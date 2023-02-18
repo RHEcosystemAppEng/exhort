@@ -21,8 +21,9 @@ package com.redhat.exhort.service;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import com.redhat.exhort.integration.Constants;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+
+import com.redhat.exhort.integration.Constants;
 
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Named;
@@ -34,9 +35,10 @@ public class RestClientBeans {
   @Produces
   @Singleton
   @Named("snyk")
-  public RestClient snyk(@ConfigProperty(name = "api.snyk.host") String url)
+  public RestClient restClient(@ConfigProperty(name = "api.snyk.host") String snykUrl)
       throws URISyntaxException {
-    return new RestClient(ClientBuilder.newClient(), new URI(url + Constants.SNYK_DEP_GRAPH_API_PATH));
+    return new RestClient(
+        ClientBuilder.newClient(), new URI(snykUrl + Constants.SNYK_DEP_GRAPH_API_PATH));
   }
 
   @Produces
@@ -52,7 +54,8 @@ public class RestClientBeans {
   @Named("ossIndex")
   public RestClient ossIndex(@ConfigProperty(name = "api.ossindex.host") String url)
       throws URISyntaxException {
-    return new RestClient(ClientBuilder.newClient(), new URI(url + Constants.OSS_INDEX_AUTH_COMPONENT_API_PATH));
+    return new RestClient(
+        ClientBuilder.newClient(), new URI(url + Constants.OSS_INDEX_AUTH_COMPONENT_API_PATH));
   }
 
   @Produces
@@ -60,6 +63,7 @@ public class RestClientBeans {
   @Named("trustedContent")
   public RestClient trustedContent(@ConfigProperty(name = "api.trustedcontent.host") String url)
       throws URISyntaxException {
-    return new RestClient(ClientBuilder.newClient(), new URI(url + Constants.TRUSTED_CONTENT_PATH.replace("/","")));
+    return new RestClient(
+        ClientBuilder.newClient(), new URI(url + Constants.TRUSTED_CONTENT_PATH.replace("/", "")));
   }
 }

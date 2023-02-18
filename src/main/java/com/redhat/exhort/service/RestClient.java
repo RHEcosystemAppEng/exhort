@@ -35,4 +35,8 @@ public class RestClient {
   public Invocation.Builder request() {
     return this.client.target(this.serviceUrl).request();
   }
+
+  public void setServiceUrl(URI serviceUrl) {
+    this.serviceUrl = serviceUrl;
+  }
 }
