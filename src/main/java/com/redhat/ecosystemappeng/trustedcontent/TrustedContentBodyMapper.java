@@ -6,10 +6,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.redhat.ecosystemappeng.ObjectMapperProducer;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
+
+@RegisterForReflection
 public class TrustedContentBodyMapper {
 
-    private final ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = ObjectMapperProducer.newInstance();
 
     public String parse(String body) throws JsonMappingException, JsonProcessingException {
         ObjectNode node = (ObjectNode) mapper.readTree(body);

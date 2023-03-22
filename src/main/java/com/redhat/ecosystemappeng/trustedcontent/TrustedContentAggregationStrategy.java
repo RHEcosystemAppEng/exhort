@@ -5,13 +5,13 @@ import org.apache.camel.Exchange;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.redhat.ecosystemappeng.ObjectMapperProducer;
 
 public class TrustedContentAggregationStrategy implements AggregationStrategy {
 
-    ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
+    private final ObjectMapper mapper = ObjectMapperProducer.newInstance();
 
     @Override
     public Exchange aggregate(Exchange oldExchange, Exchange newExchange) {
@@ -21,7 +21,7 @@ public class TrustedContentAggregationStrategy implements AggregationStrategy {
         String oldBody = oldExchange.getIn().getBody(String.class);
         String newBody = newExchange.getIn().getBody(String.class);
 
-        if(newBody.isBlank()) {
+        if (newBody.isBlank()) {
             return oldExchange;
         }
         try {
@@ -29,9 +29,10 @@ public class TrustedContentAggregationStrategy implements AggregationStrategy {
             ArrayNode trustedContent = (ArrayNode) mapper.readTree(newBody);
             analysis.forEach(n -> {
                 trustedContent.forEach(t -> {
-                    //if (n.get("package").asText().equals(t.get("artifactId").asText() + t.get("groupId").asText())) {
+                    if (!n.isNull() && !t.isNull() && n.get("package").asText()
+                            .equals(t.get("artifactId").asText() + t.get("groupId").asText())) {
                         ((ObjectNode) n).set("trusted-content", t);
-                    //}
+                    }
                 });
             });
             oldExchange.getIn().setBody(mapper.writeValueAsBytes(analysis));
@@ -40,5 +41,5 @@ public class TrustedContentAggregationStrategy implements AggregationStrategy {
         }
         return oldExchange;
     }
-    
+
 }
