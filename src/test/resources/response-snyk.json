@@ -1,0 +1,359 @@
+{
+    "issues": [
+        {
+            "fixInfo": {},
+            "issueId": "SNYK-JAVA-IONETTY-1042268",
+            "pkgName": "io.netty:netty-handler",
+            "pkgVersion": "4.1.86.Final"
+        },
+        {
+            "fixInfo": {},
+            "issueId": "SNYK-JAVA-NETMINIDEV-3369748",
+            "pkgName": "net.minidev:json-smart",
+            "pkgVersion": "2.4.7"
+        },
+        {
+            "fixInfo": {},
+            "issueId": "SNYK-JAVA-ORGAPACHECOMMONS-559327",
+            "pkgName": "org.apache.commons:commons-dbcp2",
+            "pkgVersion": "2.7.0"
+        },
+        {
+            "fixInfo": {},
+            "issueId": "SNYK-JAVA-ORGAPACHEDIRECTORYSERVER-1063040",
+            "pkgName": "org.apache.directory.server:apacheds-kerberos-codec",
+            "pkgVersion": "2.0.0.AM25"
+        },
+        {
+            "fixInfo": {},
+            "issueId": "SNYK-JAVA-ORGAPACHEMINA-174326",
+            "pkgName": "org.apache.mina:mina-core",
+            "pkgVersion": "2.0.18"
+        },
+        {
+            "fixInfo": {},
+            "issueId": "SNYK-JAVA-ORGMOZILLA-1314295",
+            "pkgName": "org.mozilla:rhino",
+            "pkgVersion": "1.7.7.2"
+        },
+        {
+            "fixInfo": {},
+            "issueId": "SNYK-JAVA-ORGYAML-3152153",
+            "pkgName": "org.yaml:snakeyaml",
+            "pkgVersion": "1.33"
+        }
+    ],
+    "issuesData": {
+        "SNYK-JAVA-IONETTY-1042268": {
+            "CVSSv3": "CVSS:3.1/AV:A/AC:H/PR:L/UI:R/S:U/C:H/I:L/A:L/E:U/RL:U/RC:R",
+            "credit": [
+                "Unknown"
+            ],
+            "cvssDetails": [],
+            "cvssScore": 5.6,
+            "description": "## Overview\n[io.netty:netty-handler](https://github.com/netty/netty.git/netty-handler) is a library that provides an asynchronous event-driven network application framework and tools for rapid development of maintainable high performance and high scalability protocol servers and clients. In other words, Netty is a NIO client server framework which enables quick and easy development of network applications such as protocol servers and clients. It greatly simplifies and streamlines network programming such as TCP and UDP socket server.\nAffected versions of this package are vulnerable to Improper Certificate Validation. Certificate hostname validation is disabled by default in `Netty 4.1.x` which makes it potentially susceptible to Man-in-the-Middle attacks.\n## Remediation\nThere is no fixed version for `io.netty:netty-handler`.\n## References\n- [GitHub Issue 1](https://github.com/netty/netty/issues/10806)\n- [GitHub Issue 2](https://github.com/netty/netty/issues/8537)\n- [GitHub Issue 3](https://github.com/netty/netty/issues/9930)\n- [GitHub Issue 4](https://github.com/netty/netty/issues/10362)\n",
+            "disclosureTime": "2020-11-19T07:07:57Z",
+            "fixedIn": [],
+            "id": "SNYK-JAVA-IONETTY-1042268",
+            "identifiers": {
+                "CVE": [],
+                "CWE": [
+                    "CWE-295"
+                ]
+            },
+            "insights": {
+                "triageAdvice": "This vulnerability is only applicable when certificate hostname validation is disabled."
+            },
+            "language": "java",
+            "mavenModuleName": {
+                "artifactId": "netty-handler",
+                "groupId": "io.netty"
+            },
+            "moduleName": "io.netty:netty-handler",
+            "packageManager": "maven",
+            "packageName": "io.netty:netty-handler",
+            "proprietary": false,
+            "semver": {
+                "vulnerable": [
+                    "[4.1.0.Final,]"
+                ]
+            },
+            "severity": "medium",
+            "title": "Improper Certificate Validation"
+        },
+        "SNYK-JAVA-NETMINIDEV-3369748": {
+            "CVSSv3": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H/E:P",
+            "credit": [
+                "JFrog Security"
+            ],
+            "cvssDetails": [],
+            "cvssScore": 7.5,
+            "description": "## Overview\n[net.minidev:json-smart](https://github.com/netplex/json-smart-v1) is a Java JSON parser.\nAffected versions of this package are vulnerable to Denial of Service (DoS) due to a `StackOverflowError` when parsing a deeply nested JSON array or object.\r\n\r\n**NOTE:** Although this vulnerability was fixed in version 2.4.9 the maintainer recommends upgrading to 2.4.10, due to a remaining bug.\n## PoC\n```java\r\nStringBuilder s = new StringBuilder();\r\nfor (int i = 0; i < 10000 ; i++) {\r\n  s.append(\"{\\\"a\\\":\");\r\n}\r\ns.append(\"1\");\r\nfor (int i = 0; i < 10000 ; i++) {\r\n  s.append(\"}\");\r\n}\r\nJSONParser p = new JSONParser(JSONParser.MODE_JSON_SIMPLE);\r\np.parse(s.toString());\r\n```\n\n## Details\n\nDenial of Service (DoS) describes a family of attacks, all aimed at making a system inaccessible to its intended and legitimate users.\n\nUnlike other vulnerabilities, DoS attacks usually do not aim at breaching security. Rather, they are focused on making websites and services unavailable to genuine users resulting in downtime.\n\nOne popular Denial of Service vulnerability is DDoS (a Distributed Denial of Service), an attack that attempts to clog network pipes to the system by generating a large volume of traffic from many machines.\n\nWhen it comes to open source libraries, DoS vulnerabilities allow attackers to trigger such a crash or crippling of the service by using a flaw either in the application code or from the use of open source libraries.\n\nTwo common types of DoS vulnerabilities:\n\n* High CPU/Memory Consumption- An attacker sending crafted requests that could cause the system to take a disproportionate amount of time to process. For example, [commons-fileupload:commons-fileupload](SNYK-JAVA-COMMONSFILEUPLOAD-30082).\n\n* Crash - An attacker sending crafted requests that could cause the system to crash. For Example,  [npm `ws` package](https://snyk.io/vuln/npm:ws:20171108)\n\n## Remediation\nUpgrade `net.minidev:json-smart` to version 2.4.9 or higher.\n## References\n- [GitHub Commit](https://github.com/netplex/json-smart-v2/commit/5b3205d051952d3100aa0db1535f6ba6226bd87a)\n- [GitHub Commit](https://github.com/netplex/json-smart-v2/commit/e2791ae506a57491bc856b439d706c81e45adcf8)\n- [GitHub Issue](https://github.com/netplex/json-smart-v2/issues/137)\n",
+            "disclosureTime": "2023-03-23T11:26:43Z",
+            "fixedIn": [
+                "2.4.9"
+            ],
+            "id": "SNYK-JAVA-NETMINIDEV-3369748",
+            "identifiers": {
+                "CVE": [
+                    "CVE-2023-1370"
+                ],
+                "CWE": [
+                    "CWE-400"
+                ]
+            },
+            "insights": {
+                "triageAdvice": null
+            },
+            "language": "java",
+            "mavenModuleName": {
+                "artifactId": "json-smart",
+                "groupId": "net.minidev"
+            },
+            "moduleName": "net.minidev:json-smart",
+            "packageManager": "maven",
+            "packageName": "net.minidev:json-smart",
+            "proprietary": false,
+            "semver": {
+                "vulnerable": [
+                    "[,2.4.9)"
+                ]
+            },
+            "severity": "high",
+            "title": "Denial of Service (DoS)"
+        },
+        "SNYK-JAVA-ORGAPACHECOMMONS-559327": {
+            "CVSSv3": "CVSS:3.1/AV:A/AC:L/PR:L/UI:R/S:U/C:L/I:N/A:N",
+            "credit": [
+                "Frank Gasdorf"
+            ],
+            "cvssDetails": [],
+            "cvssScore": 3,
+            "description": "## Overview\n[org.apache.commons:commons-dbcp2](https://commons.apache.org/proper/commons-dbcp) is a software that implements Database Connection Pooling\nAffected versions of this package are vulnerable to Information Exposure. If a `BasicDataSource` is created with `jmxName` set, the password property is exposed via `jmx` and is visible to anyone who is connected to jmx port.\n## Remediation\nUpgrade `org.apache.commons:commons-dbcp2` to version 2.9.0 or higher.\n## References\n- [GitHub PR](https://github.com/apache/commons-dbcp/pull/38)\n- [Jira Apache Issue](https://issues.apache.org/jira/browse/DBCP-562)\n",
+            "disclosureTime": "2020-03-05T10:54:07Z",
+            "fixedIn": [
+                "2.9.0"
+            ],
+            "id": "SNYK-JAVA-ORGAPACHECOMMONS-559327",
+            "identifiers": {
+                "CVE": [],
+                "CWE": [
+                    "CWE-200"
+                ]
+            },
+            "insights": {
+                "triageAdvice": null
+            },
+            "language": "java",
+            "mavenModuleName": {
+                "artifactId": "commons-dbcp2",
+                "groupId": "org.apache.commons"
+            },
+            "moduleName": "org.apache.commons:commons-dbcp2",
+            "packageManager": "maven",
+            "packageName": "org.apache.commons:commons-dbcp2",
+            "proprietary": false,
+            "semver": {
+                "vulnerable": [
+                    "[0,2.9.0)"
+                ]
+            },
+            "severity": "low",
+            "title": "Information Exposure"
+        },
+        "SNYK-JAVA-ORGAPACHEDIRECTORYSERVER-1063040": {
+            "CVSSv3": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:N/E:U/RL:U/RC:R",
+            "credit": [
+                "Ya Xiao"
+            ],
+            "cvssDetails": [],
+            "cvssScore": 6.5,
+            "description": "## Overview\nAffected versions of this package are vulnerable to Cryptographic Issues. A static IV is used in symmetric encryption with CBC mode. The IV of CBC mode is expected to be random. The static IV makes the resulting ciphertext much more predictable and susceptible to a dictionary attack.\n## Remediation\nA fix was pushed into the `master` branch but not yet published.\n## References\n- [GitHub Additional Information](https://github.com/apache/directory-server/blob/master/kerberos-codec/src/main/java/org/apache/directory/server/kerberos/shared/crypto/encryption/DesCbcCrcEncryption.java#L46-L48)\n- [GitHub PR](https://github.com/apache/directory-server/pull/46)\n- [JIRA Issue](https://issues.apache.org/jira/browse/DIRSERVER-2338)\n",
+            "disclosureTime": "2021-01-20T15:08:06Z",
+            "fixedIn": [],
+            "id": "SNYK-JAVA-ORGAPACHEDIRECTORYSERVER-1063040",
+            "identifiers": {
+                "CVE": [],
+                "CWE": [
+                    "CWE-310",
+                    "CWE-338"
+                ]
+            },
+            "insights": {
+                "triageAdvice": null
+            },
+            "language": "java",
+            "mavenModuleName": {
+                "artifactId": "apacheds-kerberos-codec",
+                "groupId": "org.apache.directory.server"
+            },
+            "moduleName": "org.apache.directory.server:apacheds-kerberos-codec",
+            "packageManager": "maven",
+            "packageName": "org.apache.directory.server:apacheds-kerberos-codec",
+            "proprietary": false,
+            "semver": {
+                "vulnerable": [
+                    "[0,]"
+                ]
+            },
+            "severity": "medium",
+            "title": "Cryptographic Issues"
+        },
+        "SNYK-JAVA-ORGAPACHEMINA-174326": {
+            "CVSSv3": "CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:U/C:H/I:H/A:N",
+            "credit": [
+                "Marian Rehak"
+            ],
+            "cvssDetails": [
+                {
+                    "assigner": "NVD",
+                    "cvssV3BaseScore": 7.5,
+                    "cvssV3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+                    "modificationTime": "2022-01-03T17:52:55.131944Z",
+                    "severity": "high"
+                }
+            ],
+            "cvssScore": 6.8,
+            "description": "## Overview\n[org.apache.mina:mina-core](http://mina.apache.org/) is a network application framework which helps users develop high performance and high scalability network applications easily.\nAffected versions of this package are vulnerable to Information Exposure. Handling of the `close_notify` SSL/TLS message does not lead to a connection closure, leading the server to retain the socket opened and to have the client potentially receive clear-text messages which were supposed to be encrypted.\n## Remediation\nUpgrade `org.apache.mina:mina-core` to version 2.0.21, 2.1.1 or higher.\n## References\n- [GitHub Commit](https://github.com/apache/mina/commit/294b8ce638df6e237e819537b333e02853bb612c)\n- [GitHub Commit](https://github.com/apache/mina/commit/73e881ad935e5aa6080b90585ac8dc8ddfc377e1)\n- [RedHat Bugzilla Bug](https://bugzilla.redhat.com/show_bug.cgi?id=1700016)\n- [Release Notes](http://mina.apache.org/mina-project/index.html#mina-211-mina-2021-released-posted-on-april-14-2019)\n",
+            "disclosureTime": "2019-04-14T00:00:00Z",
+            "fixedIn": [
+                "2.0.21",
+                "2.1.1"
+            ],
+            "id": "SNYK-JAVA-ORGAPACHEMINA-174326",
+            "identifiers": {
+                "CVE": [
+                    "CVE-2019-0231"
+                ],
+                "CWE": [
+                    "CWE-319"
+                ]
+            },
+            "insights": {
+                "triageAdvice": null
+            },
+            "language": "java",
+            "mavenModuleName": {
+                "artifactId": "mina-core",
+                "groupId": "org.apache.mina"
+            },
+            "moduleName": "org.apache.mina:mina-core",
+            "packageManager": "maven",
+            "packageName": "org.apache.mina:mina-core",
+            "proprietary": false,
+            "semver": {
+                "vulnerable": [
+                    "[,2.0.21)",
+                    "[2.1.0,2.1.1)"
+                ]
+            },
+            "severity": "medium",
+            "title": "Information Exposure"
+        },
+        "SNYK-JAVA-ORGMOZILLA-1314295": {
+            "CVSSv3": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:L/A:N/E:U/RL:O/RC:R",
+            "credit": [
+                "brianwrf"
+            ],
+            "cvssDetails": [],
+            "cvssScore": 8.2,
+            "description": "## Overview\n[org.mozilla:rhino](https://github.com/mozilla/rhino) is a Rhino is an open-source implementation of JavaScript written entirely in Java. It is typically embedded into Java applications to provide scripting to end users.\nAffected versions of this package are vulnerable to XML External Entity (XXE) Injection. The function `toXml` allows usage of external entities when parsing an XML document.\n\n## Details\nXXE Injection is a type of attack against an application that parses XML input.\nXML is a markup language that defines a set of rules for encoding documents in a format that is both human-readable and machine-readable. By default, many XML processors allow specification of an external entity, a URI that is dereferenced and evaluated during XML processing. When an XML document is being parsed, the parser can make a request and include the content at the specified URI inside of the XML document.\n\nAttacks can include disclosing local files, which may contain sensitive data such as passwords or private user data, using file: schemes or relative paths in the system identifier.\n\nFor example, below is a sample XML document, containing an XML element- username.\n\n```\n<xml>\n<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n   <username>John</username>\n</xml>\n```\n\nAn external XML entity - `xxe`, is defined using a system identifier and present within a DOCTYPE header. These entities can access local or remote content. For example the below code contains an external XML entity that would fetch the content of  `/etc/passwd` and display it to the user rendered by `username`.\n\n```\n<xml>\n<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n<!DOCTYPE foo [\n   <!ENTITY xxe SYSTEM \"file:///etc/passwd\" >]>\n   <username>&xxe;</username>\n</xml>\n```\n\nOther XXE Injection attacks can access local resources that may not stop returning data, possibly impacting application availability and leading to Denial of Service.\n\n## Remediation\nUpgrade `org.mozilla:rhino` to version 1.7.12 or higher.\n## References\n- [GitHub Commit](https://github.com/mozilla/rhino/commit/afed3835b3ff6ab184e9e9382ad58fb248043f1c)\n- [GitHub Issue](https://github.com/mozilla/rhino/issues/479)\n- [GitHub Vulnerable Code](https://github.com/mozilla/rhino/blob/master/xmlimplsrc/org/mozilla/javascript/xmlimpl/XmlProcessor.java#L225)\n",
+            "disclosureTime": "2018-09-28T08:40:40Z",
+            "fixedIn": [
+                "1.7.12"
+            ],
+            "id": "SNYK-JAVA-ORGMOZILLA-1314295",
+            "identifiers": {
+                "CVE": [],
+                "CWE": [
+                    "CWE-611"
+                ]
+            },
+            "insights": {
+                "triageAdvice": null
+            },
+            "language": "java",
+            "mavenModuleName": {
+                "artifactId": "rhino",
+                "groupId": "org.mozilla"
+            },
+            "moduleName": "org.mozilla:rhino",
+            "packageManager": "maven",
+            "packageName": "org.mozilla:rhino",
+            "proprietary": false,
+            "semver": {
+                "vulnerable": [
+                    "[,1.7.12)"
+                ]
+            },
+            "severity": "high",
+            "title": "XML External Entity (XXE) Injection"
+        },
+        "SNYK-JAVA-ORGYAML-3152153": {
+            "CVSSv3": "CVSS:3.1/AV:N/AC:H/PR:H/UI:N/S:U/C:H/I:H/A:H",
+            "credit": [
+                "Justin Taft",
+                "securisec"
+            ],
+            "cvssDetails": [
+                {
+                    "assigner": "Red Hat",
+                    "cvssV3BaseScore": 9.8,
+                    "cvssV3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+                    "modificationTime": "2023-02-09T15:35:08.511352Z",
+                    "severity": "critical"
+                },
+                {
+                    "assigner": "NVD",
+                    "cvssV3BaseScore": 9.8,
+                    "cvssV3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+                    "modificationTime": "2022-12-07T01:11:42.237882Z",
+                    "severity": "critical"
+                }
+            ],
+            "cvssScore": 6.6,
+            "description": "## Overview\n[org.yaml:snakeyaml](https://code.google.com/p/snakeyaml/source/browse/) is a YAML 1.1 parser and emitter for Java.\nAffected versions of this package are vulnerable to Arbitrary Code Execution in the `Constructor` class, which does not restrict which types can be deserialized. This vulnerability is exploitable by an attacker who provides a malicious YAML file for deserialization, which circumvents the `SafeConstructor` class. \r\n\r\nThe maintainers of the library contend that the application's trust would already have had to be compromised or established and therefore dispute the risk associated with this issue on the basis that there is a high bar for exploitation.\n## Remediation\nUpgrade `org.yaml:snakeyaml` to version 2.0 or higher.\n## References\n- [BitBucket Changelog](https://bitbucket.org/snakeyaml/snakeyaml/wiki/Changes)\n- [Bitbucket Commit](https://bitbucket.org/snakeyaml/snakeyaml/commits/2b8d47c8bcfd402e7a682b7b2674e8d0cb25e522)\n- [Bitbucket Issue](https://bitbucket.org/snakeyaml/snakeyaml/issues/561/cve-2022-1471-vulnerability-in)\n- [BitBucket Issue](https://bitbucket.org/snakeyaml/snakeyaml/issues/565/do-not-allow-global-tags-by-default)\n- [BitBucket PR](https://bitbucket.org/snakeyaml/snakeyaml/pull-requests/39)\n- [BitBucket PR](https://bitbucket.org/snakeyaml/snakeyaml/pull-requests/44)\n- [Snyk Blog - Technical Deepdive](https://snyk.io/blog/unsafe-deserialization-snakeyaml-java-cve-2022-1471/)\n- [Vulnerable Class](https://github.com/snakeyaml/snakeyaml/blob/master/src/main/java/org/yaml/snakeyaml/constructor/Constructor.java)\n",
+            "disclosureTime": "2022-12-01T14:49:09Z",
+            "fixedIn": [
+                "2.0"
+            ],
+            "id": "SNYK-JAVA-ORGYAML-3152153",
+            "identifiers": {
+                "CVE": [
+                    "CVE-2022-1471"
+                ],
+                "CWE": [
+                    "CWE-20"
+                ],
+                "GHSA": [
+                    "GHSA-mjmj-j48q-9wg2"
+                ]
+            },
+            "insights": {
+                "triageAdvice": null
+            },
+            "language": "java",
+            "mavenModuleName": {
+                "artifactId": "snakeyaml",
+                "groupId": "org.yaml"
+            },
+            "moduleName": "org.yaml:snakeyaml",
+            "packageManager": "maven",
+            "packageName": "org.yaml:snakeyaml",
+            "proprietary": false,
+            "semver": {
+                "vulnerable": [
+                    "[0,2.0)"
+                ]
+            },
+            "severity": "medium",
+            "title": "Arbitrary Code Execution"
+        }
+    },
+    "ok": false,
+    "org": {
+        "id": "bec5d7b5-5168-4b9f-a53f-834f1433437b",
+        "name": "rubens-playground"
+    },
+    "packageManager": "maven"
+}

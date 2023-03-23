@@ -7,9 +7,25 @@ See the [application.properties](./src/main/resources/application.properties) fo
 - Current CRDA v1.5
 - Trusted Content service
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+## Required parameters
 
-If you want to learn more about Quarkus, please visit its website: https://quarkus.io/ .
+- `api.snyk.org` Snyk OrgId
+- `api.snyk.token` Snyk API token for authentication
+
+## Dependency Graph analysis
+
+With Maven it is possible to generate a [DOT graph](https://graphviz.org/doc/info/lang.html) with all the resolved dependencies.
+The following command will generate a `dependencies.txt` file in the project target folder.
+
+```bash
+mvn --quiet clean -f "/path/to/project/pom.xml" && mvn --quiet org.apache.maven.plugins:maven-dependency-plugin:3.5.0:tree -f "/path/to/project/pom.xml" -DoutputFile="/path/to/project/target/dependencies.txt" -DoutputType=dot -DappendOutput=true
+```
+
+You can submit this file to the `/graph-analysis` endpoint in order to get a dependency graph analysis backed by Snyk.
+
+```bash
+http :8080/api/v2/graph-analysis Content-Type:text/plain @'./src/test/resources/dependencies.txt'
+```
 
 ## Running the application in dev mode
 
