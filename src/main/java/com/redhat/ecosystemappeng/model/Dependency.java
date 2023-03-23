@@ -17,7 +17,7 @@ public class Dependency {
     String artifactId;
     String version;
     String packaging;
-    String classifier;
+    // String classifier;
     String scope;
 
     public String getId() {
@@ -40,7 +40,7 @@ public class Dependency {
                 builder.scope(parts[4]);
             }
         } else {
-            builder.groupId(parts[0]).artifactId(parts[1]).packaging(parts[2]).classifier(parts[3]).version(parts[4]).scope(parts[5]);
+            builder.groupId(parts[0]).artifactId(parts[1]).packaging(parts[2])/*.classifier(parts[3])*/.version(parts[4]).scope(parts[5]);
         }
         return builder.build();
     }

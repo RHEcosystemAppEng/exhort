@@ -16,7 +16,7 @@ public class MavenDependenciesLoader {
 
     public Graph<Dependency, DependencyEdge> load(InputStream file) {
         GraphBuilder<Dependency, DependencyEdge, Graph<Dependency, DependencyEdge>> builder = GraphTypeBuilder
-                .directed().vertexClass(Dependency.class)
+                .directed().allowingSelfLoops(false).vertexClass(Dependency.class)
                 .edgeSupplier(DependencyEdge::new)
                 .buildGraphBuilder();
         try (Scanner scanner = new Scanner(file)) {
@@ -26,7 +26,11 @@ public class MavenDependenciesLoader {
                     // ignore
                 } else {
                     String[] vertices = line.replace(";", "").replaceAll("\"", "").split("->");
-                    builder.addEdge(Dependency.parse(vertices[0].trim()), Dependency.parse(vertices[1].trim()));
+                    try {
+                        builder.addEdge(Dependency.parse(vertices[0].trim()), Dependency.parse(vertices[1].trim()));
+                    } catch (IllegalArgumentException e) {
+                        // ignore loops caused by classifiers
+                    }
                 }
             }
         }
