@@ -16,8 +16,6 @@ public class RouteV3 extends RouteBuilder{
     @Override
     public void configure() {
 
-        restConfiguration().inlineRoutes(true);
-
         rest("/api/v3/")
             .get("/component-analyses/{ecosystem}/{package}/{version}")
                 .param().name("ecosystem").type(RestParamType.path).endParam()
@@ -30,15 +28,15 @@ public class RouteV3 extends RouteBuilder{
         from("direct:componentAnalysis")
             .to("direct:snykTest")
             // .multicast(new TrustedContentAggregationStrategy()).stopOnException()
-            // .to("http:{{api.crda.host}}?bridgeEndpoint=true", "direct:trustedContent")
-            .end();
+            // .to("direct:snykTest", "direct:trustedContent")
+;
 
         from("direct:componentsAnalyses")
-            .bean(GraphBuilder.class, "depsToFlatGraph")
+            .setBody().method(GraphBuilder.class, "depsToFlatGraph")
             .to("direct:snykDepGraph")
             // .multicast(new TrustedContentAggregationStrategy()).stopOnException()
-            // .to("http:{{api.crda.host}}?bridgeEndpoint=true", "direct:trustedContent")
-            .end();
+            // .to("direct:snykTest", "direct:trustedContent")
+;
 
         from("direct:trustedContent")
             .choice()
@@ -50,14 +48,14 @@ public class RouteV3 extends RouteBuilder{
                 .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.APPLICATION_JSON))
                 .setHeader("Accept", constant(MediaType.APPLICATION_JSON))
                 .setBody(method(TrustedContentBodyMapper.class))
-                .to("http:{{api.trustedContent.host}}")
+                .to("vertx-http:{{api.trustedContent.host}}")
             .otherwise()
                 .setBody(constant(""))
             .endChoice();
 
         from("direct:graphAnalysis")
-            .setBody(method(MavenDependenciesLoader.class))
-            .setBody(method(GraphBuilder.class, "fromMavenDependencies"))
+        .transform().method(MavenDependenciesLoader.class)
+            .transform().method(GraphBuilder.class, "fromMavenDependencies")
             .to("direct:snykDepGraph");
 
         from("direct:snykDepGraph")
@@ -68,7 +66,7 @@ public class RouteV3 extends RouteBuilder{
             .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.APPLICATION_JSON))
             .setHeader("Authorization", simple("token {{api.snyk.token}}"))
             .setHeader("Accept", constant(MediaType.APPLICATION_JSON))
-            .to("https:{{api.snyk.host}}");
+            .to("vertx-http:{{api.snyk.host}}");
 
         from("direct:snykTest")
             .setHeader("pkgPath", method(PackagePathConverter.class))
@@ -77,8 +75,8 @@ public class RouteV3 extends RouteBuilder{
             .setHeader(Exchange.HTTP_METHOD, constant("GET"))
             .setHeader("Authorization", simple("token {{api.snyk.token}}"))
             .setHeader("Accept", constant(MediaType.APPLICATION_JSON))
-            .setHeader(Exchange.HTTP_URI, simple("https://{{api.snyk.host}}/api/v1"))
-            .to("https://snyk"); 
+            .setHeader(Exchange.HTTP_URI, simple("{{api.snyk.host}}/api/v1"))
+            .to("vertx-http:snyk"); 
     }
     
 }

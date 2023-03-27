@@ -24,7 +24,7 @@ mvn --quiet clean -f "/path/to/project/pom.xml" && mvn --quiet org.apache.maven.
 You can submit this file to the `/graph-analysis` endpoint in order to get a dependency graph analysis backed by Snyk.
 
 ```bash
-http :8080/api/v2/graph-analysis Content-Type:text/plain @'./src/test/resources/dependencies.txt'
+http :8080/api/v3/graph-analysis Content-Type:text/plain @'./examples/dependencies.txt'
 ```
 
 ## Running the application in dev mode

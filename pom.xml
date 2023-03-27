@@ -18,6 +18,7 @@
     <surefire-plugin.version>3.0.0-M7</surefire-plugin.version>
     <jgraph.version>1.5.1</jgraph.version>
     <lombok.version>1.18.26</lombok.version>
+    <wiremock.version>2.27.2</wiremock.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -52,6 +53,10 @@
     </dependency>
     <dependency>
       <groupId>org.apache.camel.quarkus</groupId>
+      <artifactId>camel-quarkus-mail</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.camel.quarkus</groupId>
       <artifactId>camel-quarkus-rest</artifactId>
     </dependency>
     <dependency>
@@ -64,7 +69,7 @@
     </dependency>
     <dependency>
       <groupId>org.apache.camel.quarkus</groupId>
-      <artifactId>camel-quarkus-http</artifactId>
+      <artifactId>camel-quarkus-vertx-http</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.camel.quarkus</groupId>
@@ -89,6 +94,12 @@
       <version>${lombok.version}</version>
     </dependency>
 
+    <!-- Debug -->
+    <dependency>
+      <groupId>org.apache.camel.quarkus</groupId>
+      <artifactId>camel-quarkus-log</artifactId>
+    </dependency>
+
     <!-- Test -->
     <dependency>
       <groupId>io.quarkus</groupId>
@@ -96,9 +107,20 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.apache.camel.quarkus</groupId>
+      <artifactId>camel-quarkus-junit5</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>io.rest-assured</groupId>
       <artifactId>rest-assured</artifactId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.github.tomakehurst</groupId>
+      <artifactId>wiremock-jre8</artifactId>
+      <scope>test</scope>
+      <version>${wiremock.version}</version>
     </dependency>
   </dependencies>
   <build>
