@@ -3,7 +3,6 @@ package com.redhat.ecosystemappeng.routes;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.camel.Exchange;
-import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
 
 public class RouteV2 extends EndpointRouteBuilder {

@@ -11,6 +11,7 @@ See the [application.properties](./src/main/resources/application.properties) fo
 
 - `api.snyk.org` Snyk OrgId
 - `api.snyk.token` Snyk API token for authentication
+- `api.crda.key` CRDA user key
 
 ## Dependency Graph analysis
 
