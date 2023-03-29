@@ -7,13 +7,28 @@ See the [application.properties](./src/main/resources/application.properties) fo
 - Current CRDA v1.5
 - Trusted Content service
 
+### Third party dependencies
+
+ - Snyk API
+
 ## Required parameters
 
 - `api.snyk.org` Snyk OrgId
 - `api.snyk.token` Snyk API token for authentication
 - `api.crda.key` CRDA user key
 
-## Dependency Graph analysis
+## Providers
+
+Currently there are 2 available providers.
+
+ - Snyk will provide a vulnerability report for your components or full dependency graph
+ - Red Hat Trusted Content will provide the recommended software matching the current dependencies
+
+## Package Managers
+
+Only `maven` is currently supported.
+
+## Dependency Graph Analysis
 
 With Maven it is possible to generate a [DOT graph](https://graphviz.org/doc/info/lang.html) with all the resolved dependencies.
 The following command will generate a `dependencies.txt` file in the project target folder.
@@ -22,10 +37,43 @@ The following command will generate a `dependencies.txt` file in the project tar
 mvn --quiet clean -f "/path/to/project/pom.xml" && mvn --quiet org.apache.maven.plugins:maven-dependency-plugin:3.5.0:tree -f "/path/to/project/pom.xml" -DoutputFile="/path/to/project/target/dependencies.txt" -DoutputType=dot -DappendOutput=true
 ```
 
-You can submit this file to the `/graph-analysis` endpoint in order to get a dependency graph analysis backed by Snyk.
+You can submit this file to the `/dependency-analysis` endpoint in order to get a dependency graph analysis backed from the selected provider. Make sure youre passing the
+right `Content-Type` and a valid `pkgManager` and `provider`
+
+This is an example for `maven` and `snyk`:
 
 ```bash
-http :8080/api/v3/graph-analysis Content-Type:text/plain @'./examples/dependencies.txt'
+http :8080/api/v3/dependency-analysis/maven/snyk Content-Type:"text/vnd.graphviz" @'./src/test/resources/dependencies.txt' | jq .
+```
+
+## Component Analysis
+
+It is also possible to provide a list of packages in order to get a similar report. This method accepts a JSON object instead of a DOT graph.
+
+Make sure you are providing a valid `pkgManager` and `provider`
+
+```bash
+$ curl 'http://localhost:8080/api/v3/component-analysis' \
+--header 'Content-Type: application/json' \
+--data '{
+    "pkgManager": "maven",
+    "provider": "redhat",
+    "packages": [
+        {"name": "log4j:log4j", "version": "1.2.17"},
+        {"name": "io.netty:netty-common", "version": "4.1.86"},
+    ]
+}'
+...
+[
+    null,
+    null,
+    {
+        "artifactId": "jboss-logging-annotations",
+        "groupId": "org.jboss.logging",
+        "version": "2.2.1.Final-redhat-00001"
+    }
+]
+
 ```
 
 ## Running the application in dev mode
