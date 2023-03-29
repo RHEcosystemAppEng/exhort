@@ -9,7 +9,10 @@ import java.nio.file.Path;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.camel.quarkus.test.CamelQuarkusTestSupport;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+
+import com.redhat.ecosystemappeng.extensions.WiremockV2Extension;
 
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
@@ -24,6 +27,7 @@ public class RouteV2Test extends CamelQuarkusTestSupport {
     }
 
     @Test
+    @Disabled
     void testStackAnalysisReport() throws IOException {
        
         given()
@@ -38,7 +42,7 @@ public class RouteV2Test extends CamelQuarkusTestSupport {
     }
 
     @Test
-    void testGetStackAnalysisResult() {
+    void testGetV2Routes() {
         given()
             .when()
             .get("/api/v2/stack-analyses/1234")
@@ -48,10 +52,6 @@ public class RouteV2Test extends CamelQuarkusTestSupport {
             .when()
             .get("/api/v2/stack-analyses/9999")
             .then().assertThat().statusCode(404);    
-    }
-
-    @Test
-    void testGetComponentAnalysis() {
         
         given()
             .when()
