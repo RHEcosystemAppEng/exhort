@@ -7,9 +7,12 @@ import org.jgrapht.Graph;
 import com.redhat.ecosystemappeng.model.graph.DependencyEdge;
 import com.redhat.ecosystemappeng.utils.Constants;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
+
+@RegisterForReflection
 public record GraphRequest (String pkgManager, String provider, Graph<PackageRef, DependencyEdge> graph) {
     
-    public GraphRequest(String pkgManager, String provider, Graph<PackageRef, DependencyEdge> graph) {
+    public GraphRequest {
         Objects.requireNonNull(pkgManager);
         Objects.requireNonNull(provider);
         Objects.requireNonNull(graph);
@@ -19,8 +22,6 @@ public record GraphRequest (String pkgManager, String provider, Graph<PackageRef
         if(!Constants.PROVIDERS.contains(provider)) {
             throw new IllegalArgumentException("Unsupported provider: " +  provider);
         }
-        this.pkgManager = pkgManager;
-        this.provider = provider;
-        this.graph = graph;
     }
+    
 }
