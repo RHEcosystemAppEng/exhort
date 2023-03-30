@@ -1,0 +1,13 @@
+[
+    {
+      "artifactId": "quarkus",
+      "groupId": "org.quarkus",
+      "version": "1.2-redhat-007"
+    },
+    {
+      "artifactId": "jboss-logging-annotations",
+      "groupId": "org.jboss.logging",
+      "version": "2.2.1.Final-redhat-00001"
+    },
+    null
+  ]

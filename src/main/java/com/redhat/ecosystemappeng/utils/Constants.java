@@ -8,6 +8,7 @@ public final class Constants {
     
     private Constants() {}
 
+    public static final String TEXT_VND_GRAPHVIZ = "text/vnd.graphviz";
     public static final String SNYK_PROVIDER = "snyk";
     public static final String REDHAT_PROVIDER = "redhat";
 
@@ -21,5 +22,6 @@ public final class Constants {
         add(SNYK_PROVIDER);
         add(REDHAT_PROVIDER);
     }});
+
     
 }

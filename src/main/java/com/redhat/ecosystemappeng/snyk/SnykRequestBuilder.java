@@ -17,7 +17,7 @@ import com.redhat.ecosystemappeng.model.graph.DependencyEdge;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @RegisterForReflection
-public class GraphBuilder {
+public class SnykRequestBuilder {
 
     private ObjectMapper mapper = ObjectMapperProducer.newInstance();
 
