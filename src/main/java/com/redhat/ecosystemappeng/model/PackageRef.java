@@ -1,7 +1,10 @@
 package com.redhat.ecosystemappeng.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public record PackageRef (String name, String version) {
  
+    @JsonIgnore
     public String getId() {
         return name + "@" + version;
     }

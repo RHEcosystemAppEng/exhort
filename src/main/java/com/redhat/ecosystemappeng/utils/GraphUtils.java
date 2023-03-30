@@ -3,6 +3,8 @@ package com.redhat.ecosystemappeng.utils;
 import java.io.InputStream;
 import java.util.Scanner;
 
+import org.apache.camel.Body;
+import org.apache.camel.Header;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.builder.GraphBuilder;
 import org.jgrapht.graph.builder.GraphTypeBuilder;
@@ -27,14 +29,10 @@ public class GraphUtils {
         PackageRef root = new PackageRef("com.redhat.ecosystemappeng:default-app", "0.0.1");
         builder.addVertex(root);
         body.packages().forEach(d -> builder.addEdge(root, d));
-        return GraphRequest.builder()
-                .graph(builder.buildAsUnmodifiable())
-                .pkgManager(body.pkgManager())
-                .provider(body.provider())
-                .build();
+        return new GraphRequest(body.pkgManager(), body.provider(), builder.buildAsUnmodifiable());
     }
 
-    public GraphRequest fromDotFile(InputStream file, String pkgManager, String provider) {
+    public GraphRequest fromDotFile(@Body InputStream file, @Header("pkgManager") String pkgManager, @Header("provider") String provider) {
         GraphBuilder<PackageRef, DependencyEdge, Graph<PackageRef, DependencyEdge>> builder = GraphTypeBuilder
                 .directed().allowingSelfLoops(false).vertexClass(PackageRef.class)
                 .edgeSupplier(DependencyEdge::new)
@@ -54,10 +52,6 @@ public class GraphUtils {
                 }
             }
         }
-        return GraphRequest.builder()
-                .graph(builder.buildAsUnmodifiable())
-                .pkgManager(pkgManager)
-                .provider(provider)
-                .build();
+        return new GraphRequest(pkgManager, provider, builder.buildAsUnmodifiable());
     }
 }

@@ -7,15 +7,13 @@ import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
 import org.apache.camel.model.rest.RestBindingMode;
 import org.apache.camel.model.rest.RestParamType;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.redhat.ecosystemappeng.model.ComponentRequest;
-import com.redhat.ecosystemappeng.snyk.GraphBuilder;
+import com.redhat.ecosystemappeng.snyk.SnykRequestBuilder;
 import com.redhat.ecosystemappeng.trustedcontent.TrustedContentBodyMapper;
+import com.redhat.ecosystemappeng.utils.Constants;
 import com.redhat.ecosystemappeng.utils.GraphUtils;
 
 public class RouteV3 extends EndpointRouteBuilder {
-
-    private static final String TEXT_VND_GRAPHVIZ = "text/vnd.graphviz";
 
     @Override
     public void configure() {
@@ -54,7 +52,7 @@ public class RouteV3 extends EndpointRouteBuilder {
                     .type(RestParamType.path)
                     .required(true)
                     .endParam()
-                .consumes(TEXT_VND_GRAPHVIZ)
+                .consumes(Constants.TEXT_VND_GRAPHVIZ)
                 .to("direct:depAnalysis");
 
         from(direct("componentAnalysis"))
@@ -63,8 +61,7 @@ public class RouteV3 extends EndpointRouteBuilder {
                 .unmarshal().json();
 
         from(direct("depAnalysis"))
-                .transform().method(GraphUtils.class, "fromDotFile(${body}, ${header.pkgManager}, ${header.provider})")
-                .to("log:foo?showHeaders=true")
+                .transform().method(GraphUtils.class, "fromDotFile")
                 .to(direct("doAnalysis"));
 
         from(direct("doAnalysis"))
@@ -96,7 +93,7 @@ public class RouteV3 extends EndpointRouteBuilder {
                 .setHeader(Exchange.HTTP_QUERY, constant("org={{api.snyk.org}}"));
 
         from(direct("snykDepGraph"))
-                .transform().method(GraphBuilder.class, "fromDiGraph")
+                .transform().method(SnykRequestBuilder.class, "fromDiGraph")
                 .to(direct("snykRequest"))
                 .setHeader(Exchange.HTTP_PATH, constant("/test/dep-graph"))
                 .setHeader(Exchange.HTTP_METHOD, constant("POST"))

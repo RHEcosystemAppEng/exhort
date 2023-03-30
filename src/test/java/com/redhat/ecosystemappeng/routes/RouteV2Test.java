@@ -8,7 +8,6 @@ import java.nio.file.Path;
 
 import javax.ws.rs.core.MediaType;
 
-import org.apache.camel.quarkus.test.CamelQuarkusTestSupport;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -20,7 +19,7 @@ import io.restassured.RestAssured;
 
 @QuarkusTest
 @QuarkusTestResource(WiremockV2Extension.class)
-public class RouteV2Test extends CamelQuarkusTestSupport {
+public class RouteV2Test {
     
     static {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
@@ -42,7 +41,7 @@ public class RouteV2Test extends CamelQuarkusTestSupport {
     }
 
     @Test
-    void testGetV2Routes() {
+    void testStackAnalysis() {
         given()
             .when()
             .get("/api/v2/stack-analyses/1234")
@@ -52,7 +51,11 @@ public class RouteV2Test extends CamelQuarkusTestSupport {
             .when()
             .get("/api/v2/stack-analyses/9999")
             .then().assertThat().statusCode(404);    
-        
+    
+    }
+
+    @Test
+    void testComponentAnalysis() {
         given()
             .when()
                 .get("/api/v2/component-analyses/maven/log4j:log4j/1.2.7")

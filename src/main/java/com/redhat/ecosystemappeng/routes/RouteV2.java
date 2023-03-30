@@ -1,6 +1,5 @@
 package com.redhat.ecosystemappeng.routes;
 
-import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.camel.Exchange;

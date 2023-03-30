@@ -1,6 +1,5 @@
 package com.redhat.ecosystemappeng.model;
 
-import java.util.Collection;
 import java.util.Objects;
 
 import org.jgrapht.Graph;
@@ -8,9 +7,6 @@ import org.jgrapht.Graph;
 import com.redhat.ecosystemappeng.model.graph.DependencyEdge;
 import com.redhat.ecosystemappeng.utils.Constants;
 
-import lombok.Builder;
-
-@Builder
 public record GraphRequest (String pkgManager, String provider, Graph<PackageRef, DependencyEdge> graph) {
     
     public GraphRequest(String pkgManager, String provider, Graph<PackageRef, DependencyEdge> graph) {
