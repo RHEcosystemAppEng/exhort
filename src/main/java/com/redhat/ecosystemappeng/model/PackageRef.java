@@ -2,6 +2,9 @@ package com.redhat.ecosystemappeng.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
+
+@RegisterForReflection
 public record PackageRef (String name, String version) {
  
     @JsonIgnore
