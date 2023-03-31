@@ -66,7 +66,6 @@ $ curl 'http://localhost:8080/api/v3/component-analysis' \
 ...
 [
     null,
-    null,
     {
         "artifactId": "jboss-logging-annotations",
         "groupId": "org.jboss.logging",
@@ -74,6 +73,20 @@ $ curl 'http://localhost:8080/api/v3/component-analysis' \
     }
 ]
 
+```
+
+## Deploy on OpenShift
+
+The required parameters can be injected as environment variables through a secret. Create the `crda-secret` Secret before deploying the application.
+
+```bash
+oc create secret generic -n crda --from-literal=api-crda-key=<the-key> --from-literal=api-snyk-token=<the-token> --from-literal=api-snyk-org=<the-org> crda-secret
+```
+
+After that you can use the [crda-backend.yaml](./deploy/crda-backend.yaml)
+
+```bash
+oc apply -f deploy/crda-backend.yaml
 ```
 
 ## Running the application in dev mode

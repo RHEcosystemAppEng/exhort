@@ -5,6 +5,7 @@ import org.jgrapht.traverse.BreadthFirstIterator;
 import com.redhat.ecosystemappeng.model.GraphRequest;
 import com.redhat.ecosystemappeng.model.PackageRef;
 import com.redhat.ecosystemappeng.model.graph.DependencyEdge;
+import com.redhat.ecosystemappeng.utils.GraphUtils;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -16,13 +17,14 @@ public class TrustedContentBodyMapper {
         StringBuilder builder = new StringBuilder("[");
         while (iterator.hasNext()) {
             PackageRef dep = iterator.next();
-            builder.append("\"").append(dep.name()).append(":").append(dep.version()).append("\"");
-            if(iterator.hasNext()) {
-                builder.append(",");
+            if (!GraphUtils.DEFAULT_ROOT.equals(dep)) {
+                builder.append("\"").append(dep.name()).append(":").append(dep.version()).append("\"");
+                if (iterator.hasNext()) {
+                    builder.append(",");
+                }
             }
         }
         return builder.append("]").toString();
-        
     }
 
 }

@@ -19,6 +19,10 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 @RegisterForReflection
 public class GraphUtils {
 
+    public static final String DEFAULT_APP_NAME = "com.redhat.ecosystemappeng:default-app";
+    public static final String DEFAULT_APP_VERSION = "0.0.1";
+    public static final PackageRef DEFAULT_ROOT = new PackageRef(DEFAULT_APP_NAME, DEFAULT_APP_VERSION);
+
     public GraphRequest fromPackages(ComponentRequest body) {
         GraphBuilder<PackageRef, DependencyEdge, Graph<PackageRef, DependencyEdge>> builder = GraphTypeBuilder
                 .directed()
@@ -26,9 +30,8 @@ public class GraphUtils {
                 .vertexClass(PackageRef.class)
                 .edgeSupplier(DependencyEdge::new)
                 .buildGraphBuilder();
-        PackageRef root = new PackageRef("com.redhat.ecosystemappeng:default-app", "0.0.1");
-        builder.addVertex(root);
-        body.packages().forEach(d -> builder.addEdge(root, d));
+        builder.addVertex(DEFAULT_ROOT);
+        body.packages().forEach(d -> builder.addEdge(DEFAULT_ROOT, d));
         return new GraphRequest(body.pkgManager(), body.provider(), builder.buildAsUnmodifiable());
     }
 
