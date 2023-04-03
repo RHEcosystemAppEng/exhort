@@ -1,11 +1,15 @@
 package com.redhat.ecosystemappeng.extensions;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import java.util.Map;
 
 import javax.ws.rs.core.MediaType;
+
+import org.apache.camel.Exchange;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 
@@ -24,15 +28,16 @@ public class WiremockV3Extension implements QuarkusTestResourceLifecycleManager 
 
         server.stubFor(post("/api/v1/test/dep-graph?org=" + SNYK_ORG)
                 .withHeader("Authorization", equalTo("token " + SNYK_TOKEN))
-                .withHeader("Content-Type", equalTo(MediaType.APPLICATION_JSON))
+                .withHeader(Exchange.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withBodyFile("snyk_report.json")));
 
         server.stubFor(post("/api/policy/v1alpha1/trusted::gav?minimal=true")
-                .withHeader("Content-Type", equalTo(MediaType.APPLICATION_JSON))
+                .withHeader(Exchange.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON))
                 .willReturn(aResponse()
                         .withStatus(200)
+                        .withHeader(Exchange.CONTENT_ENCODING, "identity")
                         .withBodyFile("trustedContent_report.json")));
 
         return Map.of(

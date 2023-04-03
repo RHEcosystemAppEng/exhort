@@ -1,4 +1,7 @@
-package com.redhat.ecosystemappeng.utils;
+package com.redhat.ecosystemappeng.routes.integration;
+
+import static com.redhat.ecosystemappeng.routes.integration.Constants.PKG_MANAGER_HEADER;
+import static com.redhat.ecosystemappeng.routes.integration.Constants.PROVIDER_HEADER;
 
 import java.io.InputStream;
 import java.util.Scanner;
@@ -35,7 +38,7 @@ public class GraphUtils {
         return new GraphRequest(body.pkgManager(), body.provider(), builder.buildAsUnmodifiable());
     }
 
-    public GraphRequest fromDotFile(@Body InputStream file, @Header("pkgManager") String pkgManager, @Header("provider") String provider) {
+    public GraphRequest fromDotFile(@Body InputStream file, @Header(PKG_MANAGER_HEADER) String pkgManager, @Header(PROVIDER_HEADER) String provider) {
         GraphBuilder<PackageRef, DependencyEdge, Graph<PackageRef, DependencyEdge>> builder = GraphTypeBuilder
                 .directed().allowingSelfLoops(false).vertexClass(PackageRef.class)
                 .edgeSupplier(DependencyEdge::new)

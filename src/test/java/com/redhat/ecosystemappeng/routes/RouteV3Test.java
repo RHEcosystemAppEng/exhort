@@ -1,6 +1,7 @@
 package com.redhat.ecosystemappeng.routes;
 
 import static io.restassured.RestAssured.given;
+import static org.apache.camel.Exchange.CONTENT_TYPE;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -16,11 +17,11 @@ import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.redhat.ecosystemappeng.ObjectMapperProducer;
+import com.redhat.ecosystemappeng.config.ObjectMapperProducer;
 import com.redhat.ecosystemappeng.extensions.WiremockV3Extension;
 import com.redhat.ecosystemappeng.model.ComponentRequest;
 import com.redhat.ecosystemappeng.model.PackageRef;
-import com.redhat.ecosystemappeng.utils.Constants;
+import com.redhat.ecosystemappeng.routes.integration.Constants;
 
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
@@ -38,7 +39,7 @@ public class RouteV3Test {
     public void testComponentAnalysisWithWrongProvider() {
         ComponentRequest req = new ComponentRequest(Constants.MAVEN_PKG_MANAGER, "unknown", Collections.emptyList());
         given()
-            .header("Content-Type", MediaType.APPLICATION_JSON)
+            .header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
             .body(req)
         .when()
             .post("/api/v3/component-analysis")
@@ -53,7 +54,7 @@ public class RouteV3Test {
     public void testComponentAnalysisWithWrongPkgManager() {
         ComponentRequest req = new ComponentRequest("unknown", Constants.SNYK_PROVIDER, Collections.emptyList());
         given()
-            .header("Content-Type", MediaType.APPLICATION_JSON)
+            .header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
             .body(req)
         .when()
             .post("/api/v3/component-analysis")
@@ -71,7 +72,7 @@ public class RouteV3Test {
             new PackageRef("io.netty:netty-common", "4.1.86"));
         ComponentRequest req = new ComponentRequest(Constants.MAVEN_PKG_MANAGER, Constants.SNYK_PROVIDER, pkgs);
         String body = given()
-            .header("Content-Type", MediaType.APPLICATION_JSON)
+            .header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
             .body(req)
         .when()
             .post("/api/v3/component-analysis")
@@ -90,7 +91,7 @@ public class RouteV3Test {
             new PackageRef("io.netty:netty-common", "4.1.86"));
         ComponentRequest req = new ComponentRequest(Constants.MAVEN_PKG_MANAGER, Constants.REDHAT_PROVIDER, pkgs);
         String body = given()
-            .header("Content-Type", MediaType.APPLICATION_JSON)
+            .header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
             .body(req)
         .when()
             .post("/api/v3/component-analysis")
@@ -105,7 +106,7 @@ public class RouteV3Test {
     @Test
     public void testDepAnalysisWithWrongProvider() {
         given()
-            .header("Content-Type", Constants.TEXT_VND_GRAPHVIZ)
+            .header(CONTENT_TYPE, Constants.TEXT_VND_GRAPHVIZ)
             .body(loadDependenciesFile())
         .when()
             .post("/api/v3/dependency-analysis/{pkgManager}/{provider}", Constants.MAVEN_PKG_MANAGER, "unknown")
@@ -119,7 +120,7 @@ public class RouteV3Test {
     @Test
     public void testDepAnalysisWithWrongPkgManager() {
         given()
-            .header("Content-Type", Constants.TEXT_VND_GRAPHVIZ)
+            .header(CONTENT_TYPE, Constants.TEXT_VND_GRAPHVIZ)
             .body(loadDependenciesFile())
         .when()
             .post("/api/v3/dependency-analysis/{pkgManager}/{provider}", "unknown", Constants.SNYK_PROVIDER)
@@ -133,7 +134,7 @@ public class RouteV3Test {
     @Test
     public void testDepAnalysisWithSnyk() {
         String body = given()
-            .header("Content-Type", Constants.TEXT_VND_GRAPHVIZ)
+            .header(CONTENT_TYPE, Constants.TEXT_VND_GRAPHVIZ)
             .body(loadDependenciesFile())
         .when()
             .post("/api/v3/dependency-analysis/{pkgManager}/{provider}", Constants.MAVEN_PKG_MANAGER, Constants.SNYK_PROVIDER)
@@ -149,7 +150,7 @@ public class RouteV3Test {
     @Test
     public void testDepAnalysisWithRedHat() {
         String body = given()
-            .header("Content-Type", Constants.TEXT_VND_GRAPHVIZ)
+            .header(CONTENT_TYPE, Constants.TEXT_VND_GRAPHVIZ)
             .body(loadDependenciesFile())
         .when()
             .post("/api/v3/dependency-analysis/{pkgManager}/{provider}", Constants.MAVEN_PKG_MANAGER, Constants.REDHAT_PROVIDER)

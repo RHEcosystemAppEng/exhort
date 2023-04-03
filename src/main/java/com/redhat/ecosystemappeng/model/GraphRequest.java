@@ -5,7 +5,7 @@ import java.util.Objects;
 import org.jgrapht.Graph;
 
 import com.redhat.ecosystemappeng.model.graph.DependencyEdge;
-import com.redhat.ecosystemappeng.utils.Constants;
+import com.redhat.ecosystemappeng.routes.integration.Constants;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 

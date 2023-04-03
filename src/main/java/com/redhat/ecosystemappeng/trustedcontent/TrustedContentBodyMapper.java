@@ -5,7 +5,7 @@ import org.jgrapht.traverse.BreadthFirstIterator;
 import com.redhat.ecosystemappeng.model.GraphRequest;
 import com.redhat.ecosystemappeng.model.PackageRef;
 import com.redhat.ecosystemappeng.model.graph.DependencyEdge;
-import com.redhat.ecosystemappeng.utils.GraphUtils;
+import com.redhat.ecosystemappeng.routes.integration.GraphUtils;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 

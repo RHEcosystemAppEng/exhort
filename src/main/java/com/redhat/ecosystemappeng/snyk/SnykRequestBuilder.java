@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.redhat.ecosystemappeng.ObjectMapperProducer;
+import com.redhat.ecosystemappeng.config.ObjectMapperProducer;
 import com.redhat.ecosystemappeng.model.GraphRequest;
 import com.redhat.ecosystemappeng.model.PackageRef;
 import com.redhat.ecosystemappeng.model.graph.DependencyEdge;

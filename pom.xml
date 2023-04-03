@@ -74,6 +74,10 @@
       <artifactId>camel-quarkus-bean</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.apache.camel.quarkus</groupId>
+      <artifactId>camel-quarkus-freemarker</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.jgrapht</groupId>
       <artifactId>jgrapht-io</artifactId>
       <version>${jgraph.version}</version>
