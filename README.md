@@ -46,6 +46,30 @@ This is an example for `maven` and `snyk`:
 http :8080/api/v3/dependency-analysis/maven/snyk Content-Type:"text/vnd.graphviz" @'./src/test/resources/dependencies.txt' | jq .
 ```
 
+### Full report
+
+If the `provider` and `pkgManager` are not provided a full report will be executed and all the providers will be used and aggregated into
+a single response.
+
+```bash
+$ http :8080/api/v3/dependency-analysis Content-Type:"text/vnd.graphviz" @'./src/test/resources/dependencies.txt'
+{
+    "snyk": { ... snyk response ...},
+    "redhat": [ ... redhat trusted content ... ]
+}
+```
+
+By default the response Content-Type will be `application/json` but if the `text/html` media type is requested instead, the response
+will be processed and converted into HTML.
+
+```bash
+$ http :8080/api/v3/dependency-analysis Content-Type:"text/vnd.graphviz" Accept:"text/html" @'./src/test/resources/dependencies.txt'
+
+<html>
+  ...
+</html>
+```
+
 ## Component Analysis
 
 It is also possible to provide a list of packages in order to get a similar report. This method accepts a JSON object instead of a DOT graph.
