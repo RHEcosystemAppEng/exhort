@@ -17,7 +17,6 @@ import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
 
 public class WiremockV3Extension implements QuarkusTestResourceLifecycleManager {
 
-    private static final String SNYK_ORG = "acme-001";
     private static final String SNYK_TOKEN = "snyk-token-xyz";
 
     private final WireMockServer server = new WireMockServer(options().dynamicPort());
@@ -26,7 +25,7 @@ public class WiremockV3Extension implements QuarkusTestResourceLifecycleManager 
     public Map<String, String> start() {
         server.start();
 
-        server.stubFor(post("/api/v1/test/dep-graph?org=" + SNYK_ORG)
+        server.stubFor(post("/api/v1/test/dep-graph")
                 .withHeader("Authorization", equalTo("token " + SNYK_TOKEN))
                 .withHeader(Exchange.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON))
                 .willReturn(aResponse()
@@ -42,7 +41,6 @@ public class WiremockV3Extension implements QuarkusTestResourceLifecycleManager 
 
         return Map.of(
                 "api.snyk.host", server.baseUrl(),
-                "api.snyk.org", SNYK_ORG,
                 "api.snyk.token", SNYK_TOKEN,
                 "api.trustedContent.host", server.baseUrl());
     }

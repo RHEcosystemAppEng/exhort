@@ -4,7 +4,6 @@
 
 See the [application.properties](./src/main/resources/application.properties) for default values and configuration properties
 
-- Current CRDA v1.5
 - Trusted Content service
 
 ### Third party dependencies
@@ -13,9 +12,12 @@ See the [application.properties](./src/main/resources/application.properties) fo
 
 ## Required parameters
 
-- `api.snyk.org` Snyk OrgId
 - `api.snyk.token` Snyk API token for authentication
-- `api.crda.key` CRDA user key
+
+## OpenAPI and SwaggerUI
+
+- OpenAPI Spec: There is an [openapi.yaml](./src/main/resources/META-INF/openapi.yaml) or publiehsed in the endpoint http://localhost:8080/q/openapi?format=json
+- Swagger UI: Available at http://localhost:8080/q/swagger-ui for development or when enabled with the property `quarkus.swagger-ui.always-include=true` 
 
 ## Providers
 
@@ -104,7 +106,7 @@ $ curl 'http://localhost:8080/api/v3/component-analysis' \
 The required parameters can be injected as environment variables through a secret. Create the `crda-secret` Secret before deploying the application.
 
 ```bash
-oc create secret generic -n crda --from-literal=api-crda-key=<the-key> --from-literal=api-snyk-token=<the-token> --from-literal=api-snyk-org=<the-org> crda-secret
+oc create secret generic -n crda --from-literal=api-snyk-token=<the-token> crda-secret
 ```
 
 After that you can use the [crda-backend.yaml](./deploy/crda-backend.yaml)

@@ -3,13 +3,14 @@ package com.redhat.ecosystemappeng.routes;
 import static com.redhat.ecosystemappeng.routes.integration.Constants.PKG_MANAGER_HEADER;
 import static com.redhat.ecosystemappeng.routes.integration.Constants.PROVIDER_HEADER;
 import static com.redhat.ecosystemappeng.routes.integration.Constants.REQUEST_CONTENT_PROPERTY;
+import static org.apache.camel.support.builder.PredicateBuilder.not;
 
+import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
 import org.apache.camel.model.rest.RestBindingMode;
-import org.apache.camel.model.rest.RestParamType;
 import com.redhat.ecosystemappeng.model.ComponentRequest;
 import com.redhat.ecosystemappeng.routes.integration.Constants;
 import com.redhat.ecosystemappeng.routes.integration.ExchangeUtils;
@@ -19,12 +20,13 @@ import com.redhat.ecosystemappeng.routes.integration.ReportTemplate;
 import com.redhat.ecosystemappeng.snyk.SnykRequestBuilder;
 import com.redhat.ecosystemappeng.trustedcontent.TrustedContentBodyMapper;
 
-public class RouteV3 extends EndpointRouteBuilder {
+public class DependencyAnalyticsRoute extends EndpointRouteBuilder {
 
     @Override
     public void configure() {
 
-        restConfiguration().clientRequestValidation(true);
+        restConfiguration().contextPath("/api/v3/")
+            .clientRequestValidation(true);
 
         onException(IllegalArgumentException.class)
             .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(422))
@@ -32,43 +34,30 @@ public class RouteV3 extends EndpointRouteBuilder {
             .handled(true)
             .setBody().simple("${exception.message}");
 
-        rest("/api/v3/")
+        onException(ClientErrorException.class)
+            .setHeader(Exchange.HTTP_RESPONSE_CODE, simple("${exception.getResponse().getStatus()}"))
+            .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.TEXT_PLAIN))
+            .handled(true)
+            .setBody().simple("${exception.message}");
+
+        rest()
             .post("/component-analysis")
+                .id("componentAnalysis")
                 .consumes(MediaType.APPLICATION_JSON).bindingMode(RestBindingMode.json)
                 .type(ComponentRequest.class)
-                .param()
-                    .name(PKG_MANAGER_HEADER)
-                    .type(RestParamType.body)
-                    .required(true)
-                    .endParam()
-                .param()
-                    .name(PROVIDER_HEADER)
-                    .type(RestParamType.body)
-                    .required(true)
-                    .endParam()
                 .to("direct:componentAnalysis")
             .post("/dependency-analysis/{pkgManager}/{provider}")
-                .param()
-                    .name(PKG_MANAGER_HEADER)
-                    .type(RestParamType.path)
-                    .required(true)
-                    .endParam()
-                .param()
-                    .name(PROVIDER_HEADER)
-                    .type(RestParamType.path)
-                    .required(true)
-                    .endParam()
                 .consumes(Constants.TEXT_VND_GRAPHVIZ)
                 .to("direct:depAnalysis")
             .post("/dependency-analysis")
+                .id("fullDependencyAnalysis")
                 .consumes(Constants.TEXT_VND_GRAPHVIZ)
-                .produces(MediaType.APPLICATION_JSON)
-                .produces(MediaType.TEXT_HTML)
                 .to("direct:fullDepAnalysis");
 
         from(direct("componentAnalysis"))
                 .transform().method(GraphUtils.class, "fromPackages")
                 .to(direct("doAnalysis"))
+                .removeHeader("*")
                 .unmarshal().json();
 
         from(direct("depAnalysis"))
@@ -79,16 +68,25 @@ public class RouteV3 extends EndpointRouteBuilder {
                 .to(direct("doAnalysis"));
 
         from(direct("fullDepAnalysis"))
+            .to("log:foo?showHeaders=true")
             .setProperty(REQUEST_CONTENT_PROPERTY, header("Accept"))
-            .setHeader(PKG_MANAGER_HEADER, constant(Constants.MAVEN_PKG_MANAGER))
+            .setHeader(PKG_MANAGER_HEADER, constant(Constants.MAVEN_PKG_MANAGER))    
+            .choice().when(not(exchangeProperty(REQUEST_CONTENT_PROPERTY)
+                    .in(MediaType.APPLICATION_JSON, MediaType.TEXT_HTML)))
+                .throwException(new ClientErrorException( "Supported response media types are: " 
+                    + MediaType.APPLICATION_JSON + ", " 
+                    + MediaType.TEXT_HTML, 415))
+            .end()
             .multicast(new ProviderAggregationStrategy()).parallelProcessing()
                 .to(ExchangeUtils.getRecipientsForProvider())
             .end()
             .choice()
                 .when(exchangeProperty(REQUEST_CONTENT_PROPERTY).isEqualTo(MediaType.TEXT_HTML))
-                .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.TEXT_HTML))
-                .setBody(method(ReportTemplate.class))
-                .to(freemarker("report.ftl?contentCache=false"))
+                    .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.TEXT_HTML))
+                    .setBody(method(ReportTemplate.class))
+                    .to(freemarker("report.ftl"))
+                .when(exchangeProperty(REQUEST_CONTENT_PROPERTY).isEqualTo(MediaType.APPLICATION_JSON))
+                    .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.APPLICATION_JSON))
             .end();
 
         from(direct("doAnalysis"))
@@ -118,8 +116,7 @@ public class RouteV3 extends EndpointRouteBuilder {
                 .removeHeader("Accept-Encoding")
                 .setHeader("Authorization", simple("token {{api.snyk.token}}"))
                 .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.APPLICATION_JSON))
-                .setHeader("Accept", constant(MediaType.APPLICATION_JSON))
-                .setHeader(Exchange.HTTP_QUERY, constant("org={{api.snyk.org}}"));
+                .setHeader("Accept", constant(MediaType.APPLICATION_JSON));
 
         from(direct("snykDepGraph"))
                 .transform().method(SnykRequestBuilder.class, "fromDiGraph")
@@ -127,7 +124,7 @@ public class RouteV3 extends EndpointRouteBuilder {
                 .setHeader(Exchange.HTTP_PATH, constant("/test/dep-graph"))
                 .setHeader(Exchange.HTTP_METHOD, constant("POST"))
                 .to(vertxHttp("{{api.snyk.host}}/api/v1"));
-        
+
     }
 
 }

@@ -1,0 +1,132 @@
+openapi: 3.0.3
+info:
+  title: CodeReady Dependency Analytics API
+  description: Vulnerability analysis with Red Hat CodeReady Dependency Analytics
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: 3.0.0
+servers:
+- url: http://crda-backend-crda.apps.sssc-cl01.appeng.rhecoeng.com/api/v3/
+  description: Production server
+- url: http://localhost:8080/api/v3/
+  description: Local development
+paths:
+  /component-analysis:
+    post:
+      operationId: componentAnalysis
+      summary: Performs a vulnerability for the provided components
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ComponentRequest'
+        required: true
+      responses:
+        '200': 
+          description: Successful component analysis report
+          content:
+            application/json:
+              schema: 
+                type: object
+        '422':
+          description: Invalid request
+          content:
+            text/plain:
+              schema:
+                type: string
+                description: Error message
+  /dependency-analysis:
+    post:
+      operationId: fullDependencyAnalysis
+      summary:  Takes a client-resolved dependency graph to perform a full stack analysis from all the available Vulnerability sources
+      requestBody:
+        required: true
+        description: Dependency graph in DOT format
+        content:
+          text/vnd.graphviz:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Full dependency analysis from all the available providers
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  snyk:
+                    type: object
+                    description: Snyk vulnerability report data
+                  redhat:
+                    type: object
+                    description: Trusted Content service response data
+            text/html:
+              schema:
+                type: object
+  /dependency-analysis/{pkgManager}/{provider}:
+    post:
+      operationId: dependencyAnalysis
+      parameters:
+      - name: pkgManager
+        in: path
+        description: Package manager related to the provided packages
+        required: true
+        schema:
+          enum:
+          - maven
+          type: string
+        example: maven
+      - name: provider
+        in: path
+        description: Vulnerability provider to get the report from
+        required: true
+        schema:
+          enum:
+          - snyk
+          - redhat
+          type: string
+        example: snyk
+      responses:
+        '200': 
+          description: Successful component analysis report
+          content:
+            application/json:
+              schema: 
+                type: object
+        '422':
+          description: Invalid request
+          content:
+            text/plain:
+              schema:
+                type: string
+                description: Error message
+components:
+  schemas:
+    ComponentRequest:
+      type: object
+      properties:
+        pkgManager:
+          type: string
+          enum:
+            - maven
+        provider:
+          type: string
+          enum:
+            - snyk
+            - redhat
+        packages:
+          type: array
+          items:
+            $ref: '#/components/schemas/PackageRef'
+    PackageRef:
+      type: object
+      properties:
+        name:
+          type: string
+          description: <groupId>:<artifactId> for Java packages
+          example: org.jgroups:jgroups
+        version:
+          type: string
+          description: Package version
+          example: 5.2.0.Final
