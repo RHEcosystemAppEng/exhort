@@ -31,21 +31,11 @@ spec:
             memory: "128Mi"
             cpu: "500m"
         env:
-        - name: API_CRDA_KEY
-          valueFrom:
-            secretKeyRef:
-              name: crda-secret
-              key: api-crda-key
         - name: API_SNYK_TOKEN
           valueFrom:
             secretKeyRef:
               name: crda-secret
               key: api-snyk-token
-        - name: API_SNYK_ORG
-          valueFrom:
-            secretKeyRef:
-              name: crda-secret
-              key: api-snyk-org
 ---
 apiVersion: v1
 kind: Service

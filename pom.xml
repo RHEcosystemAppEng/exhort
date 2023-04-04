@@ -78,11 +78,24 @@
       <artifactId>camel-quarkus-freemarker</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.apache.camel.quarkus</groupId>
+      <artifactId>camel-quarkus-openapi-java</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-smallrye-openapi</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.jgrapht</groupId>
       <artifactId>jgrapht-io</artifactId>
       <version>${jgraph.version}</version>
     </dependency>
 
+    <dependency>
+      <groupId>org.apache.camel.quarkus</groupId>
+      <artifactId>camel-quarkus-log
+      </artifactId>
+    </dependency>
     <!-- Test -->
     <dependency>
       <groupId>org.apache.camel.quarkus</groupId>
