@@ -68,7 +68,6 @@ public class DependencyAnalyticsRoute extends EndpointRouteBuilder {
                 .to(direct("doAnalysis"));
 
         from(direct("fullDepAnalysis"))
-            .to("log:foo?showHeaders=true")
             .setProperty(REQUEST_CONTENT_PROPERTY, header("Accept"))
             .setHeader(PKG_MANAGER_HEADER, constant(Constants.MAVEN_PKG_MANAGER))    
             .choice().when(not(exchangeProperty(REQUEST_CONTENT_PROPERTY)
@@ -102,7 +101,7 @@ public class DependencyAnalyticsRoute extends EndpointRouteBuilder {
                 .removeHeader(Exchange.HTTP_PATH)
                 .removeHeader(Exchange.HTTP_QUERY)
                 .removeHeader(Exchange.HTTP_URI)
-                .setHeader(Exchange.HTTP_PATH, constant("/api/policy/v1alpha1/trusted::gav"))
+                .setHeader(Exchange.HTTP_PATH, constant(Constants.TRUSTED_CONTENT_PATH))
                 .setHeader(Exchange.HTTP_QUERY, constant("minimal=true"))
                 .setHeader(Exchange.HTTP_METHOD, constant("POST"))
                 .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.APPLICATION_JSON))
@@ -114,16 +113,20 @@ public class DependencyAnalyticsRoute extends EndpointRouteBuilder {
                 .removeHeader(Exchange.HTTP_QUERY)
                 .removeHeader(Exchange.HTTP_URI)
                 .removeHeader("Accept-Encoding")
-                .setHeader("Authorization", simple("token {{api.snyk.token}}"))
+                .choice().when(header(Constants.SNYK_TOKEN_HEADER).isNotNull())
+                    .setHeader("Authorization", simple("token ${header.crda-snyk-token}"))
+                .otherwise()
+                    .setHeader("Authorization", simple("token {{api.snyk.token}}"))
+                .end()
                 .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.APPLICATION_JSON))
                 .setHeader("Accept", constant(MediaType.APPLICATION_JSON));
 
         from(direct("snykDepGraph"))
                 .transform().method(SnykRequestBuilder.class, "fromDiGraph")
                 .to(direct("snykRequest"))
-                .setHeader(Exchange.HTTP_PATH, constant("/test/dep-graph"))
+                .setHeader(Exchange.HTTP_PATH, constant(Constants.SNYK_DEP_GRAPH_API_PATH))
                 .setHeader(Exchange.HTTP_METHOD, constant("POST"))
-                .to(vertxHttp("{{api.snyk.host}}/api/v1"));
+                .to(vertxHttp("{{api.snyk.host}}"));
 
     }
 
