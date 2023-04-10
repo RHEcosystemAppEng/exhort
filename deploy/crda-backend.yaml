@@ -36,6 +36,11 @@ spec:
             secretKeyRef:
               name: crda-secret
               key: api-snyk-token
+        - name: API_TIDELIFT_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: crda-secret
+              key: api-tidelift-token
 ---
 apiVersion: v1
 kind: Service
