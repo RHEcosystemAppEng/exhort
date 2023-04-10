@@ -1,0 +1,76 @@
+[
+  {},
+  {
+    "name": "org.slf4j:slf4j-api",
+    "platform": "maven",
+    "version": "1.7.36",
+    "published_at": "2022-02-08T13:33:51.000Z",
+    "purl": "pkg:maven/org.slf4j/slf4j-api@1.7.36",
+    "repository": {
+      "url": "https://github.com/qos-ch/slf4j",
+      "source": "package_manager"
+    },
+    "tidelift_recommendation": "recommended",
+    "violations": [],
+    "license": {
+      "expression": "MIT",
+      "source": "human_verified"
+    }
+  },
+  {},
+  {
+    "name": "io.netty:netty-buffer",
+    "platform": "maven",
+    "version": "4.1.86.Final",
+    "published_at": "2022-12-12T14:37:53.000Z",
+    "purl": "pkg:maven/io.netty/netty-buffer@4.1.86.Final",
+    "repository": {
+      "url": "https://github.com/netty/netty",
+      "source": "package_manager"
+    },
+    "tidelift_recommendation": "not_recommended",
+    "violations": [
+      {
+        "catalog_standard": "releases_have_clean_dependencies",
+        "violation_id": "4678c1b4-def9-4034-82d9-d11056394959",
+        "title": "maven/io.netty:netty-buffer 4.1.86.Final's dependencies have violations",
+        "package_name": "io.netty:netty-buffer",
+        "package_platform": "maven",
+        "version": "4.1.86.Final"
+      }
+    ],
+    "license": {
+      "expression": "Apache-2.0",
+      "source": "package_manager"
+    }
+  },
+  {},
+  {
+    "name": "commons-beanutils:commons-beanutils",
+    "platform": "maven",
+    "version": "1.9.4",
+    "published_at": "2019-07-28T22:16:54.000Z",
+    "purl": "pkg:maven/commons-beanutils/commons-beanutils@1.9.4",
+    "repository": {
+      "url": "https://svn.apache.org/viewvc/commons/proper/beanutils",
+      "source": "package_manager"
+    },
+    "tidelift_recommendation": "not_recommended",
+    "violations": [
+      {
+        "catalog_standard": "releases_have_clean_dependencies",
+        "violation_id": "69f3121a-238c-484e-9dba-5aebc9cd92bc",
+        "title": "maven/commons-beanutils:commons-beanutils 1.9.4's dependencies have violations",
+        "package_name": "commons-beanutils:commons-beanutils",
+        "package_platform": "maven",
+        "version": "1.9.4"
+      }
+    ],
+    "license": {
+      "expression": "Apache-2.0",
+      "source": "human_verified"
+    }
+  },
+  {},
+  {}
+]

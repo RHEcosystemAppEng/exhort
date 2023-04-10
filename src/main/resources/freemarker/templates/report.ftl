@@ -8,6 +8,10 @@
             <h2>Snyk</h2>
             <pre>${body.snyk}</pre>
         </div>
+        <div name="tidelift_report">
+            <h2>Tidelift</h2>
+            <pre>${body.tidelift}</pre>
+        </div>
         <div name="redhat_report">
             <h2>Red Hat</h2>
             <pre>${body.redhat}</pre>

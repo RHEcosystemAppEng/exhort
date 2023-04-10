@@ -20,7 +20,7 @@ public class ProviderAggregationStrategy implements AggregationStrategy {
     public Exchange aggregate(Exchange oldExchange, Exchange newExchange) {
         ObjectMapper mapper = ObjectMapperProducer.newInstance();
         JsonNode newExchangeNode;
-        String provider = newExchange.getIn().getHeader(PROVIDER_HEADER, String.class);
+        String provider = newExchange.getIn().getExchange().getProperty(PROVIDER_HEADER, String.class);
         try {
             newExchangeNode = mapper.readTree(newExchange.getIn().getBody(String.class));
             if (oldExchange == null) {
