@@ -1,0 +1,17 @@
+{
+  "name": "org.slf4j:slf4j-api",
+  "platform": "maven",
+  "version": "1.7.36",
+  "published_at": "2022-02-08T13:33:51.000Z",
+  "purl": "pkg:maven/org.slf4j/slf4j-api@1.7.36",
+  "repository": {
+    "url": "https://github.com/qos-ch/slf4j",
+    "source": "package_manager"
+  },
+  "tidelift_recommendation": "recommended",
+  "violations": [],
+  "license": {
+    "expression": "MIT",
+    "source": "human_verified"
+  }
+}

@@ -17,10 +17,8 @@ import com.redhat.ecosystemappeng.routes.integration.ExchangeUtils;
 import com.redhat.ecosystemappeng.routes.integration.GraphUtils;
 import com.redhat.ecosystemappeng.routes.integration.ProviderAggregationStrategy;
 import com.redhat.ecosystemappeng.routes.integration.ReportTemplate;
-import com.redhat.ecosystemappeng.snyk.SnykRequestBuilder;
-import com.redhat.ecosystemappeng.trustedcontent.TrustedContentBodyMapper;
 
-public class DependencyAnalyticsRoute extends EndpointRouteBuilder {
+public class DependencyAnalytics extends EndpointRouteBuilder {
 
     @Override
     public void configure() {
@@ -57,15 +55,18 @@ public class DependencyAnalyticsRoute extends EndpointRouteBuilder {
         from(direct("componentAnalysis"))
                 .transform().method(GraphUtils.class, "fromPackages")
                 .to(direct("doAnalysis"))
-                .removeHeader("*")
+                .removeHeaders("*")
+                .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.APPLICATION_JSON))
                 .unmarshal().json();
 
         from(direct("depAnalysis"))
                 .choice().when(header(PROVIDER_HEADER).isNull())
-                    .setHeader(PROVIDER_HEADER, method(ExchangeUtils.class, "extractProvider"))
+                    .setProperty(PROVIDER_HEADER, method(ExchangeUtils.class, "extractProvider"))
                 .end()
                 .transform().method(GraphUtils.class, "fromDotFile")
-                .to(direct("doAnalysis"));
+                .to(direct("doAnalysis"))
+                .removeHeaders("*")
+                .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.APPLICATION_JSON));
 
         from(direct("fullDepAnalysis"))
             .setProperty(REQUEST_CONTENT_PROPERTY, header("Accept"))
@@ -84,50 +85,17 @@ public class DependencyAnalyticsRoute extends EndpointRouteBuilder {
                     .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.TEXT_HTML))
                     .setBody(method(ReportTemplate.class))
                     .to(freemarker("report.ftl"))
-                .when(exchangeProperty(REQUEST_CONTENT_PROPERTY).isEqualTo(MediaType.APPLICATION_JSON))
-                    .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.APPLICATION_JSON))
             .end();
 
         from(direct("doAnalysis"))
                 .choice()
                     .when(simple("${body.provider()} =~ ${type:com.redhat.ecosystemappeng.routes.integration.Constants.SNYK_PROVIDER}"))
                         .to(direct("snykDepGraph"))
+                    .when(simple("${body.provider()} =~ ${type:com.redhat.ecosystemappeng.routes.integration.Constants.TIDELIFT_PROVIDER}"))
+                        .to(direct("tideliftReleases"))
                     .when(simple("${body.provider()} =~ ${type:com.redhat.ecosystemappeng.routes.integration.Constants.REDHAT_PROVIDER}"))
                         .to(direct("trustedContent"))
                 .end();
-
-        from(direct("trustedContent"))
-                .transform().method(TrustedContentBodyMapper.class)
-                .removeHeader(Exchange.HTTP_PATH)
-                .removeHeader(Exchange.HTTP_QUERY)
-                .removeHeader(Exchange.HTTP_URI)
-                .setHeader(Exchange.HTTP_PATH, constant(Constants.TRUSTED_CONTENT_PATH))
-                .setHeader(Exchange.HTTP_QUERY, constant("minimal=true"))
-                .setHeader(Exchange.HTTP_METHOD, constant("POST"))
-                .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.APPLICATION_JSON))
-                .setHeader("Accept", constant(MediaType.APPLICATION_JSON))
-                .to(vertxHttp("{{api.trustedContent.host}}"));
-
-        from(direct("snykRequest"))
-                .removeHeader(Exchange.HTTP_PATH)
-                .removeHeader(Exchange.HTTP_QUERY)
-                .removeHeader(Exchange.HTTP_URI)
-                .removeHeader("Accept-Encoding")
-                .choice().when(header(Constants.SNYK_TOKEN_HEADER).isNotNull())
-                    .setHeader("Authorization", simple("token ${header.crda-snyk-token}"))
-                .otherwise()
-                    .setHeader("Authorization", simple("token {{api.snyk.token}}"))
-                .end()
-                .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.APPLICATION_JSON))
-                .setHeader("Accept", constant(MediaType.APPLICATION_JSON));
-
-        from(direct("snykDepGraph"))
-                .transform().method(SnykRequestBuilder.class, "fromDiGraph")
-                .to(direct("snykRequest"))
-                .setHeader(Exchange.HTTP_PATH, constant(Constants.SNYK_DEP_GRAPH_API_PATH))
-                .setHeader(Exchange.HTTP_METHOD, constant("POST"))
-                .to(vertxHttp("{{api.snyk.host}}"));
-
     }
 
 }

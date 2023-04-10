@@ -1,0 +1,79 @@
+[
+  {},
+  {
+    "name": "log4j:log4j",
+    "platform": "maven",
+    "version": "1.2.17",
+    "published_at": "2012-05-26T09:43:39.000Z",
+    "purl": "pkg:maven/log4j/log4j@1.2.17",
+    "repository": {
+      "url": "https://svn.apache.org/viewvc/logging/log4j",
+      "source": "package_manager"
+    },
+    "tidelift_recommendation": "not_recommended",
+    "violations": [
+      {
+        "catalog_standard": "security_vulnerabilities_reviewed",
+        "violation_id": "0868fedb-8e13-4819-87bd-19a7d4c8aaa7",
+        "title": "vulnerability CVE-2019-17571 with severity 9.8 is present",
+        "package_name": "log4j:log4j",
+        "package_platform": "maven",
+        "vulnerability": {
+          "id": "CVE-2019-17571",
+          "severity": "9.8",
+          "description": "Included in Log4j 1.2 is a SocketServer class that is vulnerable to deserialization of untrusted data which can be exploited to remotely execute arbitrary code when combined with a deserialization gadget when listening to untrusted network traffic for log data. This affects Log4j versions up to 1.2 up to 1.2.17.",
+          "date": "2019-12-20",
+          "url": "https://lists.apache.org/thread.html/eea03d504b36e8f870e8321d908e1def1addda16adda04327fe7c125%40%3Cdev.logging.apache.org%3E",
+          "severity_rating": "Critical"
+        }
+      },
+      {
+        "catalog_standard": "no_deprecated_packages",
+        "violation_id": "1dcd81f8-8e35-4412-8300-9dba93b78997",
+        "title": "package maven/log4j:log4j was deprecated in favor of maven/org.apache.logging.log4j:log4j-api",
+        "package_name": "log4j:log4j",
+        "package_platform": "maven",
+        "deprecation": {
+          "deprecated_at": "2022-12-13T19:51:25.694Z",
+          "reason": "Log4j 1.2.x reached end-of-life on August 5th, 2015 (cf. [announcement](https://news.apache.org/foundation/entry/apache_logging_services_project_announces)). All development efforts have been redirected into Log4j2 (split into an API and an implementation).",
+          "package_to_use_instead": null
+        }
+      },
+      {
+        "catalog_standard": "security_vulnerabilities_reviewed",
+        "violation_id": "aa271bdb-41f3-4e1d-a8e1-6565ea90abee",
+        "title": "vulnerability CVE-2023-26464 with severity 7.5 is present",
+        "package_name": "log4j:log4j",
+        "package_platform": "maven",
+        "vulnerability": {
+          "id": "CVE-2023-26464",
+          "severity": "7.5",
+          "description": "** UNSUPPORTED WHEN ASSIGNED ** When using the Chainsaw or SocketAppender components with Log4j 1.x on JRE less than 1.7, an attacker that manages to cause a logging entry involving a specially-crafted (ie, deeply nested) hashmap or hashtable (depending on which logging component is in use) to be processed could exhaust the available memory in the virtual machine and achieve Denial of Service when the object is deserialized. This issue affects Apache Log4j before 2. Affected users are recommended to update to Log4j 2.x. NOTE: This vulnerability only affects products that are no longer supported by the maintainer.",
+          "date": "2023-03-10",
+          "url": "https://lists.apache.org/thread/wkx6grrcjkh86crr49p4blc1v1nflj3t",
+          "severity_rating": "High"
+        }
+      },
+      {
+        "catalog_standard": "security_vulnerabilities_reviewed",
+        "violation_id": "cc3f4732-0f80-43a1-9121-dbc2ac650c0f",
+        "title": "vulnerability CVE-2021-4104 with severity 7.5 is present",
+        "package_name": "log4j:log4j",
+        "package_platform": "maven",
+        "vulnerability": {
+          "id": "CVE-2021-4104",
+          "severity": "7.5",
+          "description": "JMSAppender in Log4j 1.2 is vulnerable to deserialization of untrusted data when the attacker has write access to the Log4j configuration. The attacker can provide TopicBindingName and TopicConnectionFactoryBindingName configurations causing JMSAppender to perform JNDI requests that result in remote code execution in a similar fashion to CVE-2021-44228. Note this issue only affects Log4j 1.2 when specifically configured to use JMSAppender, which is not the default. Apache Log4j 1.2 reached end of life in August 2015. Users should upgrade to Log4j 2 as it addresses numerous other issues from the previous versions.",
+          "date": "2021-12-14",
+          "url": "https://access.redhat.com/security/cve/CVE-2021-4104",
+          "severity_rating": "High"
+        }
+      }
+    ],
+    "license": {
+      "expression": "Apache-2.0",
+      "source": "human_verified"
+    }
+  },
+  {}
+]

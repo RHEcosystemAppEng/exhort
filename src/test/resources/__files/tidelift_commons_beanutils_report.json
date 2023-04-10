@@ -1,0 +1,26 @@
+{
+  "name": "commons-beanutils:commons-beanutils",
+  "platform": "maven",
+  "version": "1.9.4",
+  "published_at": "2019-07-28T22:16:54.000Z",
+  "purl": "pkg:maven/commons-beanutils/commons-beanutils@1.9.4",
+  "repository": {
+    "url": "https://svn.apache.org/viewvc/commons/proper/beanutils",
+    "source": "package_manager"
+  },
+  "tidelift_recommendation": "not_recommended",
+  "violations": [
+    {
+      "catalog_standard": "releases_have_clean_dependencies",
+      "violation_id": "69f3121a-238c-484e-9dba-5aebc9cd92bc",
+      "title": "maven/commons-beanutils:commons-beanutils 1.9.4's dependencies have violations",
+      "package_name": "commons-beanutils:commons-beanutils",
+      "package_platform": "maven",
+      "version": "1.9.4"
+    }
+  ],
+  "license": {
+    "expression": "Apache-2.0",
+    "source": "human_verified"
+  }
+}
