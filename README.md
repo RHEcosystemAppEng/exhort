@@ -12,7 +12,8 @@ See the [application.properties](./src/main/resources/application.properties) fo
 
 ## Required parameters
 
-- `api.snyk.token` Snyk API token for authentication
+- `api.snyk.token` Snyk API token for default authentication
+- `api.tidelift.token` Tidelift API token for default authentication
 
 ## OpenAPI and SwaggerUI
 
@@ -24,7 +25,10 @@ See the [application.properties](./src/main/resources/application.properties) fo
 Currently there are 2 available providers.
 
  - Snyk will provide a vulnerability report for your components or full dependency graph
+ - Tidelift will provide a vulnerability report aggregated from independent requests taken from each individual dependency.
  - Red Hat Trusted Content will provide the recommended software matching the current dependencies
+
+You can disable a given provider for the dependency graph analysis by using `api.<provider>.disabled=true` property at startup.
 
 ## Package Managers
 
@@ -106,7 +110,7 @@ $ curl 'http://localhost:8080/api/v3/component-analysis' \
 The required parameters can be injected as environment variables through a secret. Create the `crda-secret` Secret before deploying the application.
 
 ```bash
-oc create secret generic -n crda --from-literal=api-snyk-token=<the-token> crda-secret
+oc create secret generic -n crda --from-literal=api-snyk-token=<snyk_api_token> --from-literal=api-tidelift-token=<tidelift_api_token> crda-secret
 ```
 
 After that you can use the [crda-backend.yaml](./deploy/crda-backend.yaml)

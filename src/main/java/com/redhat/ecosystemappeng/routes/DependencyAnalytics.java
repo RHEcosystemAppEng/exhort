@@ -5,6 +5,8 @@ import static com.redhat.ecosystemappeng.routes.integration.Constants.PROVIDER_H
 import static com.redhat.ecosystemappeng.routes.integration.Constants.REQUEST_CONTENT_PROPERTY;
 import static org.apache.camel.support.builder.PredicateBuilder.not;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.core.MediaType;
 
@@ -13,12 +15,16 @@ import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
 import org.apache.camel.model.rest.RestBindingMode;
 import com.redhat.ecosystemappeng.model.ComponentRequest;
 import com.redhat.ecosystemappeng.routes.integration.Constants;
-import com.redhat.ecosystemappeng.routes.integration.ExchangeUtils;
+import com.redhat.ecosystemappeng.routes.integration.VulnerabilityProvider;
 import com.redhat.ecosystemappeng.routes.integration.GraphUtils;
 import com.redhat.ecosystemappeng.routes.integration.ProviderAggregationStrategy;
 import com.redhat.ecosystemappeng.routes.integration.ReportTemplate;
 
+@ApplicationScoped
 public class DependencyAnalytics extends EndpointRouteBuilder {
+
+    @Inject
+    VulnerabilityProvider vulnerabilityProvider;
 
     @Override
     public void configure() {
@@ -61,7 +67,7 @@ public class DependencyAnalytics extends EndpointRouteBuilder {
 
         from(direct("depAnalysis"))
                 .choice().when(header(PROVIDER_HEADER).isNull())
-                    .setProperty(PROVIDER_HEADER, method(ExchangeUtils.class, "extractProvider"))
+                    .setProperty(PROVIDER_HEADER, method(vulnerabilityProvider, "get"))
                 .end()
                 .transform().method(GraphUtils.class, "fromDotFile")
                 .to(direct("doAnalysis"))
@@ -78,7 +84,7 @@ public class DependencyAnalytics extends EndpointRouteBuilder {
                     + MediaType.TEXT_HTML, 415))
             .end()
             .multicast(new ProviderAggregationStrategy()).parallelProcessing()
-                .to(ExchangeUtils.getRecipientsForProvider())
+                .to(vulnerabilityProvider.getEndpoints())
             .end()
             .choice()
                 .when(exchangeProperty(REQUEST_CONTENT_PROPERTY).isEqualTo(MediaType.TEXT_HTML))
