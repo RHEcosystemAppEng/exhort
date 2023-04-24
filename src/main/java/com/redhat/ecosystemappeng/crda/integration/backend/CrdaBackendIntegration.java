@@ -83,8 +83,7 @@ public class CrdaBackendIntegration extends EndpointRouteBuilder {
         from(direct("componentAnalysis"))
                 .bean(GraphUtils.class, "fromPackages")
                 .to(direct("doAnalysis"))
-                .removeHeaders("*")
-                .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.APPLICATION_JSON))
+                .to(direct("report"))
                 .unmarshal().json();
 
         from(direct("depAnalysis"))
@@ -100,13 +99,13 @@ public class CrdaBackendIntegration extends EndpointRouteBuilder {
             .setHeader(PKG_MANAGER_HEADER, constant(Constants.MAVEN_PKG_MANAGER))    
             .choice().when(not(exchangeProperty(REQUEST_CONTENT_PROPERTY)
                     .in(MediaType.APPLICATION_JSON, MediaType.TEXT_HTML)))
-                .throwException(new ClientErrorException( "Supported response media types are: " 
+                .throwException(new ClientErrorException("Supported response media types are: " 
                     + MediaType.APPLICATION_JSON + ", " 
                     + MediaType.TEXT_HTML, 415))
             .end()
             .multicast(AggregationStrategies.bean(ProviderAggregationStrategy.class, "aggregate"))
-            .parallelProcessing()
-                .to(vulnerabilityProvider.getEndpoints())
+                .parallelProcessing()
+                    .to(vulnerabilityProvider.getEndpoints())
             .end();
 
         from(direct("report"))

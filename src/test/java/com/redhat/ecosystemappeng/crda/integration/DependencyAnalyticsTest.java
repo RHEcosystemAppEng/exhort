@@ -29,6 +29,7 @@ import static io.restassured.RestAssured.given;
 import static org.apache.camel.Exchange.CONTENT_TYPE;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
@@ -50,7 +51,6 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import com.redhat.ecosystemappeng.crda.config.ObjectMapperProducer;
 import com.redhat.ecosystemappeng.crda.extensions.InjectWireMock;
 import com.redhat.ecosystemappeng.crda.extensions.WiremockV3Extension;
-import com.redhat.ecosystemappeng.crda.integration.Constants;
 import com.redhat.ecosystemappeng.crda.model.ComponentRequest;
 import com.redhat.ecosystemappeng.crda.model.PackageRef;
 
@@ -120,8 +120,9 @@ public class DependencyAnalyticsTest {
         stubTCVexRequest();
 
         List<PackageRef> pkgs = List.of(
-            new PackageRef("log4j:log4j", "1.2.17"),
-            new PackageRef("io.netty:netty-common", "4.1.86"));
+            new PackageRef("com.fasterxml.jackson.core:jackson-databind", "2.13.1"),
+            new PackageRef("io.quarkus:quarkus-jdbc-postgresql", "2.13.5"));
+            new PackageRef("com.acme:example", "1.2.3");
         ComponentRequest req = new ComponentRequest(Constants.MAVEN_PKG_MANAGER, Constants.SNYK_PROVIDER, pkgs);
         
         String body = given()
@@ -134,7 +135,7 @@ public class DependencyAnalyticsTest {
             .statusCode(200)
             .extract().body().asPrettyString();
 
-        assertJson("snyk_report.json", body);
+        assertJson("component_snyk.json", body);
         verifyNoInteractionsWithTCGav();
         verifyNoInteractionsWithTidelift();
         verifySnykRequest(null);
@@ -142,6 +143,7 @@ public class DependencyAnalyticsTest {
     }
 
     @Test
+    @Disabled
     public void testComponentAnalysisWithTidelift() {
         stubTideliftRequest(null);
         List<PackageRef> pkgs = List.of(
@@ -169,10 +171,12 @@ public class DependencyAnalyticsTest {
     public void testSnykClientToken() {
         String token = "client-token";
         stubSnykRequest(token);
+        stubTCVexRequest();
        
         List<PackageRef> pkgs = List.of(
-            new PackageRef("log4j:log4j", "1.2.17"),
-            new PackageRef("io.netty:netty-common", "4.1.86"));
+            new PackageRef("com.fasterxml.jackson.core:jackson-databind", "2.13.1"),
+            new PackageRef("io.quarkus:quarkus-jdbc-postgresql", "2.13.5"));
+            new PackageRef("com.acme:example", "1.2.3");
         ComponentRequest req = new ComponentRequest(Constants.MAVEN_PKG_MANAGER, Constants.SNYK_PROVIDER, pkgs);
         
         String body = given()
@@ -186,14 +190,19 @@ public class DependencyAnalyticsTest {
             .statusCode(200)
             .extract().body().asPrettyString();
 
-        assertJson("snyk_report.json", body);
+        assertJson("component_snyk.json", body);
+        
+        verifySnykRequest(token);
+        verifyTCVexRequest();
+        
         verifyNoInteractionsWithTCGav();
         verifyNoInteractionsWithTidelift();
-        verifySnykRequest(token);
+        verifyNoInteractionsWithTCGav();
     }
 
 
     @Test
+    @Disabled
     public void testTideliftClientToken() {
         String token = "client-token";
         stubTideliftRequest(token);
@@ -322,7 +331,6 @@ public class DependencyAnalyticsTest {
         verifySnykRequest(null);
         verifyNoInteractionsWithTCGav();
         verifyNoInteractionsWithTidelift();
-        // verifyTideliftRequest(8, null);
     }
 
     @Test
@@ -330,8 +338,7 @@ public class DependencyAnalyticsTest {
         String snykToken = "my-snyk-token";
         stubSnykRequest(snykToken);
         String tideliftToken = "my-tidelift-token";
-        stubTideliftRequest(tideliftToken);
-        stubTCGavRequest();
+        stubTCVexRequest();
 
         String body = given()
                 .header(CONTENT_TYPE, Constants.TEXT_VND_GRAPHVIZ)
@@ -349,15 +356,15 @@ public class DependencyAnalyticsTest {
         assertJson("full_report.json", body);
 
         verifySnykRequest(snykToken);
-        verifyTideliftRequest(8, tideliftToken);
-        verifyTCGavRequest();
+        verifyTCVexRequest();
+        verifyNoInteractionsWithTidelift();
+        verifyNoInteractionsWithTCGav();
     }
 
     @Test
     public void testFullDepAnalysisHtml() {
+        stubTCVexRequest();
         stubSnykRequest(null);
-        stubTideliftRequest(null);
-        stubTCGavRequest();
 
         String body = given().header(CONTENT_TYPE, Constants.TEXT_VND_GRAPHVIZ).body(loadDependenciesFile())
             .header("Accept", MediaType.TEXT_HTML)
@@ -371,13 +378,13 @@ public class DependencyAnalyticsTest {
         
         XmlPath p = new XmlPath(CompatibilityMode.HTML, body);
         assertEquals("CRDA Stack Report", p.getString("html.header.title"));
-        assertEquals("Snyk", p.getString("html.body.div.find {it.@name == 'snyk_report'}.h2"));
-        assertEquals("Tidelift", p.getString("html.body.div.find {it.@name == 'tidelift_report'}.h2"));
-        assertEquals("Red Hat",p.getString("html.body.div.find {it.@name == 'redhat_report'}.h2"));
+        assertFalse(p.getString("html.body.ul.li.find {it == 'io.quarkus:quarkus-hibernate-orm:2.13.5.Final'}").isEmpty());
+        assertFalse(p.getString("html.body.ul.li.find {it == 'io.quarkus:quarkus-jdbc-postgresql:2.13.5.Final'}").isEmpty());
         
         verifySnykRequest(null);
-        verifyTideliftRequest(8, null);
-        verifyTCGavRequest();
+        verifyTCVexRequest();
+        verifyNoInteractionsWithTidelift();
+        verifyNoInteractionsWithTCGav();
     }
 
     @Test

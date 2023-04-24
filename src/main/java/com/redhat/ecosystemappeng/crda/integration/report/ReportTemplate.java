@@ -18,25 +18,19 @@
 
 package com.redhat.ecosystemappeng.crda.integration.report;
 
-import java.util.Map;
-import java.util.stream.Collectors;
-
+import java.util.List;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.redhat.ecosystemappeng.crda.config.ObjectMapperProducer;
-import com.redhat.ecosystemappeng.crda.integration.Constants;
+import com.redhat.ecosystemappeng.crda.model.DependencyReport;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @RegisterForReflection
 public class ReportTemplate {
 
-    public Map<String, Object> setVariables(String body) throws JsonMappingException, JsonProcessingException {
-        ObjectMapper mapper = ObjectMapperProducer.newInstance();
-        JsonNode obj = mapper.readTree(body);
-        return Constants.PROVIDERS.stream().collect(Collectors.toMap(k -> k, k -> obj.get(k)));
+    public List<DependencyReport> setVariables(List<DependencyReport> report) throws JsonMappingException, JsonProcessingException {
+        //TODO: change as needed
+        return report;
     }
 
 }
