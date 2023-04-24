@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.ws.rs.core.MediaType;
+
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @RegisterForReflection
@@ -30,7 +32,8 @@ public final class Constants {
     private Constants() {
     }
 
-    public static final String PROVIDER_HEADER = "provider";
+    public static final String PROVIDERS_PARAM = "providers";
+    
     public static final String PKG_MANAGER_HEADER = "pkgManager";
     public static final String SNYK_TOKEN_HEADER = "crda-snyk-token";
     public static final String TIDELIFT_TOKEN_HEADER = "crda-tidelift-token";
@@ -50,6 +53,7 @@ public final class Constants {
     public static final String TRUSTED_CONTENT_PATH = "/api/policy/v1alpha1/trusted::gav";
     public static final String TRUSTED_CONTENT_VEX_PATH = "/tc";
 
+    public static final String DEFAULT_ACCEPT_MEDIA_TYPE = MediaType.APPLICATION_JSON;
 
     public static final List<String> PKG_MANAGERS = Collections.unmodifiableList(new ArrayList<>() {
         {
@@ -61,6 +65,13 @@ public final class Constants {
         {
             add(SNYK_PROVIDER);
             add(TIDELIFT_PROVIDER);
+        }
+    });
+
+    public static final List<MediaType> VALID_RESPONSE_MEDIA_TYPES = Collections.unmodifiableList(new ArrayList<>() {
+        {
+            add(MediaType.APPLICATION_JSON_TYPE);
+            add(MediaType.TEXT_HTML_TYPE);
         }
     });
 

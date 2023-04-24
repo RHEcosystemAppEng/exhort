@@ -6,23 +6,23 @@ metadata:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: crda-backend-dev
+  name: crda-backend
   namespace: crda
   labels:
-    app: crda-backend-dev
+    app: crda-backend
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: crda-backend-dev
+      app: crda-backend
   template:
     metadata:
       labels:
-        app: crda-backend-dev
+        app: crda-backend
     spec:
       containers:
       - name: crda-backend
-        image: quay.io/ecosystem-appeng/crda-backend:dev
+        image: quay.io/ecosystem-appeng/crda-backend:latest
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
@@ -43,8 +43,8 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: crda-backend-dev
-  name: crda-backend-dev
+    app: crda-backend
+  name: crda-backend
   namespace: crda
 spec:
   ports:
@@ -53,18 +53,18 @@ spec:
     protocol: TCP
     targetPort: 8080
   selector:
-    app: crda-backend-dev
+    app: crda-backend
 ---
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
   labels:
-    app: crda-backend-dev
-  name: crda-backend-dev
+    app: crda-backend
+  name: crda-backend
   namespace: crda
 spec:
   port:
     targetPort: 8080
   to:
     kind: Service
-    name: crda-backend-dev
+    name: crda-backend

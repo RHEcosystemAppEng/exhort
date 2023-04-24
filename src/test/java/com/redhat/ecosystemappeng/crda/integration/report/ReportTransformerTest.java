@@ -37,7 +37,7 @@ public class ReportTransformerTest {
 
     @Test
     public void testTransformGraph() {
-        GraphRequest req = new GraphRequest.Builder(Constants.MAVEN_PKG_MANAGER, Constants.SNYK_PROVIDER)
+        GraphRequest req = new GraphRequest.Builder(Constants.MAVEN_PKG_MANAGER, List.of(Constants.SNYK_PROVIDER))
                 .graph(buildGraph())
                 .build();
 

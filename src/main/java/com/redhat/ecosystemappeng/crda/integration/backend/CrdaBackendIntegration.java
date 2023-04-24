@@ -18,11 +18,7 @@
 
 package com.redhat.ecosystemappeng.crda.integration.backend;
 
-import static com.redhat.ecosystemappeng.crda.integration.Constants.PKG_MANAGER_HEADER;
-import static com.redhat.ecosystemappeng.crda.integration.Constants.PROVIDER_HEADER;
 import static com.redhat.ecosystemappeng.crda.integration.Constants.REQUEST_CONTENT_PROPERTY;
-import static org.apache.camel.support.builder.PredicateBuilder.not;
-
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.ClientErrorException;
@@ -32,7 +28,6 @@ import org.apache.camel.Exchange;
 import org.apache.camel.builder.AggregationStrategies;
 import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
 import org.apache.camel.component.jackson.ListJacksonDataFormat;
-import org.apache.camel.model.rest.RestBindingMode;
 
 import com.redhat.ecosystemappeng.crda.integration.Constants;
 import com.redhat.ecosystemappeng.crda.integration.GraphUtils;
@@ -40,9 +35,8 @@ import com.redhat.ecosystemappeng.crda.integration.ProviderAggregationStrategy;
 import com.redhat.ecosystemappeng.crda.integration.VulnerabilityProvider;
 import com.redhat.ecosystemappeng.crda.integration.report.ReportTemplate;
 import com.redhat.ecosystemappeng.crda.integration.report.ReportTransformer;
-import com.redhat.ecosystemappeng.crda.integration.snyk.SnykVulnerabilityAggregationStrategy;
-import com.redhat.ecosystemappeng.crda.model.ComponentRequest;
 import com.redhat.ecosystemappeng.crda.model.DependencyReport;
+import com.redhat.ecosystemappeng.crda.model.PackageRef;
 
 @ApplicationScoped
 public class CrdaBackendIntegration extends EndpointRouteBuilder {
@@ -69,44 +63,27 @@ public class CrdaBackendIntegration extends EndpointRouteBuilder {
             .setBody().simple("${exception.message}");
 
         rest()
-            .post("/component-analysis")
-                .consumes(MediaType.APPLICATION_JSON).bindingMode(RestBindingMode.json)
-                .type(ComponentRequest.class)
+            .post("/component-analysis/{pkgManager}")
+                .consumes(MediaType.APPLICATION_JSON)
                 .to("direct:componentAnalysis")
-            .post("/dependency-analysis/{pkgManager}/{provider}")
-                .consumes(Constants.TEXT_VND_GRAPHVIZ)
-                .to("direct:depAnalysis")
-            .post("/dependency-analysis")
+            .post("/dependency-analysis/{pkgManager}")
                 .consumes(Constants.TEXT_VND_GRAPHVIZ)
                 .to("direct:fullDepAnalysis");
 
         from(direct("componentAnalysis"))
-                .bean(GraphUtils.class, "fromPackages")
-                .to(direct("doAnalysis"))
-                .to(direct("report"))
-                .unmarshal().json();
-
-        from(direct("depAnalysis"))
-                .choice().when(header(PROVIDER_HEADER).isNull())
-                    .setProperty(PROVIDER_HEADER, method(vulnerabilityProvider, "get"))
-                .end()
-                .bean(GraphUtils.class, "fromDotFile")
+                .unmarshal(new ListJacksonDataFormat(PackageRef.class))
+                .setProperty(Constants.PROVIDERS_PARAM, method(vulnerabilityProvider, "getProvidersFromQueryParam"))
+                .setBody().method(GraphUtils.class, "fromPackages")
                 .to(direct("doAnalysis"))
                 .to(direct("report"));
 
+
         from(direct("fullDepAnalysis"))
-            .setProperty(REQUEST_CONTENT_PROPERTY, header("Accept"))
-            .setHeader(PKG_MANAGER_HEADER, constant(Constants.MAVEN_PKG_MANAGER))    
-            .choice().when(not(exchangeProperty(REQUEST_CONTENT_PROPERTY)
-                    .in(MediaType.APPLICATION_JSON, MediaType.TEXT_HTML)))
-                .throwException(new ClientErrorException("Supported response media types are: " 
-                    + MediaType.APPLICATION_JSON + ", " 
-                    + MediaType.TEXT_HTML, 415))
-            .end()
-            .multicast(AggregationStrategies.bean(ProviderAggregationStrategy.class, "aggregate"))
-                .parallelProcessing()
-                    .to(vulnerabilityProvider.getEndpoints())
-            .end();
+            .setProperty(Constants.PROVIDERS_PARAM, method(vulnerabilityProvider, "getProvidersFromQueryParam"))
+            .setProperty(REQUEST_CONTENT_PROPERTY, method(BackendUtils.class, "getResponseMediaType"))
+            .bean(GraphUtils.class, "fromDotFile")
+            .to(direct("doAnalysis"))
+            .to(direct("report"));
 
         from(direct("report"))
             .bean(ReportTransformer.class, "transform")
@@ -120,16 +97,12 @@ public class CrdaBackendIntegration extends EndpointRouteBuilder {
             .end();
 
         from(direct("doAnalysis"))
-                .to(direct("findVulnerabilities"))
+                .multicast(AggregationStrategies.bean(ProviderAggregationStrategy.class, "aggregate"))
+                    .parallelProcessing()
+                        .recipientList(method(vulnerabilityProvider, "getProviderEndpoints"))
+                    .end()
+                .end()
                 .to(direct("recommendTrustedContent"));
-
-        from(direct("findVulnerabilities"))
-            .choice()
-                .when(simple("${body.provider()} =~ ${type:com.redhat.ecosystemappeng.crda.integration.Constants.SNYK_PROVIDER}"))
-                    .enrich(direct("snykDepGraph"), AggregationStrategies.bean(SnykVulnerabilityAggregationStrategy.class, "aggregate"))
-                .when(simple("${body.provider()} =~ ${type:com.redhat.ecosystemappeng.crda.integration.Constants.TIDELIFT_PROVIDER}"))
-                    .to(direct("tideliftReleases"))
-            .end();
 
     }
 

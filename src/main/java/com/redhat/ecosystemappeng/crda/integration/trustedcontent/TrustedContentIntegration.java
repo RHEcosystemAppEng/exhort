@@ -39,6 +39,6 @@ public class TrustedContentIntegration extends EndpointRouteBuilder {
                 .setHeader(Exchange.HTTP_METHOD, constant("POST"))
                 .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.APPLICATION_JSON))
                 .setHeader("Accept", constant(MediaType.APPLICATION_JSON))
-                .to(vertxHttp("{{api.trustedContent.host}}"));
+                .to(vertxHttp("{{api.trustedContent.gav.host}}"));
     }
 }

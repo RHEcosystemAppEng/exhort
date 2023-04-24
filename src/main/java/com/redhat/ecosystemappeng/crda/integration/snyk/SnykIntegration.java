@@ -21,6 +21,7 @@ package com.redhat.ecosystemappeng.crda.integration.snyk;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.camel.Exchange;
+import org.apache.camel.builder.AggregationStrategies;
 import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
 
 import com.redhat.ecosystemappeng.crda.integration.Constants;
@@ -31,13 +32,10 @@ public class SnykIntegration  extends EndpointRouteBuilder {
     public void configure() {
 
         from(direct("snykDepGraph"))
-            .transform().method(SnykRequestBuilder.class, "fromDiGraph")
-            .to(direct("snykRequest"))
-            .setHeader(Exchange.HTTP_PATH, constant(Constants.SNYK_DEP_GRAPH_API_PATH))
-            .setHeader(Exchange.HTTP_METHOD, constant("POST"))
-            .to(vertxHttp("{{api.snyk.host}}"));
-            
+            .enrich(direct("snykRequest"), AggregationStrategies.bean(SnykVulnerabilityAggregationStrategy.class, "aggregate"));
+
         from(direct("snykRequest"))
+            .transform().method(SnykRequestBuilder.class, "fromDiGraph")
             .removeHeader(Exchange.HTTP_PATH)
             .removeHeader(Exchange.HTTP_QUERY)
             .removeHeader(Exchange.HTTP_URI)
@@ -49,7 +47,10 @@ public class SnykIntegration  extends EndpointRouteBuilder {
                 .setHeader("Authorization", simple("token {{api.snyk.token}}"))
             .end()
             .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.APPLICATION_JSON))
-            .setHeader("Accept", constant(MediaType.APPLICATION_JSON));
+            .setHeader("Accept", constant(MediaType.APPLICATION_JSON))
+            .setHeader(Exchange.HTTP_PATH, constant(Constants.SNYK_DEP_GRAPH_API_PATH))
+            .setHeader(Exchange.HTTP_METHOD, constant("POST"))
+            .to(vertxHttp("{{api.snyk.host}}"));
 
     }
     

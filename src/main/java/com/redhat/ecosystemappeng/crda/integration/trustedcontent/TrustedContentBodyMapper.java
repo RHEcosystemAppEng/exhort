@@ -27,10 +27,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.camel.Body;
-import org.jgrapht.graph.DefaultEdge;
-import org.jgrapht.traverse.BreadthFirstIterator;
-
-import com.redhat.ecosystemappeng.crda.integration.GraphUtils;
 import com.redhat.ecosystemappeng.crda.model.GraphRequest;
 import com.redhat.ecosystemappeng.crda.model.PackageRef;
 import com.redhat.ecosystemappeng.crda.model.Recommendation;
@@ -42,28 +38,13 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 @RegisterForReflection
 public class TrustedContentBodyMapper {
 
-    public String toPackages(GraphRequest req) {
-        BreadthFirstIterator<PackageRef, DefaultEdge> iterator = new BreadthFirstIterator<>(req.graph());
-        StringBuilder builder = new StringBuilder("[");
-        while (iterator.hasNext()) {
-            PackageRef dep = iterator.next();
-            if (!GraphUtils.DEFAULT_ROOT.equals(dep)) {
-                builder.append("\"").append(dep.name()).append(":").append(dep.version()).append("\"");
-                if (iterator.hasNext()) {
-                    builder.append(",");
-                }
-            }
-        }
-        return builder.append("]").toString();
-    }
-
     public VexRequest buildVexRequest(@Body GraphRequest graph) {
         return new VexRequest(
                 graph.issues().values().stream()
-                .flatMap(Collection::stream)
-                .map(e -> e.cves())
-                .flatMap(Set::stream)
-                .collect(Collectors.toUnmodifiableList()));
+                        .flatMap(Collection::stream)
+                        .map(e -> e.cves())
+                        .flatMap(Set::stream)
+                        .collect(Collectors.toUnmodifiableList()));
     }
 
     public Map<String, Recommendation> createRecommendations(VexRequest request, List<VexResult> response) {

@@ -16,17 +16,13 @@
  * limitations under the License.
  */
 
-package com.redhat.ecosystemappeng.crda.model;
+package com.redhat.ecosystemappeng.crda.integration;
 
-import java.util.Collection;
-import java.util.List;
+import io.quarkus.test.junit.QuarkusIntegrationTest;
 
-import io.quarkus.runtime.annotations.RegisterForReflection;
-
-@RegisterForReflection
-public record ComponentRequest (String pkgManager, String provider, Collection<PackageRef> packages) {
+@QuarkusIntegrationTest
+public class DependencyAnalysisIT extends DependencyAnalysisTest {
     
-    public ComponentRequest {
-        packages = List.copyOf(packages);
-    }
+    // Run the same tests
+
 }

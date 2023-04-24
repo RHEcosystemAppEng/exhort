@@ -21,8 +21,11 @@ package com.redhat.ecosystemappeng.crda.model;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultEdge;
@@ -35,30 +38,32 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 @RegisterForReflection
 public record GraphRequest(
         String pkgManager,
-        String provider,
+        List<String> providers,
         Graph<PackageRef, DefaultEdge> graph,
         Map<String, Collection<Issue>> issues,
         Map<String, Recommendation> recommendations) {
 
     public GraphRequest {
         Objects.requireNonNull(pkgManager);
-        Objects.requireNonNull(provider);
+        Objects.requireNonNull(providers);
         Objects.requireNonNull(graph);
         if (!Constants.PKG_MANAGERS.contains(pkgManager)) {
             throw new IllegalArgumentException("Unsupported package manager: " + pkgManager);
         }
-        if (!Constants.PROVIDERS.contains(provider)) {
-            throw new IllegalArgumentException("Unsupported provider: " + provider);
+        List<String> invalidProviders = providers.stream().filter(Predicate.not(Constants.PROVIDERS::contains))
+                .collect(Collectors.toList());
+        if (!invalidProviders.isEmpty()) {
+            throw new IllegalArgumentException("Unsupported providers: " + invalidProviders);
         }
-        if (graph != null)  {
+        if (graph != null) {
             graph = GraphTypeBuilder.forGraph(graph).buildGraphBuilder().addGraph(graph).buildAsUnmodifiable();
         }
-        if(issues != null) {
+        if (issues != null) {
             issues = Collections.unmodifiableMap(issues);
         } else {
             issues = Collections.emptyMap();
         }
-        if(recommendations != null) {
+        if (recommendations != null) {
             recommendations = Collections.unmodifiableMap(recommendations);
         } else {
             recommendations = Collections.emptyMap();
@@ -68,26 +73,26 @@ public record GraphRequest(
     public static class Builder {
 
         String pkgManager;
-        String provider;
+        List<String> providers;
         Graph<PackageRef, DefaultEdge> graph;
         Map<String, Collection<Issue>> issues;
         Map<String, Recommendation> recommendations;
 
-        public Builder(String pkgManager, String provider) {
+        public Builder(String pkgManager, List<String> providers) {
             this.pkgManager = pkgManager;
-            this.provider = provider;
+            this.providers = providers;
         }
 
         public Builder(GraphRequest copy) {
             this.pkgManager = copy.pkgManager;
-            this.provider = copy.provider;
+            this.providers = copy.providers;
             this.graph = copy.graph;
 
-            if(copy.issues != null) {
+            if (copy.issues != null) {
                 this.issues = new HashMap<>(copy.issues);
             }
-            
-            if(copy.recommendations != null) {
+
+            if (copy.recommendations != null) {
                 this.recommendations = new HashMap<>(copy.recommendations);
             }
 
@@ -109,7 +114,7 @@ public record GraphRequest(
         }
 
         public GraphRequest build() {
-            return new GraphRequest(pkgManager, provider, graph, issues, recommendations);
+            return new GraphRequest(pkgManager, providers, graph, issues, recommendations);
         }
 
     }

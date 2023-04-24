@@ -18,19 +18,18 @@
 
 package com.redhat.ecosystemappeng.crda.integration;
 
-import static com.redhat.ecosystemappeng.crda.integration.Constants.PKG_MANAGER_HEADER;
-import static com.redhat.ecosystemappeng.crda.integration.Constants.PROVIDER_HEADER;
-
 import java.io.InputStream;
+import java.util.List;
 import java.util.Scanner;
+
 import org.apache.camel.Body;
+import org.apache.camel.ExchangeProperty;
 import org.apache.camel.Header;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.builder.GraphBuilder;
 import org.jgrapht.graph.builder.GraphTypeBuilder;
 
-import com.redhat.ecosystemappeng.crda.model.ComponentRequest;
 import com.redhat.ecosystemappeng.crda.model.GraphRequest;
 import com.redhat.ecosystemappeng.crda.model.PackageRef;
 import io.quarkus.runtime.annotations.RegisterForReflection;
@@ -42,7 +41,7 @@ public class GraphUtils {
     public static final String DEFAULT_APP_VERSION = "0.0.1";
     public static final PackageRef DEFAULT_ROOT = new PackageRef(DEFAULT_APP_NAME, DEFAULT_APP_VERSION);
 
-    public GraphRequest fromPackages(ComponentRequest body) {
+    public GraphRequest fromPackages(@Body List<PackageRef> body, @ExchangeProperty(Constants.PROVIDERS_PARAM) List<String> providers, @Header(Constants.PKG_MANAGER_HEADER) String pkgManager) {
         GraphBuilder<PackageRef, DefaultEdge, Graph<PackageRef, DefaultEdge>> builder = GraphTypeBuilder
                 .directed()
                 .allowingSelfLoops(false)
@@ -50,11 +49,11 @@ public class GraphUtils {
                 .edgeSupplier(DefaultEdge::new)
                 .buildGraphBuilder();
         builder.addVertex(DEFAULT_ROOT);
-        body.packages().forEach(d -> builder.addEdge(DEFAULT_ROOT, d));
-        return new GraphRequest.Builder(body.pkgManager(), body.provider()).graph(builder.buildAsUnmodifiable()).build();
+        body.forEach(d -> builder.addEdge(DEFAULT_ROOT, d));
+        return new GraphRequest.Builder(pkgManager, providers).graph(builder.buildAsUnmodifiable()).build();
     }
 
-    public GraphRequest fromDotFile(@Body InputStream file, @Header(PKG_MANAGER_HEADER) String pkgManager, @Header(PROVIDER_HEADER) String provider) {
+    public GraphRequest fromDotFile(@Body InputStream file, @ExchangeProperty(Constants.PROVIDERS_PARAM) List<String> providers, @Header(Constants.PKG_MANAGER_HEADER) String pkgManager) {
         GraphBuilder<PackageRef, DefaultEdge, Graph<PackageRef, DefaultEdge>> builder = GraphTypeBuilder
                 .directed().allowingSelfLoops(false).vertexClass(PackageRef.class)
                 .edgeSupplier(DefaultEdge::new)
@@ -76,7 +75,7 @@ public class GraphUtils {
                 }
             }
         }
-        return new GraphRequest.Builder(pkgManager, provider).graph(builder.buildAsUnmodifiable()).build();
+        return new GraphRequest.Builder(pkgManager, providers).graph(builder.buildAsUnmodifiable()).build();
     }
 
 }
