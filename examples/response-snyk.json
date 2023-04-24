@@ -4,43 +4,43 @@
             "fixInfo": {},
             "issueId": "SNYK-JAVA-IONETTY-1042268",
             "pkgName": "io.netty:netty-handler",
-            "pkgVersion": "4.1.86.Final"
+            "pkgVersion": "4.1.82.Final"
         },
         {
             "fixInfo": {},
-            "issueId": "SNYK-JAVA-NETMINIDEV-3369748",
-            "pkgName": "net.minidev:json-smart",
-            "pkgVersion": "2.4.7"
+            "issueId": "SNYK-JAVA-IONETTY-3167776",
+            "pkgName": "io.netty:netty-codec-haproxy",
+            "pkgVersion": "4.1.82.Final"
         },
         {
             "fixInfo": {},
-            "issueId": "SNYK-JAVA-ORGAPACHECOMMONS-559327",
-            "pkgName": "org.apache.commons:commons-dbcp2",
-            "pkgVersion": "2.7.0"
+            "issueId": "SNYK-JAVA-IOQUARKUS-3149918",
+            "pkgName": "io.quarkus:quarkus-vertx-http",
+            "pkgVersion": "2.13.5.Final"
         },
         {
             "fixInfo": {},
-            "issueId": "SNYK-JAVA-ORGAPACHEDIRECTORYSERVER-1063040",
-            "pkgName": "org.apache.directory.server:apacheds-kerberos-codec",
-            "pkgVersion": "2.0.0.AM25"
+            "issueId": "SNYK-JAVA-IOQUARKUS-3330765",
+            "pkgName": "io.quarkus:quarkus-vertx-http",
+            "pkgVersion": "2.13.5.Final"
         },
         {
             "fixInfo": {},
-            "issueId": "SNYK-JAVA-ORGAPACHEMINA-174326",
-            "pkgName": "org.apache.mina:mina-core",
-            "pkgVersion": "2.0.18"
+            "issueId": "SNYK-JAVA-IOVERTX-3318108",
+            "pkgName": "io.vertx:vertx-web",
+            "pkgVersion": "4.3.4"
         },
         {
             "fixInfo": {},
-            "issueId": "SNYK-JAVA-ORGMOZILLA-1314295",
-            "pkgName": "org.mozilla:rhino",
-            "pkgVersion": "1.7.7.2"
+            "issueId": "SNYK-JAVA-ORGJBOSSRESTEASY-3338627",
+            "pkgName": "org.jboss.resteasy:resteasy-core",
+            "pkgVersion": "4.7.7.Final"
         },
         {
             "fixInfo": {},
-            "issueId": "SNYK-JAVA-ORGYAML-3152153",
-            "pkgName": "org.yaml:snakeyaml",
-            "pkgVersion": "1.33"
+            "issueId": "SNYK-JAVA-ORGPOSTGRESQL-3146847",
+            "pkgName": "org.postgresql:postgresql",
+            "pkgVersion": "42.5.0"
         }
     ],
     "issuesData": {
@@ -53,6 +53,7 @@
             "cvssScore": 5.6,
             "description": "## Overview\n[io.netty:netty-handler](https://github.com/netty/netty.git/netty-handler) is a library that provides an asynchronous event-driven network application framework and tools for rapid development of maintainable high performance and high scalability protocol servers and clients. In other words, Netty is a NIO client server framework which enables quick and easy development of network applications such as protocol servers and clients. It greatly simplifies and streamlines network programming such as TCP and UDP socket server.\nAffected versions of this package are vulnerable to Improper Certificate Validation. Certificate hostname validation is disabled by default in `Netty 4.1.x` which makes it potentially susceptible to Man-in-the-Middle attacks.\n## Remediation\nThere is no fixed version for `io.netty:netty-handler`.\n## References\n- [GitHub Issue 1](https://github.com/netty/netty/issues/10806)\n- [GitHub Issue 2](https://github.com/netty/netty/issues/8537)\n- [GitHub Issue 3](https://github.com/netty/netty/issues/9930)\n- [GitHub Issue 4](https://github.com/netty/netty/issues/10362)\n",
             "disclosureTime": "2020-11-19T07:07:57Z",
+            "epssDetails": null,
             "fixedIn": [],
             "id": "SNYK-JAVA-IONETTY-1042268",
             "identifiers": {
@@ -81,25 +82,48 @@
             "severity": "medium",
             "title": "Improper Certificate Validation"
         },
-        "SNYK-JAVA-NETMINIDEV-3369748": {
-            "CVSSv3": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H/E:P",
+        "SNYK-JAVA-IONETTY-3167776": {
+            "CVSSv3": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
             "credit": [
-                "JFrog Security"
+                "Unknown"
             ],
-            "cvssDetails": [],
+            "cvssDetails": [
+                {
+                    "assigner": "Red Hat",
+                    "cvssV3BaseScore": 7.5,
+                    "cvssV3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+                    "modificationTime": "2023-03-26T14:47:45.440923Z",
+                    "severity": "high"
+                },
+                {
+                    "assigner": "NVD",
+                    "cvssV3BaseScore": 7.5,
+                    "cvssV3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+                    "modificationTime": "2022-12-20T01:10:53.812897Z",
+                    "severity": "high"
+                }
+            ],
             "cvssScore": 7.5,
-            "description": "## Overview\n[net.minidev:json-smart](https://github.com/netplex/json-smart-v1) is a Java JSON parser.\nAffected versions of this package are vulnerable to Denial of Service (DoS) due to a `StackOverflowError` when parsing a deeply nested JSON array or object.\r\n\r\n**NOTE:** Although this vulnerability was fixed in version 2.4.9 the maintainer recommends upgrading to 2.4.10, due to a remaining bug.\n## PoC\n```java\r\nStringBuilder s = new StringBuilder();\r\nfor (int i = 0; i < 10000 ; i++) {\r\n  s.append(\"{\\\"a\\\":\");\r\n}\r\ns.append(\"1\");\r\nfor (int i = 0; i < 10000 ; i++) {\r\n  s.append(\"}\");\r\n}\r\nJSONParser p = new JSONParser(JSONParser.MODE_JSON_SIMPLE);\r\np.parse(s.toString());\r\n```\n\n## Details\n\nDenial of Service (DoS) describes a family of attacks, all aimed at making a system inaccessible to its intended and legitimate users.\n\nUnlike other vulnerabilities, DoS attacks usually do not aim at breaching security. Rather, they are focused on making websites and services unavailable to genuine users resulting in downtime.\n\nOne popular Denial of Service vulnerability is DDoS (a Distributed Denial of Service), an attack that attempts to clog network pipes to the system by generating a large volume of traffic from many machines.\n\nWhen it comes to open source libraries, DoS vulnerabilities allow attackers to trigger such a crash or crippling of the service by using a flaw either in the application code or from the use of open source libraries.\n\nTwo common types of DoS vulnerabilities:\n\n* High CPU/Memory Consumption- An attacker sending crafted requests that could cause the system to take a disproportionate amount of time to process. For example, [commons-fileupload:commons-fileupload](SNYK-JAVA-COMMONSFILEUPLOAD-30082).\n\n* Crash - An attacker sending crafted requests that could cause the system to crash. For Example,  [npm `ws` package](https://snyk.io/vuln/npm:ws:20171108)\n\n## Remediation\nUpgrade `net.minidev:json-smart` to version 2.4.9 or higher.\n## References\n- [GitHub Commit](https://github.com/netplex/json-smart-v2/commit/5b3205d051952d3100aa0db1535f6ba6226bd87a)\n- [GitHub Commit](https://github.com/netplex/json-smart-v2/commit/e2791ae506a57491bc856b439d706c81e45adcf8)\n- [GitHub Issue](https://github.com/netplex/json-smart-v2/issues/137)\n",
-            "disclosureTime": "2023-03-23T11:26:43Z",
+            "description": "## Overview\nAffected versions of this package are vulnerable to Denial of Service (DoS) due to a stack overflow that can be triggered by a malformed message containing a deeply nested TLV. (The only limitation on such recursion is that the TLV length cannot exceed `0xffff`.)\r\n\r\n**NOTE:** The StackOverflowError is caught if HAProxyMessageDecoder is used as part of Netty’s ChannelPipeline.\n\n## Details\n\nDenial of Service (DoS) describes a family of attacks, all aimed at making a system inaccessible to its intended and legitimate users.\n\nUnlike other vulnerabilities, DoS attacks usually do not aim at breaching security. Rather, they are focused on making websites and services unavailable to genuine users resulting in downtime.\n\nOne popular Denial of Service vulnerability is DDoS (a Distributed Denial of Service), an attack that attempts to clog network pipes to the system by generating a large volume of traffic from many machines.\n\nWhen it comes to open source libraries, DoS vulnerabilities allow attackers to trigger such a crash or crippling of the service by using a flaw either in the application code or from the use of open source libraries.\n\nTwo common types of DoS vulnerabilities:\n\n* High CPU/Memory Consumption- An attacker sending crafted requests that could cause the system to take a disproportionate amount of time to process. For example, [commons-fileupload:commons-fileupload](SNYK-JAVA-COMMONSFILEUPLOAD-30082).\n\n* Crash - An attacker sending crafted requests that could cause the system to crash. For Example,  [npm `ws` package](https://snyk.io/vuln/npm:ws:20171108)\n\n## Remediation\nUpgrade `io.netty:netty-codec-haproxy` to version 4.1.86.Final or higher.\n## References\n- [GitHub Commit](https://github.com/netty/netty/commit/cd91cf3c99123bd1e53fd6a1de0e3d1922f05bb2)\n",
+            "disclosureTime": "2022-12-12T21:24:29Z",
+            "epssDetails": {
+                "modelVersion": "v2023.03.01",
+                "percentile": "0.28829",
+                "probability": "0.00071"
+            },
             "fixedIn": [
-                "2.4.9"
+                "4.1.86.Final"
             ],
-            "id": "SNYK-JAVA-NETMINIDEV-3369748",
+            "id": "SNYK-JAVA-IONETTY-3167776",
             "identifiers": {
                 "CVE": [
-                    "CVE-2023-1370"
+                    "CVE-2022-41881"
                 ],
                 "CWE": [
-                    "CWE-400"
+                    "CWE-674"
+                ],
+                "GHSA": [
+                    "GHSA-fx2c-96vj-985v"
                 ]
             },
             "insights": {
@@ -107,126 +131,53 @@
             },
             "language": "java",
             "mavenModuleName": {
-                "artifactId": "json-smart",
-                "groupId": "net.minidev"
+                "artifactId": "netty-codec-haproxy",
+                "groupId": "io.netty"
             },
-            "moduleName": "net.minidev:json-smart",
+            "moduleName": "io.netty:netty-codec-haproxy",
             "packageManager": "maven",
-            "packageName": "net.minidev:json-smart",
+            "packageName": "io.netty:netty-codec-haproxy",
             "proprietary": false,
             "semver": {
                 "vulnerable": [
-                    "[,2.4.9)"
+                    "[,4.1.86.Final)"
                 ]
             },
             "severity": "high",
             "title": "Denial of Service (DoS)"
         },
-        "SNYK-JAVA-ORGAPACHECOMMONS-559327": {
-            "CVSSv3": "CVSS:3.1/AV:A/AC:L/PR:L/UI:R/S:U/C:L/I:N/A:N",
+        "SNYK-JAVA-IOQUARKUS-3149918": {
+            "CVSSv3": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:L/A:H",
             "credit": [
-                "Frank Gasdorf"
-            ],
-            "cvssDetails": [],
-            "cvssScore": 3,
-            "description": "## Overview\n[org.apache.commons:commons-dbcp2](https://commons.apache.org/proper/commons-dbcp) is a software that implements Database Connection Pooling\nAffected versions of this package are vulnerable to Information Exposure. If a `BasicDataSource` is created with `jmxName` set, the password property is exposed via `jmx` and is visible to anyone who is connected to jmx port.\n## Remediation\nUpgrade `org.apache.commons:commons-dbcp2` to version 2.9.0 or higher.\n## References\n- [GitHub PR](https://github.com/apache/commons-dbcp/pull/38)\n- [Jira Apache Issue](https://issues.apache.org/jira/browse/DBCP-562)\n",
-            "disclosureTime": "2020-03-05T10:54:07Z",
-            "fixedIn": [
-                "2.9.0"
-            ],
-            "id": "SNYK-JAVA-ORGAPACHECOMMONS-559327",
-            "identifiers": {
-                "CVE": [],
-                "CWE": [
-                    "CWE-200"
-                ]
-            },
-            "insights": {
-                "triageAdvice": null
-            },
-            "language": "java",
-            "mavenModuleName": {
-                "artifactId": "commons-dbcp2",
-                "groupId": "org.apache.commons"
-            },
-            "moduleName": "org.apache.commons:commons-dbcp2",
-            "packageManager": "maven",
-            "packageName": "org.apache.commons:commons-dbcp2",
-            "proprietary": false,
-            "semver": {
-                "vulnerable": [
-                    "[0,2.9.0)"
-                ]
-            },
-            "severity": "low",
-            "title": "Information Exposure"
-        },
-        "SNYK-JAVA-ORGAPACHEDIRECTORYSERVER-1063040": {
-            "CVSSv3": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:N/E:U/RL:U/RC:R",
-            "credit": [
-                "Ya Xiao"
-            ],
-            "cvssDetails": [],
-            "cvssScore": 6.5,
-            "description": "## Overview\nAffected versions of this package are vulnerable to Cryptographic Issues. A static IV is used in symmetric encryption with CBC mode. The IV of CBC mode is expected to be random. The static IV makes the resulting ciphertext much more predictable and susceptible to a dictionary attack.\n## Remediation\nA fix was pushed into the `master` branch but not yet published.\n## References\n- [GitHub Additional Information](https://github.com/apache/directory-server/blob/master/kerberos-codec/src/main/java/org/apache/directory/server/kerberos/shared/crypto/encryption/DesCbcCrcEncryption.java#L46-L48)\n- [GitHub PR](https://github.com/apache/directory-server/pull/46)\n- [JIRA Issue](https://issues.apache.org/jira/browse/DIRSERVER-2338)\n",
-            "disclosureTime": "2021-01-20T15:08:06Z",
-            "fixedIn": [],
-            "id": "SNYK-JAVA-ORGAPACHEDIRECTORYSERVER-1063040",
-            "identifiers": {
-                "CVE": [],
-                "CWE": [
-                    "CWE-310",
-                    "CWE-338"
-                ]
-            },
-            "insights": {
-                "triageAdvice": null
-            },
-            "language": "java",
-            "mavenModuleName": {
-                "artifactId": "apacheds-kerberos-codec",
-                "groupId": "org.apache.directory.server"
-            },
-            "moduleName": "org.apache.directory.server:apacheds-kerberos-codec",
-            "packageManager": "maven",
-            "packageName": "org.apache.directory.server:apacheds-kerberos-codec",
-            "proprietary": false,
-            "semver": {
-                "vulnerable": [
-                    "[0,]"
-                ]
-            },
-            "severity": "medium",
-            "title": "Cryptographic Issues"
-        },
-        "SNYK-JAVA-ORGAPACHEMINA-174326": {
-            "CVSSv3": "CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:U/C:H/I:H/A:N",
-            "credit": [
-                "Marian Rehak"
+                "Unknown"
             ],
             "cvssDetails": [
                 {
                     "assigner": "NVD",
                     "cvssV3BaseScore": 7.5,
-                    "cvssV3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
-                    "modificationTime": "2022-01-03T17:52:55.131944Z",
+                    "cvssV3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:U/C:H/I:H/A:H",
+                    "modificationTime": "2022-12-13T01:11:40.428400Z",
                     "severity": "high"
                 }
             ],
-            "cvssScore": 6.8,
-            "description": "## Overview\n[org.apache.mina:mina-core](http://mina.apache.org/) is a network application framework which helps users develop high performance and high scalability network applications easily.\nAffected versions of this package are vulnerable to Information Exposure. Handling of the `close_notify` SSL/TLS message does not lead to a connection closure, leading the server to retain the socket opened and to have the client potentially receive clear-text messages which were supposed to be encrypted.\n## Remediation\nUpgrade `org.apache.mina:mina-core` to version 2.0.21, 2.1.1 or higher.\n## References\n- [GitHub Commit](https://github.com/apache/mina/commit/294b8ce638df6e237e819537b333e02853bb612c)\n- [GitHub Commit](https://github.com/apache/mina/commit/73e881ad935e5aa6080b90585ac8dc8ddfc377e1)\n- [RedHat Bugzilla Bug](https://bugzilla.redhat.com/show_bug.cgi?id=1700016)\n- [Release Notes](http://mina.apache.org/mina-project/index.html#mina-211-mina-2021-released-posted-on-april-14-2019)\n",
-            "disclosureTime": "2019-04-14T00:00:00Z",
+            "cvssScore": 8.2,
+            "description": "## Overview\n[io.quarkus:quarkus-vertx-http](https://github.com/quarkusio/quarkus) is a Cloud Native, (Linux) Container First framework for writing Java applications.\nAffected versions of this package are vulnerable to Access Restriction Bypass via the `CORS` filter which allows simple `GET` and `POST` requests with invalid Origin to proceed.\n## Remediation\nUpgrade `io.quarkus:quarkus-vertx-http` to version 2.14.2 or higher.\n## References\n- [GitHub Commit](https://github.com/quarkusio/quarkus/commit/cc26704d3bed46ed1d5caee90f22894952a07182)\n- [RedHat Bugzilla Bug](https://bugzilla.redhat.com/show_bug.cgi?id=2148867)\n",
+            "disclosureTime": "2022-11-28T00:00:00Z",
+            "epssDetails": {
+                "modelVersion": "v2023.03.01",
+                "percentile": "0.37618",
+                "probability": "0.00091"
+            },
             "fixedIn": [
-                "2.0.21",
-                "2.1.1"
+                "2.14.2"
             ],
-            "id": "SNYK-JAVA-ORGAPACHEMINA-174326",
+            "id": "SNYK-JAVA-IOQUARKUS-3149918",
             "identifiers": {
                 "CVE": [
-                    "CVE-2019-0231"
+                    "CVE-2022-4147"
                 ],
                 "CWE": [
-                    "CWE-319"
+                    "CWE-284"
                 ]
             },
             "insights": {
@@ -234,99 +185,63 @@
             },
             "language": "java",
             "mavenModuleName": {
-                "artifactId": "mina-core",
-                "groupId": "org.apache.mina"
+                "artifactId": "quarkus-vertx-http",
+                "groupId": "io.quarkus"
             },
-            "moduleName": "org.apache.mina:mina-core",
+            "moduleName": "io.quarkus:quarkus-vertx-http",
             "packageManager": "maven",
-            "packageName": "org.apache.mina:mina-core",
+            "packageName": "io.quarkus:quarkus-vertx-http",
             "proprietary": false,
             "semver": {
                 "vulnerable": [
-                    "[,2.0.21)",
-                    "[2.1.0,2.1.1)"
-                ]
-            },
-            "severity": "medium",
-            "title": "Information Exposure"
-        },
-        "SNYK-JAVA-ORGMOZILLA-1314295": {
-            "CVSSv3": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:L/A:N/E:U/RL:O/RC:R",
-            "credit": [
-                "brianwrf"
-            ],
-            "cvssDetails": [],
-            "cvssScore": 8.2,
-            "description": "## Overview\n[org.mozilla:rhino](https://github.com/mozilla/rhino) is a Rhino is an open-source implementation of JavaScript written entirely in Java. It is typically embedded into Java applications to provide scripting to end users.\nAffected versions of this package are vulnerable to XML External Entity (XXE) Injection. The function `toXml` allows usage of external entities when parsing an XML document.\n\n## Details\nXXE Injection is a type of attack against an application that parses XML input.\nXML is a markup language that defines a set of rules for encoding documents in a format that is both human-readable and machine-readable. By default, many XML processors allow specification of an external entity, a URI that is dereferenced and evaluated during XML processing. When an XML document is being parsed, the parser can make a request and include the content at the specified URI inside of the XML document.\n\nAttacks can include disclosing local files, which may contain sensitive data such as passwords or private user data, using file: schemes or relative paths in the system identifier.\n\nFor example, below is a sample XML document, containing an XML element- username.\n\n```\n<xml>\n<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n   <username>John</username>\n</xml>\n```\n\nAn external XML entity - `xxe`, is defined using a system identifier and present within a DOCTYPE header. These entities can access local or remote content. For example the below code contains an external XML entity that would fetch the content of  `/etc/passwd` and display it to the user rendered by `username`.\n\n```\n<xml>\n<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n<!DOCTYPE foo [\n   <!ENTITY xxe SYSTEM \"file:///etc/passwd\" >]>\n   <username>&xxe;</username>\n</xml>\n```\n\nOther XXE Injection attacks can access local resources that may not stop returning data, possibly impacting application availability and leading to Denial of Service.\n\n## Remediation\nUpgrade `org.mozilla:rhino` to version 1.7.12 or higher.\n## References\n- [GitHub Commit](https://github.com/mozilla/rhino/commit/afed3835b3ff6ab184e9e9382ad58fb248043f1c)\n- [GitHub Issue](https://github.com/mozilla/rhino/issues/479)\n- [GitHub Vulnerable Code](https://github.com/mozilla/rhino/blob/master/xmlimplsrc/org/mozilla/javascript/xmlimpl/XmlProcessor.java#L225)\n",
-            "disclosureTime": "2018-09-28T08:40:40Z",
-            "fixedIn": [
-                "1.7.12"
-            ],
-            "id": "SNYK-JAVA-ORGMOZILLA-1314295",
-            "identifiers": {
-                "CVE": [],
-                "CWE": [
-                    "CWE-611"
-                ]
-            },
-            "insights": {
-                "triageAdvice": null
-            },
-            "language": "java",
-            "mavenModuleName": {
-                "artifactId": "rhino",
-                "groupId": "org.mozilla"
-            },
-            "moduleName": "org.mozilla:rhino",
-            "packageManager": "maven",
-            "packageName": "org.mozilla:rhino",
-            "proprietary": false,
-            "semver": {
-                "vulnerable": [
-                    "[,1.7.12)"
+                    "[,2.14.2)"
                 ]
             },
             "severity": "high",
-            "title": "XML External Entity (XXE) Injection"
+            "title": "Access Restriction Bypass"
         },
-        "SNYK-JAVA-ORGYAML-3152153": {
-            "CVSSv3": "CVSS:3.1/AV:N/AC:H/PR:H/UI:N/S:U/C:H/I:H/A:H",
+        "SNYK-JAVA-IOQUARKUS-3330765": {
+            "CVSSv3": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:L/I:L/A:N",
             "credit": [
-                "Justin Taft",
-                "securisec"
+                "Unknown"
             ],
             "cvssDetails": [
                 {
                     "assigner": "Red Hat",
-                    "cvssV3BaseScore": 9.8,
-                    "cvssV3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
-                    "modificationTime": "2023-02-09T15:35:08.511352Z",
-                    "severity": "critical"
+                    "cvssV3BaseScore": 5.3,
+                    "cvssV3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N",
+                    "modificationTime": "2023-03-26T14:49:36.697430Z",
+                    "severity": "medium"
                 },
                 {
                     "assigner": "NVD",
-                    "cvssV3BaseScore": 9.8,
-                    "cvssV3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
-                    "modificationTime": "2022-12-07T01:11:42.237882Z",
-                    "severity": "critical"
+                    "cvssV3BaseScore": 6.1,
+                    "cvssV3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N",
+                    "modificationTime": "2023-03-04T01:10:10.020882Z",
+                    "severity": "medium"
                 }
             ],
-            "cvssScore": 6.6,
-            "description": "## Overview\n[org.yaml:snakeyaml](https://code.google.com/p/snakeyaml/source/browse/) is a YAML 1.1 parser and emitter for Java.\nAffected versions of this package are vulnerable to Arbitrary Code Execution in the `Constructor` class, which does not restrict which types can be deserialized. This vulnerability is exploitable by an attacker who provides a malicious YAML file for deserialization, which circumvents the `SafeConstructor` class. \r\n\r\nThe maintainers of the library contend that the application's trust would already have had to be compromised or established and therefore dispute the risk associated with this issue on the basis that there is a high bar for exploitation.\n## Remediation\nUpgrade `org.yaml:snakeyaml` to version 2.0 or higher.\n## References\n- [BitBucket Changelog](https://bitbucket.org/snakeyaml/snakeyaml/wiki/Changes)\n- [Bitbucket Commit](https://bitbucket.org/snakeyaml/snakeyaml/commits/2b8d47c8bcfd402e7a682b7b2674e8d0cb25e522)\n- [Bitbucket Issue](https://bitbucket.org/snakeyaml/snakeyaml/issues/561/cve-2022-1471-vulnerability-in)\n- [BitBucket Issue](https://bitbucket.org/snakeyaml/snakeyaml/issues/565/do-not-allow-global-tags-by-default)\n- [BitBucket PR](https://bitbucket.org/snakeyaml/snakeyaml/pull-requests/39)\n- [BitBucket PR](https://bitbucket.org/snakeyaml/snakeyaml/pull-requests/44)\n- [Snyk Blog - Technical Deepdive](https://snyk.io/blog/unsafe-deserialization-snakeyaml-java-cve-2022-1471/)\n- [Vulnerable Class](https://github.com/snakeyaml/snakeyaml/blob/master/src/main/java/org/yaml/snakeyaml/constructor/Constructor.java)\n",
-            "disclosureTime": "2022-12-01T14:49:09Z",
+            "cvssScore": 5.4,
+            "description": "## Overview\n[io.quarkus:quarkus-vertx-http](https://github.com/quarkusio/quarkus) is a Cloud Native, (Linux) Container First framework for writing Java applications.\nAffected versions of this package are vulnerable to Cross-site Scripting (XSS) due to improper user-input sanitization, if the Quarkus Form Authentication session cookie Path attribute is set to `/`.\n\n**Note:** This attack can be prevented with the Quarkus CSRF Prevention feature.\n## Details\n\nA cross-site scripting attack occurs when the attacker tricks a legitimate web-based application or site to accept a request as originating from a trusted source.\n\nThis is done by escaping the context of the web application; the web application then delivers that data to its users along with other trusted dynamic content, without validating it. The browser unknowingly executes malicious script on the client side (through client-side languages; usually JavaScript or HTML)  in order to perform actions that are otherwise typically blocked by the browser’s Same Origin Policy.\n\nInjecting malicious code is the most prevalent manner by which XSS is exploited; for this reason, escaping characters in order to prevent this manipulation is the top method for securing code against this vulnerability.\n\nEscaping means that the application is coded to mark key characters, and particularly key characters included in user input, to prevent those characters from being interpreted in a dangerous context. For example, in HTML, `<` can be coded as  `&lt`; and `>` can be coded as `&gt`; in order to be interpreted and displayed as themselves in text, while within the code itself, they are used for HTML tags. If malicious content is injected into an application that escapes special characters and that malicious content uses `<` and `>` as HTML tags, those characters are nonetheless not interpreted as HTML tags by the browser if they’ve been correctly escaped in the application code and in this way the attempted attack is diverted.\n \nThe most prominent use of XSS is to steal cookies (source: OWASP HttpOnly) and hijack user sessions, but XSS exploits have been used to expose sensitive information, enable access to privileged services and functionality and deliver malware. \n\n### Types of attacks\nThere are a few methods by which XSS can be manipulated:\n\n|Type|Origin|Description|\n|--|--|--|\n|**Stored**|Server|The malicious code is inserted in the application (usually as a link) by the attacker. The code is activated every time a user clicks the link.|\n|**Reflected**|Server|The attacker delivers a malicious link externally from the vulnerable web site application to a user. When clicked, malicious code is sent to the vulnerable web site, which reflects the attack back to the user’s browser.| \n|**DOM-based**|Client|The attacker forces the user’s browser to render a malicious page. The data in the page itself delivers the cross-site scripting data.|\n|**Mutated**| |The attacker injects code that appears safe, but is then rewritten and modified by the browser, while parsing the markup. An example is rebalancing unclosed quotation marks or even adding quotation marks to unquoted parameters.|\n\n### Affected environments\nThe following environments are susceptible to an XSS attack:\n\n* Web servers\n* Application servers\n* Web application environments\n\n### How to prevent\nThis section describes the top best practices designed to specifically protect your code: \n\n* Sanitize data input in an HTTP request before reflecting it back, ensuring all data is validated, filtered or escaped before echoing anything back to the user, such as the values of query parameters during searches. \n* Convert special characters such as `?`, `&`, `/`, `<`, `>` and spaces to their respective HTML or URL encoded equivalents. \n* Give users the option to disable client-side scripts.\n* Redirect invalid requests.\n* Detect simultaneous logins, including those from two separate IP addresses, and invalidate those sessions.\n* Use and enforce a Content Security Policy (source: Wikipedia) to disable any features that might be manipulated for an XSS attack.\n* Read the documentation for any of the libraries referenced in your code to understand which elements allow for embedded HTML.\n\n## Remediation\nUpgrade `io.quarkus:quarkus-vertx-http` to version 2.13.7.Final or higher.\n## References\n- [GitHub Commit](https://github.com/quarkusio/quarkus/commit/47bb512f8c3ff6f1f87df87f0e9761305775fa1b)\n- [GitHub PR](https://github.com/quarkusio/quarkus/pull/30413)\n- [GitHub Release](https://github.com/quarkusio/quarkus/releases/tag/2.13.7.Final)\n- [RedHat Bugzilla Bug](https://bugzilla.redhat.com/show_bug.cgi?id=2158081)\n",
+            "disclosureTime": "2023-02-23T21:30:16Z",
+            "epssDetails": {
+                "modelVersion": "v2023.03.01",
+                "percentile": "0.14595",
+                "probability": "0.00048"
+            },
             "fixedIn": [
-                "2.0"
+                "2.13.7.Final"
             ],
-            "id": "SNYK-JAVA-ORGYAML-3152153",
+            "id": "SNYK-JAVA-IOQUARKUS-3330765",
             "identifiers": {
                 "CVE": [
-                    "CVE-2022-1471"
+                    "CVE-2023-0044"
                 ],
                 "CWE": [
-                    "CWE-20"
+                    "CWE-79"
                 ],
                 "GHSA": [
-                    "GHSA-mjmj-j48q-9wg2"
+                    "GHSA-c57v-hc7m-8px2"
                 ]
             },
             "insights": {
@@ -334,20 +249,215 @@
             },
             "language": "java",
             "mavenModuleName": {
-                "artifactId": "snakeyaml",
-                "groupId": "org.yaml"
+                "artifactId": "quarkus-vertx-http",
+                "groupId": "io.quarkus"
             },
-            "moduleName": "org.yaml:snakeyaml",
+            "moduleName": "io.quarkus:quarkus-vertx-http",
             "packageManager": "maven",
-            "packageName": "org.yaml:snakeyaml",
+            "packageName": "io.quarkus:quarkus-vertx-http",
             "proprietary": false,
             "semver": {
                 "vulnerable": [
-                    "[0,2.0)"
+                    "[,2.13.7.Final)"
                 ]
             },
             "severity": "medium",
-            "title": "Arbitrary Code Execution"
+            "title": "Cross-site Scripting (XSS)"
+        },
+        "SNYK-JAVA-IOVERTX-3318108": {
+            "CVSSv3": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:N/E:P",
+            "credit": [
+                "Unknown"
+            ],
+            "cvssDetails": [
+                {
+                    "assigner": "NVD",
+                    "cvssV3BaseScore": 5.3,
+                    "cvssV3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N",
+                    "modificationTime": "2023-02-18T01:10:04.002091Z",
+                    "severity": "medium"
+                }
+            ],
+            "cvssScore": 4.8,
+            "description": "## Overview\n[io.vertx:vertx-web](https://github.com/vert-x3/vertx-web) is a HTTP web applications for Vert.x.\nAffected versions of this package are vulnerable to Directory Traversal when running Vertx web applications that serve files using `StaticHandle`. If the mount point is a wildcard (`*`) then an attacker can exfiltrate any class path resource.\r\n\r\nWhen computing the relative path to locate the resource, in case of wildcards, [the code](https://github.com/vert-x3/vertx-web/blob/62c0d66fa1c179ae6a4d57344631679a2b97e60f/vertx-web/src/main/java/io/vertx/ext/web/impl/Utils.java#L83\r\n) returns the user input (without validation) as the segment to lookup. Even though checks are performed to avoid escaping the sandbox, given that the input was not sanitized, `\\` are not properly handled and an attacker can build a path that is valid within the classpath.\r\n\r\n**Note:** This vulnerability can only be exploited on Windows Operating Systems and Windows File Systems\n\n## Details\n\nA Directory Traversal attack (also known as path traversal) aims to access files and directories that are stored outside the intended folder. By manipulating files with \"dot-dot-slash (../)\" sequences and its variations, or by using absolute file paths, it may be possible to access arbitrary files and directories stored on file system, including application source code, configuration, and other critical system files.\n\nDirectory Traversal vulnerabilities can be generally divided into two types:\n\n- **Information Disclosure**: Allows the attacker to gain information about the folder structure or read the contents of sensitive files on the system.\n\n`st` is a module for serving static files on web pages, and contains a [vulnerability of this type](https://snyk.io/vuln/npm:st:20140206). In our example, we will serve files from the `public` route.\n\nIf an attacker requests the following URL from our server, it will in turn leak the sensitive private key of the root user.\n\n```\ncurl http://localhost:8080/public/%2e%2e/%2e%2e/%2e%2e/%2e%2e/%2e%2e/root/.ssh/id_rsa\n```\n**Note** `%2e` is the URL encoded version of `.` (dot).\n\n- **Writing arbitrary files**: Allows the attacker to create or replace existing files. This type of vulnerability is also known as `Zip-Slip`. \n\nOne way to achieve this is by using a malicious `zip` archive that holds path traversal filenames. When each filename in the zip archive gets concatenated to the target extraction folder, without validation, the final path ends up outside of the target folder. If an executable or a configuration file is overwritten with a file containing malicious code, the problem can turn into an arbitrary code execution issue quite easily.\n\nThe following is an example of a `zip` archive with one benign file and one malicious file. Extracting the malicious file will result in traversing out of the target folder, ending up in `/root/.ssh/` overwriting the `authorized_keys` file:\n\n```\n2018-04-15 22:04:29 .....           19           19  good.txt\n2018-04-15 22:04:42 .....           20           20  ../../../../../../root/.ssh/authorized_keys\n```\n\n## Remediation\nUpgrade `io.vertx:vertx-web` to version 4.3.8 or higher.\n## References\n- [GitHub Commit](https://github.com/vert-x3/vertx-web/commit/8a6b4ef8096a0b8714c1f10ec0133f4b42e48428)\n- [PoC](https://github.com/adrien-aubert-drovio/vertx-statichandler-windows-traversal-path-vulnerability)\n- [Vulnerable Code](https://github.com/vert-x3/vertx-web/blob/62c0d66fa1c179ae6a4d57344631679a2b97e60f/vertx-web/src/main/java/io/vertx/ext/web/impl/Utils.java#L83)\n",
+            "disclosureTime": "2023-02-10T03:27:58Z",
+            "epssDetails": {
+                "modelVersion": "v2023.03.01",
+                "percentile": "0.17888",
+                "probability": "0.00051"
+            },
+            "fixedIn": [
+                "4.3.8"
+            ],
+            "id": "SNYK-JAVA-IOVERTX-3318108",
+            "identifiers": {
+                "CVE": [
+                    "CVE-2023-24815"
+                ],
+                "CWE": [
+                    "CWE-22"
+                ],
+                "GHSA": [
+                    "GHSA-53jx-vvf9-4x38"
+                ]
+            },
+            "insights": {
+                "triageAdvice": "This vulnerability is only applicable on Windows operating system"
+            },
+            "language": "java",
+            "mavenModuleName": {
+                "artifactId": "vertx-web",
+                "groupId": "io.vertx"
+            },
+            "moduleName": "io.vertx:vertx-web",
+            "packageManager": "maven",
+            "packageName": "io.vertx:vertx-web",
+            "proprietary": false,
+            "semver": {
+                "vulnerable": [
+                    "[4.0.0,4.3.8)"
+                ]
+            },
+            "severity": "medium",
+            "title": "Directory Traversal"
+        },
+        "SNYK-JAVA-ORGJBOSSRESTEASY-3338627": {
+            "CVSSv3": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
+            "credit": [
+                "Unknown"
+            ],
+            "cvssDetails": [
+                {
+                    "assigner": "Red Hat",
+                    "cvssV3BaseScore": 5.3,
+                    "cvssV3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
+                    "modificationTime": "2023-02-01T14:09:50.914731Z",
+                    "severity": "medium"
+                },
+                {
+                    "assigner": "NVD",
+                    "cvssV3BaseScore": 5.5,
+                    "cvssV3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:N/A:N",
+                    "modificationTime": "2023-03-02T01:10:06.588327Z",
+                    "severity": "medium"
+                }
+            ],
+            "cvssScore": 5.3,
+            "description": "## Overview\n[org.jboss.resteasy:resteasy-core](https://github.com/resteasy/Resteasy) is a JBoss.org project aimed at providing productivity frameworks for developing client and server RESTful applications and services in Java.\nAffected versions of this package are vulnerable to Creation of Temporary File With Insecure Permissions such that the insecure `File.createTempFile()` which is used in the `DataSourceProvider`, `FileProvider` and `Mime4JWorkaround` classes creates temp files with insecure permissions that could be read by a local user.\n## Remediation\nUpgrade `org.jboss.resteasy:resteasy-core` to version 4.7.8.Final or higher.\n## References\n- [GitHub Commit](https://github.com/resteasy/resteasy/commit/277ea6d15b793b53b170ae9d8f9aba83b82d33c8)\n- [GitHub Release](https://github.com/resteasy/resteasy/releases/tag/4.7.8.Final)\n- [RedHat Bugzilla Bug](https://bugzilla.redhat.com/show_bug.cgi?id=2166004)\n",
+            "disclosureTime": "2023-01-31T00:00:00Z",
+            "epssDetails": {
+                "modelVersion": "v2023.03.01",
+                "percentile": "0.05669",
+                "probability": "0.00042"
+            },
+            "fixedIn": [
+                "4.7.8.Final"
+            ],
+            "id": "SNYK-JAVA-ORGJBOSSRESTEASY-3338627",
+            "identifiers": {
+                "CVE": [
+                    "CVE-2023-0482"
+                ],
+                "CWE": [
+                    "CWE-378"
+                ]
+            },
+            "insights": {
+                "triageAdvice": null
+            },
+            "language": "java",
+            "mavenModuleName": {
+                "artifactId": "resteasy-core",
+                "groupId": "org.jboss.resteasy"
+            },
+            "moduleName": "org.jboss.resteasy:resteasy-core",
+            "packageManager": "maven",
+            "packageName": "org.jboss.resteasy:resteasy-core",
+            "proprietary": false,
+            "semver": {
+                "vulnerable": [
+                    "[0,4.7.8.Final)"
+                ]
+            },
+            "severity": "medium",
+            "title": "Creation of Temporary File With Insecure Permissions"
+        },
+        "SNYK-JAVA-ORGPOSTGRESQL-3146847": {
+            "CVSSv3": "CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:H/I:N/A:N",
+            "credit": [
+                "Jonathan Leitschuh"
+            ],
+            "cvssDetails": [
+                {
+                    "assigner": "SUSE",
+                    "cvssV3BaseScore": 5.5,
+                    "cvssV3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:N/A:N",
+                    "modificationTime": "2023-01-20T11:01:50.803032Z",
+                    "severity": "medium"
+                },
+                {
+                    "assigner": "NVD",
+                    "cvssV3BaseScore": 5.5,
+                    "cvssV3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:N/A:N",
+                    "modificationTime": "2022-11-29T01:11:13.876418Z",
+                    "severity": "medium"
+                },
+                {
+                    "assigner": "Red Hat",
+                    "cvssV3BaseScore": 5.5,
+                    "cvssV3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:N/A:N",
+                    "modificationTime": "2022-12-15T14:09:22.333400Z",
+                    "severity": "medium"
+                }
+            ],
+            "cvssScore": 4.7,
+            "description": "## Overview\n[org.postgresql:postgresql](https://mvnrepository.com/artifact/org.postgresql/postgresql) is a Java JDBC 4.2 (JRE 8+) driver for PostgreSQL database.\nAffected versions of this package are vulnerable to Information Exposure in the pgjdbc driver, which writes to the operating system's shared temp directory when the InputStream to either `PreparedStatement.setText(int, InputStream)` or `PreparedStatemet.setBytea(int, InputStream)` is larger than 2K. The temporary file is readable by other users. This is the default system behavior on Unix systems but not on MacOS.\r\n\r\n**NOTE:** This vulnerability is only fixed for JDK 1.7. Systems using JDK 1.6 or below can work around the vulnerability by setting the environment variable `java.io.tmpdir` to a non-world-readable location.\n## Remediation\nUpgrade `org.postgresql:postgresql` to version 42.2.27, 42.3.8, 42.4.3, 42.5.1 or higher.\n## References\n- [GitHub Commit](https://github.com/pgjdbc/pgjdbc/commit/34855cffb9079edf95cf77930f3e3b73f6a1b139)\n- [GitHub Commit](https://github.com/pgjdbc/pgjdbc/commit/9008dc9aade6dbfe4efafcd6872ebc55f4699cf5)\n- [GitHub Commit](https://github.com/pgjdbc/pgjdbc/commit/91b8c2ca600f82d2ec47c3fb54ca2036b000e320)\n- [GitHub Commit](https://github.com/pgjdbc/pgjdbc/commit/e73c6b6b53ff11bc0bd06c44130a880d3bf77c55)\n",
+            "disclosureTime": "2022-11-24T08:23:26Z",
+            "epssDetails": {
+                "modelVersion": "v2023.03.01",
+                "percentile": "0.11956",
+                "probability": "0.00045"
+            },
+            "fixedIn": [
+                "42.2.27",
+                "42.3.8",
+                "42.4.3",
+                "42.5.1"
+            ],
+            "id": "SNYK-JAVA-ORGPOSTGRESQL-3146847",
+            "identifiers": {
+                "CVE": [
+                    "CVE-2022-41946"
+                ],
+                "CWE": [
+                    "CWE-200"
+                ],
+                "GHSA": [
+                    "GHSA-562r-vg33-8x8h"
+                ]
+            },
+            "insights": {
+                "triageAdvice": null
+            },
+            "language": "java",
+            "mavenModuleName": {
+                "artifactId": "postgresql",
+                "groupId": "org.postgresql"
+            },
+            "moduleName": "org.postgresql:postgresql",
+            "packageManager": "maven",
+            "packageName": "org.postgresql:postgresql",
+            "proprietary": false,
+            "semver": {
+                "vulnerable": [
+                    "[42.2.0,42.2.27)",
+                    "[42.3.0,42.3.8)",
+                    "[42.4.0,42.4.3)",
+                    "[42.5.0,42.5.1)"
+                ]
+            },
+            "severity": "medium",
+            "title": "Information Exposure"
         }
     },
     "ok": false,

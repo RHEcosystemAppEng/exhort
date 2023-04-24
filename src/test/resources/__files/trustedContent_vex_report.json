@@ -1,0 +1,28 @@
+[
+  {
+      "mavenPackage": {
+          "artifactId": "quarkus-jdbc-postgresql",
+          "groupId": "io.quarkus",
+          "version": "2.13.7.Final-redhat-00003"
+      },
+      "productStatus": "fixed"
+  },
+  {
+    "mavenPackage": {
+        "artifactId": "jackson-databind",
+        "groupId": "com.fasterxml.jackson.core",
+        "version": "2.13.1.Final-redhat-00002"
+    },
+    "productStatus": "known_affected"
+  },
+  {
+    "mavenPackage": {
+        "artifactId": "jackson-databind",
+        "groupId": "com.fasterxml.jackson.core",
+        "version": "2.13.1.Final-redhat-00002"
+    },
+    "productStatus": "known_not_affected"
+  },
+  null,
+  null
+]

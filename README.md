@@ -4,16 +4,18 @@
 
 See the [application.properties](./src/main/resources/application.properties) for default values and configuration properties
 
-- Trusted Content service
+- Trusted Content service: `api.trustedContent.gav.host`
+- Trusted Content VEX stub: `api.trustedContent.vex.host`
 
 ### Third party dependencies
 
  - Snyk API
+ - Tidelift API (currently disabled)
 
 ## Required parameters
 
 - `api.snyk.token` Snyk API token for default authentication
-- `api.tidelift.token` Tidelift API token for default authentication
+- `api.tidelift.token` Tidelift API token for default authentication (currently ignored)
 
 ## OpenAPI and SwaggerUI
 
@@ -25,81 +27,75 @@ See the [application.properties](./src/main/resources/application.properties) fo
 Currently there are 2 available providers.
 
  - Snyk will provide a vulnerability report for your components or full dependency graph
- - Tidelift will provide a vulnerability report aggregated from independent requests taken from each individual dependency.
- - Red Hat Trusted Content will provide the recommended software matching the current dependencies
+ - Tidelift (Disabled) will provide a vulnerability report aggregated from independent requests taken from each individual dependency.
 
 You can disable a given provider for the dependency graph analysis by using `api.<provider>.disabled=true` property at startup.
+
+Providers should be defined as a comma separated list in the `providers` Query Parameter. e.g. `/component-analysis/maven?providers=snyk`
 
 ## Package Managers
 
 Only `maven` is currently supported.
 
-## Dependency Graph Analysis
+## Dependency Graph Analysis `/api/v3/dependency-analysis/<pkgManager>`
 
 With Maven it is possible to generate a [DOT graph](https://graphviz.org/doc/info/lang.html) with all the resolved dependencies.
 The following command will generate a `dependencies.txt` file in the project target folder.
 
 ```bash
-mvn --quiet clean -f "/path/to/project/pom.xml" && mvn --quiet org.apache.maven.plugins:maven-dependency-plugin:3.5.0:tree -f "/path/to/project/pom.xml" -DoutputFile="/path/to/project/target/dependencies.txt" -DoutputType=dot -DappendOutput=true
+mvn --quiet clean -f "/path/to/project/pom.xml" && mvn --quiet -Dversion=3.5.0 dependency:tree -f "/path/to/project/pom.xml" -DoutputFile="/path/to/project/target/dependencies.txt" -DoutputType=dot
 ```
 
-You can submit this file to the `/dependency-analysis` endpoint in order to get a dependency graph analysis backed from the selected provider. Make sure youre passing the
-right `Content-Type` and a valid `pkgManager` and `provider`
+You can submit this file to the `/dependency-analysis/<pkgManager>` endpoint in order to get a dependency graph analysis backed from the selected provider. Make sure youre passing the
+right `Content-Type` and a valid `pkgManager`
 
-This is an example for `maven` and `snyk`:
-
-```bash
-http :8080/api/v3/dependency-analysis/maven/snyk Content-Type:"text/vnd.graphviz" @'./src/test/resources/dependencies.txt' | jq .
-```
-
-### Full report
-
-If the `provider` and `pkgManager` are not provided a full report will be executed and all the providers will be used and aggregated into
-a single response.
+This is an example for `maven`:
 
 ```bash
-$ http :8080/api/v3/dependency-analysis Content-Type:"text/vnd.graphviz" @'./src/test/resources/dependencies.txt'
-{
-    "snyk": { ... snyk response ...},
-    "redhat": [ ... redhat trusted content ... ]
-}
+$ http :8080/api/v3/dependency-analysis/maven Content-Type:"text/vnd.graphviz" @'./src/test/resources/dependencies.txt'
+[
+    {
+      "ref": {
+          "name": "io.quarkus:quarkus-hibernate-orm",
+          "version": "2.13.5.Final"
+      },
+      ...
+    }
+]
 ```
 
 By default the response Content-Type will be `application/json` but if the `text/html` media type is requested instead, the response
 will be processed and converted into HTML.
 
 ```bash
-$ http :8080/api/v3/dependency-analysis Content-Type:"text/vnd.graphviz" Accept:"text/html" @'./src/test/resources/dependencies.txt'
+$ http :8080/api/v3/dependency-analysis/maven Content-Type:"text/vnd.graphviz" Accept:"text/html" @'./src/test/resources/dependencies.txt'
 
 <html>
   ...
 </html>
 ```
 
-## Component Analysis
+## Component Analysis `/api/v3/component-analysis/<pkgManager>`
 
 It is also possible to provide a list of packages in order to get a similar report. This method accepts a JSON object instead of a DOT graph.
 
-Make sure you are providing a valid `pkgManager` and `provider`
+Make sure you are providing a valid `pkgManager`
 
 ```bash
-$ curl 'http://localhost:8080/api/v3/component-analysis' \
+$ curl 'http://localhost:8080/api/v3/component-analysis/maven' \
 --header 'Content-Type: application/json' \
---data '{
-    "pkgManager": "maven",
-    "provider": "redhat",
-    "packages": [
-        {"name": "log4j:log4j", "version": "1.2.17"},
-        {"name": "io.netty:netty-common", "version": "4.1.86"},
-    ]
-}'
+--data '[
+    {"name": "log4j:log4j", "version": "1.2.17"},
+    {"name": "io.netty:netty-common", "version": "4.1.86"},
+]'
 ...
 [
-    null,
     {
-        "artifactId": "jboss-logging-annotations",
-        "groupId": "org.jboss.logging",
-        "version": "2.2.1.Final-redhat-00001"
+      "ref": {
+          "name": "log4j:log4j",
+          "version": "1.2.17"
+      },
+      ...
     }
 ]
 

@@ -36,11 +36,8 @@ spec:
             secretKeyRef:
               name: crda-secret
               key: api-snyk-token
-        - name: API_TIDELIFT_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: crda-secret
-              key: api-tidelift-token
+        - name: API_TRUSTEDCONTENT_VEX_HOST
+          value: http://tc-camel:8080
 ---
 apiVersion: v1
 kind: Service

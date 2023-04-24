@@ -1,0 +1,92 @@
+[
+  {
+    "packageRef": {
+      "name": "org.postgresql:postgresql",
+      "version": "45.0.5"
+    },
+    "transitive": [
+      {
+        "packageRef": {
+
+        },
+        "issues": [],
+        "recommendations": []
+      }
+    ],
+    "issues": [
+      {
+        "id": "SNYK-JAVA-IONETTY-1070799",
+        "source": "snyk",
+        "rawData": {
+          "id": "SNYK-JAVA-IONETTY-1070799",
+          "title": "Information Disclosure",
+          "CVSSv3": "CVSS:3.1/AV:L/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+          "credit": [
+            "Jonathan Leitschuh"
+          ],
+          "semver": {
+            "vulnerable": [
+              "[4.0.0.Final, 4.1.59.Final)"
+            ]
+          },
+          "fixedIn": [
+            "4.1.59.Final"
+          ],
+          "insights": {
+            "triageAdvice": "This vulnerability is only applicable on Linux operating systems"
+          },
+          "language": "java",
+          "severity": "medium",
+          "cvssScore": 6.2,
+          "moduleName": "io.netty:netty-codec-http",
+          "cvssDetails": [
+            {
+              "assigner": "Red Hat",
+              "severity": "medium",
+              "cvssV3Vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+              "cvssV3BaseScore": 6.2,
+              "modificationTime": "2023-03-26T14:47:50.011213Z"
+            },
+            {
+              "assigner": "NVD",
+              "severity": "medium",
+              "cvssV3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:N/A:N",
+              "cvssV3BaseScore": 5.5,
+              "modificationTime": "2022-05-13T01:10:58.276413Z"
+            }
+          ],
+          "description": "## Overview\n[io.netty:netty-codec-http](https://mvnrepository.com/artifact/io.netty/netty-codec-http) is a network application framework for rapid development of maintainable high performance protocol servers & clients.\nAffected versions of this package are vulnerable to Information Disclosure via the `AbstractDiskHttpData` method, and on Unix-like systems.\r\n\r\nWhen `netty`'s multipart decoders are used, local information disclosure can occur via the local system temporary directory if temporary storing uploads on the disk are enabled.\r\nOn unix-like systems, the temporary directory is shared between all users. As such, writing to this directory using API's that do not explicitly set the file/directory permissions can lead to information disclosure.\r\nThe method `File.createTempFile` on unix-like systems creates a random file, but, by default will create this file with the permissions `-rw-r--r--`. Sensitive information is written to this file in `AbstractDiskHttpData`, and other local users can read it.\n## Remediation\nUpgrade `io.netty:netty-codec-http` to version 4.1.59.Final or higher.\n## References\n- [GitHub Commit](https://github.com/netty/netty/commit/c735357bf29d07856ad171c6611a2e1a0e0000ec)\n",
+          "identifiers": {
+            "CVE": [
+              "CVE-2021-21290"
+            ],
+            "CWE": [
+              "CWE-378"
+            ],
+            "GHSA": [
+              "GHSA-5mcr-gq6c-3hq2"
+            ]
+          },
+          "packageName": "io.netty:netty-codec-http",
+          "proprietary": false,
+          "disclosureTime": "2021-02-09T09:57:33Z",
+          "packageManager": "maven",
+          "mavenModuleName": {
+            "groupId": "io.netty",
+            "artifactId": "netty-codec-http"
+          }
+        }
+      }
+    ],
+    "recommendations": [
+      {
+        "id": "CVE-2021-21290",
+        "status": "fixed",
+        "package": {
+          "name": "io.quarkus:quarkus-jdbc-postgresql",
+          "version": "1.2.3-redhat-0002"
+        }
+      }
+    ]
+  }
+]
