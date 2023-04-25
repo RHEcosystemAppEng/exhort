@@ -47,8 +47,10 @@ paths:
           description: Successful component analysis report
           content:
             application/json:
-              schema: 
-                type: object
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DependencyReport'
         '422':
           description: Invalid request
           content:
@@ -93,14 +95,9 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  snyk:
-                    type: object
-                    description: Snyk vulnerability report data
-                  redhat:
-                    type: object
-                    description: Trusted Content service response data
+                type: array
+                items:
+                  $ref: '#/components/schemas/DependencyReport'
             text/html:
               schema:
                 type: object
@@ -121,3 +118,55 @@ components:
           type: string
           description: Package version
           example: 5.2.0.Final
+    DependencyReport:
+      type: object
+      properties:
+        ref:
+          $ref: '#/components/schemas/PackageRef'
+        issues:
+          type: array
+          items:
+            $ref: '#/components/schemas/Issue'
+        transitive:
+          type: array
+          items:
+            $ref: '#/components/schemas/TransitiveDependencyReport'
+        recommendations:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/Recommendation'
+    Issue:
+      type: object
+      properties:
+        id:
+          type: string
+        source:
+          type: string
+        cves:
+          type: array
+          items:
+            type: string
+        rawData:
+          type: object
+    TransitiveDependencyReport:
+      type: object
+      properties:
+        ref:
+          $ref: '#/components/schemas/PackageRef'
+        issues:
+          type: array
+          items:
+            $ref: '#/components/schemas/Issue'
+        recommendations:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/Recommendation'
+    Recommendation:
+      type: object
+      properties:
+        issueRef:
+          type: string
+        mavenPackage:
+          $ref: '#/components/schemas/PackageRef'
+        productStatus:
+          type: string
