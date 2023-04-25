@@ -41,7 +41,8 @@ public record GraphRequest(
         List<String> providers,
         Graph<PackageRef, DefaultEdge> graph,
         Map<String, Collection<Issue>> issues,
-        Map<String, Recommendation> recommendations) {
+        Map<String, Recommendation> securityRecommendations,
+        PackageRef recommendation) {
 
     public GraphRequest {
         Objects.requireNonNull(pkgManager);
@@ -63,10 +64,10 @@ public record GraphRequest(
         } else {
             issues = Collections.emptyMap();
         }
-        if (recommendations != null) {
-            recommendations = Collections.unmodifiableMap(recommendations);
+        if (securityRecommendations != null) {
+            securityRecommendations = Collections.unmodifiableMap(securityRecommendations);
         } else {
-            recommendations = Collections.emptyMap();
+            securityRecommendations = Collections.emptyMap();
         }
     }
 
@@ -76,7 +77,8 @@ public record GraphRequest(
         List<String> providers;
         Graph<PackageRef, DefaultEdge> graph;
         Map<String, Collection<Issue>> issues;
-        Map<String, Recommendation> recommendations;
+        Map<String, Recommendation> securityRecommendations;
+        PackageRef recommendation;
 
         public Builder(String pkgManager, List<String> providers) {
             this.pkgManager = pkgManager;
@@ -87,13 +89,14 @@ public record GraphRequest(
             this.pkgManager = copy.pkgManager;
             this.providers = copy.providers;
             this.graph = copy.graph;
+            this.recommendation = copy.recommendation;
 
             if (copy.issues != null) {
                 this.issues = new HashMap<>(copy.issues);
             }
 
-            if (copy.recommendations != null) {
-                this.recommendations = new HashMap<>(copy.recommendations);
+            if (copy.securityRecommendations != null) {
+                this.securityRecommendations = new HashMap<>(copy.securityRecommendations);
             }
 
         }
@@ -108,13 +111,18 @@ public record GraphRequest(
             return this;
         };
 
-        public Builder recommendations(Map<String, Recommendation> recommendations) {
-            this.recommendations = recommendations;
+        public Builder securityRecommendations(Map<String, Recommendation> securityRecommendations) {
+            this.securityRecommendations = securityRecommendations;
             return this;
         }
 
+        public Builder recommendation(PackageRef recommendation) {
+            this.recommendation = recommendation;
+            return this;
+        }
+        
         public GraphRequest build() {
-            return new GraphRequest(pkgManager, providers, graph, issues, recommendations);
+            return new GraphRequest(pkgManager, providers, graph, issues, securityRecommendations, recommendation);
         }
 
     }
