@@ -20,14 +20,17 @@ package com.redhat.ecosystemappeng.crda.integration.report;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.jgrapht.Graph;
+import java.util.stream.Collectors;
+
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.traverse.BreadthFirstIterator;
 
+import com.redhat.ecosystemappeng.crda.integration.GraphUtils;
 import com.redhat.ecosystemappeng.crda.model.DependencyReport;
 import com.redhat.ecosystemappeng.crda.model.GraphRequest;
 import com.redhat.ecosystemappeng.crda.model.Issue;
@@ -41,45 +44,45 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 public class ReportTransformer {
 
     public List<DependencyReport> transform(GraphRequest request) {
-        Graph<PackageRef, DefaultEdge> graph = request.graph();
-        BreadthFirstIterator<PackageRef, DefaultEdge> i = new BreadthFirstIterator<>(graph);
         List<DependencyReport> result = new ArrayList<>();
-        if(!i.hasNext()) {
-            return result;
-        }
-        getNextLevel(graph, i.next()).forEach(d -> {
-            Collection<Issue> issues = request.issues().get(d.name());
-            result.add(new DependencyReport(d, issues, getTransitiveDependenciesReport(d, request),
-                    getRecommendations(issues, request.securityRecommendations()), request.recommendation()));
-        });
-        return result;
-    }
 
-    private List<PackageRef> getNextLevel(Graph<PackageRef, DefaultEdge> graph, PackageRef ref) {
-        List<PackageRef> firstLevel = new ArrayList<>();
-        graph.outgoingEdgesOf(ref).stream().map(e -> graph.getEdgeTarget(e)).forEach(firstLevel::add);
-        return firstLevel;
+        GraphUtils.getFirstLevel(request.graph()).forEach(d -> {
+            Collection<Issue> issues = request.issues().get(d.name());
+            if (issues == null) {
+                issues = Collections.emptyList();
+            }
+            result.add(new DependencyReport(d, issues, getTransitiveDependenciesReport(d, request),
+                    getRecommendations(issues, request.securityRecommendations()),
+                    request.recommendations().get(d.toGav())));
+        });
+        return result.stream()
+                .filter(r -> (r.issues() != null && !r.issues().isEmpty()) || !r.transitive().isEmpty()
+                        || r.recommendation() != null)
+                .collect(Collectors.toList());
     }
 
     private List<TransitiveDependencyReport> getTransitiveDependenciesReport(PackageRef start, GraphRequest request) {
-        List<PackageRef> directDeps = getNextLevel(request.graph(), start);
+        List<PackageRef> directDeps = GraphUtils.getNextLevel(request.graph(), start);
         BreadthFirstIterator<PackageRef, DefaultEdge> i = new BreadthFirstIterator<>(request.graph(), directDeps);
         List<TransitiveDependencyReport> result = new ArrayList<>();
         while (i.hasNext()) {
             PackageRef ref = i.next();
             Collection<Issue> issues = request.issues().get(ref.name());
-            result.add(
-                    new TransitiveDependencyReport(ref, issues, getRecommendations(issues, request.securityRecommendations())));
+            if (issues != null && !issues.isEmpty()) {
+                result.add(
+                        new TransitiveDependencyReport(ref, issues,
+                                getRecommendations(issues, request.securityRecommendations())));
+            }
         }
         return result;
     }
 
     private Map<String, Recommendation> getRecommendations(Collection<Issue> issues,
             Map<String, Recommendation> recommendations) {
-        if (issues == null) {
-            return null;
-        }
         Map<String, Recommendation> result = new HashMap<>();
+        if (issues == null) {
+            return result;
+        }
         issues.stream().map(i -> i.cves()).flatMap(Set::stream).forEach(cve -> {
             Recommendation r = recommendations.get(cve);
             if (r != null) {

@@ -4,16 +4,8 @@
           "name": "io.quarkus:quarkus-hibernate-orm",
           "version": "2.13.5.Final"
       },
-      "issues": null,
+      "issues": [],
       "transitive": [
-          {
-              "ref": {
-                  "name": "io.quarkus:quarkus-core",
-                  "version": "2.13.5.Final"
-              },
-              "issues": null,
-              "securityRecommendations": null
-          },
           {
               "ref": {
                   "name": "com.fasterxml.jackson.core:jackson-databind",
@@ -273,41 +265,9 @@
                       "productStatus": "known_affected"
                   }
               }
-          },
-          {
-              "ref": {
-                  "name": "jakarta.enterprise:jakarta.enterprise.cdi-api",
-                  "version": "2.0.2"
-              },
-              "issues": null,
-              "securityRecommendations": null
-          },
-          {
-              "ref": {
-                  "name": "jakarta.el:jakarta.el-api",
-                  "version": "3.0.3"
-              },
-              "issues": null,
-              "securityRecommendations": null
-          },
-          {
-              "ref": {
-                  "name": "jakarta.interceptor:jakarta.interceptor-api",
-                  "version": "1.2.5"
-              },
-              "issues": null,
-              "securityRecommendations": null
-          },
-          {
-              "ref": {
-                  "name": "io.quarkus:quarkus-narayana-jta",
-                  "version": "2.13.5.Final"
-              },
-              "issues": null,
-              "securityRecommendations": null
           }
       ],
-      "securityRecommendations": null,
+      "securityRecommendations": {},
       "recommendation": null
   },
   {
@@ -315,7 +275,7 @@
           "name": "io.quarkus:quarkus-jdbc-postgresql",
           "version": "2.13.5.Final"
       },
-      "issues": null,
+      "issues": [],
       "transitive": [
           {
               "ref": {
@@ -421,7 +381,7 @@
               }
           }
       ],
-      "securityRecommendations": null,
+      "securityRecommendations": {},
       "recommendation": null
   }
 ]

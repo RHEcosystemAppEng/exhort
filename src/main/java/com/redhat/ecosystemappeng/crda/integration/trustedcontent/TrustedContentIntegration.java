@@ -21,16 +21,56 @@ package com.redhat.ecosystemappeng.crda.integration.trustedcontent;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.camel.Exchange;
+import org.apache.camel.builder.AggregationStrategies;
 import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
+import org.apache.camel.component.jackson.ListJacksonDataFormat;
 
 import com.redhat.ecosystemappeng.crda.integration.Constants;
+import com.redhat.ecosystemappeng.crda.integration.ProviderAggregationStrategy;
+import com.redhat.ecosystemappeng.crda.model.trustedcontent.MavenPackage;
+import com.redhat.ecosystemappeng.crda.model.trustedcontent.VexResult;
 
 public class TrustedContentIntegration extends EndpointRouteBuilder {
 
     @Override
     public void configure() {
-        from(direct("trustedContent"))
-                .bean(TrustedContentBodyMapper.class)
+
+        from(direct("recommendAllTrustedContent"))
+            .multicast(AggregationStrategies.bean(ProviderAggregationStrategy.class, "aggregate"))
+                .parallelProcessing()
+                .enrich(direct("trustedContentVex"),
+                        AggregationStrategies.bean(TrustedContentBodyMapper.class, "filterRecommendations"))
+                .enrich(direct("trustedContentGav"),
+                        AggregationStrategies.bean(TrustedContentBodyMapper.class, "addRecommendations"));
+        
+        from(direct("recommendVexContent"))
+            .enrich(direct("trustedContentVex"),
+                AggregationStrategies.bean(TrustedContentBodyMapper.class, "filterRecommendations"));
+
+        from(direct("trustedContentVex"))
+                .removeHeader(Exchange.HTTP_PATH)
+                .removeHeader(Exchange.HTTP_QUERY)
+                .removeHeader(Exchange.HTTP_URI)
+                .setHeader(Exchange.HTTP_PATH, constant(Constants.TRUSTED_CONTENT_VEX_PATH))
+                .setHeader(Exchange.HTTP_METHOD, constant("POST"))
+                .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.APPLICATION_JSON))
+                .setHeader("Accept", constant(MediaType.APPLICATION_JSON))
+                .bean(TrustedContentBodyMapper.class, "buildVexRequest")
+                .enrich(direct("vexRequest"),
+                        AggregationStrategies.bean(TrustedContentBodyMapper.class, "createRecommendations"));
+
+        from(direct("vexRequest"))
+                .marshal().json()
+                .to(vertxHttp("{{api.trustedContent.vex.host}}"))
+                .unmarshal(new ListJacksonDataFormat(VexResult.class));
+
+        from(direct("trustedContentGav"))
+                .bean(TrustedContentBodyMapper.class, "buildGavRequest")
+                .enrich(direct("gavRequest"),
+                        AggregationStrategies.bean(TrustedContentBodyMapper.class, "createGavRecommendations"));
+
+        from(direct("gavRequest"))
+                .marshal().json()
                 .removeHeader(Exchange.HTTP_PATH)
                 .removeHeader(Exchange.HTTP_QUERY)
                 .removeHeader(Exchange.HTTP_URI)
@@ -39,6 +79,8 @@ public class TrustedContentIntegration extends EndpointRouteBuilder {
                 .setHeader(Exchange.HTTP_METHOD, constant("POST"))
                 .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.APPLICATION_JSON))
                 .setHeader("Accept", constant(MediaType.APPLICATION_JSON))
-                .to(vertxHttp("{{api.trustedContent.gav.host}}"));
+                .to(vertxHttp("{{api.trustedContent.gav.host}}"))
+                .unmarshal(new ListJacksonDataFormat(MavenPackage.class));
+
     }
 }

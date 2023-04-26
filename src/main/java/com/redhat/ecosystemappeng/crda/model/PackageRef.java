@@ -25,8 +25,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @RegisterForReflection
-public record PackageRef (String name, String version) {
- 
+public record PackageRef(String name, String version) {
+
     public PackageRef {
         Objects.requireNonNull(name);
         Objects.requireNonNull(version);
@@ -50,7 +50,7 @@ public record PackageRef (String name, String version) {
         if (!(other instanceof PackageRef)) {
             return false;
         }
-        return Objects.equals(name, ((PackageRef)other).name);
+        return Objects.equals(name, ((PackageRef) other).name);
     }
 
     public static PackageRef parse(String gav) {
@@ -63,5 +63,9 @@ public record PackageRef (String name, String version) {
             return new PackageRef(name, parts[3]);
         }
         return new PackageRef(name, parts[4]);
+    }
+
+    public String toGav() {
+        return String.format("%s:%s", name, version);
     }
 }

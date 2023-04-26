@@ -1,0 +1,9 @@
+[
+  null,
+  {
+    "artifactId": "quarkus-jdbc-postgresql",
+    "groupId": "io.quarkus",
+    "version": "2.13.5.redhat-00001"
+  },
+  null
+]
