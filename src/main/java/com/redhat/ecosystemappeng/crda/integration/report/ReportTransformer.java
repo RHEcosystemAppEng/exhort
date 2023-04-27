@@ -50,7 +50,7 @@ public class ReportTransformer {
         getNextLevel(graph, i.next()).forEach(d -> {
             Collection<Issue> issues = request.issues().get(d.name());
             result.add(new DependencyReport(d, issues, getTransitiveDependenciesReport(d, request),
-                    getRecommendations(issues, request.recommendations())));
+                    getRecommendations(issues, request.securityRecommendations()), request.recommendation()));
         });
         return result;
     }
@@ -69,7 +69,7 @@ public class ReportTransformer {
             PackageRef ref = i.next();
             Collection<Issue> issues = request.issues().get(ref.name());
             result.add(
-                    new TransitiveDependencyReport(ref, issues, getRecommendations(issues, request.recommendations())));
+                    new TransitiveDependencyReport(ref, issues, getRecommendations(issues, request.securityRecommendations())));
         }
         return result;
     }

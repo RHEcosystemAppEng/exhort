@@ -27,6 +27,6 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 public record TransitiveDependencyReport(
         PackageRef ref,
         Collection<Issue> issues,
-        Map<String, Recommendation> recommendations) {
+        Map<String, Recommendation> securityRecommendations) {
 
 }

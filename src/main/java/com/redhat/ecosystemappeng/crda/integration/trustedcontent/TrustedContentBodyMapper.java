@@ -71,7 +71,7 @@ public class TrustedContentBodyMapper {
         if (recommendations.isEmpty()) {
             return req;
         }
-        return new GraphRequest.Builder(req).recommendations(recommendations).build();
+        return new GraphRequest.Builder(req).securityRecommendations(recommendations).build();
 
     }
 

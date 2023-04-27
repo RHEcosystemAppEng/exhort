@@ -47,8 +47,10 @@ paths:
           description: Successful component analysis report
           content:
             application/json:
-              schema: 
-                type: object
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DependencyReport'
         '422':
           description: Invalid request
           content:
@@ -93,14 +95,9 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  snyk:
-                    type: object
-                    description: Snyk vulnerability report data
-                  redhat:
-                    type: object
-                    description: Trusted Content service response data
+                type: array
+                items:
+                  $ref: '#/components/schemas/DependencyReport'
             text/html:
               schema:
                 type: object
@@ -110,6 +107,11 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/PackageRef'
+      example:
+        - name: io.quarkus:quarkus-jdbc-postgresql
+          version: 2.13.5.Final
+        - name: io.quarkus:quarkus-hibernate-orm
+          version: 2.13.5.Final
     PackageRef:
       type: object
       properties:
@@ -121,3 +123,111 @@ components:
           type: string
           description: Package version
           example: 5.2.0.Final
+      example:
+        name: io.quarkus:quarkus-jdbc-postgresql
+        version: 2.13.5.Final
+    DependencyReport:
+      type: object
+      properties:
+        ref:
+          $ref: '#/components/schemas/PackageRef'
+        issues:
+          type: array
+          items:
+            $ref: '#/components/schemas/Issue'
+        transitive:
+          type: array
+          items:
+            $ref: '#/components/schemas/TransitiveDependencyReport'
+        recommendation:
+          description: Trusted Content recommendation that is not related to any security vulnerability
+          $ref: '#/components/schemas/PackageRef'
+        securityRecommendations:
+          description: Trusted Content recommendations related to identified security vulnerabilities
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/Recommendation'
+      example:
+        ref:
+          name: io.quarkus:quarkus-jdbc-postgresql
+          version: 2.13.5.Final
+        issues:
+          - id: SNYK-JAVA-ORGPOSTGRESQL-3146847
+            source: snyk
+            cves:
+             - CVE-2022-41946
+            rawData: {}
+        transitive:
+          - ref:
+              name: org.postgresql:postgresql
+              version: 42.5.0
+            issues:
+              - id: SNYK-JAVA-ORGPOSTGRESQL-3146847
+                source: snyk
+                cves:
+                - CVE-2022-41946
+                rawData: {}
+        securityRecommendations:
+          CVE-2022-41946:
+            issueRef: CVE-2022-41946
+            mavenPackage:
+              name: com.fasterxml.jackson.core:jackson-databind
+              version: 2.13.1.Final-redhat-00002
+            productStatus: known_not_affected
+    Issue:
+      type: object
+      properties:
+        id:
+          type: string
+        source:
+          type: string
+        cves:
+          type: array
+          items:
+            type: string
+        rawData:
+          type: object
+      example:
+        id: SNYK-JAVA-ORGPOSTGRESQL-3146847
+        source: snyk
+        cves:
+          - CVE-2022-41946
+        rawData: {}
+    TransitiveDependencyReport:
+      type: object
+      properties:
+        ref:
+          $ref: '#/components/schemas/PackageRef'
+        issues:
+          type: array
+          items:
+            $ref: '#/components/schemas/Issue'
+        securityRecommendations:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/Recommendation'
+      example:
+        ref:
+          name: org.postgresql:postgresql
+          version: 42.5.0
+        issues:
+          - id: SNYK-JAVA-ORGPOSTGRESQL-3146847
+            source: snyk
+            cves:
+             - CVE-2022-41946
+            rawData: {}
+    Recommendation:
+      type: object
+      properties:
+        issueRef:
+          type: string
+        mavenPackage:
+          $ref: '#/components/schemas/PackageRef'
+        productStatus:
+          type: string
+      example:
+        issueRef: CVE-2022-41946
+        mavenPackage:
+          name: io.quarkus:quarkus-jdbc-postgresql
+          version: 2.13.7.Final-redhat-00003
+        productStatus: fixed

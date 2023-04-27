@@ -38,9 +38,9 @@ public class ProviderAggregationStrategy {
         Map<String, Collection<Issue>> issues = new HashMap<>(oldRequest.issues());
         issues.putAll(newRequest.issues());
 
-        Map<String, Recommendation> recommendations = new HashMap<>(oldRequest.recommendations());
-        recommendations.putAll(newRequest.recommendations());
-        return new GraphRequest.Builder(oldRequest).issues(issues).recommendations(recommendations).build();
+        Map<String, Recommendation> recommendations = new HashMap<>(oldRequest.securityRecommendations());
+        recommendations.putAll(newRequest.securityRecommendations());
+        return new GraphRequest.Builder(oldRequest).issues(issues).securityRecommendations(recommendations).build();
     }
 
 }

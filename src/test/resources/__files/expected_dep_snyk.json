@@ -5,6 +5,7 @@
             "version": "2.13.5.Final"
         },
         "issues": null,
+        "recommendation": null,
         "transitive": [
             {
                 "ref": {
@@ -12,7 +13,7 @@
                     "version": "2.13.5.Final"
                 },
                 "issues": null,
-                "recommendations": null
+                "securityRecommendations": null
             },
             {
                 "ref": {
@@ -255,7 +256,7 @@
                         }
                     }
                 ],
-                "recommendations": {
+                "securityRecommendations": {
                     "CVE-2022-42004": {
                         "issueRef": "CVE-2022-42004",
                         "mavenPackage": {
@@ -280,7 +281,7 @@
                     "version": "2.0.2"
                 },
                 "issues": null,
-                "recommendations": null
+                "securityRecommendations": null
             },
             {
                 "ref": {
@@ -288,7 +289,7 @@
                     "version": "3.0.3"
                 },
                 "issues": null,
-                "recommendations": null
+                "securityRecommendations": null
             },
             {
                 "ref": {
@@ -296,7 +297,7 @@
                     "version": "1.2.5"
                 },
                 "issues": null,
-                "recommendations": null
+                "securityRecommendations": null
             },
             {
                 "ref": {
@@ -304,10 +305,10 @@
                     "version": "2.13.5.Final"
                 },
                 "issues": null,
-                "recommendations": null
+                "securityRecommendations": null
             }
         ],
-        "recommendations": null
+        "securityRecommendations": null
     },
     {
         "ref": {
@@ -315,6 +316,7 @@
             "version": "2.13.5.Final"
         },
         "issues": null,
+        "recommendation": null,
         "transitive": [
             {
                 "ref": {
@@ -408,7 +410,7 @@
                         }
                     }
                 ],
-                "recommendations": {
+                "securityRecommendations": {
                     "CVE-2022-41946": {
                         "issueRef": "CVE-2022-41946",
                         "mavenPackage": {
@@ -420,6 +422,6 @@
                 }
             }
         ],
-        "recommendations": null
+        "securityRecommendations": null
     }
 ]

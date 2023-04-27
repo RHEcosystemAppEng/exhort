@@ -240,10 +240,11 @@
                 }
             }
         ],
+        "recommendation": null,
         "transitive": [
             
         ],
-        "recommendations": {
+        "securityRecommendations": {
             "CVE-2022-42004": {
                 "issueRef": "CVE-2022-42004",
                 "mavenPackage": {
@@ -268,9 +269,10 @@
             "version": "2.13.5"
         },
         "issues": null,
+        "recommendation": null,
         "transitive": [
             
         ],
-        "recommendations": null
+        "securityRecommendations": null
     }
 ]

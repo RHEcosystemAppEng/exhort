@@ -28,6 +28,7 @@ public record DependencyReport(
         PackageRef ref,
         Collection<Issue> issues,
         Collection<TransitiveDependencyReport> transitive,
-        Map<String, Recommendation> recommendations) {
+        Map<String, Recommendation> securityRecommendations,
+        PackageRef recommendation) {
 
 }
