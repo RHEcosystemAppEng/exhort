@@ -24,6 +24,7 @@ import java.util.Map;
 
 import com.redhat.ecosystemappeng.crda.model.GraphRequest;
 import com.redhat.ecosystemappeng.crda.model.Issue;
+import com.redhat.ecosystemappeng.crda.model.PackageRef;
 import com.redhat.ecosystemappeng.crda.model.Recommendation;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
@@ -38,9 +39,17 @@ public class ProviderAggregationStrategy {
         Map<String, Collection<Issue>> issues = new HashMap<>(oldRequest.issues());
         issues.putAll(newRequest.issues());
 
-        Map<String, Recommendation> recommendations = new HashMap<>(oldRequest.securityRecommendations());
-        recommendations.putAll(newRequest.securityRecommendations());
-        return new GraphRequest.Builder(oldRequest).issues(issues).securityRecommendations(recommendations).build();
+        Map<String, Recommendation> securityRecommendations = new HashMap<>(oldRequest.securityRecommendations());
+        securityRecommendations.putAll(newRequest.securityRecommendations());
+
+        Map<String, PackageRef> recommendations = new HashMap<>(oldRequest.recommendations());
+        recommendations.putAll(newRequest.recommendations());
+
+        return new GraphRequest.Builder(oldRequest)
+                .issues(issues)
+                .securityRecommendations(securityRecommendations)
+                .recommendations(recommendations)
+                .build();
     }
 
 }

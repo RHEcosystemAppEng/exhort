@@ -74,6 +74,7 @@ public class ComponentAnalysisTest extends AbstractAnalysisTest {
     @Test
     public void testComponentAnalysisWithSnyk() {
         stubSnykRequest(null);
+        stubTCGavRequest();
         stubTCVexRequest();
 
         List<PackageRef> pkgs = List.of(
@@ -93,10 +94,10 @@ public class ComponentAnalysisTest extends AbstractAnalysisTest {
             .extract().body().asPrettyString();
 
         assertJson("component_snyk.json", body);
-        verifyNoInteractionsWithTCGav();
         verifyNoInteractionsWithTidelift();
         verifySnykRequest(null);
         verifyTCVexRequest();
+        verifyTCGavRequest();
     }
 
     @Test
@@ -129,6 +130,7 @@ public class ComponentAnalysisTest extends AbstractAnalysisTest {
         String token = "client-token";
         stubSnykRequest(token);
         stubTCVexRequest();
+        stubTCGavRequest();
        
         List<PackageRef> pkgs = List.of(
             new PackageRef("com.fasterxml.jackson.core:jackson-databind", "2.13.1"),
@@ -151,10 +153,9 @@ public class ComponentAnalysisTest extends AbstractAnalysisTest {
         
         verifySnykRequest(token);
         verifyTCVexRequest();
+        verifyTCGavRequest();
         
-        verifyNoInteractionsWithTCGav();
         verifyNoInteractionsWithTidelift();
-        verifyNoInteractionsWithTCGav();
     }
 
 

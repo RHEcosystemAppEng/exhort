@@ -31,7 +31,7 @@ Currently there are 2 available providers.
 
 You can disable a given provider for the dependency graph analysis by using `api.<provider>.disabled=true` property at startup.
 
-Providers should be defined as a comma separated list in the `providers` Query Parameter. e.g. `/component-analysis/maven?providers=snyk`
+Providers should be defined as a multi-valued list in the `providers` Query Parameter. e.g. `/component-analysis/maven?providers=snyk&providers=tidelift`
 
 ## Package Managers
 

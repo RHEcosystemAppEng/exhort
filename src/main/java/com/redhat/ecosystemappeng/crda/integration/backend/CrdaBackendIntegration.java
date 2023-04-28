@@ -74,7 +74,8 @@ public class CrdaBackendIntegration extends EndpointRouteBuilder {
                 .unmarshal(new ListJacksonDataFormat(PackageRef.class))
                 .setProperty(Constants.PROVIDERS_PARAM, method(vulnerabilityProvider, "getProvidersFromQueryParam"))
                 .setBody().method(GraphUtils.class, "fromPackages")
-                .to(direct("doAnalysis"))
+                .to(direct("findVulnerabilities"))
+                .to(direct("recommendAllTrustedContent"))
                 .to(direct("report"));
 
 
@@ -82,7 +83,8 @@ public class CrdaBackendIntegration extends EndpointRouteBuilder {
             .setProperty(Constants.PROVIDERS_PARAM, method(vulnerabilityProvider, "getProvidersFromQueryParam"))
             .setProperty(REQUEST_CONTENT_PROPERTY, method(BackendUtils.class, "getResponseMediaType"))
             .bean(GraphUtils.class, "fromDotFile")
-            .to(direct("doAnalysis"))
+            .to(direct("findVulnerabilities"))
+            .to(direct("recommendVexContent"))
             .to(direct("report"));
 
         from(direct("report"))
@@ -96,14 +98,12 @@ public class CrdaBackendIntegration extends EndpointRouteBuilder {
                     .marshal(new ListJacksonDataFormat(DependencyReport.class))
             .end();
 
-        from(direct("doAnalysis"))
-                .multicast(AggregationStrategies.bean(ProviderAggregationStrategy.class, "aggregate"))
-                    .parallelProcessing()
-                        .recipientList(method(vulnerabilityProvider, "getProviderEndpoints"))
-                    .end()
+        from(direct("findVulnerabilities"))
+            .multicast(AggregationStrategies.bean(ProviderAggregationStrategy.class, "aggregate"))
+                .parallelProcessing()
+                    .recipientList(method(vulnerabilityProvider, "getProviderEndpoints"))
                 .end()
-                .to(direct("recommendTrustedContent"));
-
+            .end();   
     }
 
 }

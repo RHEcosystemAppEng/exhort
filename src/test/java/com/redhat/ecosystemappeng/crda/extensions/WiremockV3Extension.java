@@ -42,7 +42,7 @@ public class WiremockV3Extension implements QuarkusTestResourceLifecycleManager 
                 "api.snyk.token", SNYK_TOKEN,
                 "api.tidelift.host", server.baseUrl(),
                 "api.tidelift.token", TIDELIFT_TOKEN,
-                "api.trustedContent.host", server.baseUrl(),
+                "api.trustedContent.gav.host", server.baseUrl(),
                 "api.trustedContent.vex.host", server.baseUrl());
     }
 

@@ -24,12 +24,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.apache.camel.Body;
+
+import com.redhat.ecosystemappeng.crda.integration.GraphUtils;
 import com.redhat.ecosystemappeng.crda.model.GraphRequest;
 import com.redhat.ecosystemappeng.crda.model.PackageRef;
 import com.redhat.ecosystemappeng.crda.model.Recommendation;
+import com.redhat.ecosystemappeng.crda.model.trustedcontent.MavenPackage;
 import com.redhat.ecosystemappeng.crda.model.trustedcontent.VexRequest;
 import com.redhat.ecosystemappeng.crda.model.trustedcontent.VexResult;
 
@@ -64,15 +68,48 @@ public class TrustedContentBodyMapper {
     }
 
     public GraphRequest filterRecommendations(GraphRequest req, Map<String, Recommendation> recommendations) {
-        recommendations.entrySet().stream()
-                .filter(Objects::nonNull)
-                .filter(r -> req.graph().containsVertex(r.getValue().mavenPackage()));
-
-        if (recommendations.isEmpty()) {
+        if (recommendations == null || recommendations.isEmpty()) {
             return req;
         }
-        return new GraphRequest.Builder(req).securityRecommendations(recommendations).build();
+        Map<String, Recommendation> merged = new HashMap<>();
+        if (req.securityRecommendations() != null) {
+            merged.putAll(req.securityRecommendations());
+        }
+        recommendations.entrySet().stream()
+                .filter(Objects::nonNull)
+                .filter(r -> req.graph().containsVertex(r.getValue().mavenPackage()))
+                .forEach(e -> merged.put(e.getKey(), e.getValue()));
+        return new GraphRequest.Builder(req).securityRecommendations(merged).build();
+    }
 
+    public List<String> buildGavRequest(@Body GraphRequest request) {
+        return GraphUtils.getFirstLevel(request.graph()).stream().map(PackageRef::toGav)
+                .collect(Collectors.toUnmodifiableList());
+    }
+
+    public GraphRequest addRecommendations(GraphRequest req, Map<String, PackageRef> recommendations) {
+        if (recommendations == null || recommendations.isEmpty()) {
+            return req;
+        }
+
+        Map<String, PackageRef> merged = new HashMap<>(recommendations);
+        if (req.recommendations() != null) {
+            merged.putAll(req.recommendations());
+        }
+        return new GraphRequest.Builder(req).recommendations(merged).build();
+    }
+
+    public Map<String, PackageRef> createGavRecommendations(List<String> gavRequest,
+            List<MavenPackage> recommendations) {
+        Map<String, PackageRef> result = new HashMap<>();
+        for (int i = 0; i < gavRequest.size(); i++) {
+            MavenPackage pkg = recommendations.get(i);
+            if (pkg != null) {
+                String pkgName = String.format("%s:%s", pkg.groupId(), pkg.artifactId());
+                result.put(gavRequest.get(i), new PackageRef(pkgName, pkg.version()));
+            }
+        }
+        return result;
     }
 
 }

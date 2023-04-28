@@ -268,11 +268,14 @@
             "name": "io.quarkus:quarkus-jdbc-postgresql",
             "version": "2.13.5"
         },
-        "issues": null,
-        "recommendation": null,
+        "issues": [],
         "transitive": [
             
         ],
-        "securityRecommendations": null
+        "securityRecommendations": {},
+        "recommendation": {
+            "name": "io.quarkus:quarkus-jdbc-postgresql",
+            "version": "2.13.5.redhat-00001"
+        }
     }
 ]

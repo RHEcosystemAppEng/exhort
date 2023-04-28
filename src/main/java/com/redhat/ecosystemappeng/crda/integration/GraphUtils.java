@@ -19,6 +19,8 @@
 package com.redhat.ecosystemappeng.crda.integration;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 
@@ -29,6 +31,7 @@ import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.builder.GraphBuilder;
 import org.jgrapht.graph.builder.GraphTypeBuilder;
+import org.jgrapht.traverse.BreadthFirstIterator;
 
 import com.redhat.ecosystemappeng.crda.model.GraphRequest;
 import com.redhat.ecosystemappeng.crda.model.PackageRef;
@@ -76,6 +79,21 @@ public class GraphUtils {
             }
         }
         return new GraphRequest.Builder(pkgManager, providers).graph(builder.buildAsUnmodifiable()).build();
+    }
+
+    public static List<PackageRef> getFirstLevel(Graph<PackageRef, DefaultEdge> graph) {
+        BreadthFirstIterator<PackageRef, DefaultEdge> i = new BreadthFirstIterator<>(graph);
+        if(!i.hasNext()) {
+            return Collections.emptyList();
+        }
+        PackageRef start = i.next();
+        return getNextLevel(graph, start);
+    }
+
+    public static List<PackageRef> getNextLevel(Graph<PackageRef, DefaultEdge> graph, PackageRef ref) {
+        List<PackageRef> firstLevel = new ArrayList<>();
+        graph.outgoingEdgesOf(ref).stream().map(e -> graph.getEdgeTarget(e)).forEach(firstLevel::add);
+        return firstLevel;
     }
 
 }

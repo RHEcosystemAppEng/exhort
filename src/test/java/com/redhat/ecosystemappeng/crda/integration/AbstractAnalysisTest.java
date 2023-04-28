@@ -154,7 +154,7 @@ public abstract class AbstractAnalysisTest {
                     .withStatus(200)
                     .withHeader(Exchange.CONTENT_ENCODING, "identity")
                     .withHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                    .withBodyFile("trustedContent_report.json")));
+                    .withBodyFile("trustedContent_gav_report.json")));
     }
 
     protected void verifyTCGavRequest() {
