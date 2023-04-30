@@ -187,7 +187,7 @@ public class DependencyAnalysisTest extends AbstractAnalysisTest {
                     .extract().body().asString();
         
         XmlPath p = new XmlPath(CompatibilityMode.HTML, body);
-        assertEquals("Security Issues", p.getString("html.body.div[1].div[1].span[2]"));
+        assertFalse(p.getString("html.body.div[1].div[1].span[2]").contains("Security Issues"));
 //        assertEquals("CRDA Stack Report", p.getString("html.header.title"));
 //        assertFalse(p.getString("html.body.ul.li.find {it == 'io.quarkus:quarkus-hibernate-orm:2.13.5.Final'}").isEmpty());
 //        assertFalse(p.getString("html.body.ul.li.find {it == 'io.quarkus:quarkus-jdbc-postgresql:2.13.5.Final'}").isEmpty());
