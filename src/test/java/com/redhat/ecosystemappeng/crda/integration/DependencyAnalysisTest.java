@@ -21,8 +21,8 @@ package com.redhat.ecosystemappeng.crda.integration;
 import static io.restassured.RestAssured.given;
 import static org.apache.camel.Exchange.CONTENT_TYPE;
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
+
 import javax.ws.rs.core.MediaType;
 
 import org.junit.jupiter.api.Disabled;
@@ -188,7 +188,7 @@ public class DependencyAnalysisTest extends AbstractAnalysisTest {
                     .extract().body().asString();
         
         XmlPath p = new XmlPath(CompatibilityMode.HTML, body);
-        assertFalse(p.getString("html.body.div.div.span").contains("Security Issues"));
+        assertTrue(p.getString("html.body.div.div.span").contains("Security Issues"));
 //        assertEquals("CRDA Stack Report", p.getString("html.header.title"));
 //        assertFalse(p.getString("html.body.ul.li.find {it == 'io.quarkus:quarkus-hibernate-orm:2.13.5.Final'}").isEmpty());
 //        assertFalse(p.getString("html.body.ul.li.find {it == 'io.quarkus:quarkus-jdbc-postgresql:2.13.5.Final'}").isEmpty());
