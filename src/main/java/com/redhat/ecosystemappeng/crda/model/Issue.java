@@ -27,13 +27,6 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 @RegisterForReflection
 public record Issue(String id, String source, Set<String> cves, JsonNode rawData) {
 
-    public Issue(String id, String source, Set<String> cves, JsonNode rawData) {
-        this.id = id;
-        this.source = source;
-        this.cves = cves;
-        this.rawData = rawData;
-    }
-
     public Issue() {
         this(null, null, null,null);
 

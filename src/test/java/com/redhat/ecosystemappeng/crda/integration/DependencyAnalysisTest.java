@@ -31,7 +31,6 @@ import org.junit.jupiter.api.Test;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.path.xml.XmlPath;
 import io.restassured.path.xml.XmlPath.CompatibilityMode;
-import org.junit.platform.commons.logging.Logger;
 
 @QuarkusTest
 public class DependencyAnalysisTest extends AbstractAnalysisTest {
@@ -42,8 +41,9 @@ public class DependencyAnalysisTest extends AbstractAnalysisTest {
             .header(CONTENT_TYPE, Constants.TEXT_VND_GRAPHVIZ)
             .queryParam(Constants.PROVIDERS_PARAM, "unknown")
             .body(loadDependenciesFile())
+            .pathParam("pkgManager", Constants.MAVEN_PKG_MANAGER)
         .when()
-            .post("/api/v3/dependency-analysis/{pkgManager}", Constants.MAVEN_PKG_MANAGER)
+            .post("/api/v3/dependency-analysis/{pkgManager}")
         .then()
             .assertThat()
                 .statusCode(422)
@@ -58,9 +58,10 @@ public class DependencyAnalysisTest extends AbstractAnalysisTest {
         given()
             .header(CONTENT_TYPE, Constants.TEXT_VND_GRAPHVIZ)
             .queryParam(Constants.PROVIDERS_PARAM, Constants.SNYK_PROVIDER)
+            .pathParam("pkgManager", "unknown")
             .body(loadDependenciesFile())
         .when()
-            .post("/api/v3/dependency-analysis/{pkgManager}", "unknown")
+            .post("/api/v3/dependency-analysis/{pkgManager}")
         .then()
             .assertThat()
                 .statusCode(422)
@@ -79,9 +80,10 @@ public class DependencyAnalysisTest extends AbstractAnalysisTest {
             .header(CONTENT_TYPE, Constants.TEXT_VND_GRAPHVIZ)
             .header("Accept", MediaType.APPLICATION_JSON)
             .queryParam(Constants.PROVIDERS_PARAM, Constants.SNYK_PROVIDER)
+            .pathParam("pkgManager", Constants.MAVEN_PKG_MANAGER)
             .body(loadDependenciesFile())
         .when()
-            .post("/api/v3/dependency-analysis/{pkgManager}", Constants.MAVEN_PKG_MANAGER)
+            .post("/api/v3/dependency-analysis/{pkgManager}")
         .then()
             .assertThat()
                 .statusCode(200)
@@ -103,9 +105,10 @@ public class DependencyAnalysisTest extends AbstractAnalysisTest {
         String body = given()
             .header(CONTENT_TYPE, Constants.TEXT_VND_GRAPHVIZ)
             .queryParam(Constants.PROVIDERS_PARAM, Constants.TIDELIFT_PROVIDER)
+            .pathParam("pkgManager", Constants.MAVEN_PKG_MANAGER)
             .body(loadDependenciesFile())
         .when()
-            .post("/api/v3/dependency-analysis/{pkgManager}", Constants.MAVEN_PKG_MANAGER)
+            .post("/api/v3/dependency-analysis/{pkgManager}")
         .then()
             .assertThat()
                 .statusCode(200)
@@ -126,10 +129,11 @@ public class DependencyAnalysisTest extends AbstractAnalysisTest {
 
         String body = given()
                 .header(CONTENT_TYPE, Constants.TEXT_VND_GRAPHVIZ)
-                .body(loadDependenciesFile())
+                .pathParam("pkgManager", Constants.MAVEN_PKG_MANAGER)
                 .header("Accept", MediaType.APPLICATION_JSON)
+                .body(loadDependenciesFile())
             .when()
-                .post("/api/v3/dependency-analysis/{pkgManager}", Constants.MAVEN_PKG_MANAGER)
+                .post("/api/v3/dependency-analysis/{pkgManager}")
             .then()
                 .assertThat()
                     .statusCode(200)
@@ -156,9 +160,10 @@ public class DependencyAnalysisTest extends AbstractAnalysisTest {
                 .header("Accept", MediaType.APPLICATION_JSON)
                 .header(Constants.TIDELIFT_TOKEN_HEADER, tideliftToken)
                 .header(Constants.SNYK_TOKEN_HEADER, snykToken)
+                .pathParam("pkgManager", Constants.MAVEN_PKG_MANAGER)
                 .body(loadDependenciesFile())
             .when()
-                .post("/api/v3/dependency-analysis/{pkgManager}", Constants.MAVEN_PKG_MANAGER)
+                .post("/api/v3/dependency-analysis/{pkgManager}")
             .then()
                 .assertThat()
                     .statusCode(200)
@@ -177,21 +182,22 @@ public class DependencyAnalysisTest extends AbstractAnalysisTest {
         stubTCVexRequest();
         stubSnykRequest(null);
 
-        String body = given().header(CONTENT_TYPE, Constants.TEXT_VND_GRAPHVIZ).body(loadDependenciesFile())
+        String body = given()
+            .body(loadDependenciesFile())
+            .header(CONTENT_TYPE, Constants.TEXT_VND_GRAPHVIZ)
             .header("Accept", MediaType.TEXT_HTML)
+            .pathParam("pkgManager", Constants.MAVEN_PKG_MANAGER)
             .when()
-                .post("/api/v3/dependency-analysis/{pkgManager}", Constants.MAVEN_PKG_MANAGER)
+                .post("/api/v3/dependency-analysis/{pkgManager}")
             .then()
                 .assertThat()
                     .statusCode(200)
                     .contentType(MediaType.TEXT_HTML)
                     .extract().body().asString();
         
-//        XmlPath p = new XmlPath(CompatibilityMode.HTML, body);
-//        assertTrue(p.getString("html.body.div.div.span").contains("Security Issues"));
-//        assertEquals("CRDA Stack Report", p.getString("html.header.title"));
-//        assertFalse(p.getString("html.body.ul.li.find {it == 'io.quarkus:quarkus-hibernate-orm:2.13.5.Final'}").isEmpty());
-//        assertFalse(p.getString("html.body.ul.li.find {it == 'io.quarkus:quarkus-jdbc-postgresql:2.13.5.Final'}").isEmpty());
+        XmlPath p = new XmlPath(CompatibilityMode.HTML, body);
+        assertEquals("CRDA Stack Analysis", p.getString("html.head.title"));
+        //TODO: Add more validations
         
         verifySnykRequest(null);
         verifyTCVexRequest();
@@ -205,8 +211,9 @@ public class DependencyAnalysisTest extends AbstractAnalysisTest {
             .header(CONTENT_TYPE, Constants.TEXT_VND_GRAPHVIZ)
             .body(loadDependenciesFile())
             .header("Accept", MediaType.APPLICATION_XML)
+            .pathParam("pkgManager", Constants.MAVEN_PKG_MANAGER)
             .when()
-                .post("/api/v3/dependency-analysis/{pkgManager}", Constants.MAVEN_PKG_MANAGER)
+                .post("/api/v3/dependency-analysis/{pkgManager}")
             .then()
                 .assertThat()
                     .statusCode(415)

@@ -4,13 +4,13 @@ import com.redhat.ecosystemappeng.crda.model.DependencyReport;
 import com.redhat.ecosystemappeng.crda.model.Issue;
 import com.redhat.ecosystemappeng.crda.model.Recommendation;
 import com.redhat.ecosystemappeng.crda.model.TransitiveDependencyReport;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import java.util.Map;
 
+@RegisterForReflection
 public class DependencyReportWrapper {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DependencyReportWrapper.class);
 
     private DependencyReport dependencyReport;
 
@@ -25,7 +25,8 @@ public class DependencyReportWrapper {
     public int countDirectVulnerabilities() {
         if (dependencyReport.issues() != null) {
             return dependencyReport.issues().size();
-        } else return 0;
+        }
+        return 0;
     }
 
     public int countTransitiveVulnerabilities() {
@@ -53,7 +54,8 @@ public class DependencyReportWrapper {
                 if (highestVulIssueData.rawData() == null) {
                     highestVulIssueData = item;
                 }
-                if (item.rawData().get("cvssScore").asDouble() > highestVulIssueData.rawData().get("cvssScore").asDouble()) {
+                if (item.rawData().get("cvssScore").asDouble() > highestVulIssueData.rawData().get("cvssScore")
+                        .asDouble()) {
                     highestVulIssueData = item;
                 }
             }
@@ -101,7 +103,7 @@ public class DependencyReportWrapper {
         String link = pkgName;
         link = link.replace(".", "/");
         link = link.replace(":", "/");
-        link  = link + "/" + version;
+        link = link + "/" + version;
         return link;
     }
 

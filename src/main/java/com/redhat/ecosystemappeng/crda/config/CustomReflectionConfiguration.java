@@ -25,9 +25,17 @@ import javax.ws.rs.core.Response;
 import org.apache.camel.http.base.HttpOperationFailedException;
 import org.jboss.resteasy.reactive.common.jaxrs.ResponseImpl;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
-@RegisterForReflection(targets = { HttpOperationFailedException.class, ClientErrorException.class, WebApplicationException.class, Response.class, ResponseImpl.class })
+@RegisterForReflection(targets = {
+        HttpOperationFailedException.class,
+        ClientErrorException.class,
+        WebApplicationException.class,
+        Response.class,
+        ResponseImpl.class,
+        JsonNode.class })
 public class CustomReflectionConfiguration {
 
 }
