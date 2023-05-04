@@ -22,9 +22,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.redhat.ecosystemappeng.crda.model.DependencyReport;
 import io.quarkus.runtime.annotations.RegisterForReflection;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,7 +32,6 @@ import java.util.Map;
 @RegisterForReflection
 public class ReportTemplate {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ReportTemplate.class);
     public Map<String, Object> setVariables(List<DependencyReport> report) throws JsonMappingException, JsonProcessingException, IOException {
 
         Map<String, Object> reportMap = new HashMap<>();

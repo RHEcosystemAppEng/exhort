@@ -30,12 +30,15 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
+
 import javax.ws.rs.core.MediaType;
 
 import org.apache.camel.Exchange;
 import org.junit.jupiter.api.AfterEach;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.jknack.handlebars.internal.Files;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.redhat.ecosystemappeng.crda.config.ObjectMapperProducer;
@@ -74,6 +77,16 @@ public abstract class AbstractAnalysisTest {
             assertEquals(expected, current);
         } catch (IOException e) {
             fail("Unexpected processing exception");
+        }
+    }
+
+    protected void assertHtml(String expectedFile, String currentBody) {
+        String expected;
+        try {
+            expected = Files.read(getClass().getClassLoader().getResourceAsStream("__files/" + expectedFile), Charset.defaultCharset());
+            assertEquals(expected, currentBody);
+        } catch (IOException e) {
+            fail("Unable to read HTML file", e);
         }
     }
 

@@ -2,15 +2,16 @@ package com.redhat.ecosystemappeng.crda.integration.report;
 
 import com.redhat.ecosystemappeng.crda.model.DependencyReport;
 import com.redhat.ecosystemappeng.crda.model.Issue;
+import com.redhat.ecosystemappeng.crda.model.PackageRef;
 import com.redhat.ecosystemappeng.crda.model.Recommendation;
 import com.redhat.ecosystemappeng.crda.model.TransitiveDependencyReport;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import java.util.Map;
 
+@RegisterForReflection
 public class DependencyReportWrapper {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DependencyReportWrapper.class);
 
     private DependencyReport dependencyReport;
 
@@ -61,7 +62,7 @@ public class DependencyReportWrapper {
         return highestVulIssueData;
     }
 
-    public String getTransRecommendationName(String cveId) {
+    public PackageRef getTransRecommendationName(String cveId) {
         for (TransitiveDependencyReport transDep : dependencyReport.transitive()) {
             Map<String, Recommendation> rhRecMap = transDep.securityRecommendations();
             if (!rhRecMap.isEmpty()) {
@@ -70,14 +71,14 @@ public class DependencyReportWrapper {
                         for (String cve : issue.cves()) {
                             if (rhRecMap.containsKey(cve)) {
                                 Recommendation cveRec = rhRecMap.get(cve);
-                                return cveRec.mavenPackage().version();
+                                return cveRec.mavenPackage();
                             }
                         }
                     }
                 }
             }
         }
-        return "";
+        return null;
     }
 
     public String getDirectRecommendationName(String cveId) {

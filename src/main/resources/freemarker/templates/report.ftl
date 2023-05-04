@@ -118,10 +118,10 @@
                     <#assign barNum = dependency.getHighestVulnerability().rawData().get("cvssScore").asDouble() *10>
                     <#assign severity = dependency.getHighestVulnerability().rawData().get("severity").asText()>
                     <td>
-                        <#if severity == "high">
+                        <#if severity == "critical" || severity == "high">
                             <div class="pf-c-progress pf-m-danger" id="progress-simple-example">
-                            <#else>
-                                <div class="pf-c-progress pf-m-warning" id="progress-simple-example">
+                        <#else>
+                            <div class="pf-c-progress pf-m-warning" id="progress-simple-example">
                         </#if>
                             <div
                                     class="pf-c-progress__description"
@@ -185,14 +185,15 @@
                                     <tbody>
                                     <#list dependency.dependencyReport.issues() as vulnerability>
                                         <tr>
+                                            <#assign severity = vulnerability.rawData().get("severity").asText()>
                                             <td>
-                                                <#if (vulnerability.rawData().get("severity").asText() == "high") >
-                                                <span class="pf-c-label pf-m-red">
-                                                    <#elseif (vulnerability.rawData().get("severity").asText() == "medium") >
-                                                        <span class="pf-c-label pf-m-orange">
-                                                     <#elseif (vulnerability.rawData().get("severity").asText() == "low") >
-                                                        <span class="pf-c-label pf-m-gold">
-                                                            </#if>
+                                                <#if severity == "critical" || severity == "high">
+                                                    <span class="pf-c-label pf-m-red">
+                                                <#elseif (vulnerability.rawData().get("severity").asText() == "medium") >
+                                                    <span class="pf-c-label pf-m-orange">
+                                                <#elseif (vulnerability.rawData().get("severity").asText() == "low") >
+                                                    <span class="pf-c-label pf-m-gold">
+                                                </#if>
                                                     <span class="pf-c-label__content">
                                                         ${vulnerability.rawData().get("severity").asText()}
                                                     </span>
@@ -201,13 +202,12 @@
                                             <td>${vulnerability.rawData().get("title").asText()}</td>
                                             <td>
                                                 <#assign barNum = vulnerability.rawData().get("cvssScore").asDouble() *10>
-                                                <#assign severity = vulnerability.rawData().get("severity").asText()>
-                                                <#if severity == "high">
-                                                <div class="pf-c-progress pf-m-danger" id="progress-simple-example">
-                                                    <#else>
+                                                <#if severity == "critical" || severity == "high">
+                                                    <div class="pf-c-progress pf-m-danger" id="progress-simple-example">
+                                                <#else>
                                                     <div class="pf-c-progress pf-m-warning" id="progress-simple-example">
-                                                        </#if>
-                                                        <div class="pf-c-progress__description" id="progress-simple-example-description"
+                                                </#if>
+                                                    <div class="pf-c-progress__description" id="progress-simple-example-description"
                                                         >${vulnerability.rawData().get("cvssScore").asDouble()}/10</div>
                                                         <div
                                                                 class="pf-c-progress__bar"
@@ -231,7 +231,7 @@
                                             </td>
                                             <td>
                                                 <#assign recommendation = dependency.getDirectRecommendationName(vulnerability.id())>
-                                                <#if recommendation != "">
+                                                <#if recommendation?has_content>
                                                     <#assign link = dependency.getLink(dependency.dependencyReport.ref().name(), recommendation)>
                                                     <span class="pf-c-icon pf-m-sm">
                                                               <span class="pf-c-icon__content pf-m-success">
@@ -282,6 +282,7 @@
                                         <#list transDependency.issues() as vulnerability>
                                             <#if vulnerability?index == 0>
                                                 <tr>
+                                                    <#assign severity = vulnerability.rawData().get("severity").asText()>
                                                     <td rowspan="${numOfVul}">
                                                         <a href="https://security.snyk.io/package/maven/${vulnerability.rawData().get("packageName").asText()}"
                                                            target="_blank">
@@ -289,27 +290,26 @@
                                                         </a>
                                                     </td>
                                                     <td>
-                                                        <#if (vulnerability.rawData().get("severity").asText() == "high") >
-                                                        <span class="pf-c-label pf-m-red">
-                                                                <#elseif (vulnerability.rawData().get("severity").asText() == "medium") >
-                                                                    <span class="pf-c-label pf-m-orange">
-                                                                 <#elseif (vulnerability.rawData().get("severity").asText() == "low") >
-                                                                    <span class="pf-c-label pf-m-gold">
-                                                                        </#if>
+                                                        <#if severity == "critical" || severity == "high">
+                                                            <span class="pf-c-label pf-m-red">
+                                                        <#elseif (vulnerability.rawData().get("severity").asText() == "medium") >
+                                                            <span class="pf-c-label pf-m-orange">
+                                                        <#elseif (vulnerability.rawData().get("severity").asText() == "low") >
+                                                            <span class="pf-c-label pf-m-gold">
+                                                        </#if>
                                                                 <span class="pf-c-label__content">
                                                                     ${vulnerability.rawData().get("severity").asText()}
                                                                 </span>
-                                                               </span>
+                                                            </span>
                                                     </td>
                                                     <td>${vulnerability.rawData().get("title").asText()}</td>
                                                     <td>
                                                         <#assign barNum = vulnerability.rawData().get("cvssScore").asDouble() *10>
-                                                        <#assign severity = vulnerability.rawData().get("severity").asText()>
-                                                        <#if severity == "high">
-                                                        <div class="pf-c-progress pf-m-danger" id="progress-simple-example">
-                                                            <#else>
+                                                        <#if severity == "critical" || severity == "high">
+                                                            <div class="pf-c-progress pf-m-danger" id="progress-simple-example">
+                                                        <#else>
                                                             <div class="pf-c-progress pf-m-warning" id="progress-simple-example">
-                                                                </#if>
+                                                        </#if>
                                                                 <div class="pf-c-progress__description" id="progress-simple-example-description"
                                                                 >${vulnerability.rawData().get("cvssScore").asDouble()}/10</div>
                                                                 <div
@@ -333,16 +333,16 @@
                                                         </#if>
                                                     </td>
                                                     <td>
-                                                        <#assign recommendation = dependency.getTransRecommendationName(vulnerability.id())>
-                                                        <#if recommendation != "" >
-                                                            <#assign link = dependency.getLink(vulnerability.rawData().get("packageName").asText(), recommendation)>
+                                                        <#assign recommendation = dependency.getTransRecommendationName(vulnerability.id())!>
+                                                        <#if recommendation?has_content>
+                                                            <#assign link = dependency.getLink(recommendation.name(), recommendation.version())>
                                                             <span class="pf-c-icon pf-m-sm">
                                                               <span class="pf-c-icon__content pf-m-success">
                                                                 <i class="pf-icon pf-icon-security" aria-hidden="true"></i>
                                                               </span>
                                                             </span>
                                                             <a href="https://maven.repository.redhat.com/ga/${link}" target="_blank" style="font-size: 16px">
-                                                                ${recommendation}
+                                                                ${recommendation.version()}
                                                             </a>
                                                         <#else>
                                                             <a href="https://snyk.io/vuln/${vulnerability.id()}"
@@ -354,28 +354,28 @@
                                                 </tr>
                                             <#else >
                                                 <tr>
+                                                    <#assign severity = vulnerability.rawData().get("severity").asText()>
                                                     <td>
-                                                        <#if (vulnerability.rawData().get("severity").asText() == "high") >
-                                                        <span class="pf-c-label pf-m-red">
-                                                                <#elseif (vulnerability.rawData().get("severity").asText() == "medium") >
-                                                                    <span class="pf-c-label pf-m-orange">
-                                                                 <#elseif (vulnerability.rawData().get("severity").asText() == "low") >
-                                                                    <span class="pf-c-label pf-m-gold">
-                                                                        </#if>
+                                                        <#if severity == "critical" || severity == "high">
+                                                            <span class="pf-c-label pf-m-red">
+                                                        <#elseif (vulnerability.rawData().get("severity").asText() == "medium") >
+                                                            <span class="pf-c-label pf-m-orange">
+                                                        <#elseif (vulnerability.rawData().get("severity").asText() == "low") >
+                                                            <span class="pf-c-label pf-m-gold">
+                                                        </#if>
                                                                 <span class="pf-c-label__content">
                                                                     ${vulnerability.rawData().get("severity").asText()}
                                                                 </span>
-                                                               </span>
+                                                            </span>
                                                     </td>
                                                     <td>${vulnerability.rawData().get("title").asText()}</td>
                                                     <td>
                                                         <#assign barNum = vulnerability.rawData().get("cvssScore").asDouble() *10>
-                                                        <#assign severity = vulnerability.rawData().get("severity").asText()>
-                                                        <#if severity == "high">
-                                                        <div class="pf-c-progress pf-m-danger" id="progress-simple-example">
-                                                            <#else>
+                                                        <#if severity == "critical" || severity == "high">
+                                                            <div class="pf-c-progress pf-m-danger" id="progress-simple-example">
+                                                        <#else>
                                                             <div class="pf-c-progress pf-m-warning" id="progress-simple-example">
-                                                                </#if>
+                                                        </#if>
                                                                 <div class="pf-c-progress__description" id="progress-simple-example-description"
                                                                 >${vulnerability.rawData().get("cvssScore").asDouble()}/10</div>
                                                                 <div
@@ -399,16 +399,16 @@
                                                         </#if>
                                                     </td>
                                                     <td>
-                                                        <#assign recommendation = dependency.getTransRecommendationName(vulnerability.id())>
-                                                        <#if recommendation != "">
-                                                            <#assign link = dependency.getLink(vulnerability.rawData().get("packageName").asText(), recommendation)>
+                                                        <#assign recommendation = dependency.getTransRecommendationName(vulnerability.id())!>
+                                                        <#if recommendation?has_content>
+                                                            <#assign link = dependency.getLink(recommendation.name(), recommendation.version())>
                                                             <span class="pf-c-icon pf-m-sm">
                                                               <span class="pf-c-icon__content pf-m-success">
                                                                 <i class="pf-icon pf-icon-security" aria-hidden="true"></i>
                                                               </span>
                                                             </span>
                                                             <a href="https://maven.repository.redhat.com/ga/${link}" target="_blank" style="font-size: 16px">
-                                                                ${recommendation}
+                                                                ${recommendation.version()}
                                                             </a>
                                                         <#else>
                                                             <a href="https://snyk.io/vuln/${vulnerability.id()}"
