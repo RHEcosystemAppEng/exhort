@@ -16,7 +16,7 @@
     <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
     <quarkus.platform.version>2.16.5.Final</quarkus.platform.version>
     <skipITs>true</skipITs>
-    <surefire-plugin.version>3.0.0-M7</surefire-plugin.version>
+    <surefire-plugin.version>3.0.0</surefire-plugin.version>
     <wiremock.version>2.27.2</wiremock.version>
   </properties>
   <dependencyManagement>
