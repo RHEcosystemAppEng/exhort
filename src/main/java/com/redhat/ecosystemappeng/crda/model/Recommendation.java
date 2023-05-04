@@ -21,6 +21,10 @@ package com.redhat.ecosystemappeng.crda.model;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @RegisterForReflection
-public record Recommendation(String issueRef, PackageRef mavenPackage, String productStatus) {
+public record Recommendation(
+    String issueRef,
+    PackageRef mavenPackage,
+    String productStatus
+) {
 
 }

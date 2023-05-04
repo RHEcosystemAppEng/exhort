@@ -27,6 +27,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.activation.DataHandler;
+import javax.ws.rs.core.MediaType;
+
+import org.apache.camel.Exchange;
+import org.apache.camel.attachment.AttachmentMessage;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.traverse.BreadthFirstIterator;
 
@@ -75,6 +80,12 @@ public class ReportTransformer {
             }
         }
         return result;
+    }
+    
+    public void attachHtmlReport(Exchange exchange) {
+        exchange.getIn(AttachmentMessage.class).addAttachment("report.html",
+                new DataHandler(exchange.getIn().getBody(String.class), MediaType.TEXT_HTML));
+
     }
 
     private Map<String, Recommendation> getRecommendations(Collection<Issue> issues,

@@ -101,6 +101,21 @@ paths:
             text/html:
               schema:
                 type: object
+            multipart/mixed:
+              schema:
+                type: object
+                properties:
+                  json_report:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/DependencyReport'
+                  html_report:
+                    type: object
+              encoding:
+                summary:
+                  contentType: application/json
+                report:
+                  contentType: text/html
 components:
   schemas:
     ComponentRequest:

@@ -34,21 +34,25 @@ public final class Constants {
 
     public static final String PROVIDERS_PARAM = "providers";
     
+    public static final String ACCEPT_HEADER = "Accept";
+    public static final String ACCEPT_ENCODING_HEADER = "Accept-Encoding";
     public static final String PKG_MANAGER_HEADER = "pkgManager";
     public static final String SNYK_TOKEN_HEADER = "crda-snyk-token";
     public static final String TIDELIFT_TOKEN_HEADER = "crda-tidelift-token";
     
     public static final String TEXT_VND_GRAPHVIZ = "text/vnd.graphviz";
-    
+    public static final MediaType MULTIPART_MIXED_TYPE = new MediaType("multipart", "mixed");
+    public static final String MULTIPART_MIXED = MULTIPART_MIXED_TYPE.toString();
+
     public static final String SNYK_PROVIDER = "snyk";
     public static final String TIDELIFT_PROVIDER = "tidelift";
 
     public static final String MAVEN_PKG_MANAGER = "maven";
     public static final String REQUEST_CONTENT_PROPERTY = "requestContent";
-    public static final String GRAPH_PROPERTY = "graph";
+    public static final String REPORT_PROPERTY = "report";
 
-    public static final String SNYK_DEP_GRAPH_API_PATH = "/api/v1/test/dep-graph";
-    public static final String TIDELIFT_API_BASE_PATH = "/external-api/v1/packages";
+    public static final String SNYK_DEP_GRAPH_API_PATH = "/test/dep-graph";
+    public static final String TIDELIFT_API_BASE_PATH = "/packages";
     public static final String TIDELIFT_RELEASES_PATTERN = "/%s/%s/releases/%s";
     public static final String TRUSTED_CONTENT_PATH = "/api/policy/v1alpha1/trusted::gav";
     public static final String TRUSTED_CONTENT_VEX_PATH = "/tc";
@@ -72,6 +76,7 @@ public final class Constants {
         {
             add(MediaType.APPLICATION_JSON_TYPE);
             add(MediaType.TEXT_HTML_TYPE);
+            add(MULTIPART_MIXED_TYPE);
         }
     });
 

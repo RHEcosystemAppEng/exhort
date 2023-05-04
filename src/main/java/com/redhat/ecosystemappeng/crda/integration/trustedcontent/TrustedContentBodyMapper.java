@@ -46,6 +46,7 @@ public class TrustedContentBodyMapper {
                 graph.issues().values().stream()
                         .flatMap(Collection::stream)
                         .map(e -> e.cves())
+                        .filter(Objects::nonNull)
                         .flatMap(Set::stream)
                         .collect(Collectors.toUnmodifiableList()));
     }

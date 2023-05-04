@@ -33,7 +33,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 @RegisterForReflection
 public class BackendUtils {
 
-    public String getResponseMediaType(@Header("Accept") String acceptHeader) {
+    public String getResponseMediaType(@Header(Constants.ACCEPT_HEADER) String acceptHeader) {
         if (acceptHeader == null || acceptHeader.isBlank()) {
             return Constants.DEFAULT_ACCEPT_MEDIA_TYPE;
         }
