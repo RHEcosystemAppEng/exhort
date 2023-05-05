@@ -33,15 +33,15 @@ import com.redhat.ecosystemappeng.crda.config.ObjectMapperProducer;
 import com.redhat.ecosystemappeng.crda.integration.Constants;
 import com.redhat.ecosystemappeng.crda.model.GraphRequest;
 import com.redhat.ecosystemappeng.crda.model.Issue;
-
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @RegisterForReflection
-public class SnykVulnerabilityAggregationStrategy {
-    
+public class SnykAggregationStrategy {
+
     private final ObjectMapper mapper = ObjectMapperProducer.newInstance();
-  
-    public GraphRequest aggregate(GraphRequest graphReq, String newExchange) throws JsonMappingException, JsonProcessingException {
+
+    public GraphRequest aggregate(GraphRequest graphReq, String newExchange)
+            throws JsonMappingException, JsonProcessingException {
         JsonNode snykResponse = mapper.readTree(newExchange);
         Map<String, Collection<Issue>> issuesData = getIssues(snykResponse);
         return new GraphRequest.Builder(graphReq).issues(issuesData).build();
@@ -52,19 +52,26 @@ public class SnykVulnerabilityAggregationStrategy {
         snykResponse.withArray("issues").elements().forEachRemaining(n -> {
             String pkgName = n.get("pkgName").asText();
             String issueId = n.get("issueId").asText();
-            Set<String> cves = new HashSet<>();
             JsonNode issueData = snykResponse.get("issuesData").get(issueId);
-            issueData.withArray("/identifiers/CVE")
-                .elements()
-                .forEachRemaining(cve -> cves.add(cve.asText()));
             Collection<Issue> issues = reports.get(pkgName);
-            if(issues== null) {
+            if (issues == null) {
                 issues = new ArrayList<>();
                 reports.put(pkgName, issues);
             }
-            issues.add(new Issue(issueId, Constants.SNYK_PROVIDER, cves, issueData));
+            issues.add(toIssue(issueId, issueData));
         });
         return reports;
+    }
+
+    private Issue toIssue(String id, JsonNode data) {
+        Issue.Builder builder = new Issue.Builder(id).source(Constants.SNYK_PROVIDER);
+        Set<String> cves = new HashSet<>();
+        data.withArray("/identifiers/CVE")
+                .elements()
+                .forEachRemaining(cve -> cves.add(cve.asText()));
+        builder.rawData(data)
+                .cves(cves);
+        return builder.build();
     }
 
 }

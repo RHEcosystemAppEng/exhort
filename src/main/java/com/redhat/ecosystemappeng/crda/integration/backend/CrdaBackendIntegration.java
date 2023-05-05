@@ -33,9 +33,6 @@ import com.redhat.ecosystemappeng.crda.integration.Constants;
 import com.redhat.ecosystemappeng.crda.integration.GraphUtils;
 import com.redhat.ecosystemappeng.crda.integration.ProviderAggregationStrategy;
 import com.redhat.ecosystemappeng.crda.integration.VulnerabilityProvider;
-import com.redhat.ecosystemappeng.crda.integration.report.ReportTemplate;
-import com.redhat.ecosystemappeng.crda.integration.report.ReportTransformer;
-import com.redhat.ecosystemappeng.crda.model.DependencyReport;
 import com.redhat.ecosystemappeng.crda.model.PackageRef;
 
 @ApplicationScoped
@@ -82,21 +79,12 @@ public class CrdaBackendIntegration extends EndpointRouteBuilder {
         from(direct("fullDepAnalysis"))
             .setProperty(Constants.PROVIDERS_PARAM, method(vulnerabilityProvider, "getProvidersFromQueryParam"))
             .setProperty(REQUEST_CONTENT_PROPERTY, method(BackendUtils.class, "getResponseMediaType"))
+            .removeHeader(Constants.ACCEPT_HEADER)
+            .removeHeader(Constants.ACCEPT_ENCODING_HEADER)
             .bean(GraphUtils.class, "fromDotFile")
             .to(direct("findVulnerabilities"))
             .to(direct("recommendVexContent"))
             .to(direct("report"));
-
-        from(direct("report"))
-            .bean(ReportTransformer.class, "transform")
-            .choice()
-                .when(exchangeProperty(REQUEST_CONTENT_PROPERTY).isEqualTo(MediaType.TEXT_HTML))
-                    .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.TEXT_HTML))
-                    .setBody(method(ReportTemplate.class))
-                    .to(freemarker("report.ftl"))
-                .otherwise()
-                    .marshal(new ListJacksonDataFormat(DependencyReport.class))
-            .end();
 
         from(direct("findVulnerabilities"))
             .multicast(AggregationStrategies.bean(ProviderAggregationStrategy.class, "aggregate"))

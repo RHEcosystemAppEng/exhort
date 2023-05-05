@@ -27,16 +27,34 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 @RegisterForReflection
 public record Issue(String id, String source, Set<String> cves, JsonNode rawData) {
 
-    public Issue(String id, String source, Set<String> cves, JsonNode rawData) {
-        this.id = id;
-        this.source = source;
-        this.cves = cves;
-        this.rawData = rawData;
-    }
+    public static final class Builder {
+        String id;
+        String source;
+        Set<String> cves;
+        JsonNode rawData;
 
-    public Issue() {
-        this(null, null, null,null);
+        public Builder(String id) {
+            this.id = id;
+        }
 
+        public Builder source(String source) {
+            this.source = source;
+            return this;
+        }
+
+        public Builder cves(Set<String> cves) {
+            this.cves = cves;
+            return this;
+        }
+
+        public Builder rawData(JsonNode rawData) {
+            this.rawData = rawData;
+            return this;
+        }
+
+        public Issue build() {
+            return new Issue(id, source, cves, rawData);
+        }
     }
 
 }

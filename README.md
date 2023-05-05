@@ -64,6 +64,8 @@ $ http :8080/api/v3/dependency-analysis/maven Content-Type:"text/vnd.graphviz" @
 ]
 ```
 
+### HTML Report
+
 By default the response Content-Type will be `application/json` but if the `text/html` media type is requested instead, the response
 will be processed and converted into HTML.
 
@@ -73,6 +75,46 @@ $ http :8080/api/v3/dependency-analysis/maven Content-Type:"text/vnd.graphviz" A
 <html>
   ...
 </html>
+```
+
+### Mime-Multipart response
+
+It is also possible to get a MIME Multipart response containing a JSON report with the HTML attached.
+For that, use the `Accept: multipart/mixed` request header.
+
+
+```bash
+http :8080/api/v3/dependency-analysis/maven Content-Type:"text/vnd.graphviz" Accept:"multipart/mixed" @'./target/dependencies.txt'
+HTTP/1.1 200 OK
+	boundary="----=_Part_2_2047647971.1682593849895"
+Content-Type: multipart/mixed; 
+MIME-Version: 1.0
+Message-Id: <49857413.3.1682593849896@granada>
+User-Agent: HTTPie/3.2.1
+transfer-encoding: chunked
+x-quarkus-hot-deployment-done: true
+
+------=_Part_2_2047647971.1682593849895
+Content-Type: application/json
+Content-Transfer-Encoding: binary
+
+[{...}]
+------=_Part_2_2047647971.1682593849895
+Content-Type: text/html
+Content-Transfer-Encoding: 8bit
+Content-Disposition: attachment; filename=report.html
+
+<html>
+    <header>
+        <title>CRDA Stack Report</title>
+    </header>
+    <body>
+        <h1>Stack Report</h1>
+        <p>This is an example</p>
+    </body>
+</html>
+------=_Part_2_2047647971.1682593849895--
+
 ```
 
 ## Component Analysis `/api/v3/component-analysis/<pkgManager>`

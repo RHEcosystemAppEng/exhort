@@ -28,11 +28,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.enterprise.context.ApplicationScoped;
 
 @RegisterForReflection
+@ApplicationScoped
 public class ReportTemplate {
 
-    public Map<String, Object> setVariables(List<DependencyReport> report) throws JsonMappingException, JsonProcessingException, IOException {
+    public Map<String, Object> setVariables(List<DependencyReport> report)
+            throws JsonMappingException, JsonProcessingException, IOException {
 
         Map<String, Object> reportMap = new HashMap<>();
         List<DependencyReportWrapper> wrappers = new ArrayList<>();

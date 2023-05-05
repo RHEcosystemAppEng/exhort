@@ -18,6 +18,7 @@
 
 package com.redhat.ecosystemappeng.crda.integration.snyk;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.camel.Exchange;
@@ -26,13 +27,14 @@ import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
 
 import com.redhat.ecosystemappeng.crda.integration.Constants;
 
+@ApplicationScoped
 public class SnykIntegration  extends EndpointRouteBuilder {
 
     @Override
     public void configure() {
 
         from(direct("snykDepGraph"))
-            .enrich(direct("snykRequest"), AggregationStrategies.bean(SnykVulnerabilityAggregationStrategy.class, "aggregate"));
+            .enrich(direct("snykRequest"), AggregationStrategies.bean(SnykAggregationStrategy.class, "aggregate"));
 
         from(direct("snykRequest"))
             .transform().method(SnykRequestBuilder.class, "fromDiGraph")

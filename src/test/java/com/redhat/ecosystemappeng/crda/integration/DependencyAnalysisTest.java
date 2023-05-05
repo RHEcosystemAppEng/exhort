@@ -21,6 +21,11 @@ package com.redhat.ecosystemappeng.crda.integration;
 import static io.restassured.RestAssured.given;
 import static org.apache.camel.Exchange.CONTENT_TYPE;
 import static org.hamcrest.core.IsEqual.equalTo;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 import javax.ws.rs.core.MediaType;
 
 import org.junit.jupiter.api.Disabled;

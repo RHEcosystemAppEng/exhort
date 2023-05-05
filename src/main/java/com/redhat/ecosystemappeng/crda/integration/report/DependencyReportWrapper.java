@@ -48,10 +48,10 @@ public class DependencyReportWrapper {
     }
 
     public Issue getHighestVulnerability() {
-        Issue highestVulIssueData = new Issue();
+        Issue highestVulIssueData = null;
         if (dependencyReport.issues() != null) {
             for (Issue item : dependencyReport.issues()) {
-                if (highestVulIssueData.rawData() == null) {
+                if (highestVulIssueData == null) {
                     highestVulIssueData = item;
                 }
                 if (item.rawData().get("cvssScore").asDouble() > highestVulIssueData.rawData().get("cvssScore").asDouble()) {
