@@ -103,27 +103,6 @@
     <hr class="pf-c-divider mt-2"/>
 </div>
 
-<!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                ...
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-link" data-dismiss="modal">Vex</button>
-                <button type="button" class="btn btn-link">SBOMS</button>
-            </div>
-        </div>
-    </div>
-</div>
-
 <#--Table-->
 <div class="p-3">
     <table class="table" style="border-collapse:collapse; font-size: smaller;">
@@ -457,6 +436,30 @@
     </table>
 </div>
 
+<!-- Modal -->
+<div class="modal fade" id="modal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalLabel">
+                    <a href="" target="_blank">
+                        Modal title
+                    </a>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Which file type below would you like? Or click on the title to go to the Red Hat Maven repository.
+            </div>
+            <div class="modal-footer" style="justify-content: space-around">
+                <span id="vex"><a href="" target="_blank">Vex</a></span>
+                <span id="sbom"> <a href="" target="_blank">SBOMS</a></span>
+            </div>
+        </div>
+    </div>
+</div>
 
 </div>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
@@ -465,5 +468,19 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx"
         crossorigin="anonymous"></script>
+<script>
+    $('#modal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget) // Button that triggered the modal
+        var link = button.data('link')// Extract info from data-* attributes
+        var rhpkg = button.data('rhpkg')
+        var vex = button.data('vex')
+        var sbom = button.data('sbom')
+        var modal = $(this)
+        modal.find('.modal-title a').attr("href", link);
+        modal.find('.modal-title a').text(rhpkg);
+        modal.find('#vex a').attr("href", vex)
+        modal.find('#sbom a').attr("href", sbom)
+    })
+</script>
 </body>
 </html>
