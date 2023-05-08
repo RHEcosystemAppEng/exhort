@@ -454,8 +454,8 @@
                 Which file type below would you like? Or click on the title to go to the Red Hat Maven repository.
             </div>
             <div class="modal-footer" style="justify-content: space-around">
-                <span id="vex"><a href="" target="_blank">Vex</a></span>
-                <span id="sbom"> <a href="" target="_blank">SBOMS</a></span>
+                <span id="vex"><a href="" target="_blank">VEX</a></span>
+                <span id="sbom"> <a href="" target="_blank">SBOMs</a></span>
             </div>
         </div>
     </div>
