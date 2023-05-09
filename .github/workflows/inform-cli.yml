@@ -1,0 +1,25 @@
+---
+name: Inform CLI of OpenAPI spec change
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "src/main/resources/META-INF/openapi.yaml"
+
+jobs:
+  inform_cli_spec_change:
+    runs-on: ubuntu-latest
+    name: Dispatch event for CLI
+    steps:
+      - name: Dispatch
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.CRDA_CLI_REPO_PAT }}
+          script: |
+            await github.rest.repos.createDispatchEvent({
+              owner: "RHEcosystemAppEng",
+              repo: "crda-cli",
+              event_type: "backend-openapi-spec-modified"
+            })
