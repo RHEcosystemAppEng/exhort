@@ -451,7 +451,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                Which file type below would you like? Or click on the title to go to the Red Hat Maven repository.
+                Click either VEX or SBOM to download the corresponding file type. You can also click the package name to view more information in Red Hat's Maven repository.
             </div>
             <div class="modal-footer" style="justify-content: space-around">
                 <span id="vex"><a href="" target="_blank">VEX</a></span>
