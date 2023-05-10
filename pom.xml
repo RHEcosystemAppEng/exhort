@@ -8,7 +8,6 @@
   <properties>
     <compiler-plugin.version>3.10.1</compiler-plugin.version>
     <jgraph.version>1.5.1</jgraph.version>
-    <lombok.version>1.18.26</lombok.version>
     <maven.compiler.release>17</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
