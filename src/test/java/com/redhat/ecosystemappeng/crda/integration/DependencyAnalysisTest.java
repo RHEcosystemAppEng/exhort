@@ -37,6 +37,7 @@ import io.quarkus.test.junit.QuarkusTest;
 import com.redhat.ecosystemappeng.crda.model.AnalysisReport;
 import com.redhat.ecosystemappeng.crda.model.DependencyReport;
 import com.redhat.ecosystemappeng.crda.model.PackageRef;
+import com.redhat.ecosystemappeng.crda.model.Summary;
 import com.redhat.ecosystemappeng.crda.model.TransitiveDependencyReport;
 
 @QuarkusTest
@@ -142,17 +143,7 @@ public class DependencyAnalysisTest extends AbstractAnalysisTest {
                     .contentType(MediaType.APPLICATION_JSON)
                     .extract().body().as(AnalysisReport.class);
 
-
-        assertEquals(2, report.summary().dependencies().scanned());
-        assertEquals(8, report.summary().dependencies().transitive());
-
-        assertEquals(4, report.summary().vulnerabilities().total());
-        assertEquals(2, report.summary().vulnerabilities().direct());
-        assertEquals(0, report.summary().vulnerabilities().critical());
-        assertEquals(1, report.summary().vulnerabilities().high());
-        assertEquals(3, report.summary().vulnerabilities().medium());
-        assertEquals(0, report.summary().vulnerabilities().low());
-
+        assertSummary(report.summary());
         assertDependenciesReport(report.dependencies());
 
         verifyTCVexRequest();
@@ -168,7 +159,7 @@ public class DependencyAnalysisTest extends AbstractAnalysisTest {
         String tideliftToken = "my-tidelift-token";
         stubTCVexRequest();
 
-        String body = given()
+        AnalysisReport report = given()
                 .header(CONTENT_TYPE, Constants.TEXT_VND_GRAPHVIZ)
                 .header("Accept", MediaType.APPLICATION_JSON)
                 .header(Constants.TIDELIFT_TOKEN_HEADER, tideliftToken)
@@ -180,8 +171,10 @@ public class DependencyAnalysisTest extends AbstractAnalysisTest {
                 .assertThat()
                     .statusCode(200)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .extract().body().asPrettyString();
-        assertJson("full_report.json", body);
+                    .extract().body().as(AnalysisReport.class);
+
+        assertSummary(report.summary());
+        assertDependenciesReport(report.dependencies());
 
         verifySnykRequest(snykToken);
         verifyTCVexRequest();
@@ -228,6 +221,18 @@ public class DependencyAnalysisTest extends AbstractAnalysisTest {
         verifyNoInteractions();
     }
 
+    private void assertSummary(Summary summary) {
+        assertEquals(2, summary.dependencies().scanned());
+        assertEquals(8, summary.dependencies().transitive());
+
+        assertEquals(4, summary.vulnerabilities().total());
+        assertEquals(2, summary.vulnerabilities().direct());
+        assertEquals(0, summary.vulnerabilities().critical());
+        assertEquals(1, summary.vulnerabilities().high());
+        assertEquals(3, summary.vulnerabilities().medium());
+        assertEquals(0, summary.vulnerabilities().low());
+    }
+
     private void assertDependenciesReport(List<DependencyReport> dependencies) {
         assertEquals(2, dependencies.size());
 
@@ -248,9 +253,9 @@ public class DependencyAnalysisTest extends AbstractAnalysisTest {
         assertEquals(tReport.highestVulnerability(), tReport.issues().get(0));
         assertEquals(report.highestVulnerability(), tReport.highestVulnerability());
 
-        assertEquals(new PackageRef(jackson.name(), "2.13.1.Final-redhat-00002"), report.remediations().get("CVE-2020-36518").mavenPackage());
-        assertEquals(new PackageRef(jackson.name(), "2.13.1.Final-redhat-00002"), report.remediations().get("CVE-2022-42004").mavenPackage());
-        assertNull(report.remediations().get("CVE-2022-42003"));
+        assertEquals(new PackageRef(jackson.name(), "2.13.1.Final-redhat-00002"), tReport.remediations().get("CVE-2020-36518").mavenPackage());
+        assertEquals(new PackageRef(jackson.name(), "2.13.1.Final-redhat-00002"), tReport.remediations().get("CVE-2022-42004").mavenPackage());
+        assertNull(tReport.remediations().get("CVE-2022-42003"));
     }
 
     private DependencyReport getReport(String pkgName, List<DependencyReport> dependencies) {
