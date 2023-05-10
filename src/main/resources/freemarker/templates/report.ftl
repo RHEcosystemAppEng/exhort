@@ -18,6 +18,24 @@
         </g>
     </symbol>
 </svg>
+<#function htmlRef package>
+    <#local result = package.name()?replace(".", "")>
+    <#local result = result?replace(":","")>
+    <#local result = result?replace("-","")>
+    <#return result>
+</#function>
+<#function repoLink package>
+    <#local result = package.name()?replace(".", "/")>
+    <#local result = result?replace(":", "/")>
+    <#local result = body.remediationPath + result + "/" + package.version()>
+    <#return result>
+</#function>
+<#function packageLink package>
+    <#return body.packagePath + package.name()>
+</#function>
+<#function issueLink issueId>
+    <#return body.issueLinkFormatter.format(issueId) >
+</#function>
 <html xmlns="http://www.w3.org/1999/html">
 <head>
     <#include "styles.ftl">
@@ -33,6 +51,7 @@
     <link rel="stylesheet" href="style.css"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
           integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <title>CRDA Dependency Analysis</title>
 </head>
 <body class="p-4 container-fluid">
 
@@ -60,7 +79,7 @@
                           <i class="pf-icon pf-icon-security" aria-hidden="true"></i>
                       </span>
                     </span>
-                    Total Vulnerabilities: ${body.totalVul}
+                    Total Vulnerabilities: ${body.report.summary().vulnerabilities().total()}
                 </p>
                 <p class="ml-5">
                     <span class="pf-c-icon pf-m-sm">
@@ -68,7 +87,7 @@
                         <i class="pf-icon pf-icon-security" aria-hidden="true"></i>
                       </span>
                     </span>
-                    Vulnerable Dependencies: ${body.vulnerableDeps}
+                    Vulnerable Dependencies: ${body.report.summary().vulnerabilities().direct()}
                 </p>
             </div>
         </div>
@@ -122,21 +141,21 @@
         </thead>
         <tbody>
         <#assign numOfPkg = 0>
-        <#list body.directs as dependency>
-            <tr data-toggle="collapse" data-target="#${dependency.getHtmlName()}" class="accordion-toggle">
+        <#list body.report.dependencies() as dependency>
+            <tr data-toggle="collapse" data-target="#${htmlRef(dependency.ref())}" class="accordion-toggle">
                 <#assign numOfPkg++>
                 <td>#${numOfPkg}</td>
                 <td>
-                    <a href="https://security.snyk.io/package/maven/${dependency.dependencyReport.ref().name()}"
+                    <a href="${packageLink(dependency.ref())}"
                        target="_blank">
-                        ${dependency.dependencyReport.ref().name()}
+                        ${dependency.ref().name()}
                     </a>
                 </td>
-                <td>${dependency.countDirectVulnerabilities()}</td>
-                <td>${dependency.countTransitiveVulnerabilities()}</td>
-                <#if (dependency.countDirectVulnerabilities() != 0) >
-                    <#assign barNum = dependency.getHighestVulnerability().rawData().get("cvssScore").asDouble() *10>
-                    <#assign severity = dependency.getHighestVulnerability().rawData().get("severity").asText()>
+                <td>${dependency.issues()?size}</td>
+                <td>${dependency.transitiveIssuesCount()}</td>
+                <#if dependency.highestVulnerability()?? >
+                    <#assign barNum = dependency.highestVulnerability().cvssScore() *10>
+                    <#assign severity = dependency.highestVulnerability().severity()>
                     <td>
                         <#if severity == "critical" || severity == "high">
                             <div class="pf-c-progress pf-m-danger" id="progress-simple-example">
@@ -146,13 +165,13 @@
                             <div
                                     class="pf-c-progress__description"
                                     id="progress-simple-example-description"
-                            >${dependency.getHighestVulnerability().rawData().get("cvssScore")}/10</div>
+                            >${dependency.highestVulnerability().cvssScore()}/10</div>
                             <div
                                     class="pf-c-progress__bar"
                                     role="progressbar"
                                     aria-valuemin="0"
                                     aria-valuemax="10"
-                                    aria-valuenow="${dependency.getHighestVulnerability().rawData().get("cvssScore")}"
+                                    aria-valuenow="${dependency.highestVulnerability().cvssScore()}"
                                     aria-labelledby="progress-simple-example-description"
                             >
                                 <div class="pf-c-progress__indicator" style="width:${barNum}%;"></div>
@@ -161,9 +180,9 @@
                             </div>
                     </td>
                     <td>
-                        <a href="https://security.snyk.io/vuln/${dependency.getHighestVulnerability().rawData().get("id").asText()}"
+                        <a href="${issueLink(dependency.highestVulnerability().id())}"
                            target="_blank">
-                            ${dependency.getHighestVulnerability().rawData().get("id").asText()}
+                            ${dependency.highestVulnerability().id()}
                         </a>
                     </td>
                 <#else>
@@ -171,8 +190,7 @@
                     <td>--</td>
                 </#if>
                 <td>
-                    <#assign rhRemediationAvail = dependency.isRHRemediationAvail()>
-                    <#if rhRemediationAvail>
+                    <#if dependency.hasRemediation()>
                         <svg style="width: 10.9793322px; height: 13px" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                             <use href="#shield-icon">
                         </svg>
@@ -182,12 +200,12 @@
             </tr>
             <tr>
                 <td colspan="8" class="hiddenRow">
-                    <div class="accordian-body collapse p-4 bg-light" id="${dependency.getHtmlName()}">
+                    <div class="accordion-body collapse p-4 bg-light" id="${htmlRef(dependency.ref())}">
                         <p class="px-3">Details of the dependency:
-                            <span class="font-weight-bold">${dependency.dependencyReport.ref().name()}</span>
+                            <span class="font-weight-bold">${dependency.ref().name()}</span>
                         </p>
-                        <#if dependency.dependencyReport.issues()??>
-                            <#if dependency.dependencyReport.issues()?size != 0>
+                        <#if dependency.issues()??>
+                            <#if dependency.issues()?size != 0>
                             <div class="p-3">
                                 <table class="table" style="border-collapse:collapse; font-size: small;">
                                     <thead>
@@ -195,43 +213,43 @@
                                         <th scope="col">Severity</th>
                                         <th scope="col">Description</th>
                                         <th scope="col" style="width: 15%">CVSS</th>
-                                        <th scope="col">ID</th>
+                                        <th scope="col">CVE</th>
                                         <th scope="col">Remediation</th>
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <#list dependency.dependencyReport.issues() as vulnerability>
+                                    <#list dependency.issues() as vulnerability>
                                         <tr>
-                                            <#assign severity = vulnerability.rawData().get("severity").asText()>
+                                            <#assign severity = vulnerability.severity()>
                                             <td>
                                                 <#if severity == "critical" || severity == "high">
                                                     <span class="pf-c-label pf-m-red">
-                                                <#elseif (vulnerability.rawData().get("severity").asText() == "medium") >
+                                                <#elseif (severity == "medium") >
                                                     <span class="pf-c-label pf-m-orange">
-                                                <#elseif (vulnerability.rawData().get("severity").asText() == "low") >
+                                                <#elseif (severity == "low") >
                                                     <span class="pf-c-label pf-m-gold">
                                                 </#if>
                                                     <span class="pf-c-label__content">
-                                                        ${vulnerability.rawData().get("severity").asText()}
+                                                        ${vulnerability.severity()}
                                                     </span>
                                                 </span>
                                             </td>
-                                            <td>${vulnerability.rawData().get("title").asText()}</td>
+                                            <td>${vulnerability.title()}</td>
                                             <td>
-                                                <#assign barNum = vulnerability.rawData().get("cvssScore").asDouble() *10>
+                                                <#assign barNum = vulnerability.cvssScore() *10>
                                                 <#if severity == "critical" || severity == "high">
                                                     <div class="pf-c-progress pf-m-danger" id="progress-simple-example">
                                                 <#else>
                                                     <div class="pf-c-progress pf-m-warning" id="progress-simple-example">
                                                 </#if>
                                                     <div class="pf-c-progress__description" id="progress-simple-example-description"
-                                                        >${vulnerability.rawData().get("cvssScore").asDouble()}/10</div>
+                                                        >${vulnerability.cvssScore()}/10</div>
                                                         <div
                                                                 class="pf-c-progress__bar"
                                                                 role="progressbar"
                                                                 aria-valuemin="0"
                                                                 aria-valuemax="10"
-                                                                aria-valuenow="${dependency.getHighestVulnerability().rawData().get("cvssScore")}"
+                                                                aria-valuenow="${dependency.highestVulnerability().cvssScore()}"
                                                                 aria-labelledby="progress-simple-example-description"
                                                         >
                                                             <div class="pf-c-progress__indicator" style="width:${barNum}%;"></div>
@@ -247,17 +265,17 @@
                                                 </#if>
                                             </td>
                                             <td>
-                                                <#assign recommendation = dependency.getDirectRecommendationName(vulnerability.id())>
-                                                <#if recommendation?has_content>
-                                                    <#assign link = dependency.getLink(dependency.dependencyReport.ref().name(), recommendation)>
+                                                <#assign remediation = dependency.findRemediationByIssue(vulnerability)!>
+                                                <#if remediation?has_content>
                                                     <svg style="width: 10.9793322px; height: 13px" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                                                         <use href="#shield-icon">
                                                     </svg>
-                                                    <a href="https://maven.repository.redhat.com/ga/${link}" target="_blank">
-                                                        ${recommendation}
+                                                    <a href="${repoLink(remediation)}" target="_blank" style="font-size: 16px">
+                                                        ${remediation.version()}
                                                     </a>
+                                                <#assign remediation = dependency.findRemediationByIssue(vulnerability)!>
                                                 <#else>
-                                                    <a href="https://snyk.io/vuln/${vulnerability.id()}"
+                                                    <a href="${issueLink(vulnerability.id())}"
                                                        target="_blank">
                                                         ${vulnerability.id()}
                                                     </a>
@@ -271,11 +289,11 @@
                             </#if>
                         </#if>
                         <button type="button" class="btn btn-outline-secondary" data-toggle="collapse" style="font-size: small;"
-                           href="#${dependency.getHtmlName()}transTable" role="button" aria-expanded="false"
-                           aria-controls="${dependency.getHtmlName()}transTable">
+                           href="#${htmlRef(dependency.ref())}transTable" role="button" aria-expanded="false"
+                           aria-controls="${htmlRef(dependency.ref())}transTable">
                             Transitive Dependencies with vulnerabilites <i class="fa fa-angle-down"></i>
                         </button>
-                        <div class="p-3 collapse" id="${dependency.getHtmlName()}transTable">
+                        <div class="p-3 collapse" id="${htmlRef(dependency.ref())}transTable">
                             <table class="table" style="border-collapse:collapse; font-size: small;">
                                 <thead>
                                 <tr>
@@ -283,53 +301,53 @@
                                     <th scope="col">Severity</th>
                                     <th scope="col">Description</th>
                                     <th scope="col" style="width: 15%">CVSS</th>
-                                    <th scope="col">ID</th>
+                                    <th scope="col">CVE</th>
                                     <th scope="col">Remediation</th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <#list dependency.dependencyReport.transitive() as transDependency>
+                                <#list dependency.transitive() as transDependency>
                                     <#if transDependency.issues()??>
                                         <#assign numOfVul = transDependency.issues()?size/>
                                         <#list transDependency.issues() as vulnerability>
+                                            <#assign severity = vulnerability.severity()>
                                             <#if vulnerability?index == 0>
                                                 <tr>
-                                                    <#assign severity = vulnerability.rawData().get("severity").asText()>
                                                     <td rowspan="${numOfVul}">
-                                                        <a href="https://security.snyk.io/package/maven/${vulnerability.rawData().get("packageName").asText()}"
+                                                        <a href="${packageLink(transDependency.ref())}"
                                                            target="_blank">
-                                                            ${vulnerability.rawData().get("packageName").asText()}
+                                                            ${transDependency.ref().name()}
                                                         </a>
                                                     </td>
                                                     <td>
                                                         <#if severity == "critical" || severity == "high">
                                                             <span class="pf-c-label pf-m-red">
-                                                        <#elseif (vulnerability.rawData().get("severity").asText() == "medium") >
+                                                        <#elseif severity == "medium" >
                                                             <span class="pf-c-label pf-m-orange">
-                                                        <#elseif (vulnerability.rawData().get("severity").asText() == "low") >
+                                                        <#elseif severity == "low" >
                                                             <span class="pf-c-label pf-m-gold">
                                                         </#if>
-                                                                <span class="pf-c-label__content">
-                                                                    ${vulnerability.rawData().get("severity").asText()}
-                                                                </span>
+                                                            <span class="pf-c-label__content">
+                                                                ${severity}
                                                             </span>
+                                                        </span>
                                                     </td>
-                                                    <td>${vulnerability.rawData().get("title").asText()}</td>
+                                                    <td>${vulnerability.title()}</td>
                                                     <td>
-                                                        <#assign barNum = vulnerability.rawData().get("cvssScore").asDouble() *10>
+                                                        <#assign barNum = vulnerability.cvssScore() *10>
                                                         <#if severity == "critical" || severity == "high">
                                                             <div class="pf-c-progress pf-m-danger" id="progress-simple-example">
                                                         <#else>
                                                             <div class="pf-c-progress pf-m-warning" id="progress-simple-example">
                                                         </#if>
-                                                                <div class="pf-c-progress__description" id="progress-simple-example-description"
-                                                                >${vulnerability.rawData().get("cvssScore").asDouble()}/10</div>
+                                                            <div class="pf-c-progress__description" id="progress-simple-example-description"
+                                                                >${vulnerability.cvssScore()}/10</div>
                                                                 <div
                                                                         class="pf-c-progress__bar"
                                                                         role="progressbar"
                                                                         aria-valuemin="0"
                                                                         aria-valuemax="10"
-                                                                        aria-valuenow="${vulnerability.rawData().get("cvssScore").asDouble()}"
+                                                                        aria-valuenow="${vulnerability.cvssScore()}"
                                                                         aria-labelledby="progress-simple-example-description"
                                                                 >
                                                                     <div class="pf-c-progress__indicator" style="width:${barNum}%;"></div>
@@ -345,33 +363,17 @@
                                                         </#if>
                                                     </td>
                                                     <td>
-                                                        <#assign recommendation = dependency.getTransRecommendationName(vulnerability.id())!>
-                                                        <#if recommendation?has_content>
-                                                            <#assign link = dependency.getLink(recommendation.name(), recommendation.version())>
-                                                            <svg width="10.9793322px" height="13px" viewBox="0 0 10.9793322 13" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                                                                <title>Combined Shape</title>
-                                                                <g id="New-dependencies-view" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                                                                    <g id="Overview" transform="translate(-1207.172757, -938.000000)" fill="#3E8635">
-                                                                        <g id="Details-of-dependency-com.github" transform="translate(427.000000, 764.000000)">
-                                                                            <g id="Dependency-1" transform="translate(0.000000, 144.000000)">
-                                                                                <g id="Group-9" transform="translate(780.172757, 24.000000)">
-                                                                                    <g id="Group-4" transform="translate(0.000000, 3.200001)">
-                                                                                        <g id="Icons/2.-Size-sm/Actions/check" transform="translate(0.000000, 2.799999)">
-                                                                                            <path d="M10.5565789,0 C10.7906249,0 10.9793322,0.181542969 10.9793322,0.40625 L10.9793322,5.74082031 C10.9793322,9.75 6.24081907,13 5.49579296,13 C4.75076684,13 0,9.75 0,5.73955078 L0,0.40625 C0,0.181542969 0.188707272,0 0.422753304,0 Z M8.54277883,3.11782667 L4.7912961,6.89087353 L3.03981338,5.1293244 C2.883609,4.97220683 2.63032812,4.97220683 2.47412375,5.1293244 L1.90844938,5.69826556 C1.75224501,5.85538312 1.75224501,6.11010449 1.90844938,6.26720671 L4.50845797,8.88215991 C4.66464708,9.03927747 4.9179127,9.03927747 5.07413233,8.88217525 L9.67414282,4.25570898 C9.8303472,4.09859141 9.8303472,3.84387004 9.67414282,3.68676782 L9.10846846,3.11782667 C8.95226408,2.96072444 8.6989832,2.96072444 8.54277883,3.11782667 Z" id="Combined-Shape"></path>
-                                                                                        </g>
-                                                                                    </g>
-                                                                                </g>
-                                                                            </g>
-                                                                        </g>
-                                                                    </g>
-                                                                </g>
+                                                        <#assign remediation = dependency.findTransitiveRemediationByIssue(vulnerability)!>
+                                                        <#if remediation?has_content>
+                                                            <svg style="width: 10.9793322px; height: 13px" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                                                                <use href="#shield-icon">
                                                             </svg>
-                                                            <a href="https://maven.repository.redhat.com/ga/${link}" target="_blank" style="font-size: 16px">
-                                                                ${recommendation.version()}
+                                                            <a href="${repoLink(remediation)}" target="_blank" style="font-size: 16px">
+                                                                ${remediation.version()}
                                                             </a>
                                                         <#else>
-                                                            <a href="https://snyk.io/vuln/${vulnerability.id()}"
-                                                               target="_blank">
+                                                            <a href="${issueLink(vulnerability.id())}"
+                                                            target="_blank">
                                                                 ${vulnerability.id()}
                                                             </a>
                                                         </#if>
@@ -379,36 +381,35 @@
                                                 </tr>
                                             <#else >
                                                 <tr>
-                                                    <#assign severity = vulnerability.rawData().get("severity").asText()>
                                                     <td>
                                                         <#if severity == "critical" || severity == "high">
                                                             <span class="pf-c-label pf-m-red">
-                                                        <#elseif (vulnerability.rawData().get("severity").asText() == "medium") >
+                                                        <#elseif (severity == "medium") >
                                                             <span class="pf-c-label pf-m-orange">
-                                                        <#elseif (vulnerability.rawData().get("severity").asText() == "low") >
+                                                        <#elseif (severity == "low") >
                                                             <span class="pf-c-label pf-m-gold">
                                                         </#if>
-                                                                <span class="pf-c-label__content">
-                                                                    ${vulnerability.rawData().get("severity").asText()}
-                                                                </span>
+                                                            <span class="pf-c-label__content">
+                                                                ${severity}
                                                             </span>
+                                                        </span>
                                                     </td>
-                                                    <td>${vulnerability.rawData().get("title").asText()}</td>
+                                                    <td>${vulnerability.title()}</td>
                                                     <td>
-                                                        <#assign barNum = vulnerability.rawData().get("cvssScore").asDouble() *10>
+                                                        <#assign barNum = vulnerability.cvssScore() *10>
                                                         <#if severity == "critical" || severity == "high">
                                                             <div class="pf-c-progress pf-m-danger" id="progress-simple-example">
                                                         <#else>
                                                             <div class="pf-c-progress pf-m-warning" id="progress-simple-example">
                                                         </#if>
-                                                                <div class="pf-c-progress__description" id="progress-simple-example-description"
-                                                                >${vulnerability.rawData().get("cvssScore").asDouble()}/10</div>
+                                                            <div class="pf-c-progress__description" id="progress-simple-example-description"
+                                                                >${vulnerability.cvssScore()}/10</div>
                                                                 <div
                                                                         class="pf-c-progress__bar"
                                                                         role="progressbar"
                                                                         aria-valuemin="0"
                                                                         aria-valuemax="10"
-                                                                        aria-valuenow="${vulnerability.rawData().get("cvssScore").asDouble()}"
+                                                                        aria-valuenow="${vulnerability.cvssScore()}"
                                                                         aria-labelledby="progress-simple-example-description"
                                                                 >
                                                                     <div class="pf-c-progress__indicator" style="width:${barNum}%;"></div>
@@ -424,32 +425,16 @@
                                                         </#if>
                                                     </td>
                                                     <td>
-                                                        <#assign recommendation = dependency.getTransRecommendationName(vulnerability.id())!>
-                                                        <#if recommendation?has_content>
-                                                            <#assign link = dependency.getLink(recommendation.name(), recommendation.version())>
-                                                            <svg width="10.9793322px" height="13px" viewBox="0 0 10.9793322 13" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                                                                <title>Combined Shape</title>
-                                                                <g id="New-dependencies-view" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                                                                    <g id="Overview" transform="translate(-1207.172757, -938.000000)" fill="#3E8635">
-                                                                        <g id="Details-of-dependency-com.github" transform="translate(427.000000, 764.000000)">
-                                                                            <g id="Dependency-1" transform="translate(0.000000, 144.000000)">
-                                                                                <g id="Group-9" transform="translate(780.172757, 24.000000)">
-                                                                                    <g id="Group-4" transform="translate(0.000000, 3.200001)">
-                                                                                        <g id="Icons/2.-Size-sm/Actions/check" transform="translate(0.000000, 2.799999)">
-                                                                                            <path d="M10.5565789,0 C10.7906249,0 10.9793322,0.181542969 10.9793322,0.40625 L10.9793322,5.74082031 C10.9793322,9.75 6.24081907,13 5.49579296,13 C4.75076684,13 0,9.75 0,5.73955078 L0,0.40625 C0,0.181542969 0.188707272,0 0.422753304,0 Z M8.54277883,3.11782667 L4.7912961,6.89087353 L3.03981338,5.1293244 C2.883609,4.97220683 2.63032812,4.97220683 2.47412375,5.1293244 L1.90844938,5.69826556 C1.75224501,5.85538312 1.75224501,6.11010449 1.90844938,6.26720671 L4.50845797,8.88215991 C4.66464708,9.03927747 4.9179127,9.03927747 5.07413233,8.88217525 L9.67414282,4.25570898 C9.8303472,4.09859141 9.8303472,3.84387004 9.67414282,3.68676782 L9.10846846,3.11782667 C8.95226408,2.96072444 8.6989832,2.96072444 8.54277883,3.11782667 Z" id="Combined-Shape"></path>
-                                                                                        </g>
-                                                                                    </g>
-                                                                                </g>
-                                                                            </g>
-                                                                        </g>
-                                                                    </g>
-                                                                </g>
+                                                        <#assign remediation = dependency.findTransitiveRemediationByIssue(vulnerability)!>
+                                                        <#if remediation?has_content>
+                                                            <svg style="width: 10.9793322px; height: 13px" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                                                                <use href="#shield-icon">
                                                             </svg>
-                                                            <a href="https://maven.repository.redhat.com/ga/${link}" target="_blank" style="font-size: 16px">
-                                                                ${recommendation.version()}
+                                                            <a href="${repoLink(remediation)}" target="_blank" style="font-size: 16px">
+                                                                ${remediation.version()}
                                                             </a>
                                                         <#else>
-                                                            <a href="https://snyk.io/vuln/${vulnerability.id()}"
+                                                            <a href="${issueLink(vulnerability.id())}"
                                                                target="_blank">
                                                                 ${vulnerability.id()}
                                                             </a>

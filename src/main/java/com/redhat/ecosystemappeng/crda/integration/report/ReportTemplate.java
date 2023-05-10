@@ -20,43 +20,47 @@ package com.redhat.ecosystemappeng.crda.integration.report;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.redhat.ecosystemappeng.crda.model.DependencyReport;
+import com.redhat.ecosystemappeng.crda.model.AnalysisReport;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.enterprise.context.ApplicationScoped;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @RegisterForReflection
 @ApplicationScoped
 public class ReportTemplate {
 
-    public Map<String, Object> setVariables(List<DependencyReport> report)
+    @ConfigProperty(name = "report.trustedContent.link")
+    String remediationPath;
+
+    @ConfigProperty(name = "report.snyk.link")
+    String packagePath;
+
+    @ConfigProperty(name = "api.snyk.issue.regex")
+    String issuePathRegex;
+
+    public Map<String, Object> setVariables(AnalysisReport report)
             throws JsonMappingException, JsonProcessingException, IOException {
 
-        Map<String, Object> reportMap = new HashMap<>();
-        List<DependencyReportWrapper> wrappers = new ArrayList<>();
-        for (DependencyReport dependencyReport : report) {
-            wrappers.add(new DependencyReportWrapper(dependencyReport));
-        }
+        Map<String, Object> params = new HashMap<>();
+        params.put("report", report);
+        params.put("remediationPath", remediationPath);
+        params.put("packagePath", packagePath);
+        params.put("issueLinkFormatter", new IssueLinkFormatter(issuePathRegex));
 
-        int totalVul = countTotalVul(wrappers);
-        reportMap.put("directs", wrappers);
-        reportMap.put("totalVul", totalVul);
-        reportMap.put("vulnerableDeps", report.size());
-
-        return reportMap;
+        return params;
     }
 
-    private int countTotalVul(List<DependencyReportWrapper> report) {
-        int total = 0;
-        for (DependencyReportWrapper dependencyReport : report) {
-            total += dependencyReport.countDirectVulnerabilities() + dependencyReport.countTransitiveVulnerabilities();
+    @RegisterForReflection
+    public static record IssueLinkFormatter(String issuePathRegex) {
+        
+        public String format(String id) {
+            return String.format(issuePathRegex, id, id);
         }
-        return total;
+
     }
 
 }

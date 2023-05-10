@@ -18,7 +18,6 @@
 
 package com.redhat.ecosystemappeng.crda.model;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -40,8 +39,8 @@ public record GraphRequest(
         String pkgManager,
         List<String> providers,
         Graph<PackageRef, DefaultEdge> graph,
-        Map<String, Collection<Issue>> issues,
-        Map<String, Recommendation> securityRecommendations,
+        Map<String, List<Issue>> issues,
+        Map<String, Remediation> remediations,
         Map<String, PackageRef> recommendations) {
 
     public GraphRequest {
@@ -64,10 +63,10 @@ public record GraphRequest(
         } else {
             issues = Collections.emptyMap();
         }
-        if (securityRecommendations != null) {
-            securityRecommendations = Collections.unmodifiableMap(securityRecommendations);
+        if (remediations != null) {
+            remediations = Collections.unmodifiableMap(remediations);
         } else {
-            securityRecommendations = Collections.emptyMap();
+            remediations = Collections.emptyMap();
         }
         if (recommendations != null) {
             recommendations = Collections.unmodifiableMap(recommendations);
@@ -81,8 +80,8 @@ public record GraphRequest(
         String pkgManager;
         List<String> providers;
         Graph<PackageRef, DefaultEdge> graph;
-        Map<String, Collection<Issue>> issues;
-        Map<String, Recommendation> securityRecommendations;
+        Map<String, List<Issue>> issues;
+        Map<String, Remediation> remediations;
         Map<String, PackageRef> recommendations;
 
         public Builder(String pkgManager, List<String> providers) {
@@ -99,8 +98,8 @@ public record GraphRequest(
                 this.issues = new HashMap<>(copy.issues);
             }
 
-            if (copy.securityRecommendations != null) {
-                this.securityRecommendations = new HashMap<>(copy.securityRecommendations);
+            if (copy.remediations != null) {
+                this.remediations = new HashMap<>(copy.remediations);
             }
 
             if (copy.recommendations != null) {
@@ -114,13 +113,13 @@ public record GraphRequest(
             return this;
         }
 
-        public Builder issues(Map<String, Collection<Issue>> issues) {
+        public Builder issues(Map<String, List<Issue>> issues) {
             this.issues = issues;
             return this;
         };
 
-        public Builder securityRecommendations(Map<String, Recommendation> securityRecommendations) {
-            this.securityRecommendations = securityRecommendations;
+        public Builder remediations(Map<String, Remediation> remediations) {
+            this.remediations = remediations;
             return this;
         }
 
@@ -130,7 +129,7 @@ public record GraphRequest(
         }
         
         public GraphRequest build() {
-            return new GraphRequest(pkgManager, providers, graph, issues, securityRecommendations, recommendations);
+            return new GraphRequest(pkgManager, providers, graph, issues, remediations, recommendations);
         }
 
     }

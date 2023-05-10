@@ -31,7 +31,7 @@ import org.apache.camel.Body;
 import com.redhat.ecosystemappeng.crda.integration.GraphUtils;
 import com.redhat.ecosystemappeng.crda.model.GraphRequest;
 import com.redhat.ecosystemappeng.crda.model.PackageRef;
-import com.redhat.ecosystemappeng.crda.model.Recommendation;
+import com.redhat.ecosystemappeng.crda.model.Remediation;
 import com.redhat.ecosystemappeng.crda.model.trustedcontent.MavenPackage;
 import com.redhat.ecosystemappeng.crda.model.trustedcontent.VexRequest;
 import com.redhat.ecosystemappeng.crda.model.trustedcontent.VexResult;
@@ -51,8 +51,8 @@ public class TrustedContentBodyMapper {
                         .collect(Collectors.toUnmodifiableList()));
     }
 
-    public Map<String, Recommendation> createRecommendations(VexRequest request, List<VexResult> response) {
-        Map<String, Recommendation> recommendations = new HashMap<>();
+    public Map<String, Remediation> createRemediations(VexRequest request, List<VexResult> response) {
+        Map<String, Remediation> remediations = new HashMap<>();
         for (int i = 0; i < request.cves().size(); i++) {
             VexResult result = response.get(i);
             if (result != null) {
@@ -60,26 +60,26 @@ public class TrustedContentBodyMapper {
                 PackageRef ref = new PackageRef(
                         result.mavenPackage().groupId() + ":" + result.mavenPackage().artifactId(),
                         result.mavenPackage().version());
-                Recommendation r = new Recommendation(cve, ref, result.productStatus());
-                recommendations.put(cve, r);
+                Remediation r = new Remediation(cve, ref, result.productStatus());
+                remediations.put(cve, r);
             }
         }
-        return recommendations;
+        return remediations;
     }
 
-    public GraphRequest filterRecommendations(GraphRequest req, Map<String, Recommendation> recommendations) {
+    public GraphRequest filterRecommendations(GraphRequest req, Map<String, Remediation> recommendations) {
         if (recommendations == null || recommendations.isEmpty()) {
             return req;
         }
-        Map<String, Recommendation> merged = new HashMap<>();
-        if (req.securityRecommendations() != null) {
-            merged.putAll(req.securityRecommendations());
+        Map<String, Remediation> merged = new HashMap<>();
+        if (req.remediations() != null) {
+            merged.putAll(req.remediations());
         }
         recommendations.entrySet().stream()
                 .filter(Objects::nonNull)
                 .filter(r -> req.graph().containsVertex(r.getValue().mavenPackage()))
                 .forEach(e -> merged.put(e.getKey(), e.getValue()));
-        return new GraphRequest.Builder(req).securityRecommendations(merged).build();
+        return new GraphRequest.Builder(req).remediations(merged).build();
     }
 
     public List<String> buildGavRequest(@Body GraphRequest request) {

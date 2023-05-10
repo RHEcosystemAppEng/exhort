@@ -57,7 +57,7 @@ public class TrustedContentIntegration extends EndpointRouteBuilder {
                 .setHeader("Accept", constant(MediaType.APPLICATION_JSON))
                 .bean(TrustedContentBodyMapper.class, "buildVexRequest")
                 .enrich(direct("vexRequest"),
-                        AggregationStrategies.bean(TrustedContentBodyMapper.class, "createRecommendations"));
+                        AggregationStrategies.bean(TrustedContentBodyMapper.class, "createRemediations"));
 
         from(direct("vexRequest"))
                 .marshal().json()

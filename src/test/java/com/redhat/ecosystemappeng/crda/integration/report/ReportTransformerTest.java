@@ -21,8 +21,6 @@ package com.redhat.ecosystemappeng.crda.integration.report;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -32,68 +30,66 @@ import org.jgrapht.graph.builder.GraphTypeBuilder;
 import org.junit.jupiter.api.Test;
 
 import com.redhat.ecosystemappeng.crda.integration.Constants;
-import com.redhat.ecosystemappeng.crda.model.DependencyReport;
+import com.redhat.ecosystemappeng.crda.model.AnalysisReport;
 import com.redhat.ecosystemappeng.crda.model.GraphRequest;
 import com.redhat.ecosystemappeng.crda.model.Issue;
 import com.redhat.ecosystemappeng.crda.model.PackageRef;
+import com.redhat.ecosystemappeng.crda.model.Severity;
 
 public class ReportTransformerTest {
 
     @Test
     public void testFilterDepsWithoutIssues() {
-        Map<String, Collection<Issue>> issues = Map.of("aa", List.of(new Issue("SNYK-001", "snyk", Collections.emptySet(), null )));
+        Map<String, List<Issue>> issues = Map.of("aa", List.of(buildIssue(1, 5f)));
         GraphRequest req = new GraphRequest.Builder(Constants.MAVEN_PKG_MANAGER, List.of(Constants.SNYK_PROVIDER))
                 .graph(buildGraph()).issues(issues)
                 .build();
 
-        List<DependencyReport> reports = new ReportTransformer().transform(req);
-        
-        assertNotNull(reports);
-        assertEquals(1, reports.size());
-        
-        assertEquals("aa", reports.get(0).ref().name());
-    }
+        AnalysisReport report = new ReportTransformer().transform(req);
 
+        assertNotNull(report);
+        assertEquals(1, report.dependencies().size());
+
+        assertEquals("aa", report.dependencies().get(0).ref().name());
+    }
 
     @Test
     public void testFilterTransitiveWithoutIssues() {
-        Map<String, Collection<Issue>> issues = Map.of(
-            "aa", List.of(new Issue("SNYK-001", "snyk", Collections.emptySet(), null )),
-            "aaa", List.of(new Issue("SNYK-002", "snyk", Collections.emptySet(), null )),
-            "aba", List.of(new Issue("SNYK-003", "snyk", Collections.emptySet(), null ))
-        );
+        Map<String, List<Issue>> issues = Map.of(
+                "aa", List.of(buildIssue(1, 5f)),
+                "aaa", List.of(buildIssue(2, 5f)),
+                "aba", List.of(buildIssue(3, 5f)));
         GraphRequest req = new GraphRequest.Builder(Constants.MAVEN_PKG_MANAGER, List.of(Constants.SNYK_PROVIDER))
                 .graph(buildGraph()).issues(issues)
                 .build();
 
-        List<DependencyReport> reports = new ReportTransformer().transform(req);
-        
-        assertNotNull(reports);
-        assertEquals(2, reports.size());
-        
-        assertEquals("aa", reports.get(0).ref().name());
-        assertEquals("ab", reports.get(1).ref().name());
+        AnalysisReport report = new ReportTransformer().transform(req);
 
-        assertEquals(1, reports.get(0).transitive().size());
-        assertEquals(1, reports.get(1).transitive().size());
+        assertNotNull(report);
+        assertEquals(2, report.dependencies().size());
+
+        assertEquals("aa", report.dependencies().get(0).ref().name());
+        assertEquals("ab", report.dependencies().get(1).ref().name());
+
+        assertEquals(1, report.dependencies().get(0).transitive().size());
+        assertEquals(1, report.dependencies().get(1).transitive().size());
     }
 
     @Test
     public void testFilterRecommendations() {
         Map<String, PackageRef> recommendations = Map.of(
-            "aa:1", new PackageRef("aa", "1.redhat-0001")
-        );
+                "aa:1", new PackageRef("aa", "1.redhat-0001"));
         GraphRequest req = new GraphRequest.Builder(Constants.MAVEN_PKG_MANAGER, List.of(Constants.SNYK_PROVIDER))
                 .graph(buildGraph()).recommendations(recommendations)
                 .build();
 
-        List<DependencyReport> reports = new ReportTransformer().transform(req);
-        
-        assertNotNull(reports);
-        assertEquals(1, reports.size());
-        
-        assertEquals("aa", reports.get(0).ref().name());
-        assertEquals("1.redhat-0001", reports.get(0).recommendation().version());
+        AnalysisReport report = new ReportTransformer().transform(req);
+
+        assertNotNull(report);
+        assertEquals(1, report.dependencies().size());
+
+        assertEquals("aa", report.dependencies().get(0).ref().name());
+        assertEquals("1.redhat-0001", report.dependencies().get(0).recommendation().version());
     }
 
     private Graph<PackageRef, DefaultEdge> buildGraph() {
@@ -110,6 +106,13 @@ public class ReportTransformerTest {
                 .buildAsUnmodifiable();
     }
 
-
+    private Issue buildIssue(int id, Float score) {
+        return new Issue.Builder(String.format("ISSUE-00%d", id))
+                .title(String.format("ISSUE Example 00%d", id))
+                .source(Constants.SNYK_PROVIDER)
+                .severity(Severity.values()[id % Severity.values().length])
+                .cvssScore(score)
+                .build();
+    }
 
 }

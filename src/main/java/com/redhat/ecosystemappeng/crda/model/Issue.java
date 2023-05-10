@@ -18,27 +18,64 @@
 
 package com.redhat.ecosystemappeng.crda.model;
 
+import java.util.Collections;
+import java.util.Objects;
 import java.util.Set;
-
-import com.fasterxml.jackson.databind.JsonNode;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @RegisterForReflection
-public record Issue(String id, String source, Set<String> cves, JsonNode rawData) {
+public record Issue(
+        String id,
+        String title,
+        String source,
+        CvssVector cvss,
+        Float cvssScore,
+        Severity severity,
+        Set<String> cves) {
 
-    public static final class Builder {
+    public Issue {
+        Objects.requireNonNull(id);
+        Objects.requireNonNull(title);
+        Objects.requireNonNull(source);
+        Objects.requireNonNull(severity);
+        Objects.requireNonNull(cvssScore);
+        if(cves != null) {
+            cves = Collections.unmodifiableSet(cves);
+        }
+    }            
+
+    public static class Builder {
+
         String id;
+        String title;
         String source;
+        CvssVector cvss;
+        Float cvssScore;
+        Severity severity;
         Set<String> cves;
-        JsonNode rawData;
 
         public Builder(String id) {
             this.id = id;
         }
 
+        public Builder title(String title) {
+            this.title = title;
+            return this;
+        }
+
         public Builder source(String source) {
             this.source = source;
+            return this;
+        }
+
+        public Builder cvss(CvssVector cvss) {
+            this.cvss = cvss;
+            return this;
+        }
+
+        public Builder cvssScore(Float cvssScore) {
+            this.cvssScore = cvssScore;
             return this;
         }
 
@@ -47,14 +84,13 @@ public record Issue(String id, String source, Set<String> cves, JsonNode rawData
             return this;
         }
 
-        public Builder rawData(JsonNode rawData) {
-            this.rawData = rawData;
+        public Builder severity(Severity severity) {
+            this.severity = severity;
             return this;
         }
 
         public Issue build() {
-            return new Issue(id, source, cves, rawData);
+            return new Issue(id, title, source, cvss, cvssScore, severity, cves);
         }
     }
-
 }

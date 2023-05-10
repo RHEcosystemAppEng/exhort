@@ -1,4 +1,4 @@
-openapi: 3.0.3
+openapi: 3.1.0
 info:
   title: CodeReady Dependency Analytics API
   description: Vulnerability analysis with Red Hat CodeReady Dependency Analytics
@@ -157,11 +157,11 @@ components:
         recommendation:
           description: Trusted Content recommendation that is not related to any security vulnerability
           $ref: '#/components/schemas/PackageRef'
-        securityRecommendations:
-          description: Trusted Content recommendations related to identified security vulnerabilities
+        remediations:
+          description: Trusted Content remediation related to identified security vulnerabilities
           type: object
           additionalProperties:
-            $ref: '#/components/schemas/Recommendation'
+            $ref: '#/components/schemas/Remediation'
       example:
         ref:
           name: io.quarkus:quarkus-jdbc-postgresql
@@ -182,7 +182,7 @@ components:
                 cves:
                 - CVE-2022-41946
                 rawData: {}
-        securityRecommendations:
+        remediations:
           CVE-2022-41946:
             issueRef: CVE-2022-41946
             mavenPackage:
@@ -217,10 +217,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Issue'
-        securityRecommendations:
+        remediations:
           type: object
           additionalProperties:
-            $ref: '#/components/schemas/Recommendation'
+            $ref: '#/components/schemas/Remediation'
       example:
         ref:
           name: org.postgresql:postgresql
@@ -231,7 +231,7 @@ components:
             cves:
              - CVE-2022-41946
             rawData: {}
-    Recommendation:
+    Remediation:
       type: object
       properties:
         issueRef:
@@ -246,3 +246,25 @@ components:
           name: io.quarkus:quarkus-jdbc-postgresql
           version: 2.13.7.Final-redhat-00003
         productStatus: fixed
+    Summary:
+      type: object
+      properties:
+        scannedDependencies:
+          type: number
+        transitiveDependencies:
+          type: number
+        vulnerabilities:
+          type: object
+          properties:
+            direct:
+              type: number
+            total:
+              type: number
+            critical:
+              type: number
+            high:
+              type: number
+            medium:
+              type: number
+            low:
+              type: number

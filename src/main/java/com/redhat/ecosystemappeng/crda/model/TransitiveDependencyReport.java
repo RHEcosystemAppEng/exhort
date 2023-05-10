@@ -18,7 +18,7 @@
 
 package com.redhat.ecosystemappeng.crda.model;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
@@ -26,7 +26,8 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 @RegisterForReflection
 public record TransitiveDependencyReport(
         PackageRef ref,
-        Collection<Issue> issues,
-        Map<String, Recommendation> securityRecommendations) {
+        Issue highestVulnerability,
+        List<Issue> issues,
+        Map<String, Remediation> remediations) {
 
 }
