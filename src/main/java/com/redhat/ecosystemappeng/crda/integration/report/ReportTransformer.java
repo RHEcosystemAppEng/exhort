@@ -29,9 +29,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
-import javax.activation.DataHandler;
-import javax.ws.rs.core.MediaType;
-
 import org.apache.camel.Exchange;
 import org.apache.camel.attachment.AttachmentMessage;
 import org.jgrapht.graph.DefaultEdge;
@@ -50,6 +47,8 @@ import com.redhat.ecosystemappeng.crda.model.TransitiveDependencyReport;
 import com.redhat.ecosystemappeng.crda.model.VulnerabilitiesSummary;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
+import jakarta.activation.DataHandler;
+import jakarta.ws.rs.core.MediaType;
 
 @RegisterForReflection
 public class ReportTransformer {

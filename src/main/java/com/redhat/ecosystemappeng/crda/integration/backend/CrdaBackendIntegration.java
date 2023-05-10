@@ -19,10 +19,6 @@
 package com.redhat.ecosystemappeng.crda.integration.backend;
 
 import static com.redhat.ecosystemappeng.crda.integration.Constants.REQUEST_CONTENT_PROPERTY;
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.ws.rs.ClientErrorException;
-import javax.ws.rs.core.MediaType;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.AggregationStrategies;
@@ -34,6 +30,11 @@ import com.redhat.ecosystemappeng.crda.integration.GraphUtils;
 import com.redhat.ecosystemappeng.crda.integration.ProviderAggregationStrategy;
 import com.redhat.ecosystemappeng.crda.integration.VulnerabilityProvider;
 import com.redhat.ecosystemappeng.crda.model.PackageRef;
+
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.ClientErrorException;
+import jakarta.ws.rs.core.MediaType;
 
 @ApplicationScoped
 public class CrdaBackendIntegration extends EndpointRouteBuilder {

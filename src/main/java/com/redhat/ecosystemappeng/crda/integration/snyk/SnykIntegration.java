@@ -18,14 +18,14 @@
 
 package com.redhat.ecosystemappeng.crda.integration.snyk;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.ws.rs.core.MediaType;
-
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.AggregationStrategies;
 import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
 
 import com.redhat.ecosystemappeng.crda.integration.Constants;
+
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.ws.rs.core.MediaType;
 
 @ApplicationScoped
 public class SnykIntegration  extends EndpointRouteBuilder {

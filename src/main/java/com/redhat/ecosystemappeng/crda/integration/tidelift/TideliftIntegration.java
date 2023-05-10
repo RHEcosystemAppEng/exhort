@@ -18,8 +18,6 @@
 
 package com.redhat.ecosystemappeng.crda.integration.tidelift;
 
-import javax.ws.rs.core.MediaType;
-
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
 import org.apache.camel.http.base.HttpOperationFailedException;
@@ -29,6 +27,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.redhat.ecosystemappeng.crda.config.ObjectMapperProducer;
 import com.redhat.ecosystemappeng.crda.integration.Constants;
 import com.redhat.ecosystemappeng.crda.model.GraphRequest;
+
+import jakarta.ws.rs.core.MediaType;
 
 public class TideliftIntegration extends EndpointRouteBuilder {
     

@@ -21,10 +21,9 @@ package com.redhat.ecosystemappeng.crda.integration;
 import static io.restassured.RestAssured.given;
 import static org.apache.camel.Exchange.CONTENT_TYPE;
 import static org.hamcrest.core.IsEqual.equalTo;
+
 import java.util.Collections;
 import java.util.List;
-
-import javax.ws.rs.core.MediaType;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -32,6 +31,7 @@ import org.junit.jupiter.api.Test;
 import com.redhat.ecosystemappeng.crda.model.PackageRef;
 
 import io.quarkus.test.junit.QuarkusTest;
+import jakarta.ws.rs.core.MediaType;
 
 @QuarkusTest
 public class ComponentAnalysisTest extends AbstractAnalysisTest {
