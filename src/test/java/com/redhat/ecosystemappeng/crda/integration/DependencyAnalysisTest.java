@@ -21,10 +21,12 @@ package com.redhat.ecosystemappeng.crda.integration;
 import static io.restassured.RestAssured.given;
 import static org.apache.camel.Exchange.CONTENT_TYPE;
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.util.List;
 
 import javax.ws.rs.core.MediaType;
 
@@ -32,6 +34,11 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import io.quarkus.test.junit.QuarkusTest;
+import com.redhat.ecosystemappeng.crda.model.AnalysisReport;
+import com.redhat.ecosystemappeng.crda.model.DependencyReport;
+import com.redhat.ecosystemappeng.crda.model.PackageRef;
+import com.redhat.ecosystemappeng.crda.model.Summary;
+import com.redhat.ecosystemappeng.crda.model.TransitiveDependencyReport;
 
 @QuarkusTest
 public class DependencyAnalysisTest extends AbstractAnalysisTest {
@@ -124,7 +131,7 @@ public class DependencyAnalysisTest extends AbstractAnalysisTest {
         // stubTideliftRequest(null);
         stubTCVexRequest();
 
-        String body = given()
+        AnalysisReport report = given()
                 .header(CONTENT_TYPE, Constants.TEXT_VND_GRAPHVIZ)
                 .body(loadDependenciesFile())
                 .header("Accept", MediaType.APPLICATION_JSON)
@@ -134,9 +141,10 @@ public class DependencyAnalysisTest extends AbstractAnalysisTest {
                 .assertThat()
                     .statusCode(200)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .extract().body().asPrettyString();
+                    .extract().body().as(AnalysisReport.class);
 
-        assertJson("full_report.json", body);
+        assertSummary(report.summary());
+        assertDependenciesReport(report.dependencies());
 
         verifyTCVexRequest();
         verifySnykRequest(null);
@@ -151,7 +159,7 @@ public class DependencyAnalysisTest extends AbstractAnalysisTest {
         String tideliftToken = "my-tidelift-token";
         stubTCVexRequest();
 
-        String body = given()
+        AnalysisReport report = given()
                 .header(CONTENT_TYPE, Constants.TEXT_VND_GRAPHVIZ)
                 .header("Accept", MediaType.APPLICATION_JSON)
                 .header(Constants.TIDELIFT_TOKEN_HEADER, tideliftToken)
@@ -163,8 +171,10 @@ public class DependencyAnalysisTest extends AbstractAnalysisTest {
                 .assertThat()
                     .statusCode(200)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .extract().body().asPrettyString();
-        assertJson("full_report.json", body);
+                    .extract().body().as(AnalysisReport.class);
+
+        assertSummary(report.summary());
+        assertDependenciesReport(report.dependencies());
 
         verifySnykRequest(snykToken);
         verifyTCVexRequest();
@@ -209,6 +219,49 @@ public class DependencyAnalysisTest extends AbstractAnalysisTest {
                     .contentType(MediaType.TEXT_PLAIN);
         
         verifyNoInteractions();
+    }
+
+    private void assertSummary(Summary summary) {
+        assertEquals(2, summary.dependencies().scanned());
+        assertEquals(8, summary.dependencies().transitive());
+
+        assertEquals(4, summary.vulnerabilities().total());
+        assertEquals(2, summary.vulnerabilities().direct());
+        assertEquals(0, summary.vulnerabilities().critical());
+        assertEquals(1, summary.vulnerabilities().high());
+        assertEquals(3, summary.vulnerabilities().medium());
+        assertEquals(0, summary.vulnerabilities().low());
+    }
+
+    private void assertDependenciesReport(List<DependencyReport> dependencies) {
+        assertEquals(2, dependencies.size());
+
+        PackageRef hibernate = new PackageRef("io.quarkus:quarkus-hibernate-orm", "2.13.5.Final");
+        DependencyReport report = getReport(hibernate.name(), dependencies);
+        assertNotNull(report);
+        assertEquals(hibernate, report.ref());
+        assertNull(report.recommendation());
+        assertTrue(report.issues().isEmpty());
+        assertTrue(report.remediations().isEmpty());
+        assertTrue(report.hasRemediation());
+        
+        assertEquals(1, report.transitive().size());
+        TransitiveDependencyReport tReport = report.transitive().get(0);
+        PackageRef jackson = new PackageRef("com.fasterxml.jackson.core:jackson-databind", "2.13.1");
+        assertEquals(jackson, tReport.ref());
+        assertEquals(3, tReport.issues().size());
+        assertEquals(tReport.highestVulnerability(), tReport.issues().get(0));
+        assertEquals(report.highestVulnerability(), tReport.highestVulnerability());
+
+        assertEquals(new PackageRef(jackson.name(), "2.13.1.Final-redhat-00002"), tReport.remediations().get("CVE-2020-36518").mavenPackage());
+        assertEquals(new PackageRef(jackson.name(), "2.13.1.Final-redhat-00002"), tReport.remediations().get("CVE-2022-42004").mavenPackage());
+        assertNull(tReport.remediations().get("CVE-2022-42003"));
+    }
+
+    private DependencyReport getReport(String pkgName, List<DependencyReport> dependencies) {
+        DependencyReport dep = dependencies.stream().filter(d -> d.ref().name().equals(pkgName)).findFirst().orElse(null);
+        assertNotNull(dep);
+        return dep;
     }
 
 }

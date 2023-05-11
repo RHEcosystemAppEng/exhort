@@ -18,17 +18,67 @@
 
 package com.redhat.ecosystemappeng.crda.model;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @RegisterForReflection
 public record DependencyReport(
         PackageRef ref,
-        Collection<Issue> issues,
-        Collection<TransitiveDependencyReport> transitive,
-        Map<String, Recommendation> securityRecommendations,
+        Issue highestVulnerability,
+        List<Issue> issues,
+        List<TransitiveDependencyReport> transitive,
+        Map<String, Remediation> remediations,
         PackageRef recommendation) {
+    
+    public int transitiveIssuesCount() {
+        return transitive.stream().mapToInt(t -> t.issues().size()).sum();
+    }
 
+    public boolean hasRemediation() {
+        if(!remediations.isEmpty()) {
+            return true;
+        }
+        return transitive != null && transitive.stream().anyMatch(t -> !t.remediations().isEmpty());
+    }
+
+    public PackageRef findRemediationByIssue(Issue issue) {
+        if(issue.cves().isEmpty()) {
+            return null;
+        }
+        List<Remediation> result = new ArrayList<>();
+        issue.cves()
+            .stream()
+            .map(cve -> remediations.get(cve))
+            .filter(Objects::nonNull)
+            .forEach(result::add);
+        
+        if(result.isEmpty()) {
+            return null;
+        }
+        // Assuming there's only one CVE by issue
+        return result.get(0).mavenPackage();
+    }
+
+    public PackageRef findTransitiveRemediationByIssue(Issue issue) {
+        if(issue.cves().isEmpty()) {
+            return null;
+        }
+        List<Remediation> result = new ArrayList<>();
+        issue.cves()
+            .stream()
+            .forEach(cve -> transitive.stream()
+                .map(t -> t.remediations().get(cve))
+                .filter(Objects::nonNull)
+                .forEach(result::add));
+        
+        if(result.isEmpty()) {
+            return null;
+        }
+        // Assuming there's only one CVE by issue
+        return result.get(0).mavenPackage();
+    }
 }

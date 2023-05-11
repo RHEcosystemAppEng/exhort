@@ -19,9 +19,9 @@
 package com.redhat.ecosystemappeng.crda.integration.snyk;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -29,10 +29,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.redhat.ecosystemappeng.crda.CvssParser;
 import com.redhat.ecosystemappeng.crda.config.ObjectMapperProducer;
 import com.redhat.ecosystemappeng.crda.integration.Constants;
 import com.redhat.ecosystemappeng.crda.model.GraphRequest;
 import com.redhat.ecosystemappeng.crda.model.Issue;
+import com.redhat.ecosystemappeng.crda.model.Severity;
+
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @RegisterForReflection
@@ -43,17 +46,17 @@ public class SnykAggregationStrategy {
     public GraphRequest aggregate(GraphRequest graphReq, String newExchange)
             throws JsonMappingException, JsonProcessingException {
         JsonNode snykResponse = mapper.readTree(newExchange);
-        Map<String, Collection<Issue>> issuesData = getIssues(snykResponse);
+        Map<String, List<Issue>> issuesData = getIssues(snykResponse);
         return new GraphRequest.Builder(graphReq).issues(issuesData).build();
     }
 
-    private Map<String, Collection<Issue>> getIssues(JsonNode snykResponse) {
-        Map<String, Collection<Issue>> reports = new HashMap<>();
+    private Map<String, List<Issue>> getIssues(JsonNode snykResponse) {
+        Map<String, List<Issue>> reports = new HashMap<>();
         snykResponse.withArray("issues").elements().forEachRemaining(n -> {
             String pkgName = n.get("pkgName").asText();
             String issueId = n.get("issueId").asText();
             JsonNode issueData = snykResponse.get("issuesData").get(issueId);
-            Collection<Issue> issues = reports.get(pkgName);
+            List<Issue> issues = reports.get(pkgName);
             if (issues == null) {
                 issues = new ArrayList<>();
                 reports.put(pkgName, issues);
@@ -67,10 +70,14 @@ public class SnykAggregationStrategy {
         Issue.Builder builder = new Issue.Builder(id).source(Constants.SNYK_PROVIDER);
         Set<String> cves = new HashSet<>();
         data.withArray("/identifiers/CVE")
-                .elements()
-                .forEachRemaining(cve -> cves.add(cve.asText()));
-        builder.rawData(data)
-                .cves(cves);
+            .elements()
+            .forEachRemaining(cve -> cves.add(cve.asText()));
+        String cvssV3 = data.get("CVSSv3").asText();
+        builder.title(data.get("title").asText())
+            .severity(Severity.fromValue(data.get("severity").asText()))
+            .cvss(CvssParser.fromVectorString(cvssV3))
+            .cvssScore(data.get("cvssScore").floatValue())
+            .cves(cves);
         return builder.build();
     }
 

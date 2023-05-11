@@ -20,7 +20,7 @@
 </svg>
 <html xmlns="http://www.w3.org/1999/html">
 <head>
-    <style type="text/css">
+<style type="text/css">
     * {box-sizing: border-box}
 
     /* Set height of body and the document to 100% */
@@ -118,6 +118,7 @@
     <link rel="stylesheet" href="style.css"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
           integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <title>CRDA Dependency Analysis</title>
 </head>
 <body class="p-4 container-fluid">
 
@@ -213,8 +214,31 @@
                 </td>
                 <td>0</td>
                 <td>3</td>
-                    <td>--</td>
-                    <td>--</td>
+                    <td>
+                            <div class="pf-c-progress pf-m-danger" id="progress-simple-example">
+                            <div
+                                    class="pf-c-progress__description"
+                                    id="progress-simple-example-description"
+                            >7.5/10</div>
+                            <div
+                                    class="pf-c-progress__bar"
+                                    role="progressbar"
+                                    aria-valuemin="0"
+                                    aria-valuemax="10"
+                                    aria-valuenow="7.5"
+                                    aria-labelledby="progress-simple-example-description"
+                            >
+                                <div class="pf-c-progress__indicator" style="width:75%;"></div>
+                            </div>
+                        </div>
+                            </div>
+                    </td>
+                    <td>
+                        <a href="https://security.snyk.io/vuln/SNYK-JAVA-COMFASTERXMLJACKSONCORE-2421244?utm_medium=Partner&utm_source=RedHat&utm_campaign=Code-Ready-Analytics-2020&utm_content=vuln/SNYK-JAVA-COMFASTERXMLJACKSONCORE-2421244"
+                           target="_blank">
+                            SNYK-JAVA-COMFASTERXMLJACKSONCORE-2421244
+                        </a>
+                    </td>
                 <td>
                         <svg style="width: 10.9793322px; height: 13px" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                             <use href="#shield-icon">
@@ -224,7 +248,7 @@
             </tr>
             <tr>
                 <td colspan="8" class="hiddenRow">
-                    <div class="accordian-body collapse p-4 bg-light" id="ioquarkusquarkushibernateorm">
+                    <div class="accordion-body collapse p-4 bg-light" id="ioquarkusquarkushibernateorm">
                         <p class="px-3">Details of the dependency:
                             <span class="font-weight-bold">io.quarkus:quarkus-hibernate-orm</span>
                         </p>
@@ -241,7 +265,7 @@
                                     <th scope="col">Severity</th>
                                     <th scope="col">Description</th>
                                     <th scope="col" style="width: 15%">CVSS</th>
-                                    <th scope="col">ID</th>
+                                    <th scope="col">CVE</th>
                                     <th scope="col">Remediation</th>
                                 </tr>
                                 </thead>
@@ -255,15 +279,15 @@
                                                     </td>
                                                     <td>
                                                             <span class="pf-c-label pf-m-red">
-                                                                <span class="pf-c-label__content">
-                                                                    high
-                                                                </span>
+                                                            <span class="pf-c-label__content">
+                                                                high
                                                             </span>
+                                                        </span>
                                                     </td>
                                                     <td>Denial of Service (DoS)</td>
                                                     <td>
                                                             <div class="pf-c-progress pf-m-danger" id="progress-simple-example">
-                                                                <div class="pf-c-progress__description" id="progress-simple-example-description"
+                                                            <div class="pf-c-progress__description" id="progress-simple-example-description"
                                                                 >7.5/10</div>
                                                                 <div
                                                                         class="pf-c-progress__bar"
@@ -282,23 +306,8 @@
                                                                 CVE-2020-36518
                                                     </td>
                                                     <td>
-                                                            <svg width="10.9793322px" height="13px" viewBox="0 0 10.9793322 13" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                                                                <title>Combined Shape</title>
-                                                                <g id="New-dependencies-view" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                                                                    <g id="Overview" transform="translate(-1207.172757, -938.000000)" fill="#3E8635">
-                                                                        <g id="Details-of-dependency-com.github" transform="translate(427.000000, 764.000000)">
-                                                                            <g id="Dependency-1" transform="translate(0.000000, 144.000000)">
-                                                                                <g id="Group-9" transform="translate(780.172757, 24.000000)">
-                                                                                    <g id="Group-4" transform="translate(0.000000, 3.200001)">
-                                                                                        <g id="Icons/2.-Size-sm/Actions/check" transform="translate(0.000000, 2.799999)">
-                                                                                            <path d="M10.5565789,0 C10.7906249,0 10.9793322,0.181542969 10.9793322,0.40625 L10.9793322,5.74082031 C10.9793322,9.75 6.24081907,13 5.49579296,13 C4.75076684,13 0,9.75 0,5.73955078 L0,0.40625 C0,0.181542969 0.188707272,0 0.422753304,0 Z M8.54277883,3.11782667 L4.7912961,6.89087353 L3.03981338,5.1293244 C2.883609,4.97220683 2.63032812,4.97220683 2.47412375,5.1293244 L1.90844938,5.69826556 C1.75224501,5.85538312 1.75224501,6.11010449 1.90844938,6.26720671 L4.50845797,8.88215991 C4.66464708,9.03927747 4.9179127,9.03927747 5.07413233,8.88217525 L9.67414282,4.25570898 C9.8303472,4.09859141 9.8303472,3.84387004 9.67414282,3.68676782 L9.10846846,3.11782667 C8.95226408,2.96072444 8.6989832,2.96072444 8.54277883,3.11782667 Z" id="Combined-Shape"></path>
-                                                                                        </g>
-                                                                                    </g>
-                                                                                </g>
-                                                                            </g>
-                                                                        </g>
-                                                                    </g>
-                                                                </g>
+                                                            <svg style="width: 10.9793322px; height: 13px" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                                                                <use href="#shield-icon">
                                                             </svg>
                                                             <a href="https://maven.repository.redhat.com/ga/com/fasterxml/jackson/core/jackson-databind/2.13.1.Final-redhat-00002" target="_blank" style="font-size: 16px">
                                                                 2.13.1.Final-redhat-00002
@@ -308,15 +317,15 @@
                                                 <tr>
                                                     <td>
                                                             <span class="pf-c-label pf-m-orange">
-                                                                <span class="pf-c-label__content">
-                                                                    medium
-                                                                </span>
+                                                            <span class="pf-c-label__content">
+                                                                medium
                                                             </span>
+                                                        </span>
                                                     </td>
                                                     <td>Denial of Service (DoS)</td>
                                                     <td>
                                                             <div class="pf-c-progress pf-m-warning" id="progress-simple-example">
-                                                                <div class="pf-c-progress__description" id="progress-simple-example-description"
+                                                            <div class="pf-c-progress__description" id="progress-simple-example-description"
                                                                 >5.9/10</div>
                                                                 <div
                                                                         class="pf-c-progress__bar"
@@ -335,23 +344,8 @@
                                                                 CVE-2022-42004
                                                     </td>
                                                     <td>
-                                                            <svg width="10.9793322px" height="13px" viewBox="0 0 10.9793322 13" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                                                                <title>Combined Shape</title>
-                                                                <g id="New-dependencies-view" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                                                                    <g id="Overview" transform="translate(-1207.172757, -938.000000)" fill="#3E8635">
-                                                                        <g id="Details-of-dependency-com.github" transform="translate(427.000000, 764.000000)">
-                                                                            <g id="Dependency-1" transform="translate(0.000000, 144.000000)">
-                                                                                <g id="Group-9" transform="translate(780.172757, 24.000000)">
-                                                                                    <g id="Group-4" transform="translate(0.000000, 3.200001)">
-                                                                                        <g id="Icons/2.-Size-sm/Actions/check" transform="translate(0.000000, 2.799999)">
-                                                                                            <path d="M10.5565789,0 C10.7906249,0 10.9793322,0.181542969 10.9793322,0.40625 L10.9793322,5.74082031 C10.9793322,9.75 6.24081907,13 5.49579296,13 C4.75076684,13 0,9.75 0,5.73955078 L0,0.40625 C0,0.181542969 0.188707272,0 0.422753304,0 Z M8.54277883,3.11782667 L4.7912961,6.89087353 L3.03981338,5.1293244 C2.883609,4.97220683 2.63032812,4.97220683 2.47412375,5.1293244 L1.90844938,5.69826556 C1.75224501,5.85538312 1.75224501,6.11010449 1.90844938,6.26720671 L4.50845797,8.88215991 C4.66464708,9.03927747 4.9179127,9.03927747 5.07413233,8.88217525 L9.67414282,4.25570898 C9.8303472,4.09859141 9.8303472,3.84387004 9.67414282,3.68676782 L9.10846846,3.11782667 C8.95226408,2.96072444 8.6989832,2.96072444 8.54277883,3.11782667 Z" id="Combined-Shape"></path>
-                                                                                        </g>
-                                                                                    </g>
-                                                                                </g>
-                                                                            </g>
-                                                                        </g>
-                                                                    </g>
-                                                                </g>
+                                                            <svg style="width: 10.9793322px; height: 13px" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                                                                <use href="#shield-icon">
                                                             </svg>
                                                             <a href="https://maven.repository.redhat.com/ga/com/fasterxml/jackson/core/jackson-databind/2.13.1.Final-redhat-00002" target="_blank" style="font-size: 16px">
                                                                 2.13.1.Final-redhat-00002
@@ -361,15 +355,15 @@
                                                 <tr>
                                                     <td>
                                                             <span class="pf-c-label pf-m-orange">
-                                                                <span class="pf-c-label__content">
-                                                                    medium
-                                                                </span>
+                                                            <span class="pf-c-label__content">
+                                                                medium
                                                             </span>
+                                                        </span>
                                                     </td>
                                                     <td>Denial of Service (DoS)</td>
                                                     <td>
                                                             <div class="pf-c-progress pf-m-warning" id="progress-simple-example">
-                                                                <div class="pf-c-progress__description" id="progress-simple-example-description"
+                                                            <div class="pf-c-progress__description" id="progress-simple-example-description"
                                                                 >5.9/10</div>
                                                                 <div
                                                                         class="pf-c-progress__bar"
@@ -388,7 +382,7 @@
                                                                 CVE-2022-42003
                                                     </td>
                                                     <td>
-                                                            <a href="https://snyk.io/vuln/SNYK-JAVA-COMFASTERXMLJACKSONCORE-3038426"
+                                                            <a href="https://security.snyk.io/vuln/SNYK-JAVA-COMFASTERXMLJACKSONCORE-3038426?utm_medium=Partner&utm_source=RedHat&utm_campaign=Code-Ready-Analytics-2020&utm_content=vuln/SNYK-JAVA-COMFASTERXMLJACKSONCORE-3038426"
                                                                target="_blank">
                                                                 SNYK-JAVA-COMFASTERXMLJACKSONCORE-3038426
                                                             </a>
@@ -411,8 +405,31 @@
                 </td>
                 <td>0</td>
                 <td>1</td>
-                    <td>--</td>
-                    <td>--</td>
+                    <td>
+                            <div class="pf-c-progress pf-m-warning" id="progress-simple-example">
+                            <div
+                                    class="pf-c-progress__description"
+                                    id="progress-simple-example-description"
+                            >4.7/10</div>
+                            <div
+                                    class="pf-c-progress__bar"
+                                    role="progressbar"
+                                    aria-valuemin="0"
+                                    aria-valuemax="10"
+                                    aria-valuenow="4.7"
+                                    aria-labelledby="progress-simple-example-description"
+                            >
+                                <div class="pf-c-progress__indicator" style="width:47%;"></div>
+                            </div>
+                        </div>
+                            </div>
+                    </td>
+                    <td>
+                        <a href="https://security.snyk.io/vuln/SNYK-JAVA-ORGPOSTGRESQL-3146847?utm_medium=Partner&utm_source=RedHat&utm_campaign=Code-Ready-Analytics-2020&utm_content=vuln/SNYK-JAVA-ORGPOSTGRESQL-3146847"
+                           target="_blank">
+                            SNYK-JAVA-ORGPOSTGRESQL-3146847
+                        </a>
+                    </td>
                 <td>
                         <svg style="width: 10.9793322px; height: 13px" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                             <use href="#shield-icon">
@@ -422,7 +439,7 @@
             </tr>
             <tr>
                 <td colspan="8" class="hiddenRow">
-                    <div class="accordian-body collapse p-4 bg-light" id="ioquarkusquarkusjdbcpostgresql">
+                    <div class="accordion-body collapse p-4 bg-light" id="ioquarkusquarkusjdbcpostgresql">
                         <p class="px-3">Details of the dependency:
                             <span class="font-weight-bold">io.quarkus:quarkus-jdbc-postgresql</span>
                         </p>
@@ -439,7 +456,7 @@
                                     <th scope="col">Severity</th>
                                     <th scope="col">Description</th>
                                     <th scope="col" style="width: 15%">CVSS</th>
-                                    <th scope="col">ID</th>
+                                    <th scope="col">CVE</th>
                                     <th scope="col">Remediation</th>
                                 </tr>
                                 </thead>
@@ -453,15 +470,15 @@
                                                     </td>
                                                     <td>
                                                             <span class="pf-c-label pf-m-orange">
-                                                                <span class="pf-c-label__content">
-                                                                    medium
-                                                                </span>
+                                                            <span class="pf-c-label__content">
+                                                                medium
                                                             </span>
+                                                        </span>
                                                     </td>
                                                     <td>Information Exposure</td>
                                                     <td>
                                                             <div class="pf-c-progress pf-m-warning" id="progress-simple-example">
-                                                                <div class="pf-c-progress__description" id="progress-simple-example-description"
+                                                            <div class="pf-c-progress__description" id="progress-simple-example-description"
                                                                 >4.7/10</div>
                                                                 <div
                                                                         class="pf-c-progress__bar"
@@ -480,23 +497,8 @@
                                                                 CVE-2022-41946
                                                     </td>
                                                     <td>
-                                                            <svg width="10.9793322px" height="13px" viewBox="0 0 10.9793322 13" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                                                                <title>Combined Shape</title>
-                                                                <g id="New-dependencies-view" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                                                                    <g id="Overview" transform="translate(-1207.172757, -938.000000)" fill="#3E8635">
-                                                                        <g id="Details-of-dependency-com.github" transform="translate(427.000000, 764.000000)">
-                                                                            <g id="Dependency-1" transform="translate(0.000000, 144.000000)">
-                                                                                <g id="Group-9" transform="translate(780.172757, 24.000000)">
-                                                                                    <g id="Group-4" transform="translate(0.000000, 3.200001)">
-                                                                                        <g id="Icons/2.-Size-sm/Actions/check" transform="translate(0.000000, 2.799999)">
-                                                                                            <path d="M10.5565789,0 C10.7906249,0 10.9793322,0.181542969 10.9793322,0.40625 L10.9793322,5.74082031 C10.9793322,9.75 6.24081907,13 5.49579296,13 C4.75076684,13 0,9.75 0,5.73955078 L0,0.40625 C0,0.181542969 0.188707272,0 0.422753304,0 Z M8.54277883,3.11782667 L4.7912961,6.89087353 L3.03981338,5.1293244 C2.883609,4.97220683 2.63032812,4.97220683 2.47412375,5.1293244 L1.90844938,5.69826556 C1.75224501,5.85538312 1.75224501,6.11010449 1.90844938,6.26720671 L4.50845797,8.88215991 C4.66464708,9.03927747 4.9179127,9.03927747 5.07413233,8.88217525 L9.67414282,4.25570898 C9.8303472,4.09859141 9.8303472,3.84387004 9.67414282,3.68676782 L9.10846846,3.11782667 C8.95226408,2.96072444 8.6989832,2.96072444 8.54277883,3.11782667 Z" id="Combined-Shape"></path>
-                                                                                        </g>
-                                                                                    </g>
-                                                                                </g>
-                                                                            </g>
-                                                                        </g>
-                                                                    </g>
-                                                                </g>
+                                                            <svg style="width: 10.9793322px; height: 13px" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                                                                <use href="#shield-icon">
                                                             </svg>
                                                             <a href="https://maven.repository.redhat.com/ga/io/quarkus/quarkus-jdbc-postgresql/2.13.7.Final-redhat-00003" target="_blank" style="font-size: 16px">
                                                                 2.13.7.Final-redhat-00003

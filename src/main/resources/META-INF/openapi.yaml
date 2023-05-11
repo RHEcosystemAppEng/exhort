@@ -48,9 +48,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/DependencyReport'
+                $ref: '#/components/schemas/AnalysisReport'
         '422':
           description: Invalid request
           content:
@@ -95,9 +93,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/DependencyReport'
+                $ref: '#/components/schemas/AnalysisReport'
             text/html:
               schema:
                 type: object
@@ -106,9 +102,7 @@ paths:
                 type: object
                 properties:
                   json_report:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/DependencyReport'
+                    $ref: '#/components/schemas/AnalysisReport'
                   html_report:
                     type: object
               encoding:
@@ -118,6 +112,15 @@ paths:
                   contentType: text/html
 components:
   schemas:
+    AnalysisReport:
+      type: object
+      properties:
+        summary:
+          $ref: '#/components/schemas/Summary'
+        dependencies:
+          type: array
+          items:
+            $ref: '#/components/schemas/DependencyReport'
     ComponentRequest:
       type: array
       items:
@@ -157,32 +160,62 @@ components:
         recommendation:
           description: Trusted Content recommendation that is not related to any security vulnerability
           $ref: '#/components/schemas/PackageRef'
-        securityRecommendations:
-          description: Trusted Content recommendations related to identified security vulnerabilities
+        remediations:
+          description: Trusted Content remediation related to identified security vulnerabilities
           type: object
           additionalProperties:
-            $ref: '#/components/schemas/Recommendation'
+            $ref: '#/components/schemas/Remediation'
       example:
         ref:
           name: io.quarkus:quarkus-jdbc-postgresql
           version: 2.13.5.Final
         issues:
-          - id: SNYK-JAVA-ORGPOSTGRESQL-3146847
+          - id: SNYK-JAVA-COMFASTERXMLJACKSONCORE-3038426
+            title: Denial of Service (DoS)
             source: snyk
+            cvss:
+              attackVector: Network
+              attackComplexity: High
+              privilegesRequired: None
+              userInteraction: None
+              scope: Unchanged
+              confidentialityImpact: None
+              integrityImpact: None
+              availabilityImpact: High
+              exploitCodeMaturity: Proof of concept code
+              remediationLevel:
+              reportConfidence:
+              cvss: CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H/E:P
+            cvssScore: 5.9
+            severity: MEDIUM
             cves:
-             - CVE-2022-41946
-            rawData: {}
+            - CVE-2022-42003
         transitive:
           - ref:
               name: org.postgresql:postgresql
               version: 42.5.0
             issues:
-              - id: SNYK-JAVA-ORGPOSTGRESQL-3146847
+              - id: SNYK-JAVA-COMFASTERXMLJACKSONCORE-3038426
+                title: Denial of Service (DoS)
                 source: snyk
+                cvss:
+                  attackVector: Network
+                  attackComplexity: High
+                  privilegesRequired: None
+                  userInteraction: None
+                  scope: Unchanged
+                  confidentialityImpact: None
+                  integrityImpact: None
+                  availabilityImpact: High
+                  exploitCodeMaturity: Proof of concept code
+                  remediationLevel:
+                  reportConfidence:
+                  cvss: CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H/E:P
+                cvssScore: 5.9
+                severity: MEDIUM
                 cves:
-                - CVE-2022-41946
-                rawData: {}
-        securityRecommendations:
+                - CVE-2022-42003
+        remediations:
           CVE-2022-41946:
             issueRef: CVE-2022-41946
             mavenPackage:
@@ -194,20 +227,47 @@ components:
       properties:
         id:
           type: string
+        title:
+          type: string
         source:
           type: string
+        cvss:
+          $ref: '#/components/schemas/CvssVector'
+        score:
+          type: number
+        severity:
+          type: string
+          enum:
+            - CRITICAL
+            - HIGH
+            - MEDIUM
+            - LOW
         cves:
           type: array
           items:
             type: string
-        rawData:
-          type: object
       example:
-        id: SNYK-JAVA-ORGPOSTGRESQL-3146847
+        id: SNYK-JAVA-COMFASTERXMLJACKSONCORE-3038426
+        title: Denial of Service (DoS)
         source: snyk
+        cvss:
+          attackVector: Network
+          attackComplexity: High
+          privilegesRequired: None
+          userInteraction: None
+          scope: Unchanged
+          confidentialityImpact: None
+          integrityImpact: None
+          availabilityImpact: High
+          exploitCodeMaturity: Proof of concept code
+          remediationLevel:
+          reportConfidence:
+          cvss: CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H/E:P
+        cvssScore: 5.9
+        severity: MEDIUM
         cves:
-          - CVE-2022-41946
-        rawData: {}
+        - CVE-2022-42003
+        
     TransitiveDependencyReport:
       type: object
       properties:
@@ -217,21 +277,36 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Issue'
-        securityRecommendations:
+        remediations:
           type: object
           additionalProperties:
-            $ref: '#/components/schemas/Recommendation'
+            $ref: '#/components/schemas/Remediation'
       example:
         ref:
           name: org.postgresql:postgresql
           version: 42.5.0
         issues:
-          - id: SNYK-JAVA-ORGPOSTGRESQL-3146847
+          - id: SNYK-JAVA-COMFASTERXMLJACKSONCORE-3038426
+            title: Denial of Service (DoS)
             source: snyk
+            cvss:
+              attackVector: Network
+              attackComplexity: High
+              privilegesRequired: None
+              userInteraction: None
+              scope: Unchanged
+              confidentialityImpact: None
+              integrityImpact: None
+              availabilityImpact: High
+              exploitCodeMaturity: Proof of concept code
+              remediationLevel:
+              reportConfidence:
+              cvss: CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H/E:P
+            cvssScore: 5.9
+            severity: MEDIUM
             cves:
-             - CVE-2022-41946
-            rawData: {}
-    Recommendation:
+            - CVE-2022-42003
+    Remediation:
       type: object
       properties:
         issueRef:
@@ -246,3 +321,59 @@ components:
           name: io.quarkus:quarkus-jdbc-postgresql
           version: 2.13.7.Final-redhat-00003
         productStatus: fixed
+    Summary:
+      type: object
+      properties:
+        dependencies:
+          $ref: '#/components/schemas/DependenciesSummary'
+        vulnerabilities:
+          $ref: '#/components/schemas/VulnerabilitiesSummary'
+    DependenciesSummary:
+      type: object
+      properties:
+        scanned:
+          type: number
+        transitive:
+          type: number
+    VulnerabilitiesSummary:
+      type: object
+      properties:
+        direct:
+          type: number
+        total:
+          type: number
+        critical:
+          type: number
+        high:
+          type: number
+        medium:
+          type: number
+        low:
+          type: number
+    CvssVector:
+      type: object
+      properties:
+        attackVector:
+          type: string
+        attackComplexity:
+          type: string
+        privilegesRequired:
+          type: string
+        userInteraction:
+          type: string
+        scope:
+          type: string
+        confidentialityImpact:
+          type: string
+        integrityImpact:
+          type: string
+        availabilityImpact:
+          type: string
+        exploitCodeMaturity:
+          type: string
+        remediationLevel:
+          type: string
+        reportConficende:
+          type: string
+        cvss:
+          type: string

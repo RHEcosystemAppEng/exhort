@@ -18,14 +18,14 @@
 
 package com.redhat.ecosystemappeng.crda.integration;
 
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.redhat.ecosystemappeng.crda.model.GraphRequest;
 import com.redhat.ecosystemappeng.crda.model.Issue;
 import com.redhat.ecosystemappeng.crda.model.PackageRef;
-import com.redhat.ecosystemappeng.crda.model.Recommendation;
+import com.redhat.ecosystemappeng.crda.model.Remediation;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -36,18 +36,18 @@ public class ProviderAggregationStrategy {
         if (oldRequest == null) {
             return newRequest;
         }
-        Map<String, Collection<Issue>> issues = new HashMap<>(oldRequest.issues());
+        Map<String, List<Issue>> issues = new HashMap<>(oldRequest.issues());
         issues.putAll(newRequest.issues());
 
-        Map<String, Recommendation> securityRecommendations = new HashMap<>(oldRequest.securityRecommendations());
-        securityRecommendations.putAll(newRequest.securityRecommendations());
+        Map<String, Remediation> remediations = new HashMap<>(oldRequest.remediations());
+        remediations.putAll(newRequest.remediations());
 
         Map<String, PackageRef> recommendations = new HashMap<>(oldRequest.recommendations());
         recommendations.putAll(newRequest.recommendations());
 
         return new GraphRequest.Builder(oldRequest)
                 .issues(issues)
-                .securityRecommendations(securityRecommendations)
+                .remediations(remediations)
                 .recommendations(recommendations)
                 .build();
     }

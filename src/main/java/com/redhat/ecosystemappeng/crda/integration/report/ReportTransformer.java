@@ -19,13 +19,17 @@
 package com.redhat.ecosystemappeng.crda.integration.report;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.activation.DataHandler;
 import javax.ws.rs.core.MediaType;
@@ -36,34 +40,58 @@ import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.traverse.BreadthFirstIterator;
 
 import com.redhat.ecosystemappeng.crda.integration.GraphUtils;
+import com.redhat.ecosystemappeng.crda.model.AnalysisReport;
+import com.redhat.ecosystemappeng.crda.model.DependenciesSummary;
 import com.redhat.ecosystemappeng.crda.model.DependencyReport;
 import com.redhat.ecosystemappeng.crda.model.GraphRequest;
 import com.redhat.ecosystemappeng.crda.model.Issue;
 import com.redhat.ecosystemappeng.crda.model.PackageRef;
-import com.redhat.ecosystemappeng.crda.model.Recommendation;
+import com.redhat.ecosystemappeng.crda.model.Remediation;
+import com.redhat.ecosystemappeng.crda.model.Summary;
 import com.redhat.ecosystemappeng.crda.model.TransitiveDependencyReport;
+import com.redhat.ecosystemappeng.crda.model.VulnerabilitiesSummary;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @RegisterForReflection
 public class ReportTransformer {
 
-    public List<DependencyReport> transform(GraphRequest request) {
-        List<DependencyReport> result = new ArrayList<>();
-
-        GraphUtils.getFirstLevel(request.graph()).forEach(d -> {
-            Collection<Issue> issues = request.issues().get(d.name());
+    public AnalysisReport transform(GraphRequest request) {
+        List<DependencyReport> depsReport = new ArrayList<>();
+        List<PackageRef> direct = GraphUtils.getFirstLevel(request.graph());
+        direct.forEach(d -> {
+            List<Issue> issues = request.issues().get(d.name());
             if (issues == null) {
                 issues = Collections.emptyList();
             }
-            result.add(new DependencyReport(d, issues, getTransitiveDependenciesReport(d, request),
-                    getRecommendations(issues, request.securityRecommendations()),
-                    request.recommendations().get(d.toGav())));
+            List<TransitiveDependencyReport> transitiveReport = getTransitiveDependenciesReport(d, request);
+            Optional<Issue> highestVulnerability = issues.stream().max(Comparator.comparing(Issue::cvssScore));
+            Optional<Issue> highestTransitive = transitiveReport.stream().map(TransitiveDependencyReport::highestVulnerability).max(Comparator.comparing(Issue::cvssScore));
+            if(!highestTransitive.isEmpty()) {
+                if(highestVulnerability.isEmpty() || highestVulnerability.get().cvssScore() < highestTransitive.get().cvssScore()) {
+                    highestVulnerability = highestTransitive;
+                }
+            }
+            depsReport
+                    .add(new DependencyReport(d, highestVulnerability.orElse(null), issues, transitiveReport,
+                            getRemediations(issues, request.remediations()),
+                            request.recommendations().get(d.toGav())));
         });
-        return result.stream()
+        List<DependencyReport> result = depsReport.stream()
                 .filter(r -> (r.issues() != null && !r.issues().isEmpty()) || !r.transitive().isEmpty()
                         || r.recommendation() != null)
                 .collect(Collectors.toList());
+        int total = request.graph().vertexSet().size() - direct.size();
+        DependenciesSummary deps = new DependenciesSummary(direct.size(), total);
+        VulnerabilitiesSummary vulnerabilities = buildVulnerabilitiesSummary(request, result.size());
+        Summary summary = new Summary(deps, vulnerabilities);
+        return new AnalysisReport(summary, result);
+    }
+
+    public void attachHtmlReport(Exchange exchange) {
+        exchange.getIn(AttachmentMessage.class).addAttachment("report.html",
+                new DataHandler(exchange.getIn().getBody(String.class), MediaType.TEXT_HTML));
+
     }
 
     private List<TransitiveDependencyReport> getTransitiveDependenciesReport(PackageRef start, GraphRequest request) {
@@ -72,34 +100,69 @@ public class ReportTransformer {
         List<TransitiveDependencyReport> result = new ArrayList<>();
         while (i.hasNext()) {
             PackageRef ref = i.next();
-            Collection<Issue> issues = request.issues().get(ref.name());
+            List<Issue> issues = request.issues().get(ref.name());
             if (issues != null && !issues.isEmpty()) {
+                Optional<Issue> highestVulnerability = issues.stream().max(Comparator.comparing(Issue::cvssScore));
                 result.add(
-                        new TransitiveDependencyReport(ref, issues,
-                                getRecommendations(issues, request.securityRecommendations())));
+                        new TransitiveDependencyReport(ref, highestVulnerability.orElse(null), issues,
+                                getRemediations(issues, request.remediations())));
             }
         }
         return result;
     }
-    
-    public void attachHtmlReport(Exchange exchange) {
-        exchange.getIn(AttachmentMessage.class).addAttachment("report.html",
-                new DataHandler(exchange.getIn().getBody(String.class), MediaType.TEXT_HTML));
 
-    }
-
-    private Map<String, Recommendation> getRecommendations(Collection<Issue> issues,
-            Map<String, Recommendation> recommendations) {
-        Map<String, Recommendation> result = new HashMap<>();
+    private Map<String, Remediation> getRemediations(List<Issue> issues,
+            Map<String, Remediation> remediations) {
+        Map<String, Remediation> result = new HashMap<>();
         if (issues == null) {
             return result;
         }
-        issues.stream().map(i -> i.cves()).flatMap(Set::stream).forEach(cve -> {
-            Recommendation r = recommendations.get(cve);
-            if (r != null) {
-                result.put(cve, r);
-            }
-        });
+        issues.stream().map(i -> i.cves())
+                .filter(Objects::nonNull)
+                .flatMap(Set::stream)
+                .forEach(cve -> {
+                    Remediation r = remediations.get(cve);
+                    if (r != null) {
+                        result.put(cve, r);
+                    }
+                });
         return result;
+    }
+
+    private VulnerabilitiesSummary buildVulnerabilitiesSummary(GraphRequest request, int directDepsCount) {
+        VulnerabilitiesSummary.Builder builder = new VulnerabilitiesSummary.Builder();
+        Stream<Issue> issues = request.issues().values().stream().flatMap(List::stream);
+        AtomicInteger total = new AtomicInteger();
+        AtomicInteger critical = new AtomicInteger();
+        AtomicInteger high = new AtomicInteger();
+        AtomicInteger medium = new AtomicInteger();
+        AtomicInteger low = new AtomicInteger();
+
+        issues.forEach(i -> {
+            switch (i.severity()) {
+                case CRITICAL:
+                    critical.incrementAndGet();
+                    break;
+                case HIGH:
+                    high.incrementAndGet();
+                    break;
+                case MEDIUM:
+                    medium.incrementAndGet();
+                    break;
+                case LOW:
+                    low.incrementAndGet();
+                    break;
+            }
+            total.incrementAndGet();
+        });
+
+        return builder
+                .direct(directDepsCount)
+                .total(total.get())
+                .critical(critical.get())
+                .high(high.get())
+                .medium(medium.get())
+                .low(low.get())
+                .build();
     }
 }
