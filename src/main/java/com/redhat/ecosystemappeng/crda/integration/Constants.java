@@ -22,9 +22,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.ws.rs.core.MediaType;
-
 import io.quarkus.runtime.annotations.RegisterForReflection;
+import jakarta.ws.rs.core.MediaType;
 
 @RegisterForReflection
 public final class Constants {

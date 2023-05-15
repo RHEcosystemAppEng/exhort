@@ -18,14 +18,13 @@
 
 package com.redhat.ecosystemappeng.crda.config;
 
-import javax.ws.rs.ClientErrorException;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
-
 import org.apache.camel.http.base.HttpOperationFailedException;
 import org.jboss.resteasy.reactive.common.jaxrs.ResponseImpl;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
+import jakarta.ws.rs.ClientErrorException;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response;
 
 @RegisterForReflection(targets = { HttpOperationFailedException.class, ClientErrorException.class, WebApplicationException.class, Response.class, ResponseImpl.class })
 public class CustomReflectionConfiguration {

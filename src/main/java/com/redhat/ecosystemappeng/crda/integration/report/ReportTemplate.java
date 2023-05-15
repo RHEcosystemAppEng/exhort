@@ -18,16 +18,18 @@
 
 package com.redhat.ecosystemappeng.crda.integration.report;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.redhat.ecosystemappeng.crda.model.AnalysisReport;
-import io.quarkus.runtime.annotations.RegisterForReflection;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.redhat.ecosystemappeng.crda.model.AnalysisReport;
+
+import io.quarkus.runtime.annotations.RegisterForReflection;
+import jakarta.enterprise.context.ApplicationScoped;
 
 @RegisterForReflection
 @ApplicationScoped

@@ -20,8 +20,8 @@ package com.redhat.ecosystemappeng.crda.integration;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
@@ -32,10 +32,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
-import javax.ws.rs.core.MediaType;
-
 import org.apache.camel.Exchange;
 import org.junit.jupiter.api.AfterEach;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.jknack.handlebars.internal.Files;
@@ -44,11 +43,13 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import com.redhat.ecosystemappeng.crda.config.ObjectMapperProducer;
 import com.redhat.ecosystemappeng.crda.extensions.InjectWireMock;
 import com.redhat.ecosystemappeng.crda.extensions.WiremockV3Extension;
+
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
 import io.restassured.config.DecoderConfig;
 import io.restassured.config.EncoderConfig;
+import jakarta.ws.rs.core.MediaType;
 
 @QuarkusTest
 @QuarkusTestResource(WiremockV3Extension.class)

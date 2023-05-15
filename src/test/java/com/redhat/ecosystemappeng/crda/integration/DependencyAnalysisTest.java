@@ -28,17 +28,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
-import javax.ws.rs.core.MediaType;
-
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import io.quarkus.test.junit.QuarkusTest;
 import com.redhat.ecosystemappeng.crda.model.AnalysisReport;
 import com.redhat.ecosystemappeng.crda.model.DependencyReport;
 import com.redhat.ecosystemappeng.crda.model.PackageRef;
 import com.redhat.ecosystemappeng.crda.model.Summary;
 import com.redhat.ecosystemappeng.crda.model.TransitiveDependencyReport;
+
+import io.quarkus.test.junit.QuarkusTest;
+import jakarta.ws.rs.core.MediaType;
 
 @QuarkusTest
 public class DependencyAnalysisTest extends AbstractAnalysisTest {

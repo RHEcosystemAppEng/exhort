@@ -19,9 +19,6 @@
 package com.redhat.ecosystemappeng.crda.integration.backend;
 
 import java.util.List;
-import javax.ws.rs.ClientErrorException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response.Status;
 
 import org.apache.camel.Header;
 import org.jboss.resteasy.reactive.common.util.MediaTypeHelper;
@@ -29,6 +26,9 @@ import org.jboss.resteasy.reactive.common.util.MediaTypeHelper;
 import com.redhat.ecosystemappeng.crda.integration.Constants;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
+import jakarta.ws.rs.ClientErrorException;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response.Status;
 
 @RegisterForReflection
 public class BackendUtils {
