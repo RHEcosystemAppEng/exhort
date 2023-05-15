@@ -8,6 +8,10 @@
         font-family: Arial;
         padding: 20px;
     }
+    .pf-c-table thead,
+    .pf-c-table .pf-m-truncate {
+        --pf-c-table--cell--MaxWidth: none !important;
+    }
     .hiddenRow {
         padding: 0 !important;
     }

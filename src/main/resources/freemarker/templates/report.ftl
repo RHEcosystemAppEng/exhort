@@ -95,8 +95,6 @@
 </div>
 
 <div class="ml-3 mt-4">
-<#--    <h3 class="font-weight-light">Dependencies with security issues in your stack</h3>-->
-<#--    <div class="pb-4">A list of the dependencies affected with common vulnerabilities and exposures (CVE).</div>-->
     <div class="d-inline p-2 bg-light">Commonly Known Vulnerabilities</div>
 </div>
 <div>
@@ -105,23 +103,28 @@
 
 <#--Table-->
 <div class="p-3">
-    <table class="table" style="border-collapse:collapse; font-size: smaller;">
-        <thead>
+    <table class="pf-c-table pf-m-expandable pf-m-compact pf-m-grid-md">
+        <thead class="">
         <tr>
-            <th scope="col">#</th>
-            <th scope="col">Dependencies</th>
-            <th scope="col"># Direct</th>
-            <th scope="col"># Transitive</th>
-            <th scope="col">Highest CVSS</th>
-            <th scope="col">Highest Severity</th>
-            <th scope="col">Red Hat remediation available</th>
-            <th scope="col"></th>
+            <th role="columnheader" scope="col"></th>
+            <th role="columnheader" scope="col">#</th>
+            <th role="columnheader" scope="col">Dependencies</th>
+            <th role="columnheader" scope="col"># Direct</th>
+            <th role="columnheader" scope="col"># Transitive</th>
+            <th role="columnheader" scope="col">Highest CVSS</th>
+            <th role="columnheader" scope="col">Highest Severity</th>
+            <th role="columnheader" scope="col">Red Hat remediation available</th>
         </tr>
         </thead>
         <tbody>
         <#assign numOfPkg = 0>
         <#list body.report.dependencies() as dependency>
             <tr data-toggle="collapse" data-target="#${htmlRef(dependency.ref())}" class="accordion-toggle">
+                <td role="cell">
+                    <div class="pf-c-table__toggle-icon">
+                        <i class="fas fa-angle-down" aria-hidden="true"></i>
+                    </div>
+                </td>
                 <#assign numOfPkg++>
                 <td>#${numOfPkg}</td>
                 <td>
@@ -137,26 +140,26 @@
                     <#assign severity = dependency.highestVulnerability().severity()>
                     <td>
                         <#if severity == "critical" || severity == "high">
-                            <div class="pf-c-progress pf-m-danger" id="progress-simple-example">
-                        <#else>
+                        <div class="pf-c-progress pf-m-danger" id="progress-simple-example">
+                            <#else>
                             <div class="pf-c-progress pf-m-warning" id="progress-simple-example">
-                        </#if>
-                            <div
-                                    class="pf-c-progress__description"
-                                    id="progress-simple-example-description"
-                            >${dependency.highestVulnerability().cvssScore()}/10</div>
-                            <div
-                                    class="pf-c-progress__bar"
-                                    role="progressbar"
-                                    aria-valuemin="0"
-                                    aria-valuemax="10"
-                                    aria-valuenow="${dependency.highestVulnerability().cvssScore()}"
-                                    aria-labelledby="progress-simple-example-description"
-                            >
-                                <div class="pf-c-progress__indicator" style="width:${barNum}%;"></div>
+                                </#if>
+                                <div
+                                        class="pf-c-progress__description"
+                                        id="progress-simple-example-description"
+                                >${dependency.highestVulnerability().cvssScore()}/10</div>
+                                <div
+                                        class="pf-c-progress__bar"
+                                        role="progressbar"
+                                        aria-valuemin="0"
+                                        aria-valuemax="10"
+                                        aria-valuenow="${dependency.highestVulnerability().cvssScore()}"
+                                        aria-labelledby="progress-simple-example-description"
+                                >
+                                    <div class="pf-c-progress__indicator" style="width:${barNum}%;"></div>
+                                </div>
                             </div>
                         </div>
-                            </div>
                     </td>
                     <td>
                         <a href="${issueLink(dependency.highestVulnerability().id())}"
@@ -175,9 +178,8 @@
                         </svg>
                     </#if>
                 </td>
-                <td><i class="fa fa-angle-down"></i></td>
             </tr>
-            <tr>
+            <tr class="pf-c-table__expandable-row pf-m-expanded">
                 <td colspan="8" class="hiddenRow">
                     <div class="accordion-body collapse p-4 bg-light" id="${htmlRef(dependency.ref())}">
                         <p class="px-3">Details of the dependency:
@@ -185,23 +187,23 @@
                         </p>
                         <#if dependency.issues()??>
                             <#if dependency.issues()?size != 0>
-                            <div class="p-3">
-                                <table class="table" style="border-collapse:collapse; font-size: small;">
-                                    <thead>
-                                    <tr>
-                                        <th scope="col">Severity</th>
-                                        <th scope="col">Description</th>
-                                        <th scope="col" style="width: 15%">CVSS</th>
-                                        <th scope="col">CVE</th>
-                                        <th scope="col">Remediation</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <#list dependency.issues() as vulnerability>
+                                <div class="p-3">
+                                    <table class="pf-c-table pf-m-expandable pf-m-compact pf-m-grid-md">
+                                        <thead>
                                         <tr>
-                                            <#assign severity = vulnerability.severity()>
-                                            <td>
-                                                <#if severity == "critical" || severity == "high">
+                                            <th scope="col">Severity</th>
+                                            <th scope="col">Description</th>
+                                            <th scope="col" style="width: 15%">CVSS</th>
+                                            <th scope="col">CVE</th>
+                                            <th scope="col">Remediation</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <#list dependency.issues() as vulnerability>
+                                            <tr>
+                                                <#assign severity = vulnerability.severity()>
+                                                <td>
+                                                    <#if severity == "critical" || severity == "high">
                                                     <span class="pf-c-label pf-m-red">
                                                 <#elseif (severity == "medium") >
                                                     <span class="pf-c-label pf-m-orange">
@@ -212,68 +214,71 @@
                                                         ${vulnerability.severity()}
                                                     </span>
                                                 </span>
-                                            </td>
-                                            <td>${vulnerability.title()}</td>
-                                            <td>
-                                                <#assign barNum = vulnerability.cvssScore() *10>
-                                                <#if severity == "critical" || severity == "high">
+                                                </td>
+                                                <td>${vulnerability.title()}</td>
+                                                <td>
+                                                    <#assign barNum = vulnerability.cvssScore() *10>
+                                                    <#if severity == "critical" || severity == "high">
                                                     <div class="pf-c-progress pf-m-danger" id="progress-simple-example">
-                                                <#else>
-                                                    <div class="pf-c-progress pf-m-warning" id="progress-simple-example">
-                                                </#if>
-                                                    <div class="pf-c-progress__description" id="progress-simple-example-description"
-                                                        >${vulnerability.cvssScore()}/10</div>
-                                                        <div
-                                                                class="pf-c-progress__bar"
-                                                                role="progressbar"
-                                                                aria-valuemin="0"
-                                                                aria-valuemax="10"
-                                                                aria-valuenow="${dependency.highestVulnerability().cvssScore()}"
-                                                                aria-labelledby="progress-simple-example-description"
-                                                        >
-                                                            <div class="pf-c-progress__indicator" style="width:${barNum}%;"></div>
+                                                        <#else>
+                                                        <div class="pf-c-progress pf-m-warning" id="progress-simple-example">
+                                                            </#if>
+                                                            <div class="pf-c-progress__description" id="progress-simple-example-description"
+                                                            >${vulnerability.cvssScore()}/10</div>
+                                                            <div
+                                                                    class="pf-c-progress__bar"
+                                                                    role="progressbar"
+                                                                    aria-valuemin="0"
+                                                                    aria-valuemax="10"
+                                                                    aria-valuenow="${dependency.highestVulnerability().cvssScore()}"
+                                                                    aria-labelledby="progress-simple-example-description"
+                                                            >
+                                                                <div class="pf-c-progress__indicator" style="width:${barNum}%;"></div>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <#if vulnerability.cves()?size != 0>
-                                                    <#list vulnerability.cves() as cve>
-                                                        ${cve}
-                                                    </#list>
-                                                </#if>
-                                            </td>
-                                            <td>
-                                                <#assign remediation = dependency.findRemediationByIssue(vulnerability)!>
-                                                <#if remediation?has_content>
-                                                    <svg style="width: 10.9793322px; height: 13px" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                                                        <use href="#shield-icon">
-                                                    </svg>
-                                                    <a href="${repoLink(remediation)}" target="_blank" style="font-size: 16px">
-                                                        ${remediation.version()}
-                                                    </a>
-                                                <#assign remediation = dependency.findRemediationByIssue(vulnerability)!>
-                                                <#else>
-                                                    <a href="${issueLink(vulnerability.id())}"
-                                                       target="_blank">
-                                                        ${vulnerability.id()}
-                                                    </a>
-                                                </#if>
-                                            </td>
-                                        </tr>
-                                    </#list>
-                                    </tbody>
-                                </table>
-                            </div>
+                                                </td>
+                                                <td>
+                                                    <#if vulnerability.cves()?size != 0>
+                                                        <#list vulnerability.cves() as cve>
+                                                            ${cve}
+                                                        </#list>
+                                                    </#if>
+                                                </td>
+                                                <td>
+                                                    <#assign remediation = dependency.findRemediationByIssue(vulnerability)!>
+                                                    <#if remediation?has_content>
+                                                        <svg style="width: 10.9793322px; height: 13px" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                                                            <use href="#shield-icon">
+                                                        </svg>
+<#--                                                        <a href="${repoLink(remediation)}" target="_blank" style="font-size: 16px">-->
+<#--                                                            ${remediation.version()}-->
+<#--                                                        </a>-->
+                                                        <button type="button" class="btn btn-link" data-toggle="modal" data-target="#modal" data-vex="https://vex.com" data-sbom="https://sbom.com" data-link="${repoLink(remediation)}" data-rhpkg="${remediation.version()}">
+                                                            ${remediation.version()}
+                                                        </button>
+                                                        <#assign remediation = dependency.findRemediationByIssue(vulnerability)!>
+                                                    <#else>
+                                                        <a href="${issueLink(vulnerability.id())}"
+                                                           target="_blank">
+                                                            ${vulnerability.id()}
+                                                        </a>
+                                                    </#if>
+                                                </td>
+                                            </tr>
+                                        </#list>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </#if>
                         </#if>
                         <button type="button" class="btn btn-outline-secondary" data-toggle="collapse" style="font-size: small;"
-                           href="#${htmlRef(dependency.ref())}transTable" role="button" aria-expanded="false"
-                           aria-controls="${htmlRef(dependency.ref())}transTable">
+                                href="#${htmlRef(dependency.ref())}transTable" role="button" aria-expanded="false"
+                                aria-controls="${htmlRef(dependency.ref())}transTable">
                             Transitive Dependencies with vulnerabilites <i class="fa fa-angle-down"></i>
                         </button>
                         <div class="p-3 collapse" id="${htmlRef(dependency.ref())}transTable">
-                            <table class="table" style="border-collapse:collapse; font-size: small;">
+                            <table class="pf-c-table pf-m-expandable pf-m-compact pf-m-grid-md">
                                 <thead>
                                 <tr>
                                     <th scope="col" style="width: 20%">Dependencies</th>
@@ -290,17 +295,18 @@
                                         <#assign numOfVul = transDependency.issues()?size/>
                                         <#list transDependency.issues() as vulnerability>
                                             <#assign severity = vulnerability.severity()>
-                                            <#if vulnerability?index == 0>
-                                                <tr>
+                                            <tr>
+                                                <#if vulnerability?index == 0>
                                                     <td rowspan="${numOfVul}">
                                                         <a href="${packageLink(transDependency.ref())}"
                                                            target="_blank">
                                                             ${transDependency.ref().name()}
                                                         </a>
                                                     </td>
-                                                    <td>
-                                                        <#if severity == "critical" || severity == "high">
-                                                            <span class="pf-c-label pf-m-red">
+                                                </#if>
+                                                <td style="padding-left: 0.5rem">
+                                                    <#if severity == "critical" || severity == "high">
+                                                    <span class="pf-c-label pf-m-red">
                                                         <#elseif severity == "medium" >
                                                             <span class="pf-c-label pf-m-orange">
                                                         <#elseif severity == "low" >
@@ -310,124 +316,63 @@
                                                                 ${severity}
                                                             </span>
                                                         </span>
-                                                    </td>
-                                                    <td>${vulnerability.title()}</td>
-                                                    <td>
-                                                        <#assign barNum = vulnerability.cvssScore() *10>
-                                                        <#if severity == "critical" || severity == "high">
-                                                            <div class="pf-c-progress pf-m-danger" id="progress-simple-example">
+                                                </td>
+                                                <td>${vulnerability.title()}</td>
+                                                <td>
+                                                    <#assign barNum = vulnerability.cvssScore() *10>
+                                                    <#if severity == "critical" || severity == "high">
+                                                    <div class="pf-c-progress pf-m-danger" id="progress-simple-example">
                                                         <#else>
-                                                            <div class="pf-c-progress pf-m-warning" id="progress-simple-example">
-                                                        </#if>
+                                                        <div class="pf-c-progress pf-m-warning" id="progress-simple-example">
+                                                            </#if>
                                                             <div class="pf-c-progress__description" id="progress-simple-example-description"
-                                                                >${vulnerability.cvssScore()}/10</div>
-                                                                <div
-                                                                        class="pf-c-progress__bar"
-                                                                        role="progressbar"
-                                                                        aria-valuemin="0"
-                                                                        aria-valuemax="10"
-                                                                        aria-valuenow="${vulnerability.cvssScore()}"
-                                                                        aria-labelledby="progress-simple-example-description"
-                                                                >
-                                                                    <div class="pf-c-progress__indicator" style="width:${barNum}%;"></div>
-                                                                </div>
+                                                            >${vulnerability.cvssScore()}/10</div>
+                                                            <div
+                                                                    class="pf-c-progress__bar"
+                                                                    role="progressbar"
+                                                                    aria-valuemin="0"
+                                                                    aria-valuemax="10"
+                                                                    aria-valuenow="${vulnerability.cvssScore()}"
+                                                                    aria-labelledby="progress-simple-example-description"
+                                                            >
+                                                                <div class="pf-c-progress__indicator" style="width:${barNum}%;"></div>
                                                             </div>
                                                         </div>
-                                                    </td>
-                                                    <td>
-                                                        <#if vulnerability.cves()?size != 0>
-                                                            <#list vulnerability.cves() as cve>
-                                                                ${cve}
-                                                            </#list>
-                                                        </#if>
-                                                    </td>
-                                                    <td>
-                                                        <#assign remediation = dependency.findTransitiveRemediationByIssue(vulnerability)!>
-                                                        <#if remediation?has_content>
-                                                            <svg style="width: 10.9793322px; height: 13px" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                                                                <use href="#shield-icon">
-                                                            </svg>
-                                                            <a href="${repoLink(remediation)}" target="_blank" style="font-size: 16px">
-                                                                ${remediation.version()}
-                                                            </a>
-                                                        <#else>
-                                                            <a href="${issueLink(vulnerability.id())}"
-                                                            target="_blank">
-                                                                ${vulnerability.id()}
-                                                            </a>
-                                                        </#if>
-                                                    </td>
-                                                </tr>
-                                            <#else >
-                                                <tr>
-                                                    <td>
-                                                        <#if severity == "critical" || severity == "high">
-                                                            <span class="pf-c-label pf-m-red">
-                                                        <#elseif (severity == "medium") >
-                                                            <span class="pf-c-label pf-m-orange">
-                                                        <#elseif (severity == "low") >
-                                                            <span class="pf-c-label pf-m-gold">
-                                                        </#if>
-                                                            <span class="pf-c-label__content">
-                                                                ${severity}
-                                                            </span>
-                                                        </span>
-                                                    </td>
-                                                    <td>${vulnerability.title()}</td>
-                                                    <td>
-                                                        <#assign barNum = vulnerability.cvssScore() *10>
-                                                        <#if severity == "critical" || severity == "high">
-                                                            <div class="pf-c-progress pf-m-danger" id="progress-simple-example">
-                                                        <#else>
-                                                            <div class="pf-c-progress pf-m-warning" id="progress-simple-example">
-                                                        </#if>
-                                                            <div class="pf-c-progress__description" id="progress-simple-example-description"
-                                                                >${vulnerability.cvssScore()}/10</div>
-                                                                <div
-                                                                        class="pf-c-progress__bar"
-                                                                        role="progressbar"
-                                                                        aria-valuemin="0"
-                                                                        aria-valuemax="10"
-                                                                        aria-valuenow="${vulnerability.cvssScore()}"
-                                                                        aria-labelledby="progress-simple-example-description"
-                                                                >
-                                                                    <div class="pf-c-progress__indicator" style="width:${barNum}%;"></div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <#if vulnerability.cves()?size != 0>
-                                                            <#list vulnerability.cves() as cve>
-                                                                ${cve}
-                                                            </#list>
-                                                        </#if>
-                                                    </td>
-                                                    <td>
-                                                        <#assign remediation = dependency.findTransitiveRemediationByIssue(vulnerability)!>
-                                                        <#if remediation?has_content>
-                                                            <svg style="width: 10.9793322px; height: 13px" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                                                                <use href="#shield-icon">
-                                                            </svg>
-                                                            <a href="${repoLink(remediation)}" target="_blank" style="font-size: 16px">
-                                                                ${remediation.version()}
-                                                            </a>
-                                                        <#else>
-                                                            <a href="${issueLink(vulnerability.id())}"
-                                                               target="_blank">
-                                                                ${vulnerability.id()}
-                                                            </a>
-                                                        </#if>
-                                                    </td>
-                                                </tr>
-                                            </#if>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <#if vulnerability.cves()?size != 0>
+                                                        <#list vulnerability.cves() as cve>
+                                                            ${cve}
+                                                        </#list>
+                                                    </#if>
+                                                </td>
+                                                <td>
+                                                    <#assign remediation = dependency.findTransitiveRemediationByIssue(vulnerability)!>
+                                                    <#if remediation?has_content>
+                                                        <svg style="width: 10.9793322px; height: 13px" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                                                            <use href="#shield-icon">
+                                                        </svg>
+<#--                                                        <a href="${repoLink(remediation)}" target="_blank" style="font-size: 16px">-->
+<#--                                                            ${remediation.version()}-->
+<#--                                                        </a>-->
+                                                        <button type="button" class="btn btn-link" data-toggle="modal" data-target="#modal" data-vex="https://vex.com" data-sbom="https://sbom.com" data-link="${repoLink(remediation)}" data-rhpkg="${remediation.version()}">
+                                                            ${remediation.version()}
+                                                        </button>
+                                                    <#else>
+                                                        <a href="${issueLink(vulnerability.id())}"
+                                                           target="_blank">
+                                                            ${vulnerability.id()}
+                                                        </a>
+                                                    </#if>
+                                                </td>
+                                            </tr>
                                         </#list>
                                     </#if>
                                 </#list>
                                 </tbody>
                             </table>
                         </div>
-
                     </div>
                 </td>
             </tr>
