@@ -2,14 +2,14 @@
     "summary": {
         "dependencies": {
             "scanned": 2,
-            "transitive": 1
+            "transitive": 0
         },
         "vulnerabilities": {
-            "total": 4,
+            "total": 6,
             "direct": 2,
             "critical": 0,
-            "high": 1,
-            "medium": 3,
+            "high": 2,
+            "medium": 4,
             "low": 0
         }
     },
@@ -66,6 +66,78 @@
                     "severity": "HIGH",
                     "cves": [
                         "CVE-2020-36518"
+                    ]
+                },
+                {
+                    "id": "SNYK-JAVA-COMFASTERXMLJACKSONCORE-2421244",
+                    "title": "Denial of Service (DoS)",
+                    "source": "snyk",
+                    "cvss": {
+                        "attackVector": "Network",
+                        "attackComplexity": "Low",
+                        "privilegesRequired": "None",
+                        "userInteraction": "None",
+                        "scope": "Unchanged",
+                        "confidentialityImpact": "None",
+                        "integrityImpact": "None",
+                        "availabilityImpact": "High",
+                        "exploitCodeMaturity": null,
+                        "remediationLevel": null,
+                        "reportConfidence": null,
+                        "cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+                    },
+                    "cvssScore": 7.5,
+                    "severity": "HIGH",
+                    "cves": [
+                        "CVE-2020-36518"
+                    ]
+                },
+                {
+                    "id": "SNYK-JAVA-COMFASTERXMLJACKSONCORE-3038424",
+                    "title": "Denial of Service (DoS)",
+                    "source": "snyk",
+                    "cvss": {
+                        "attackVector": "Network",
+                        "attackComplexity": "High",
+                        "privilegesRequired": "None",
+                        "userInteraction": "None",
+                        "scope": "Unchanged",
+                        "confidentialityImpact": "None",
+                        "integrityImpact": "None",
+                        "availabilityImpact": "High",
+                        "exploitCodeMaturity": "Proof of concept code",
+                        "remediationLevel": null,
+                        "reportConfidence": null,
+                        "cvss": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H/E:P"
+                    },
+                    "cvssScore": 5.9,
+                    "severity": "MEDIUM",
+                    "cves": [
+                        "CVE-2022-42004"
+                    ]
+                },
+                {
+                    "id": "SNYK-JAVA-COMFASTERXMLJACKSONCORE-3038426",
+                    "title": "Denial of Service (DoS)",
+                    "source": "snyk",
+                    "cvss": {
+                        "attackVector": "Network",
+                        "attackComplexity": "High",
+                        "privilegesRequired": "None",
+                        "userInteraction": "None",
+                        "scope": "Unchanged",
+                        "confidentialityImpact": "None",
+                        "integrityImpact": "None",
+                        "availabilityImpact": "High",
+                        "exploitCodeMaturity": "Proof of concept code",
+                        "remediationLevel": null,
+                        "reportConfidence": null,
+                        "cvss": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H/E:P"
+                    },
+                    "cvssScore": 5.9,
+                    "severity": "MEDIUM",
+                    "cves": [
+                        "CVE-2022-42003"
                     ]
                 },
                 {

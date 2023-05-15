@@ -29,8 +29,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import javax.activation.DataHandler;
 import javax.ws.rs.core.MediaType;
 
@@ -59,16 +57,20 @@ public class ReportTransformer {
     public AnalysisReport transform(GraphRequest request) {
         List<DependencyReport> depsReport = new ArrayList<>();
         List<PackageRef> direct = GraphUtils.getFirstLevel(request.graph());
+        VulnerabilityCounter counter = new VulnerabilityCounter();
         direct.forEach(d -> {
             List<Issue> issues = request.issues().get(d.name());
             if (issues == null) {
                 issues = Collections.emptyList();
             }
             List<TransitiveDependencyReport> transitiveReport = getTransitiveDependenciesReport(d, request);
-            Optional<Issue> highestVulnerability = issues.stream().max(Comparator.comparing(Issue::cvssScore));
-            Optional<Issue> highestTransitive = transitiveReport.stream().map(TransitiveDependencyReport::highestVulnerability).max(Comparator.comparing(Issue::cvssScore));
-            if(!highestTransitive.isEmpty()) {
-                if(highestVulnerability.isEmpty() || highestVulnerability.get().cvssScore() < highestTransitive.get().cvssScore()) {
+            updateVulnerabilitySummary(issues, transitiveReport, counter);
+            Optional<Issue> highestVulnerability = issues.stream().findFirst();
+            Optional<Issue> highestTransitive = transitiveReport.stream()
+                    .map(TransitiveDependencyReport::highestVulnerability).max(Comparator.comparing(Issue::cvssScore));
+            if (!highestTransitive.isEmpty()) {
+                if (highestVulnerability.isEmpty()
+                        || highestVulnerability.get().cvssScore() < highestTransitive.get().cvssScore()) {
                     highestVulnerability = highestTransitive;
                 }
             }
@@ -81,11 +83,37 @@ public class ReportTransformer {
                 .filter(r -> (r.issues() != null && !r.issues().isEmpty()) || !r.transitive().isEmpty()
                         || r.recommendation() != null)
                 .collect(Collectors.toList());
-        int total = request.graph().vertexSet().size() - direct.size();
+        int total = request.graph().vertexSet().size() - direct.size() - 1;
         DependenciesSummary deps = new DependenciesSummary(direct.size(), total);
-        VulnerabilitiesSummary vulnerabilities = buildVulnerabilitiesSummary(request, result.size());
-        Summary summary = new Summary(deps, vulnerabilities);
+        counter.direct.set(result.size());
+        Summary summary = new Summary(deps, counter.getSummary());
         return new AnalysisReport(summary, result);
+    }
+
+    private void updateVulnerabilitySummary(List<Issue> issues, List<TransitiveDependencyReport> transitiveReport,
+            VulnerabilityCounter counter) {
+        issues.forEach(i -> incrementCounter(i, counter));
+        transitiveReport.forEach(tr -> {
+            tr.issues().forEach(i -> incrementCounter(i, counter));
+        });
+    }
+
+    private void incrementCounter(Issue i, VulnerabilityCounter counter) {
+        switch (i.severity()) {
+            case CRITICAL:
+                counter.critical.incrementAndGet();
+                break;
+            case HIGH:
+            counter.high.incrementAndGet();
+                break;
+            case MEDIUM:
+            counter. medium.incrementAndGet();
+                break;
+            case LOW:
+            counter.low.incrementAndGet();
+                break;
+        }
+        counter.total.incrementAndGet();
     }
 
     public void attachHtmlReport(Exchange exchange) {
@@ -129,40 +157,23 @@ public class ReportTransformer {
         return result;
     }
 
-    private VulnerabilitiesSummary buildVulnerabilitiesSummary(GraphRequest request, int directDepsCount) {
-        VulnerabilitiesSummary.Builder builder = new VulnerabilitiesSummary.Builder();
-        Stream<Issue> issues = request.issues().values().stream().flatMap(List::stream);
-        AtomicInteger total = new AtomicInteger();
-        AtomicInteger critical = new AtomicInteger();
-        AtomicInteger high = new AtomicInteger();
-        AtomicInteger medium = new AtomicInteger();
-        AtomicInteger low = new AtomicInteger();
+    static final record VulnerabilityCounter(
+            AtomicInteger total,
+            AtomicInteger direct,
+            AtomicInteger critical,
+            AtomicInteger high,
+            AtomicInteger medium,
+            AtomicInteger low) {
 
-        issues.forEach(i -> {
-            switch (i.severity()) {
-                case CRITICAL:
-                    critical.incrementAndGet();
-                    break;
-                case HIGH:
-                    high.incrementAndGet();
-                    break;
-                case MEDIUM:
-                    medium.incrementAndGet();
-                    break;
-                case LOW:
-                    low.incrementAndGet();
-                    break;
-            }
-            total.incrementAndGet();
-        });
+        VulnerabilityCounter() {
+            this(new AtomicInteger(), new AtomicInteger(), new AtomicInteger(), new AtomicInteger(),
+                    new AtomicInteger(),
+                    new AtomicInteger());
+        }
 
-        return builder
-                .direct(directDepsCount)
-                .total(total.get())
-                .critical(critical.get())
-                .high(high.get())
-                .medium(medium.get())
-                .low(low.get())
-                .build();
+        VulnerabilitiesSummary getSummary() {
+            return new VulnerabilitiesSummary(total.get(), direct.get(),
+                    critical.get(), high.get(), medium.get(), low.get());
+        }
     }
 }
