@@ -223,7 +223,7 @@ public class DependencyAnalysisTest extends AbstractAnalysisTest {
 
     private void assertSummary(Summary summary) {
         assertEquals(2, summary.dependencies().scanned());
-        assertEquals(8, summary.dependencies().transitive());
+        assertEquals(7, summary.dependencies().transitive());
 
         assertEquals(4, summary.vulnerabilities().total());
         assertEquals(2, summary.vulnerabilities().direct());

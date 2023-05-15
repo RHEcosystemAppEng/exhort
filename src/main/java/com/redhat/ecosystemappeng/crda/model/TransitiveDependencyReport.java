@@ -18,8 +18,10 @@
 
 package com.redhat.ecosystemappeng.crda.model;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -30,4 +32,11 @@ public record TransitiveDependencyReport(
         List<Issue> issues,
         Map<String, Remediation> remediations) {
 
+    public TransitiveDependencyReport {
+        if (issues != null) {
+            issues = issues.stream()
+                    .sorted(Comparator.comparing(Issue::cvssScore).reversed())
+                    .collect(Collectors.toUnmodifiableList());
+        }
+    }
 }

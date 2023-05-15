@@ -2,7 +2,7 @@
     "summary": {
         "dependencies": {
             "scanned": 2,
-            "transitive": 8
+            "transitive": 7
         },
         "vulnerabilities": {
             "total": 4,

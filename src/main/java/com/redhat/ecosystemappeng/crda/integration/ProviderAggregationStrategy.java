@@ -37,7 +37,15 @@ public class ProviderAggregationStrategy {
             return newRequest;
         }
         Map<String, List<Issue>> issues = new HashMap<>(oldRequest.issues());
-        issues.putAll(newRequest.issues());
+        newRequest.issues().entrySet().forEach(e -> {
+            List<Issue> newIssues = oldRequest.issues().get(e.getKey());
+            if(newIssues == null) {
+                newIssues = e.getValue();
+                oldRequest.issues().put(e.getKey(), newIssues);
+            } else {
+                newIssues.addAll(e.getValue());
+            }
+        });
 
         Map<String, Remediation> remediations = new HashMap<>(oldRequest.remediations());
         remediations.putAll(newRequest.remediations());
