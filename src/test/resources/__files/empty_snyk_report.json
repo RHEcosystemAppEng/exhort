@@ -1,0 +1,12 @@
+{
+  "ok": true,
+  "packageManager": "maven",
+  "issuesData": {
+  },
+  "issues": [
+  ],
+  "org": {
+      "id": "bec5d7b5-5168-4b9f-a53f-834f1433437b",
+      "name": "rubens-playground"
+  }
+}

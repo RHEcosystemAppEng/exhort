@@ -126,6 +126,32 @@ public class DependencyAnalysisTest extends AbstractAnalysisTest {
     }
 
     @Test
+    public void testEmptyRequest() {
+        stubEmptySnykRequest();
+        // stubTideliftRequest(null);
+        stubTCVexRequest();
+
+        String body = given()
+                .header(CONTENT_TYPE, Constants.TEXT_VND_GRAPHVIZ)
+                .body(loadEmptyDependenciesFile())
+                .header("Accept", MediaType.APPLICATION_JSON)
+            .when()
+                .post("/api/v3/dependency-analysis/{pkgManager}", Constants.MAVEN_PKG_MANAGER)
+            .then()
+                .assertThat()
+                    .statusCode(200)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .extract().body().asPrettyString();
+
+        assertJson("empty_response.json", body);
+
+        verifyTCVexRequest();
+        verifySnykRequest(null);
+        verifyNoInteractionsWithTCGav();
+        verifyNoInteractionsWithTidelift();
+    }
+
+    @Test
     public void testFullDepAnalysisJson() {
         stubSnykRequest(null);
         // stubTideliftRequest(null);

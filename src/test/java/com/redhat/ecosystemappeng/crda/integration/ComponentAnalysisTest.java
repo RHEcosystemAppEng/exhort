@@ -187,4 +187,31 @@ public class ComponentAnalysisTest extends AbstractAnalysisTest {
         verifyTideliftRequest(3, token);
     }
 
+    @Test
+    public void testEmptyRequest() {
+        stubSnykRequest(null);
+        stubTCVexRequest();
+        stubTCGavRequest();
+       
+        List<PackageRef> pkgs = Collections.emptyList();
+
+        String body = given()
+            .header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
+            .queryParam(Constants.PROVIDERS_PARAM, Constants.SNYK_PROVIDER)
+            .body(pkgs)
+        .when()
+            .post("/api/v3/component-analysis/{pkgManager}", Constants.MAVEN_PKG_MANAGER)
+        .then()
+            .assertThat()
+            .statusCode(200)
+            .extract().body().asPrettyString();
+
+        assertJson("empty_response.json", body);
+        
+        verifySnykRequest(null);
+        verifyTCVexRequest();
+        verifyTCGavRequest();
+        
+        verifyNoInteractionsWithTidelift();
+    }
 }
