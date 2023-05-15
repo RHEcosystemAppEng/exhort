@@ -98,7 +98,25 @@ x-quarkus-hot-deployment-done: true
 Content-Type: application/json
 Content-Transfer-Encoding: binary
 
-[{...}]
+{
+    "summary": {
+        "dependencies": {
+            ...
+        },
+        "vulnerabilities": {
+            ...
+        }
+    },
+    "dependencies": [
+        {
+        "ref": {
+            "name": "log4j:log4j",
+            "version": "1.2.17"
+        },
+        ...
+        }
+    ]
+}
 ------=_Part_2_2047647971.1682593849895
 Content-Type: text/html
 Content-Transfer-Encoding: 8bit
@@ -131,16 +149,25 @@ $ curl 'http://localhost:8080/api/v3/component-analysis/maven' \
     {"name": "io.netty:netty-common", "version": "4.1.86"},
 ]'
 ...
-[
-    {
-      "ref": {
-          "name": "log4j:log4j",
-          "version": "1.2.17"
-      },
-      ...
-    }
-]
-
+{
+    "summary": {
+        "dependencies": {
+            ...
+        },
+        "vulnerabilities": {
+            ...
+        }
+    },
+    "dependencies": [
+        {
+        "ref": {
+            "name": "log4j:log4j",
+            "version": "1.2.17"
+        },
+        ...
+        }
+    ]
+}
 ```
 
 ## Deploy on OpenShift
