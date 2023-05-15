@@ -25,7 +25,7 @@ paths:
           enum:
           - maven
           type: string
-        example: maven        
+        example: maven
       - name: providers
         in: query
         description: List of vulnerability providers to get the report from
@@ -43,7 +43,7 @@ paths:
               $ref: '#/components/schemas/ComponentRequest'
         required: true
       responses:
-        '200': 
+        '200':
           description: Successful component analysis report
           content:
             application/json:
@@ -165,6 +165,10 @@ components:
           type: object
           additionalProperties:
             $ref: '#/components/schemas/Remediation'
+        highestVulnerability:
+          description: Highest vulnerability found for this dependency
+          type: object
+          $ref: '#/components/schemas/Issue'
       example:
         ref:
           name: io.quarkus:quarkus-jdbc-postgresql
@@ -267,7 +271,7 @@ components:
         severity: MEDIUM
         cves:
         - CVE-2022-42003
-        
+
     TransitiveDependencyReport:
       type: object
       properties:
