@@ -35,6 +35,7 @@ import org.jgrapht.traverse.BreadthFirstIterator;
 
 import com.redhat.ecosystemappeng.crda.model.GraphRequest;
 import com.redhat.ecosystemappeng.crda.model.PackageRef;
+
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @RegisterForReflection
@@ -61,6 +62,7 @@ public class GraphUtils {
                 .directed().allowingSelfLoops(false).vertexClass(PackageRef.class)
                 .edgeSupplier(DefaultEdge::new)
                 .buildGraphBuilder();
+        boolean empty = true;
         try (Scanner scanner = new Scanner(file)) {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
@@ -72,11 +74,15 @@ public class GraphUtils {
                         PackageRef source = PackageRef.parse(vertices[0].trim());
                         PackageRef target = PackageRef.parse(vertices[1].trim());
                         builder.addEdge(source, target);
+                        empty = false;
                     } catch (IllegalArgumentException e) {
                         // ignore loops caused by classifiers
                     }
                 }
             }
+        }
+        if(empty) {
+            builder.addVertex(DEFAULT_ROOT);
         }
         return new GraphRequest.Builder(pkgManager, providers).graph(builder.buildAsUnmodifiable()).build();
     }

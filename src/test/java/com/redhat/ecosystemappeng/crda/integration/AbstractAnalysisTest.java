@@ -95,6 +95,10 @@ public abstract class AbstractAnalysisTest {
         return new File(getClass().getClassLoader().getResource("dependencies.txt").getPath());
     }
 
+    protected File loadEmptyDependenciesFile() {
+        return new File(getClass().getClassLoader().getResource("empty_dependencies.txt").getPath());
+    }
+
     protected void stubSnykRequest(String token) {
         if(token == null) {
             token = WiremockV3Extension.SNYK_TOKEN;
@@ -108,6 +112,15 @@ public abstract class AbstractAnalysisTest {
                         .withBodyFile("snyk_report.json")));
     }
 
+    protected void stubEmptySnykRequest() {
+        server.stubFor(post(Constants.SNYK_DEP_GRAPH_API_PATH)
+                .withHeader("Authorization", WireMock.equalTo("token " + WiremockV3Extension.SNYK_TOKEN))
+                .withHeader(Exchange.CONTENT_TYPE, WireMock.equalTo(MediaType.APPLICATION_JSON))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                        .withBodyFile("empty_snyk_report.json")));
+    }
 
     protected void verifySnykRequest(String token) {
         if(token == null) {
