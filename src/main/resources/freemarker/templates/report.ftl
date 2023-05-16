@@ -36,6 +36,9 @@
 <#function issueLink issueId>
     <#return body.issueLinkFormatter.format(issueId) >
 </#function>
+<#function vexLink cve>
+    <#return body.vexPath + cve + "-Quarkus.json" >
+</#function>
 <html xmlns="http://www.w3.org/1999/html">
 <head>
     <#include "styles.ftl">
@@ -174,7 +177,7 @@
                 <td>
                     <#if dependency.hasRemediation()>
                         <svg style="width: 10.9793322px; height: 13px" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                            <use href="#shield-icon">
+                            <use href="#shield-icon"/>
                         </svg>
                     </#if>
                 </td>
@@ -249,12 +252,9 @@
                                                     <#assign remediation = dependency.findRemediationByIssue(vulnerability)!>
                                                     <#if remediation?has_content>
                                                         <svg style="width: 10.9793322px; height: 13px" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                                                            <use href="#shield-icon">
+                                                            <use href="#shield-icon"/>
                                                         </svg>
-<#--                                                        <a href="${repoLink(remediation)}" target="_blank" style="font-size: 16px">-->
-<#--                                                            ${remediation.version()}-->
-<#--                                                        </a>-->
-                                                        <button type="button" class="btn btn-link" data-toggle="modal" data-target="#modal" data-vex="https://vex.com" data-sbom="https://sbom.com" data-link="${repoLink(remediation)}" data-rhpkg="${remediation.version()}">
+                                                        <button type="button" class="btn btn-link" data-toggle="modal" data-target="#modal" data-vex="${vexLink(vulnerability.cves()[0])}" data-sbom="${body.sbomPath}" data-link="${repoLink(remediation)}" data-rhpkg="${remediation.version()}">
                                                             ${remediation.version()}
                                                         </button>
                                                         <#assign remediation = dependency.findRemediationByIssue(vulnerability)!>
@@ -281,7 +281,7 @@
                             <table class="pf-c-table pf-m-expandable pf-m-compact pf-m-grid-md">
                                 <thead>
                                 <tr>
-                                    <th scope="col" style="width: 20%">Dependencies</th>
+                                    <th scope="col" style="width: 21%">Dependencies</th>
                                     <th scope="col">Severity</th>
                                     <th scope="col">Description</th>
                                     <th scope="col" style="width: 15%">CVSS</th>
@@ -351,12 +351,9 @@
                                                     <#assign remediation = dependency.findTransitiveRemediationByIssue(vulnerability)!>
                                                     <#if remediation?has_content>
                                                         <svg style="width: 10.9793322px; height: 13px" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                                                            <use href="#shield-icon">
+                                                            <use href="#shield-icon"/>
                                                         </svg>
-<#--                                                        <a href="${repoLink(remediation)}" target="_blank" style="font-size: 16px">-->
-<#--                                                            ${remediation.version()}-->
-<#--                                                        </a>-->
-                                                        <button type="button" class="btn btn-link" data-toggle="modal" data-target="#modal" data-vex="https://vex.com" data-sbom="https://sbom.com" data-link="${repoLink(remediation)}" data-rhpkg="${remediation.version()}">
+                                                        <button type="button" class="btn btn-link" data-toggle="modal" data-target="#modal" data-vex="${vexLink(vulnerability.cves()[0])}" data-sbom="${body.sbomPath}" data-link="${repoLink(remediation)}" data-rhpkg="${remediation.version()}">
                                                             ${remediation.version()}
                                                         </button>
                                                     <#else>
