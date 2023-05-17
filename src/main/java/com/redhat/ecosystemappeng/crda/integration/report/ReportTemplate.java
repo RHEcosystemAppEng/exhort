@@ -44,6 +44,12 @@ public class ReportTemplate {
     @ConfigProperty(name = "api.snyk.issue.regex")
     String issuePathRegex;
 
+    @ConfigProperty(name = "report.vex.link")
+    String vexPath;
+
+    @ConfigProperty(name = "report.sbom.link")
+    String sbomPath;
+
     public Map<String, Object> setVariables(AnalysisReport report)
             throws JsonMappingException, JsonProcessingException, IOException {
 
@@ -52,6 +58,8 @@ public class ReportTemplate {
         params.put("remediationPath", remediationPath);
         params.put("packagePath", packagePath);
         params.put("issueLinkFormatter", new IssueLinkFormatter(issuePathRegex));
+        params.put("vexPath", vexPath);
+        params.put("sbomPath", sbomPath);
 
         return params;
     }
