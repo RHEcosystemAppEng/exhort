@@ -11,7 +11,7 @@
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * 
+ *
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
@@ -49,19 +49,21 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
 import io.restassured.config.DecoderConfig;
 import io.restassured.config.EncoderConfig;
+
 import jakarta.ws.rs.core.MediaType;
 
 @QuarkusTest
 @QuarkusTestResource(WiremockV3Extension.class)
 public abstract class AbstractAnalysisTest {
 
-    @InjectWireMock
-    WireMockServer server;
+    @InjectWireMock WireMockServer server;
 
     static {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
-        RestAssured.config().encoderConfig(EncoderConfig.encoderConfig().defaultContentCharset("UTF-8"));
-        RestAssured.config().decoderConfig(DecoderConfig.decoderConfig().defaultContentCharset("UTF-8"));
+        RestAssured.config()
+                .encoderConfig(EncoderConfig.encoderConfig().defaultContentCharset("UTF-8"));
+        RestAssured.config()
+                .decoderConfig(DecoderConfig.decoderConfig().defaultContentCharset("UTF-8"));
     }
 
     @AfterEach
@@ -74,7 +76,11 @@ public abstract class AbstractAnalysisTest {
         JsonNode current;
         try {
             current = mapper.readTree(currentBody);
-            JsonNode expected = mapper.readTree(getClass().getClassLoader().getResourceAsStream("__files/" + expectedFile));
+            JsonNode expected =
+                    mapper.readTree(
+                            getClass()
+                                    .getClassLoader()
+                                    .getResourceAsStream("__files/" + expectedFile));
             assertEquals(expected, current);
         } catch (IOException e) {
             fail("Unexpected processing exception");
@@ -84,7 +90,12 @@ public abstract class AbstractAnalysisTest {
     protected void assertHtml(String expectedFile, String currentBody) {
         String expected;
         try {
-            expected = Files.read(getClass().getClassLoader().getResourceAsStream("__files/" + expectedFile), Charset.defaultCharset());
+            expected =
+                    Files.read(
+                            getClass()
+                                    .getClassLoader()
+                                    .getResourceAsStream("__files/" + expectedFile),
+                            Charset.defaultCharset());
             assertEquals(expected, currentBody);
         } catch (IOException e) {
             fail("Unable to read HTML file", e);
@@ -96,92 +107,120 @@ public abstract class AbstractAnalysisTest {
     }
 
     protected File loadEmptyDependenciesFile() {
-        return new File(getClass().getClassLoader().getResource("empty_dependencies.txt").getPath());
+        return new File(
+                getClass().getClassLoader().getResource("empty_dependencies.txt").getPath());
     }
 
     protected void stubSnykRequest(String token) {
-        if(token == null) {
+        if (token == null) {
             token = WiremockV3Extension.SNYK_TOKEN;
         }
-        server.stubFor(post(Constants.SNYK_DEP_GRAPH_API_PATH)
-                .withHeader("Authorization", WireMock.equalTo("token " + token))
-                .withHeader(Exchange.CONTENT_TYPE, WireMock.equalTo(MediaType.APPLICATION_JSON))
-                .willReturn(aResponse()
-                        .withStatus(200)
-                        .withHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                        .withBodyFile("snyk_report.json")));
+        server.stubFor(
+                post(Constants.SNYK_DEP_GRAPH_API_PATH)
+                        .withHeader("Authorization", WireMock.equalTo("token " + token))
+                        .withHeader(
+                                Exchange.CONTENT_TYPE, WireMock.equalTo(MediaType.APPLICATION_JSON))
+                        .willReturn(
+                                aResponse()
+                                        .withStatus(200)
+                                        .withHeader(
+                                                Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                                        .withBodyFile("snyk_report.json")));
     }
 
     protected void stubEmptySnykRequest() {
-        server.stubFor(post(Constants.SNYK_DEP_GRAPH_API_PATH)
-                .withHeader("Authorization", WireMock.equalTo("token " + WiremockV3Extension.SNYK_TOKEN))
-                .withHeader(Exchange.CONTENT_TYPE, WireMock.equalTo(MediaType.APPLICATION_JSON))
-                .willReturn(aResponse()
-                        .withStatus(200)
-                        .withHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                        .withBodyFile("empty_snyk_report.json")));
+        server.stubFor(
+                post(Constants.SNYK_DEP_GRAPH_API_PATH)
+                        .withHeader(
+                                "Authorization",
+                                WireMock.equalTo("token " + WiremockV3Extension.SNYK_TOKEN))
+                        .withHeader(
+                                Exchange.CONTENT_TYPE, WireMock.equalTo(MediaType.APPLICATION_JSON))
+                        .willReturn(
+                                aResponse()
+                                        .withStatus(200)
+                                        .withHeader(
+                                                Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                                        .withBodyFile("empty_snyk_report.json")));
     }
 
     protected void verifySnykRequest(String token) {
-        if(token == null) {
+        if (token == null) {
             token = WiremockV3Extension.SNYK_TOKEN;
         }
-        server.verify(1, postRequestedFor(urlEqualTo(Constants.SNYK_DEP_GRAPH_API_PATH))
-            .withHeader("Authorization", WireMock.equalTo("token " + token)));
+        server.verify(
+                1,
+                postRequestedFor(urlEqualTo(Constants.SNYK_DEP_GRAPH_API_PATH))
+                        .withHeader("Authorization", WireMock.equalTo("token " + token)));
     }
 
-
     protected void stubTideliftRequest(String token) {
-        if(token == null) {
+        if (token == null) {
             token = WiremockV3Extension.TIDELIFT_TOKEN;
         }
         server.stubFor(
                 get(Constants.TIDELIFT_API_BASE_PATH + "/maven/log4j:log4j/releases/1.2.17")
                         .withHeader("Authorization", WireMock.equalTo("Bearer " + token))
-                        .willReturn(aResponse()
-                                .withStatus(200)
-                                .withHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                                .withBodyFile("tidelift_log4j_report.json")));
+                        .willReturn(
+                                aResponse()
+                                        .withStatus(200)
+                                        .withHeader(
+                                                Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                                        .withBodyFile("tidelift_log4j_report.json")));
         server.stubFor(
-                get(Constants.TIDELIFT_API_BASE_PATH + "/maven/io.netty:netty-buffer/releases/4.1.86.Final")
+                get(Constants.TIDELIFT_API_BASE_PATH
+                                + "/maven/io.netty:netty-buffer/releases/4.1.86.Final")
                         .withHeader("Authorization", WireMock.equalTo("Bearer " + token))
-                        .willReturn(aResponse()
-                                .withStatus(200)
-                                .withHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                                .withBodyFile("tidelift_netty_buffer_report.json")));
+                        .willReturn(
+                                aResponse()
+                                        .withStatus(200)
+                                        .withHeader(
+                                                Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                                        .withBodyFile("tidelift_netty_buffer_report.json")));
         server.stubFor(
-                get(Constants.TIDELIFT_API_BASE_PATH + "/maven/commons-beanutils:commons-beanutils/releases/1.9.4")
+                get(Constants.TIDELIFT_API_BASE_PATH
+                                + "/maven/commons-beanutils:commons-beanutils/releases/1.9.4")
                         .withHeader("Authorization", WireMock.equalTo("Bearer " + token))
-                        .willReturn(aResponse()
-                                .withStatus(200)
-                                .withHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                                .withBodyFile("tidelift_commons_beanutils_report.json")));
+                        .willReturn(
+                                aResponse()
+                                        .withStatus(200)
+                                        .withHeader(
+                                                Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                                        .withBodyFile("tidelift_commons_beanutils_report.json")));
 
         server.stubFor(
                 get(Constants.TIDELIFT_API_BASE_PATH + "/maven/org.slf4j:slf4j-api/releases/1.7.36")
                         .withHeader("Authorization", WireMock.equalTo("Bearer " + token))
-                        .willReturn(aResponse()
-                                .withStatus(200)
-                                .withHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                                .withBodyFile("tidelift_slf4j_report.json")));
+                        .willReturn(
+                                aResponse()
+                                        .withStatus(200)
+                                        .withHeader(
+                                                Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                                        .withBodyFile("tidelift_slf4j_report.json")));
     }
 
     protected void verifyTideliftRequest(int times, String token) {
-        if(token == null) {
+        if (token == null) {
             token = WiremockV3Extension.TIDELIFT_TOKEN;
         }
-        server.verify(times, getRequestedFor(urlMatching(Constants.TIDELIFT_API_BASE_PATH + ".*"))
-            .withHeader("Authorization", WireMock.equalTo("Bearer " + token)));
+        server.verify(
+                times,
+                getRequestedFor(urlMatching(Constants.TIDELIFT_API_BASE_PATH + ".*"))
+                        .withHeader("Authorization", WireMock.equalTo("Bearer " + token)));
     }
 
     protected void stubTCGavRequest() {
-        server.stubFor(post(urlMatching(Constants.TRUSTED_CONTENT_PATH + ".*"))
-            .withHeader(Exchange.CONTENT_TYPE, WireMock.equalTo(MediaType.APPLICATION_JSON))
-            .willReturn(aResponse()
-                    .withStatus(200)
-                    .withHeader(Exchange.CONTENT_ENCODING, "identity")
-                    .withHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                    .withBodyFile("trustedContent_gav_report.json")));
+        server.stubFor(
+                post(urlMatching(Constants.TRUSTED_CONTENT_PATH + ".*"))
+                        .withHeader(
+                                Exchange.CONTENT_TYPE, WireMock.equalTo(MediaType.APPLICATION_JSON))
+                        .willReturn(
+                                aResponse()
+                                        .withStatus(200)
+                                        .withHeader(Exchange.CONTENT_ENCODING, "identity")
+                                        .withHeader(
+                                                Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                                        .withBodyFile("trustedContent_gav_report.json")));
     }
 
     protected void verifyTCGavRequest() {
@@ -189,13 +228,17 @@ public abstract class AbstractAnalysisTest {
     }
 
     protected void stubTCVexRequest() {
-        server.stubFor(post(urlMatching(Constants.TRUSTED_CONTENT_VEX_PATH))
-            .withHeader(Exchange.CONTENT_TYPE, WireMock.equalTo(MediaType.APPLICATION_JSON))
-            .willReturn(aResponse()
-                .withStatus(200)
-                .withHeader(Exchange.CONTENT_ENCODING, "identity")
-                .withHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                .withBodyFile("trustedContent_vex_report.json")));
+        server.stubFor(
+                post(urlMatching(Constants.TRUSTED_CONTENT_VEX_PATH))
+                        .withHeader(
+                                Exchange.CONTENT_TYPE, WireMock.equalTo(MediaType.APPLICATION_JSON))
+                        .willReturn(
+                                aResponse()
+                                        .withStatus(200)
+                                        .withHeader(Exchange.CONTENT_ENCODING, "identity")
+                                        .withHeader(
+                                                Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                                        .withBodyFile("trustedContent_vex_report.json")));
     }
 
     protected void verifyTCVexRequest() {
@@ -224,5 +267,4 @@ public abstract class AbstractAnalysisTest {
     protected void verifyNoInteractionsWithTCVex() {
         server.verify(0, postRequestedFor(urlMatching(Constants.TRUSTED_CONTENT_VEX_PATH)));
     }
-
 }

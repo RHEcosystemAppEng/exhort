@@ -11,7 +11,7 @@
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * 
+ *
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
@@ -29,6 +29,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.redhat.ecosystemappeng.crda.model.AnalysisReport;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
+
 import jakarta.enterprise.context.ApplicationScoped;
 
 @RegisterForReflection
@@ -66,11 +67,9 @@ public class ReportTemplate {
 
     @RegisterForReflection
     public static record IssueLinkFormatter(String issuePathRegex) {
-        
+
         public String format(String id) {
             return String.format(issuePathRegex, id, id);
         }
-
     }
-
 }

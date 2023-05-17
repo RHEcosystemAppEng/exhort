@@ -11,7 +11,7 @@
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * 
+ *
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
@@ -21,6 +21,7 @@ package com.redhat.ecosystemappeng.crda.integration.snyk;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.traverse.BreadthFirstIterator;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -58,26 +59,33 @@ public class SnykRequestBuilder {
                 root = dep;
             }
             nodes.add(createNode(dep, graph));
-            pkgs.add(mapper.createObjectNode()
-                    .put("id", dep.getId())
-                    .set("info", mapper.createObjectNode()
-                            .put("name", dep.name())
-                            .put("version", dep.version())));
+            pkgs.add(
+                    mapper.createObjectNode()
+                            .put("id", dep.getId())
+                            .set(
+                                    "info",
+                                    mapper.createObjectNode()
+                                            .put("name", dep.name())
+                                            .put("version", dep.version())));
         }
         depGraph.set("pkgs", pkgs);
-        depGraph.set("graph", mapper.createObjectNode()
-                .put("rootNodeId", root.getId())
-                .set("nodes", nodes));
+        depGraph.set(
+                "graph",
+                mapper.createObjectNode().put("rootNodeId", root.getId()).set("nodes", nodes));
         return pkgs;
     }
 
     private ObjectNode createNode(PackageRef dep, Graph<PackageRef, DefaultEdge> graph) {
         ArrayNode depsNode = mapper.createArrayNode();
-        graph.outgoingEdgesOf(dep).forEach(e -> depsNode.add(mapper.createObjectNode().put("nodeId", graph.getEdgeTarget(e).getId())));
+        graph.outgoingEdgesOf(dep)
+                .forEach(
+                        e ->
+                                depsNode.add(
+                                        mapper.createObjectNode()
+                                                .put("nodeId", graph.getEdgeTarget(e).getId())));
         return mapper.createObjectNode()
                 .put("nodeId", dep.getId())
                 .put("pkgId", dep.getId())
                 .set("deps", depsNode);
     }
-
 }

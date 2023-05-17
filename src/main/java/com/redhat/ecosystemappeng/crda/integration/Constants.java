@@ -11,7 +11,7 @@
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * 
+ *
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
@@ -23,22 +23,22 @@ import java.util.Collections;
 import java.util.List;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
+
 import jakarta.ws.rs.core.MediaType;
 
 @RegisterForReflection
 public final class Constants {
 
-    private Constants() {
-    }
+    private Constants() {}
 
     public static final String PROVIDERS_PARAM = "providers";
-    
+
     public static final String ACCEPT_HEADER = "Accept";
     public static final String ACCEPT_ENCODING_HEADER = "Accept-Encoding";
     public static final String PKG_MANAGER_HEADER = "pkgManager";
     public static final String SNYK_TOKEN_HEADER = "crda-snyk-token";
     public static final String TIDELIFT_TOKEN_HEADER = "crda-tidelift-token";
-    
+
     public static final String TEXT_VND_GRAPHVIZ = "text/vnd.graphviz";
     public static final MediaType MULTIPART_MIXED_TYPE = new MediaType("multipart", "mixed");
     public static final String MULTIPART_MIXED = MULTIPART_MIXED_TYPE.toString();
@@ -58,25 +58,30 @@ public final class Constants {
 
     public static final String DEFAULT_ACCEPT_MEDIA_TYPE = MediaType.APPLICATION_JSON;
 
-    public static final List<String> PKG_MANAGERS = Collections.unmodifiableList(new ArrayList<>() {
-        {
-            add(MAVEN_PKG_MANAGER);
-        }
-    });
+    public static final List<String> PKG_MANAGERS =
+            Collections.unmodifiableList(
+                    new ArrayList<>() {
+                        {
+                            add(MAVEN_PKG_MANAGER);
+                        }
+                    });
 
-    public static final List<String> PROVIDERS = Collections.unmodifiableList(new ArrayList<>() {
-        {
-            add(SNYK_PROVIDER);
-            add(TIDELIFT_PROVIDER);
-        }
-    });
+    public static final List<String> PROVIDERS =
+            Collections.unmodifiableList(
+                    new ArrayList<>() {
+                        {
+                            add(SNYK_PROVIDER);
+                            add(TIDELIFT_PROVIDER);
+                        }
+                    });
 
-    public static final List<MediaType> VALID_RESPONSE_MEDIA_TYPES = Collections.unmodifiableList(new ArrayList<>() {
-        {
-            add(MediaType.APPLICATION_JSON_TYPE);
-            add(MediaType.TEXT_HTML_TYPE);
-            add(MULTIPART_MIXED_TYPE);
-        }
-    });
-
+    public static final List<MediaType> VALID_RESPONSE_MEDIA_TYPES =
+            Collections.unmodifiableList(
+                    new ArrayList<>() {
+                        {
+                            add(MediaType.APPLICATION_JSON_TYPE);
+                            add(MediaType.TEXT_HTML_TYPE);
+                            add(MULTIPART_MIXED_TYPE);
+                        }
+                    });
 }

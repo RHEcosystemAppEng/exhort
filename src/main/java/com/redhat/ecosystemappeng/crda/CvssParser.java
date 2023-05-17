@@ -1,9 +1,28 @@
+/*
+ * Copyright 2023 Red Hat, Inc. and/or its affiliates
+ * and other contributors as indicated by the @author tags.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.redhat.ecosystemappeng.crda;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiConsumer;
+
 import com.redhat.ecosystemappeng.crda.model.CvssVector;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
@@ -11,10 +30,9 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 @RegisterForReflection
 public class CvssParser {
 
-    private static final record IndexItem (BiConsumer<String, CvssVector.Builder> setter, Map<String, String> parameters){
+    private static final record IndexItem(
+            BiConsumer<String, CvssVector.Builder> setter, Map<String, String> parameters) {}
 
-    }
-    
     private static final Map<String, IndexItem> INDEX = new HashMap<>();
     private static final Map<String, String> ATTACK_VECTORS = new HashMap<>();
     private static final Map<String, String> ATTACK_COMPLEXITY = new HashMap<>();
@@ -83,9 +101,9 @@ public class CvssParser {
         Objects.requireNonNull(vector);
         CvssVector.Builder builder = new CvssVector.Builder();
         String[] parts = vector.split("/");
-        for(int i = 0; i< parts.length; i++) {
+        for (int i = 0; i < parts.length; i++) {
             String[] metrics = parts[i].split(":");
-            if(metrics.length == 2 && INDEX.containsKey(metrics[0])) {
+            if (metrics.length == 2 && INDEX.containsKey(metrics[0])) {
                 IndexItem item = INDEX.get(metrics[0]);
                 String value = item.parameters().get(metrics[1]);
                 item.setter().accept(value, builder);
@@ -94,6 +112,6 @@ public class CvssParser {
 
         return builder.cvss(vector).build();
     }
-    
+
     private CvssParser() {}
 }

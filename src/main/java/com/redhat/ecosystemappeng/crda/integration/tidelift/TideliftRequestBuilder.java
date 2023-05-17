@@ -11,7 +11,7 @@
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * 
+ *
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
@@ -28,8 +28,13 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @RegisterForReflection
 public class TideliftRequestBuilder {
-    
-    public String buildPath(@Header(Constants.PKG_MANAGER_HEADER) String pkgManager, @Body PackageRef pkgRef) {
-        return String.format(Constants.TIDELIFT_API_BASE_PATH + Constants.TIDELIFT_RELEASES_PATTERN, pkgManager, pkgRef.name(), pkgRef.version());
+
+    public String buildPath(
+            @Header(Constants.PKG_MANAGER_HEADER) String pkgManager, @Body PackageRef pkgRef) {
+        return String.format(
+                Constants.TIDELIFT_API_BASE_PATH + Constants.TIDELIFT_RELEASES_PATTERN,
+                pkgManager,
+                pkgRef.name(),
+                pkgRef.version());
     }
 }

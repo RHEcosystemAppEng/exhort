@@ -11,7 +11,7 @@
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * 
+ *
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
@@ -26,6 +26,7 @@ import org.jboss.resteasy.reactive.common.util.MediaTypeHelper;
 import com.redhat.ecosystemappeng.crda.integration.Constants;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
+
 import jakarta.ws.rs.ClientErrorException;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response.Status;
@@ -38,15 +39,16 @@ public class BackendUtils {
             return Constants.DEFAULT_ACCEPT_MEDIA_TYPE;
         }
         List<MediaType> requested = MediaTypeHelper.parseHeader(acceptHeader);
-        MediaType match = MediaTypeHelper.getBestMatch(Constants.VALID_RESPONSE_MEDIA_TYPES, requested);
+        MediaType match =
+                MediaTypeHelper.getBestMatch(Constants.VALID_RESPONSE_MEDIA_TYPES, requested);
         if (match == null) {
             throw new ClientErrorException(
-                    "Unexpected Accept header " + acceptHeader + ". Supported content types are: "
+                    "Unexpected Accept header "
+                            + acceptHeader
+                            + ". Supported content types are: "
                             + Constants.VALID_RESPONSE_MEDIA_TYPES,
                     Status.UNSUPPORTED_MEDIA_TYPE);
         }
         return match.toString();
-
     }
-
 }

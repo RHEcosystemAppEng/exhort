@@ -11,7 +11,7 @@
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * 
+ *
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
@@ -41,9 +41,12 @@ public class ReportTransformerTest {
     @Test
     public void testFilterDepsWithoutIssues() {
         Map<String, List<Issue>> issues = Map.of("aa", List.of(buildIssue(1, 5f)));
-        GraphRequest req = new GraphRequest.Builder(Constants.MAVEN_PKG_MANAGER, List.of(Constants.SNYK_PROVIDER))
-                .graph(buildGraph()).issues(issues)
-                .build();
+        GraphRequest req =
+                new GraphRequest.Builder(
+                                Constants.MAVEN_PKG_MANAGER, List.of(Constants.SNYK_PROVIDER))
+                        .graph(buildGraph())
+                        .issues(issues)
+                        .build();
 
         AnalysisReport report = new ReportTransformer().transform(req);
 
@@ -55,13 +58,17 @@ public class ReportTransformerTest {
 
     @Test
     public void testFilterTransitiveWithoutIssues() {
-        Map<String, List<Issue>> issues = Map.of(
-                "aa", List.of(buildIssue(1, 5f)),
-                "aaa", List.of(buildIssue(2, 5f)),
-                "aba", List.of(buildIssue(3, 5f)));
-        GraphRequest req = new GraphRequest.Builder(Constants.MAVEN_PKG_MANAGER, List.of(Constants.SNYK_PROVIDER))
-                .graph(buildGraph()).issues(issues)
-                .build();
+        Map<String, List<Issue>> issues =
+                Map.of(
+                        "aa", List.of(buildIssue(1, 5f)),
+                        "aaa", List.of(buildIssue(2, 5f)),
+                        "aba", List.of(buildIssue(3, 5f)));
+        GraphRequest req =
+                new GraphRequest.Builder(
+                                Constants.MAVEN_PKG_MANAGER, List.of(Constants.SNYK_PROVIDER))
+                        .graph(buildGraph())
+                        .issues(issues)
+                        .build();
 
         AnalysisReport report = new ReportTransformer().transform(req);
 
@@ -77,11 +84,14 @@ public class ReportTransformerTest {
 
     @Test
     public void testFilterRecommendations() {
-        Map<String, PackageRef> recommendations = Map.of(
-                "aa:1", new PackageRef("aa", "1.redhat-0001"));
-        GraphRequest req = new GraphRequest.Builder(Constants.MAVEN_PKG_MANAGER, List.of(Constants.SNYK_PROVIDER))
-                .graph(buildGraph()).recommendations(recommendations)
-                .build();
+        Map<String, PackageRef> recommendations =
+                Map.of("aa:1", new PackageRef("aa", "1.redhat-0001"));
+        GraphRequest req =
+                new GraphRequest.Builder(
+                                Constants.MAVEN_PKG_MANAGER, List.of(Constants.SNYK_PROVIDER))
+                        .graph(buildGraph())
+                        .recommendations(recommendations)
+                        .build();
 
         AnalysisReport report = new ReportTransformer().transform(req);
 
@@ -93,9 +103,11 @@ public class ReportTransformerTest {
     }
 
     private Graph<PackageRef, DefaultEdge> buildGraph() {
-        return GraphTypeBuilder.directed().allowingSelfLoops(false)
+        return GraphTypeBuilder.directed()
+                .allowingSelfLoops(false)
                 .vertexClass(PackageRef.class)
-                .edgeClass(DefaultEdge.class).buildGraphBuilder()
+                .edgeClass(DefaultEdge.class)
+                .buildGraphBuilder()
                 .addEdge(new PackageRef("a", "1"), new PackageRef("aa", "1"))
                 .addEdge(new PackageRef("a", "1"), new PackageRef("ab", "1"))
                 .addEdge(new PackageRef("aa", "1"), new PackageRef("aaa", "1"))
@@ -114,5 +126,4 @@ public class ReportTransformerTest {
                 .cvssScore(score)
                 .build();
     }
-
 }

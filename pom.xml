@@ -5,9 +5,16 @@
   <groupId>com.redhat.ecosystemappeng</groupId>
   <artifactId>crda-backend</artifactId>
   <version>1.0.0-SNAPSHOT</version>
+
+  <licenses>
+    <license>
+      <name>Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
   <properties>
-    <compiler-plugin.version>3.10.1</compiler-plugin.version>
-    <jgraph.version>1.5.1</jgraph.version>
     <maven.compiler.release>17</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -15,9 +22,14 @@
     <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
     <quarkus.platform.version>3.0.2.Final</quarkus.platform.version>
     <skipITs>true</skipITs>
-    <surefire-plugin.version>3.0.0</surefire-plugin.version>
+    <jgraph.version>1.5.1</jgraph.version>
     <wiremock.version>3.0.0-beta-8</wiremock.version>
+    <compiler-plugin.version>3.10.1</compiler-plugin.version>
+    <surefire-plugin.version>3.0.0</surefire-plugin.version>
+    <spotless-maven-plugin.version>2.36.0</spotless-maven-plugin.version>
+    <google-java-format.version>1.17.0</google-java-format.version>
   </properties>
+
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -90,7 +102,6 @@
       <artifactId>jgrapht-io</artifactId>
       <version>${jgraph.version}</version>
     </dependency>
-
     <!-- Test -->
     <dependency>
       <groupId>org.apache.camel.quarkus</groupId>
@@ -163,6 +174,57 @@
             </configuration>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>com.diffplug.spotless</groupId>
+        <artifactId>spotless-maven-plugin</artifactId>
+        <version>${spotless-maven-plugin.version}</version>
+        <configuration>
+          <formats>
+            <format>
+              <includes>
+                <include>*.md</include>
+                <include>.gitignore</include>
+                <include>*.properties</include>
+                <include>*.yaml</include>
+                <include>*.json</include>
+              </includes>
+              <trimTrailingWhitespace/>
+              <endWithNewline/>
+              <indent>
+                <spaces>true</spaces>
+                <spacesPerTab>4</spacesPerTab>
+              </indent>
+            </format>
+          </formats>
+          <java>
+            <toggleOffOn>
+              <off>fmt:off</off>
+              <on>fmt:on</on>
+            </toggleOffOn>
+            <googleJavaFormat>
+              <version>${google-java-format.version}</version>
+              <style>AOSP</style>
+              <reflowLongStrings>true</reflowLongStrings>
+            </googleJavaFormat>
+            <formatAnnotations />
+            <importOrder>
+              <order>java|javax,org,com,io</order>
+            </importOrder>
+            <removeUnusedImports />
+            <licenseHeader>
+              <file>${project.basedir}/src/license/java_header.txt</file>
+            </licenseHeader>
+          </java>
+        </configuration>
+        <executions>
+        <execution>
+          <goals>
+            <goal>check</goal>
+          </goals>
+          <phase>compile</phase>
+        </execution>
+      </executions>
       </plugin>
     </plugins>
   </build>

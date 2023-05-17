@@ -11,7 +11,7 @@
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * 
+ *
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
@@ -52,17 +52,21 @@ public class SnykAggregationStrategy {
 
     private Map<String, List<Issue>> getIssues(JsonNode snykResponse) {
         Map<String, List<Issue>> reports = new HashMap<>();
-        snykResponse.withArray("issues").elements().forEachRemaining(n -> {
-            String pkgName = n.get("pkgName").asText();
-            String issueId = n.get("issueId").asText();
-            JsonNode issueData = snykResponse.get("issuesData").get(issueId);
-            List<Issue> issues = reports.get(pkgName);
-            if (issues == null) {
-                issues = new ArrayList<>();
-                reports.put(pkgName, issues);
-            }
-            issues.add(toIssue(issueId, issueData));
-        });
+        snykResponse
+                .withArray("issues")
+                .elements()
+                .forEachRemaining(
+                        n -> {
+                            String pkgName = n.get("pkgName").asText();
+                            String issueId = n.get("issueId").asText();
+                            JsonNode issueData = snykResponse.get("issuesData").get(issueId);
+                            List<Issue> issues = reports.get(pkgName);
+                            if (issues == null) {
+                                issues = new ArrayList<>();
+                                reports.put(pkgName, issues);
+                            }
+                            issues.add(toIssue(issueId, issueData));
+                        });
         return reports;
     }
 
@@ -70,15 +74,14 @@ public class SnykAggregationStrategy {
         Issue.Builder builder = new Issue.Builder(id).source(Constants.SNYK_PROVIDER);
         Set<String> cves = new HashSet<>();
         data.withArray("/identifiers/CVE")
-            .elements()
-            .forEachRemaining(cve -> cves.add(cve.asText()));
+                .elements()
+                .forEachRemaining(cve -> cves.add(cve.asText()));
         String cvssV3 = data.get("CVSSv3").asText();
         builder.title(data.get("title").asText())
-            .severity(Severity.fromValue(data.get("severity").asText()))
-            .cvss(CvssParser.fromVectorString(cvssV3))
-            .cvssScore(data.get("cvssScore").floatValue())
-            .cves(cves);
+                .severity(Severity.fromValue(data.get("severity").asText()))
+                .cvss(CvssParser.fromVectorString(cvssV3))
+                .cvssScore(data.get("cvssScore").floatValue())
+                .cves(cves);
         return builder.build();
     }
-
 }

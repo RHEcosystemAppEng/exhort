@@ -11,7 +11,7 @@
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * 
+ *
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
@@ -22,11 +22,17 @@ import org.apache.camel.http.base.HttpOperationFailedException;
 import org.jboss.resteasy.reactive.common.jaxrs.ResponseImpl;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
+
 import jakarta.ws.rs.ClientErrorException;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
 
-@RegisterForReflection(targets = { HttpOperationFailedException.class, ClientErrorException.class, WebApplicationException.class, Response.class, ResponseImpl.class })
-public class CustomReflectionConfiguration {
-
-}
+@RegisterForReflection(
+        targets = {
+            HttpOperationFailedException.class,
+            ClientErrorException.class,
+            WebApplicationException.class,
+            Response.class,
+            ResponseImpl.class
+        })
+public class CustomReflectionConfiguration {}
