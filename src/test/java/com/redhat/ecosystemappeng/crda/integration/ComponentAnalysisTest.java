@@ -11,7 +11,7 @@
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * 
+ *
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
@@ -31,6 +31,7 @@ import org.junit.jupiter.api.Test;
 import com.redhat.ecosystemappeng.crda.model.PackageRef;
 
 import io.quarkus.test.junit.QuarkusTest;
+
 import jakarta.ws.rs.core.MediaType;
 
 @QuarkusTest
@@ -39,14 +40,13 @@ public class ComponentAnalysisTest extends AbstractAnalysisTest {
     @Test
     public void testComponentAnalysisWithWrongProvider() {
         List<PackageRef> req = Collections.emptyList();
-        given()
-            .header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
-            .queryParam(Constants.PROVIDERS_PARAM, "unknown")
-            .body(req)
-        .when()
-            .post("/api/v3/component-analysis/{pkgManager}", Constants.MAVEN_PKG_MANAGER)
-        .then()
-            .assertThat()
+        given().header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                .queryParam(Constants.PROVIDERS_PARAM, "unknown")
+                .body(req)
+                .when()
+                .post("/api/v3/component-analysis/{pkgManager}", Constants.MAVEN_PKG_MANAGER)
+                .then()
+                .assertThat()
                 .statusCode(422)
                 .contentType(MediaType.TEXT_PLAIN)
                 .body(equalTo("Unsupported providers: [unknown]"));
@@ -57,13 +57,12 @@ public class ComponentAnalysisTest extends AbstractAnalysisTest {
     @Test
     public void testComponentAnalysisWithWrongPkgManager() {
         List<PackageRef> req = Collections.emptyList();
-        given()
-            .header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
-            .body(req)
-        .when()
-            .post("/api/v3/component-analysis/{pkgManager}", "unknown")
-        .then()
-            .assertThat()
+        given().header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                .body(req)
+                .when()
+                .post("/api/v3/component-analysis/{pkgManager}", "unknown")
+                .then()
+                .assertThat()
                 .statusCode(422)
                 .contentType(MediaType.TEXT_PLAIN)
                 .body(equalTo("Unsupported package manager: unknown"));
@@ -77,21 +76,26 @@ public class ComponentAnalysisTest extends AbstractAnalysisTest {
         stubTCGavRequest();
         stubTCVexRequest();
 
-        List<PackageRef> pkgs = List.of(
-            new PackageRef("com.fasterxml.jackson.core:jackson-databind", "2.13.1"),
-            new PackageRef("io.quarkus:quarkus-jdbc-postgresql", "2.13.5"));
-            new PackageRef("com.acme:example", "1.2.3");
-         
-        String body = given()
-            .header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
-            .queryParam(Constants.PROVIDERS_PARAM, Constants.SNYK_PROVIDER)
-            .body(pkgs)
-        .when()
-            .post("/api/v3/component-analysis/{pkgManager}", Constants.MAVEN_PKG_MANAGER)
-        .then()
-            .assertThat()
-            .statusCode(200)
-            .extract().body().asPrettyString();
+        List<PackageRef> pkgs =
+                List.of(
+                        new PackageRef("com.fasterxml.jackson.core:jackson-databind", "2.13.1"),
+                        new PackageRef("io.quarkus:quarkus-jdbc-postgresql", "2.13.5"));
+        new PackageRef("com.acme:example", "1.2.3");
+
+        String body =
+                given().header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                        .queryParam(Constants.PROVIDERS_PARAM, Constants.SNYK_PROVIDER)
+                        .body(pkgs)
+                        .when()
+                        .post(
+                                "/api/v3/component-analysis/{pkgManager}",
+                                Constants.MAVEN_PKG_MANAGER)
+                        .then()
+                        .assertThat()
+                        .statusCode(200)
+                        .extract()
+                        .body()
+                        .asPrettyString();
 
         assertJson("component_snyk.json", body);
         verifyNoInteractionsWithTidelift();
@@ -104,20 +108,25 @@ public class ComponentAnalysisTest extends AbstractAnalysisTest {
     @Disabled
     public void testComponentAnalysisWithTidelift() {
         stubTideliftRequest(null);
-        List<PackageRef> pkgs = List.of(
-            new PackageRef("log4j:log4j", "1.2.17"),
-            new PackageRef("io.netty:netty-common", "4.1.86"));
+        List<PackageRef> pkgs =
+                List.of(
+                        new PackageRef("log4j:log4j", "1.2.17"),
+                        new PackageRef("io.netty:netty-common", "4.1.86"));
 
-        String body = given()
-            .header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
-            .queryParam(Constants.PROVIDERS_PARAM, Constants.TIDELIFT_PROVIDER)
-            .body(pkgs)
-        .when()
-            .post("/api/v3/component-analysis/{pkgManager}", Constants.MAVEN_PKG_MANAGER)
-        .then()
-            .assertThat()
-            .statusCode(200)
-            .extract().body().asPrettyString();
+        String body =
+                given().header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                        .queryParam(Constants.PROVIDERS_PARAM, Constants.TIDELIFT_PROVIDER)
+                        .body(pkgs)
+                        .when()
+                        .post(
+                                "/api/v3/component-analysis/{pkgManager}",
+                                Constants.MAVEN_PKG_MANAGER)
+                        .then()
+                        .assertThat()
+                        .statusCode(200)
+                        .extract()
+                        .body()
+                        .asPrettyString();
 
         assertJson("tidelift_component_report.json", body);
         verifyNoInteractionsWithTCGav();
@@ -131,33 +140,37 @@ public class ComponentAnalysisTest extends AbstractAnalysisTest {
         stubSnykRequest(token);
         stubTCVexRequest();
         stubTCGavRequest();
-       
-        List<PackageRef> pkgs = List.of(
-            new PackageRef("com.fasterxml.jackson.core:jackson-databind", "2.13.1"),
-            new PackageRef("io.quarkus:quarkus-jdbc-postgresql", "2.13.5"));
-            new PackageRef("com.acme:example", "1.2.3");
 
-        String body = given()
-            .header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
-            .header(Constants.SNYK_TOKEN_HEADER, token)
-            .queryParam(Constants.PROVIDERS_PARAM, Constants.SNYK_PROVIDER)
-            .body(pkgs)
-        .when()
-            .post("/api/v3/component-analysis/{pkgManager}", Constants.MAVEN_PKG_MANAGER)
-        .then()
-            .assertThat()
-            .statusCode(200)
-            .extract().body().asPrettyString();
+        List<PackageRef> pkgs =
+                List.of(
+                        new PackageRef("com.fasterxml.jackson.core:jackson-databind", "2.13.1"),
+                        new PackageRef("io.quarkus:quarkus-jdbc-postgresql", "2.13.5"));
+        new PackageRef("com.acme:example", "1.2.3");
+
+        String body =
+                given().header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                        .header(Constants.SNYK_TOKEN_HEADER, token)
+                        .queryParam(Constants.PROVIDERS_PARAM, Constants.SNYK_PROVIDER)
+                        .body(pkgs)
+                        .when()
+                        .post(
+                                "/api/v3/component-analysis/{pkgManager}",
+                                Constants.MAVEN_PKG_MANAGER)
+                        .then()
+                        .assertThat()
+                        .statusCode(200)
+                        .extract()
+                        .body()
+                        .asPrettyString();
 
         assertJson("component_snyk.json", body);
-        
+
         verifySnykRequest(token);
         verifyTCVexRequest();
         verifyTCGavRequest();
-        
+
         verifyNoInteractionsWithTidelift();
     }
-
 
     @Test
     @Disabled
@@ -165,21 +178,26 @@ public class ComponentAnalysisTest extends AbstractAnalysisTest {
         String token = "client-token";
         stubTideliftRequest(token);
 
-        List<PackageRef> pkgs = List.of(
-            new PackageRef("log4j:log4j", "1.2.17"),
-            new PackageRef("io.netty:netty-common", "4.1.86"));
+        List<PackageRef> pkgs =
+                List.of(
+                        new PackageRef("log4j:log4j", "1.2.17"),
+                        new PackageRef("io.netty:netty-common", "4.1.86"));
 
-        String body = given()
-            .header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
-            .header(Constants.TIDELIFT_TOKEN_HEADER, token)
-            .queryParam(Constants.PROVIDERS_PARAM, Constants.TIDELIFT_PROVIDER)
-            .body(pkgs)
-        .when()
-            .post("/api/v3/component-analysis/{pkgManager}", Constants.MAVEN_PKG_MANAGER)
-        .then()
-            .assertThat()
-            .statusCode(200)
-            .extract().body().asPrettyString();
+        String body =
+                given().header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                        .header(Constants.TIDELIFT_TOKEN_HEADER, token)
+                        .queryParam(Constants.PROVIDERS_PARAM, Constants.TIDELIFT_PROVIDER)
+                        .body(pkgs)
+                        .when()
+                        .post(
+                                "/api/v3/component-analysis/{pkgManager}",
+                                Constants.MAVEN_PKG_MANAGER)
+                        .then()
+                        .assertThat()
+                        .statusCode(200)
+                        .extract()
+                        .body()
+                        .asPrettyString();
 
         assertJson("tidelift_component_report.json", body);
         verifyNoInteractionsWithTCGav();
@@ -192,26 +210,30 @@ public class ComponentAnalysisTest extends AbstractAnalysisTest {
         stubSnykRequest(null);
         stubTCVexRequest();
         stubTCGavRequest();
-       
+
         List<PackageRef> pkgs = Collections.emptyList();
 
-        String body = given()
-            .header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
-            .queryParam(Constants.PROVIDERS_PARAM, Constants.SNYK_PROVIDER)
-            .body(pkgs)
-        .when()
-            .post("/api/v3/component-analysis/{pkgManager}", Constants.MAVEN_PKG_MANAGER)
-        .then()
-            .assertThat()
-            .statusCode(200)
-            .extract().body().asPrettyString();
+        String body =
+                given().header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                        .queryParam(Constants.PROVIDERS_PARAM, Constants.SNYK_PROVIDER)
+                        .body(pkgs)
+                        .when()
+                        .post(
+                                "/api/v3/component-analysis/{pkgManager}",
+                                Constants.MAVEN_PKG_MANAGER)
+                        .then()
+                        .assertThat()
+                        .statusCode(200)
+                        .extract()
+                        .body()
+                        .asPrettyString();
 
         assertJson("empty_response.json", body);
-        
+
         verifySnykRequest(null);
         verifyTCVexRequest();
         verifyTCGavRequest();
-        
+
         verifyNoInteractionsWithTidelift();
     }
 }

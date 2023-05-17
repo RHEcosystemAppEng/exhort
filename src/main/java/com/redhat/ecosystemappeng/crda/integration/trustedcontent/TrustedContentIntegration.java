@@ -11,7 +11,7 @@
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * 
+ *
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
@@ -34,7 +34,7 @@ public class TrustedContentIntegration extends EndpointRouteBuilder {
 
     @Override
     public void configure() {
-
+        // fmt:off
         from(direct("recommendAllTrustedContent"))
             .multicast(AggregationStrategies.bean(ProviderAggregationStrategy.class, "aggregate"))
                 .parallelProcessing()
@@ -81,6 +81,6 @@ public class TrustedContentIntegration extends EndpointRouteBuilder {
                 .setHeader("Accept", constant(MediaType.APPLICATION_JSON))
                 .to(vertxHttp("{{api.trustedContent.gav.host}}"))
                 .unmarshal(new ListJacksonDataFormat(MavenPackage.class));
-
+        //fmt:on
     }
 }

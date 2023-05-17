@@ -11,7 +11,7 @@
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * 
+ *
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
@@ -50,13 +50,19 @@ public record GraphRequest(
         if (!Constants.PKG_MANAGERS.contains(pkgManager)) {
             throw new IllegalArgumentException("Unsupported package manager: " + pkgManager);
         }
-        List<String> invalidProviders = providers.stream().filter(Predicate.not(Constants.PROVIDERS::contains))
-                .collect(Collectors.toList());
+        List<String> invalidProviders =
+                providers.stream()
+                        .filter(Predicate.not(Constants.PROVIDERS::contains))
+                        .collect(Collectors.toList());
         if (!invalidProviders.isEmpty()) {
             throw new IllegalArgumentException("Unsupported providers: " + invalidProviders);
         }
         if (graph != null) {
-            graph = GraphTypeBuilder.forGraph(graph).buildGraphBuilder().addGraph(graph).buildAsUnmodifiable();
+            graph =
+                    GraphTypeBuilder.forGraph(graph)
+                            .buildGraphBuilder()
+                            .addGraph(graph)
+                            .buildAsUnmodifiable();
         }
         if (issues != null) {
             issues = Collections.unmodifiableMap(issues);
@@ -105,7 +111,6 @@ public record GraphRequest(
             if (copy.recommendations != null) {
                 this.recommendations = new HashMap<>(copy.recommendations);
             }
-
         }
 
         public Builder graph(Graph<PackageRef, DefaultEdge> graph) {
@@ -116,7 +121,8 @@ public record GraphRequest(
         public Builder issues(Map<String, List<Issue>> issues) {
             this.issues = issues;
             return this;
-        };
+        }
+        ;
 
         public Builder remediations(Map<String, Remediation> remediations) {
             this.remediations = remediations;
@@ -127,11 +133,10 @@ public record GraphRequest(
             this.recommendations = recommendations;
             return this;
         }
-        
+
         public GraphRequest build() {
-            return new GraphRequest(pkgManager, providers, graph, issues, remediations, recommendations);
+            return new GraphRequest(
+                    pkgManager, providers, graph, issues, remediations, recommendations);
         }
-
     }
-
 }

@@ -11,7 +11,7 @@
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * 
+ *
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
@@ -39,12 +39,11 @@ import jakarta.ws.rs.core.MediaType;
 @ApplicationScoped
 public class CrdaBackendIntegration extends EndpointRouteBuilder {
 
-    @Inject
-    VulnerabilityProvider vulnerabilityProvider;
+    @Inject VulnerabilityProvider vulnerabilityProvider;
 
     @Override
     public void configure() {
-
+        // fmt:off
         restConfiguration().contextPath("/api/v3/")
             .clientRequestValidation(true);
 
@@ -92,7 +91,7 @@ public class CrdaBackendIntegration extends EndpointRouteBuilder {
                 .parallelProcessing()
                     .recipientList(method(vulnerabilityProvider, "getProviderEndpoints"))
                 .end()
-            .end();   
+            .end();
+        //fmt:on
     }
-
 }

@@ -11,7 +11,7 @@
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * 
+ *
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
@@ -37,15 +37,19 @@ public class ProviderAggregationStrategy {
             return newRequest;
         }
         Map<String, List<Issue>> issues = new HashMap<>(oldRequest.issues());
-        newRequest.issues().entrySet().forEach(e -> {
-            List<Issue> newIssues = oldRequest.issues().get(e.getKey());
-            if(newIssues == null) {
-                newIssues = e.getValue();
-                oldRequest.issues().put(e.getKey(), newIssues);
-            } else {
-                newIssues.addAll(e.getValue());
-            }
-        });
+        newRequest
+                .issues()
+                .entrySet()
+                .forEach(
+                        e -> {
+                            List<Issue> newIssues = oldRequest.issues().get(e.getKey());
+                            if (newIssues == null) {
+                                newIssues = e.getValue();
+                                oldRequest.issues().put(e.getKey(), newIssues);
+                            } else {
+                                newIssues.addAll(e.getValue());
+                            }
+                        });
 
         Map<String, Remediation> remediations = new HashMap<>(oldRequest.remediations());
         remediations.putAll(newRequest.remediations());
@@ -59,5 +63,4 @@ public class ProviderAggregationStrategy {
                 .recommendations(recommendations)
                 .build();
     }
-
 }

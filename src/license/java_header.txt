@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Red Hat, Inc. and/or its affiliates
+ * Copyright $YEAR Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +16,3 @@
  * limitations under the License.
  */
 
-package com.redhat.ecosystemappeng.crda.model;
-
-import io.quarkus.runtime.annotations.RegisterForReflection;
-
-@RegisterForReflection
-public record Summary(DependenciesSummary dependencies, VulnerabilitiesSummary vulnerabilities) {}

@@ -11,7 +11,7 @@
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * 
+ *
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
@@ -29,6 +29,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.attachment.AttachmentMessage;
 import org.jgrapht.graph.DefaultEdge;
@@ -47,6 +48,7 @@ import com.redhat.ecosystemappeng.crda.model.TransitiveDependencyReport;
 import com.redhat.ecosystemappeng.crda.model.VulnerabilitiesSummary;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
+
 import jakarta.activation.DataHandler;
 import jakarta.ws.rs.core.MediaType;
 
@@ -57,31 +59,44 @@ public class ReportTransformer {
         List<DependencyReport> depsReport = new ArrayList<>();
         List<PackageRef> direct = GraphUtils.getFirstLevel(request.graph());
         VulnerabilityCounter counter = new VulnerabilityCounter();
-        direct.forEach(d -> {
-            List<Issue> issues = request.issues().get(d.name());
-            if (issues == null) {
-                issues = Collections.emptyList();
-            }
-            List<TransitiveDependencyReport> transitiveReport = getTransitiveDependenciesReport(d, request);
-            updateVulnerabilitySummary(issues, transitiveReport, counter);
-            Optional<Issue> highestVulnerability = issues.stream().findFirst();
-            Optional<Issue> highestTransitive = transitiveReport.stream()
-                    .map(TransitiveDependencyReport::highestVulnerability).max(Comparator.comparing(Issue::cvssScore));
-            if (!highestTransitive.isEmpty()) {
-                if (highestVulnerability.isEmpty()
-                        || highestVulnerability.get().cvssScore() < highestTransitive.get().cvssScore()) {
-                    highestVulnerability = highestTransitive;
-                }
-            }
-            depsReport
-                    .add(new DependencyReport(d, highestVulnerability.orElse(null), issues, transitiveReport,
-                            getRemediations(issues, request.remediations()),
-                            request.recommendations().get(d.toGav())));
-        });
-        List<DependencyReport> result = depsReport.stream()
-                .filter(r -> (r.issues() != null && !r.issues().isEmpty()) || !r.transitive().isEmpty()
-                        || r.recommendation() != null)
-                .collect(Collectors.toList());
+        direct.forEach(
+                d -> {
+                    List<Issue> issues = request.issues().get(d.name());
+                    if (issues == null) {
+                        issues = Collections.emptyList();
+                    }
+                    List<TransitiveDependencyReport> transitiveReport =
+                            getTransitiveDependenciesReport(d, request);
+                    updateVulnerabilitySummary(issues, transitiveReport, counter);
+                    Optional<Issue> highestVulnerability = issues.stream().findFirst();
+                    Optional<Issue> highestTransitive =
+                            transitiveReport.stream()
+                                    .map(TransitiveDependencyReport::highestVulnerability)
+                                    .max(Comparator.comparing(Issue::cvssScore));
+                    if (!highestTransitive.isEmpty()) {
+                        if (highestVulnerability.isEmpty()
+                                || highestVulnerability.get().cvssScore()
+                                        < highestTransitive.get().cvssScore()) {
+                            highestVulnerability = highestTransitive;
+                        }
+                    }
+                    depsReport.add(
+                            new DependencyReport(
+                                    d,
+                                    highestVulnerability.orElse(null),
+                                    issues,
+                                    transitiveReport,
+                                    getRemediations(issues, request.remediations()),
+                                    request.recommendations().get(d.toGav())));
+                });
+        List<DependencyReport> result =
+                depsReport.stream()
+                        .filter(
+                                r ->
+                                        (r.issues() != null && !r.issues().isEmpty())
+                                                || !r.transitive().isEmpty()
+                                                || r.recommendation() != null)
+                        .collect(Collectors.toList());
         int total = request.graph().vertexSet().size() - direct.size() - 1;
         DependenciesSummary deps = new DependenciesSummary(direct.size(), total);
         counter.direct.set(result.size());
@@ -89,12 +104,15 @@ public class ReportTransformer {
         return new AnalysisReport(summary, result);
     }
 
-    private void updateVulnerabilitySummary(List<Issue> issues, List<TransitiveDependencyReport> transitiveReport,
+    private void updateVulnerabilitySummary(
+            List<Issue> issues,
+            List<TransitiveDependencyReport> transitiveReport,
             VulnerabilityCounter counter) {
         issues.forEach(i -> incrementCounter(i, counter));
-        transitiveReport.forEach(tr -> {
-            tr.issues().forEach(i -> incrementCounter(i, counter));
-        });
+        transitiveReport.forEach(
+                tr -> {
+                    tr.issues().forEach(i -> incrementCounter(i, counter));
+                });
     }
 
     private void incrementCounter(Issue i, VulnerabilityCounter counter) {
@@ -103,56 +121,66 @@ public class ReportTransformer {
                 counter.critical.incrementAndGet();
                 break;
             case HIGH:
-            counter.high.incrementAndGet();
+                counter.high.incrementAndGet();
                 break;
             case MEDIUM:
-            counter. medium.incrementAndGet();
+                counter.medium.incrementAndGet();
                 break;
             case LOW:
-            counter.low.incrementAndGet();
+                counter.low.incrementAndGet();
                 break;
         }
         counter.total.incrementAndGet();
     }
 
     public void attachHtmlReport(Exchange exchange) {
-        exchange.getIn(AttachmentMessage.class).addAttachment("report.html",
-                new DataHandler(exchange.getIn().getBody(String.class), MediaType.TEXT_HTML));
-
+        exchange.getIn(AttachmentMessage.class)
+                .addAttachment(
+                        "report.html",
+                        new DataHandler(
+                                exchange.getIn().getBody(String.class), MediaType.TEXT_HTML));
     }
 
-    private List<TransitiveDependencyReport> getTransitiveDependenciesReport(PackageRef start, GraphRequest request) {
+    private List<TransitiveDependencyReport> getTransitiveDependenciesReport(
+            PackageRef start, GraphRequest request) {
         List<PackageRef> directDeps = GraphUtils.getNextLevel(request.graph(), start);
-        BreadthFirstIterator<PackageRef, DefaultEdge> i = new BreadthFirstIterator<>(request.graph(), directDeps);
+        BreadthFirstIterator<PackageRef, DefaultEdge> i =
+                new BreadthFirstIterator<>(request.graph(), directDeps);
         List<TransitiveDependencyReport> result = new ArrayList<>();
         while (i.hasNext()) {
             PackageRef ref = i.next();
             List<Issue> issues = request.issues().get(ref.name());
             if (issues != null && !issues.isEmpty()) {
-                Optional<Issue> highestVulnerability = issues.stream().max(Comparator.comparing(Issue::cvssScore));
+                Optional<Issue> highestVulnerability =
+                        issues.stream().max(Comparator.comparing(Issue::cvssScore));
                 result.add(
-                        new TransitiveDependencyReport(ref, highestVulnerability.orElse(null), issues,
+                        new TransitiveDependencyReport(
+                                ref,
+                                highestVulnerability.orElse(null),
+                                issues,
                                 getRemediations(issues, request.remediations())));
             }
         }
         return result;
     }
 
-    private Map<String, Remediation> getRemediations(List<Issue> issues,
-            Map<String, Remediation> remediations) {
+    private Map<String, Remediation> getRemediations(
+            List<Issue> issues, Map<String, Remediation> remediations) {
         Map<String, Remediation> result = new HashMap<>();
         if (issues == null) {
             return result;
         }
-        issues.stream().map(i -> i.cves())
+        issues.stream()
+                .map(i -> i.cves())
                 .filter(Objects::nonNull)
                 .flatMap(Set::stream)
-                .forEach(cve -> {
-                    Remediation r = remediations.get(cve);
-                    if (r != null) {
-                        result.put(cve, r);
-                    }
-                });
+                .forEach(
+                        cve -> {
+                            Remediation r = remediations.get(cve);
+                            if (r != null) {
+                                result.put(cve, r);
+                            }
+                        });
         return result;
     }
 
@@ -165,14 +193,18 @@ public class ReportTransformer {
             AtomicInteger low) {
 
         VulnerabilityCounter() {
-            this(new AtomicInteger(), new AtomicInteger(), new AtomicInteger(), new AtomicInteger(),
+            this(
+                    new AtomicInteger(),
+                    new AtomicInteger(),
+                    new AtomicInteger(),
+                    new AtomicInteger(),
                     new AtomicInteger(),
                     new AtomicInteger());
         }
 
         VulnerabilitiesSummary getSummary() {
-            return new VulnerabilitiesSummary(total.get(), direct.get(),
-                    critical.get(), high.get(), medium.get(), low.get());
+            return new VulnerabilitiesSummary(
+                    total.get(), direct.get(), critical.get(), high.get(), medium.get(), low.get());
         }
     }
 }

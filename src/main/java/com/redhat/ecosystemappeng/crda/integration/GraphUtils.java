@@ -11,7 +11,7 @@
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * 
+ *
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
@@ -43,25 +43,36 @@ public class GraphUtils {
 
     public static final String DEFAULT_APP_NAME = "com.redhat.ecosystemappeng:default-app";
     public static final String DEFAULT_APP_VERSION = "0.0.1";
-    public static final PackageRef DEFAULT_ROOT = new PackageRef(DEFAULT_APP_NAME, DEFAULT_APP_VERSION);
+    public static final PackageRef DEFAULT_ROOT =
+            new PackageRef(DEFAULT_APP_NAME, DEFAULT_APP_VERSION);
 
-    public GraphRequest fromPackages(@Body List<PackageRef> body, @ExchangeProperty(Constants.PROVIDERS_PARAM) List<String> providers, @Header(Constants.PKG_MANAGER_HEADER) String pkgManager) {
-        GraphBuilder<PackageRef, DefaultEdge, Graph<PackageRef, DefaultEdge>> builder = GraphTypeBuilder
-                .directed()
-                .allowingSelfLoops(false)
-                .vertexClass(PackageRef.class)
-                .edgeSupplier(DefaultEdge::new)
-                .buildGraphBuilder();
+    public GraphRequest fromPackages(
+            @Body List<PackageRef> body,
+            @ExchangeProperty(Constants.PROVIDERS_PARAM) List<String> providers,
+            @Header(Constants.PKG_MANAGER_HEADER) String pkgManager) {
+        GraphBuilder<PackageRef, DefaultEdge, Graph<PackageRef, DefaultEdge>> builder =
+                GraphTypeBuilder.directed()
+                        .allowingSelfLoops(false)
+                        .vertexClass(PackageRef.class)
+                        .edgeSupplier(DefaultEdge::new)
+                        .buildGraphBuilder();
         builder.addVertex(DEFAULT_ROOT);
         body.forEach(d -> builder.addEdge(DEFAULT_ROOT, d));
-        return new GraphRequest.Builder(pkgManager, providers).graph(builder.buildAsUnmodifiable()).build();
+        return new GraphRequest.Builder(pkgManager, providers)
+                .graph(builder.buildAsUnmodifiable())
+                .build();
     }
 
-    public GraphRequest fromDotFile(@Body InputStream file, @ExchangeProperty(Constants.PROVIDERS_PARAM) List<String> providers, @Header(Constants.PKG_MANAGER_HEADER) String pkgManager) {
-        GraphBuilder<PackageRef, DefaultEdge, Graph<PackageRef, DefaultEdge>> builder = GraphTypeBuilder
-                .directed().allowingSelfLoops(false).vertexClass(PackageRef.class)
-                .edgeSupplier(DefaultEdge::new)
-                .buildGraphBuilder();
+    public GraphRequest fromDotFile(
+            @Body InputStream file,
+            @ExchangeProperty(Constants.PROVIDERS_PARAM) List<String> providers,
+            @Header(Constants.PKG_MANAGER_HEADER) String pkgManager) {
+        GraphBuilder<PackageRef, DefaultEdge, Graph<PackageRef, DefaultEdge>> builder =
+                GraphTypeBuilder.directed()
+                        .allowingSelfLoops(false)
+                        .vertexClass(PackageRef.class)
+                        .edgeSupplier(DefaultEdge::new)
+                        .buildGraphBuilder();
         boolean empty = true;
         try (Scanner scanner = new Scanner(file)) {
             while (scanner.hasNextLine()) {
@@ -81,25 +92,29 @@ public class GraphUtils {
                 }
             }
         }
-        if(empty) {
+        if (empty) {
             builder.addVertex(DEFAULT_ROOT);
         }
-        return new GraphRequest.Builder(pkgManager, providers).graph(builder.buildAsUnmodifiable()).build();
+        return new GraphRequest.Builder(pkgManager, providers)
+                .graph(builder.buildAsUnmodifiable())
+                .build();
     }
 
     public static List<PackageRef> getFirstLevel(Graph<PackageRef, DefaultEdge> graph) {
         BreadthFirstIterator<PackageRef, DefaultEdge> i = new BreadthFirstIterator<>(graph);
-        if(!i.hasNext()) {
+        if (!i.hasNext()) {
             return Collections.emptyList();
         }
         PackageRef start = i.next();
         return getNextLevel(graph, start);
     }
 
-    public static List<PackageRef> getNextLevel(Graph<PackageRef, DefaultEdge> graph, PackageRef ref) {
+    public static List<PackageRef> getNextLevel(
+            Graph<PackageRef, DefaultEdge> graph, PackageRef ref) {
         List<PackageRef> firstLevel = new ArrayList<>();
-        graph.outgoingEdgesOf(ref).stream().map(e -> graph.getEdgeTarget(e)).forEach(firstLevel::add);
+        graph.outgoingEdgesOf(ref).stream()
+                .map(e -> graph.getEdgeTarget(e))
+                .forEach(firstLevel::add);
         return firstLevel;
     }
-
 }

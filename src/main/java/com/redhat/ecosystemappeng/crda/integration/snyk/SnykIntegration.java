@@ -11,7 +11,7 @@
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * 
+ *
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
@@ -28,11 +28,11 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.core.MediaType;
 
 @ApplicationScoped
-public class SnykIntegration  extends EndpointRouteBuilder {
+public class SnykIntegration extends EndpointRouteBuilder {
 
     @Override
     public void configure() {
-
+        // fmt:off
         from(direct("snykDepGraph"))
             .enrich(direct("snykRequest"), AggregationStrategies.bean(SnykAggregationStrategy.class, "aggregate"));
 
@@ -53,7 +53,6 @@ public class SnykIntegration  extends EndpointRouteBuilder {
             .setHeader(Exchange.HTTP_PATH, constant(Constants.SNYK_DEP_GRAPH_API_PATH))
             .setHeader(Exchange.HTTP_METHOD, constant("POST"))
             .to(vertxHttp("{{api.snyk.host}}"));
-
+        //fmt:on
     }
-    
 }

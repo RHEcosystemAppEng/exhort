@@ -11,7 +11,7 @@
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * 
+ *
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
@@ -38,9 +38,10 @@ public record DependencyReport(
 
     public DependencyReport {
         if (issues != null) {
-            issues = issues.stream()
-                    .sorted(Comparator.comparing(Issue::cvssScore).reversed())
-                    .collect(Collectors.toUnmodifiableList());
+            issues =
+                    issues.stream()
+                            .sorted(Comparator.comparing(Issue::cvssScore).reversed())
+                            .collect(Collectors.toUnmodifiableList());
         }
     }
 
@@ -60,8 +61,7 @@ public record DependencyReport(
             return null;
         }
         List<Remediation> result = new ArrayList<>();
-        issue.cves()
-                .stream()
+        issue.cves().stream()
                 .map(cve -> remediations.get(cve))
                 .filter(Objects::nonNull)
                 .forEach(result::add);
@@ -78,12 +78,13 @@ public record DependencyReport(
             return null;
         }
         List<Remediation> result = new ArrayList<>();
-        issue.cves()
-                .stream()
-                .forEach(cve -> transitive.stream()
-                        .map(t -> t.remediations().get(cve))
-                        .filter(Objects::nonNull)
-                        .forEach(result::add));
+        issue.cves().stream()
+                .forEach(
+                        cve ->
+                                transitive.stream()
+                                        .map(t -> t.remediations().get(cve))
+                                        .filter(Objects::nonNull)
+                                        .forEach(result::add));
 
         if (result.isEmpty()) {
             return null;

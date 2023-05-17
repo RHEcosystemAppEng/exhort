@@ -11,7 +11,7 @@
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * 
+ *
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
@@ -51,15 +51,19 @@ public class TrustedContentBodyMapper {
                         .collect(Collectors.toUnmodifiableList()));
     }
 
-    public Map<String, Remediation> createRemediations(VexRequest request, List<VexResult> response) {
+    public Map<String, Remediation> createRemediations(
+            VexRequest request, List<VexResult> response) {
         Map<String, Remediation> remediations = new HashMap<>();
         for (int i = 0; i < request.cves().size(); i++) {
             VexResult result = response.get(i);
             if (result != null) {
                 String cve = request.cves().get(i);
-                PackageRef ref = new PackageRef(
-                        result.mavenPackage().groupId() + ":" + result.mavenPackage().artifactId(),
-                        result.mavenPackage().version());
+                PackageRef ref =
+                        new PackageRef(
+                                result.mavenPackage().groupId()
+                                        + ":"
+                                        + result.mavenPackage().artifactId(),
+                                result.mavenPackage().version());
                 Remediation r = new Remediation(cve, ref, result.productStatus());
                 remediations.put(cve, r);
             }
@@ -67,7 +71,8 @@ public class TrustedContentBodyMapper {
         return remediations;
     }
 
-    public GraphRequest filterRecommendations(GraphRequest req, Map<String, Remediation> recommendations) {
+    public GraphRequest filterRecommendations(
+            GraphRequest req, Map<String, Remediation> recommendations) {
         if (recommendations == null || recommendations.isEmpty()) {
             return req;
         }
@@ -83,11 +88,13 @@ public class TrustedContentBodyMapper {
     }
 
     public List<String> buildGavRequest(@Body GraphRequest request) {
-        return GraphUtils.getFirstLevel(request.graph()).stream().map(PackageRef::toGav)
+        return GraphUtils.getFirstLevel(request.graph()).stream()
+                .map(PackageRef::toGav)
                 .collect(Collectors.toUnmodifiableList());
     }
 
-    public GraphRequest addRecommendations(GraphRequest req, Map<String, PackageRef> recommendations) {
+    public GraphRequest addRecommendations(
+            GraphRequest req, Map<String, PackageRef> recommendations) {
         if (recommendations == null || recommendations.isEmpty()) {
             return req;
         }
@@ -99,8 +106,8 @@ public class TrustedContentBodyMapper {
         return new GraphRequest.Builder(req).recommendations(merged).build();
     }
 
-    public Map<String, PackageRef> createGavRecommendations(List<String> gavRequest,
-            List<MavenPackage> recommendations) {
+    public Map<String, PackageRef> createGavRecommendations(
+            List<String> gavRequest, List<MavenPackage> recommendations) {
         Map<String, PackageRef> result = new HashMap<>();
         for (int i = 0; i < gavRequest.size(); i++) {
             MavenPackage pkg = recommendations.get(i);
@@ -111,5 +118,4 @@ public class TrustedContentBodyMapper {
         }
         return result;
     }
-
 }

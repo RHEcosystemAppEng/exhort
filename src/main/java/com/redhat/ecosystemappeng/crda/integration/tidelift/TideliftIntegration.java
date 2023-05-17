@@ -11,7 +11,7 @@
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * 
+ *
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
@@ -31,12 +31,12 @@ import com.redhat.ecosystemappeng.crda.model.GraphRequest;
 import jakarta.ws.rs.core.MediaType;
 
 public class TideliftIntegration extends EndpointRouteBuilder {
-    
+
     @Override
     public void configure() throws Exception {
 
         ObjectNode emptyNode = ObjectMapperProducer.newInstance().createObjectNode();
-
+        // fmt:off
         from(direct("tideliftReleases"))
             .to(direct("preTidelift"))
             .setHeader(Constants.PKG_MANAGER_HEADER, simple("${body.pkgManager()}"))
@@ -71,6 +71,6 @@ public class TideliftIntegration extends EndpointRouteBuilder {
             .onWhen(simple("${exception.getStatusCode()} == 404"))
                 .setBody(constant(emptyNode)).marshal().json();
            
-
+        //fmt:on
     }
 }

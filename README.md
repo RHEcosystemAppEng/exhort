@@ -9,8 +9,8 @@ See the [application.properties](./src/main/resources/application.properties) fo
 
 ### Third party dependencies
 
- - Snyk API
- - Tidelift API (currently disabled)
+- Snyk API
+- Tidelift API (currently disabled)
 
 ## Required parameters
 
@@ -20,14 +20,14 @@ See the [application.properties](./src/main/resources/application.properties) fo
 ## OpenAPI and SwaggerUI
 
 - OpenAPI Spec: There is an [openapi.yaml](./src/main/resources/META-INF/openapi.yaml) or publiehsed in the endpoint http://localhost:8080/q/openapi?format=json
-- Swagger UI: Available at http://localhost:8080/q/swagger-ui for development or when enabled with the property `quarkus.swagger-ui.always-include=true` 
+- Swagger UI: Available at http://localhost:8080/q/swagger-ui for development or when enabled with the property `quarkus.swagger-ui.always-include=true`
 
 ## Providers
 
 Currently there are 2 available providers.
 
- - Snyk will provide a vulnerability report for your components or full dependency graph
- - Tidelift (Disabled) will provide a vulnerability report aggregated from independent requests taken from each individual dependency.
+- Snyk will provide a vulnerability report for your components or full dependency graph
+- Tidelift (Disabled) will provide a vulnerability report aggregated from independent requests taken from each individual dependency.
 
 You can disable a given provider for the dependency graph analysis by using `api.<provider>.disabled=true` property at startup.
 
@@ -55,11 +55,11 @@ This is an example for `maven`:
 $ http :8080/api/v3/dependency-analysis/maven Content-Type:"text/vnd.graphviz" @'./src/test/resources/dependencies.txt'
 [
     {
-      "ref": {
-          "name": "io.quarkus:quarkus-hibernate-orm",
-          "version": "2.13.5.Final"
-      },
-      ...
+    "ref": {
+        "name": "io.quarkus:quarkus-hibernate-orm",
+        "version": "2.13.5.Final"
+    },
+    ...
     }
 ]
 ```
@@ -73,7 +73,7 @@ will be processed and converted into HTML.
 $ http :8080/api/v3/dependency-analysis/maven Content-Type:"text/vnd.graphviz" Accept:"text/html" @'./src/test/resources/dependencies.txt'
 
 <html>
-  ...
+...
 </html>
 ```
 
@@ -86,8 +86,8 @@ For that, use the `Accept: multipart/mixed` request header.
 ```bash
 http :8080/api/v3/dependency-analysis/maven Content-Type:"text/vnd.graphviz" Accept:"multipart/mixed" @'./target/dependencies.txt'
 HTTP/1.1 200 OK
-	boundary="----=_Part_2_2047647971.1682593849895"
-Content-Type: multipart/mixed; 
+    boundary="----=_Part_2_2047647971.1682593849895"
+Content-Type: multipart/mixed;
 MIME-Version: 1.0
 Message-Id: <49857413.3.1682593849896@granada>
 User-Agent: HTTPie/3.2.1
@@ -213,12 +213,12 @@ The application, packaged as an _über-jar_, is now runnable using `java -jar ta
 
 ## Creating a native executable
 
-You can create a native executable using: 
+You can create a native executable using:
 ```shell script
 ./mvnw package -Pnative
 ```
 
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using: 
+Or, if you don't have GraalVM installed, you can run the native executable build in a container using:
 ```shell script
 ./mvnw package -Pnative -Dquarkus.native.container-build=true
 ```
