@@ -56,6 +56,10 @@ public record DependencyReport(
         return transitive != null && transitive.stream().anyMatch(t -> !t.remediations().isEmpty());
     }
 
+    public int transitiveRemediationCount() {
+        return transitive.stream().mapToInt(t -> t.remediations().size()).sum();
+    }
+
     public PackageRef findRemediationByIssue(Issue issue) {
         if (issue.cves().isEmpty()) {
             return null;

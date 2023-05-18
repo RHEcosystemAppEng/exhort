@@ -176,9 +176,20 @@
                 </#if>
                 <td>
                     <#if dependency.hasRemediation()>
-                        <svg style="width: 10.9793322px; height: 13px" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                            <use href="#shield-icon"/>
-                        </svg>
+                        <#if dependency.remediations()?size != 0>
+                            <div style="margin-bottom: 10px;">
+                                <svg style="width: 10.9793322px; height: 13px" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                                    <use href="#shield-icon"/>
+                                </svg> ${dependency.remediations()?size} Direct
+                            </div>
+                        </#if>
+                         <#if dependency.transitiveRemediationCount() != 0>
+                            <div>
+                                <svg style="width: 10.9793322px; height: 13px" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                                    <use href="#shield-icon"/>
+                                </svg> ${dependency.transitiveRemediationCount()} Transitive
+                            </div>
+                         </#if>
                     </#if>
                 </td>
             </tr>
