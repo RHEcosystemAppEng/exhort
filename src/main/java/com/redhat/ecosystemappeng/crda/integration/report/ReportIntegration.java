@@ -44,7 +44,8 @@ public class ReportIntegration extends EndpointRouteBuilder {
                 .otherwise()
                     .to(direct("jsonReport"))
             .end()
-            .removeHeader(Constants.PKG_MANAGER_HEADER);
+            .removeHeader(Constants.PKG_MANAGER_HEADER)
+            .removeHeader(Constants.VERBOSE_MODE_HEADER);
 
         from(direct("htmlReport"))
             .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.TEXT_HTML))
@@ -57,11 +58,13 @@ public class ReportIntegration extends EndpointRouteBuilder {
             .to(direct("htmlReport"))
             .bean(ReportTransformer.class, "attachHtmlReport")
             .setBody(exchangeProperty(Constants.REPORT_PROPERTY))
+            .bean(ReportTransformer.class, "hideJsonPrivateData")
             .marshal().json()
             .marshal().mimeMultipart(Constants.MULTIPART_MIXED_TYPE.getSubtype(), false, false, true);
         
         from(direct("jsonReport"))
             .bean(ReportTransformer.class, "transform")
+            .bean(ReportTransformer.class, "hideJsonPrivateData")
             .marshal().json();
         //fmt:on
     }

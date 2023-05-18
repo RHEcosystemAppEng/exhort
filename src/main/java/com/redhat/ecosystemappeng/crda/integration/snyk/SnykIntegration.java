@@ -23,6 +23,7 @@ import org.apache.camel.builder.AggregationStrategies;
 import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
 
 import com.redhat.ecosystemappeng.crda.integration.Constants;
+import com.redhat.ecosystemappeng.crda.integration.VulnerabilityProvider;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.core.MediaType;
@@ -34,6 +35,13 @@ public class SnykIntegration extends EndpointRouteBuilder {
     public void configure() {
         // fmt:off
         from(direct("snykDepGraph"))
+            .choice()
+                .when(header(Constants.SNYK_TOKEN_HEADER).isNotNull())
+                    .setHeader("Authorization", simple("token ${header.crda-snyk-token}"))
+            .otherwise()
+                .setHeader("Authorization", simple("token {{api.snyk.token}}"))
+                .setProperty(Constants.PROVIDER_PRIVATE_DATA_PROPERTY, method(VulnerabilityProvider.class, "providersPrivateData(${exchangeProperty." + Constants.PROVIDER_PRIVATE_DATA_PROPERTY + "}, " + Constants.SNYK_PROVIDER + ")"))
+            .end()
             .enrich(direct("snykRequest"), AggregationStrategies.bean(SnykAggregationStrategy.class, "aggregate"));
 
         from(direct("snykRequest"))
@@ -42,12 +50,6 @@ public class SnykIntegration extends EndpointRouteBuilder {
             .removeHeader(Exchange.HTTP_QUERY)
             .removeHeader(Exchange.HTTP_URI)
             .removeHeader("Accept-Encoding")
-            .choice()
-                .when(header(Constants.SNYK_TOKEN_HEADER).isNotNull())
-                    .setHeader("Authorization", simple("token ${header.crda-snyk-token}"))
-            .otherwise()
-                .setHeader("Authorization", simple("token {{api.snyk.token}}"))
-            .end()
             .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.APPLICATION_JSON))
             .setHeader("Accept", constant(MediaType.APPLICATION_JSON))
             .setHeader(Exchange.HTTP_PATH, constant(Constants.SNYK_DEP_GRAPH_API_PATH))

@@ -206,6 +206,7 @@
                                         <thead>
                                         <tr>
                                             <th scope="col">Severity</th>
+                                            <th scope="col">Exploit Maturity</th>
                                             <th scope="col">Description</th>
                                             <th scope="col" style="width: 15%">CVSS</th>
                                             <th scope="col">CVE</th>
@@ -229,6 +230,7 @@
                                                     </span>
                                                 </span>
                                                 </td>
+                                                <td>${vulnerability.cvss().exploitCodeMaturity()!"No known exploit"}</td>
                                                 <td>${vulnerability.title()}</td>
                                                 <td>
                                                     <#assign barNum = vulnerability.cvssScore() *10>
@@ -294,6 +296,7 @@
                                 <tr>
                                     <th scope="col" style="width: 21%">Dependencies</th>
                                     <th scope="col">Severity</th>
+                                    <th scope="col">Exploit Maturity</th>
                                     <th scope="col">Description</th>
                                     <th scope="col" style="width: 15%">CVSS</th>
                                     <th scope="col">CVE</th>
@@ -328,6 +331,7 @@
                                                             </span>
                                                         </span>
                                                 </td>
+                                                <td>${vulnerability.cvss().exploitCodeMaturity()!"No known exploit"}</td>
                                                 <td>${vulnerability.title()}</td>
                                                 <td>
                                                     <#assign barNum = vulnerability.cvssScore() *10>

@@ -20,13 +20,18 @@ package com.redhat.ecosystemappeng.crda.integration.report;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.camel.Body;
+import org.apache.camel.ExchangeProperty;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.redhat.ecosystemappeng.crda.integration.Constants;
 import com.redhat.ecosystemappeng.crda.model.AnalysisReport;
+import com.redhat.ecosystemappeng.crda.model.Issue;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -51,7 +56,10 @@ public class ReportTemplate {
     @ConfigProperty(name = "report.sbom.link")
     String sbomPath;
 
-    public Map<String, Object> setVariables(AnalysisReport report)
+    public Map<String, Object> setVariables(
+            @Body AnalysisReport report,
+            @ExchangeProperty(Constants.PROVIDER_PRIVATE_DATA_PROPERTY)
+                    List<String> providerPrivateData)
             throws JsonMappingException, JsonProcessingException, IOException {
 
         Map<String, Object> params = new HashMap<>();
@@ -59,6 +67,7 @@ public class ReportTemplate {
         params.put("remediationPath", remediationPath);
         params.put("packagePath", packagePath);
         params.put("issueLinkFormatter", new IssueLinkFormatter(issuePathRegex));
+        params.put("issueVisibilityHelper", new IssueVisibilityHelper(providerPrivateData));
         params.put("vexPath", vexPath);
         params.put("sbomPath", sbomPath);
 
@@ -70,6 +79,16 @@ public class ReportTemplate {
 
         public String format(String id) {
             return String.format(issuePathRegex, id, id);
+        }
+    }
+
+    @RegisterForReflection
+    public static record IssueVisibilityHelper(List<String> providerData) {
+        public boolean showIssue(Issue issue) {
+            if (!issue.unique()) {
+                return true;
+            }
+            return providerData.contains(issue.source());
         }
     }
 }
