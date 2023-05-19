@@ -38,6 +38,7 @@ public final class Constants {
     public static final String PKG_MANAGER_HEADER = "pkgManager";
     public static final String SNYK_TOKEN_HEADER = "crda-snyk-token";
     public static final String TIDELIFT_TOKEN_HEADER = "crda-tidelift-token";
+    public static final String VERBOSE_MODE_HEADER = "verbose";
 
     public static final String TEXT_VND_GRAPHVIZ = "text/vnd.graphviz";
     public static final MediaType MULTIPART_MIXED_TYPE = new MediaType("multipart", "mixed");
@@ -49,6 +50,7 @@ public final class Constants {
     public static final String MAVEN_PKG_MANAGER = "maven";
     public static final String REQUEST_CONTENT_PROPERTY = "requestContent";
     public static final String REPORT_PROPERTY = "report";
+    public static final String PROVIDER_PRIVATE_DATA_PROPERTY = "providerPrivateData";
 
     public static final String SNYK_DEP_GRAPH_API_PATH = "/test/dep-graph";
     public static final String TIDELIFT_API_BASE_PATH = "/packages";
@@ -57,6 +59,7 @@ public final class Constants {
     public static final String TRUSTED_CONTENT_VEX_PATH = "/tc";
 
     public static final String DEFAULT_ACCEPT_MEDIA_TYPE = MediaType.APPLICATION_JSON;
+    public static final boolean DEFAULT_VERBOSE_MODE = false;
 
     public static final List<String> PKG_MANAGERS =
             Collections.unmodifiableList(

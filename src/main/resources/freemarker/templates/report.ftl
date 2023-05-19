@@ -165,10 +165,18 @@
                         </div>
                     </td>
                     <td>
-                        <a href="${issueLink(dependency.highestVulnerability().id())}"
-                           target="_blank">
-                            ${dependency.highestVulnerability().id()}
-                        </a>
+                        <#if body.issueVisibilityHelper.showIssue(dependency.highestVulnerability())>
+                            <a href="${issueLink(dependency.highestVulnerability().id())}"
+                            target="_blank">
+                                ${dependency.highestVulnerability().id()}
+                            </a>
+                        <#else>
+                            <a href="${body.snykSignup}"
+                                target="_blank">
+                                Sign up for a free Snyk account
+                            </a>to learn about the vulnerabilities found
+                        </#if>
+                        
                     </td>
                 <#else>
                     <td>--</td>
@@ -206,8 +214,9 @@
                                         <thead>
                                         <tr>
                                             <th scope="col">Severity</th>
+                                            <th scope="col" style="width: 18%">Exploit Maturity</th>
                                             <th scope="col">Description</th>
-                                            <th scope="col" style="width: 15%">CVSS</th>
+                                            <th scope="col" style="width: 13%">CVSS</th>
                                             <th scope="col">CVE</th>
                                             <th scope="col">Remediation</th>
                                         </tr>
@@ -216,20 +225,37 @@
                                         <#list dependency.issues() as vulnerability>
                                             <tr>
                                                 <#assign severity = vulnerability.severity()>
-                                                <td>
-                                                    <#if severity == "critical" || severity == "high">
-                                                    <span class="pf-c-label pf-m-red">
-                                                <#elseif (severity == "medium") >
-                                                    <span class="pf-c-label pf-m-orange">
-                                                <#elseif (severity == "low") >
-                                                    <span class="pf-c-label pf-m-gold">
-                                                </#if>
-                                                    <span class="pf-c-label__content">
-                                                        ${vulnerability.severity()}
+                                                <#if body.issueVisibilityHelper.showIssue(vulnerability)>
+                                                    <td>
+                                                        <#if severity == "critical" || severity == "high">
+                                                        <span class="pf-c-label pf-m-red">
+                                                    <#elseif (severity == "medium") >
+                                                        <span class="pf-c-label pf-m-orange">
+                                                    <#elseif (severity == "low") >
+                                                        <span class="pf-c-label pf-m-gold">
+                                                    </#if>
+                                                        <span class="pf-c-label__content">
+                                                            ${vulnerability.severity()}
+                                                        </span>
                                                     </span>
-                                                </span>
-                                                </td>
-                                                <td>${vulnerability.title()}</td>
+                                                    </td>
+                                                    <#if body.issueVisibilityHelper.showIssue(vulnerability)>
+                                                        <td>${vulnerability.cvss().exploitCodeMaturity()!"No known exploit"}</td>
+                                                    <#else>
+                                                        <td><a href="${body.snykSignup}"
+                                                            target="_blank">
+                                                                Sign up for a free Snyk account
+                                                            </a>to find out which vulnerabilities have a publicly known exploits
+                                                        </td>
+                                                    </#if>
+                                                    <td>${vulnerability.title()}</td>
+                                                <#else>
+                                                    <td colspan="3"><a href="${body.snykSignup}"
+                                                            target="_blank">
+                                                            Sign up for a free Snyk account
+                                                        </a>to find out which vulnerabilities have a publicly known exploits
+                                                    </td>
+                                                </#if>
                                                 <td>
                                                     <#assign barNum = vulnerability.cvssScore() *10>
                                                     <#if severity == "critical" || severity == "high">
@@ -270,10 +296,17 @@
                                                         </button>
                                                         <#assign remediation = dependency.findRemediationByIssue(vulnerability)!>
                                                     <#else>
-                                                        <a href="${issueLink(vulnerability.id())}"
-                                                           target="_blank">
-                                                            ${vulnerability.id()}
-                                                        </a>
+                                                        <#if body.issueVisibilityHelper.showIssue(vulnerability)>
+                                                            <a href="${issueLink(vulnerability.id())}"
+                                                            target="_blank">
+                                                                ${vulnerability.id()}
+                                                            </a>
+                                                        <#else>
+                                                            <a href="${body.snykSignup}"
+                                                                target="_blank">
+                                                                Sign up for a free Snyk account
+                                                            </a>to learn about the vulnerabilities found
+                                                        </#if>
                                                     </#if>
                                                 </td>
                                             </tr>
@@ -294,8 +327,9 @@
                                 <tr>
                                     <th scope="col" style="width: 21%">Dependencies</th>
                                     <th scope="col">Severity</th>
+                                    <th scope="col" style="width: 18%">Exploit Maturity</th>
                                     <th scope="col">Description</th>
-                                    <th scope="col" style="width: 15%">CVSS</th>
+                                    <th scope="col" style="width: 13%">CVSS</th>
                                     <th scope="col">CVE</th>
                                     <th scope="col">Remediation</th>
                                 </tr>
@@ -307,14 +341,15 @@
                                         <#list transDependency.issues() as vulnerability>
                                             <#assign severity = vulnerability.severity()>
                                             <tr>
-                                                <#if vulnerability?index == 0>
-                                                    <td rowspan="${numOfVul}">
-                                                        <a href="${packageLink(transDependency.ref())}"
-                                                           target="_blank">
-                                                            ${transDependency.ref().name()}
-                                                        </a>
-                                                    </td>
-                                                </#if>
+                                            <#if vulnerability?index == 0>
+                                                <td rowspan="${numOfVul}">
+                                                    <a href="${packageLink(transDependency.ref())}"
+                                                        target="_blank">
+                                                        ${transDependency.ref().name()}
+                                                    </a>
+                                                </td>
+                                            </#if>
+                                            <#if body.issueVisibilityHelper.showIssue(vulnerability)>
                                                 <td style="padding-left: 0.5rem">
                                                     <#if severity == "critical" || severity == "high">
                                                     <span class="pf-c-label pf-m-red">
@@ -328,7 +363,15 @@
                                                             </span>
                                                         </span>
                                                 </td>
+                                                <td>${vulnerability.cvss().exploitCodeMaturity()!"No known exploit"}</td>
                                                 <td>${vulnerability.title()}</td>
+                                            <#else>
+                                                <td colspan="3"><a href="${body.snykSignup}"
+                                                        target="_blank">
+                                                        Sign up for a free Snyk account
+                                                    </a>to find out which vulnerabilities have a publicly known exploits
+                                                </td>
+                                            </#if>
                                                 <td>
                                                     <#assign barNum = vulnerability.cvssScore() *10>
                                                     <#if severity == "critical" || severity == "high">
@@ -368,10 +411,17 @@
                                                             ${remediation.version()}
                                                         </button>
                                                     <#else>
-                                                        <a href="${issueLink(vulnerability.id())}"
-                                                           target="_blank">
-                                                            ${vulnerability.id()}
-                                                        </a>
+                                                        <#if body.issueVisibilityHelper.showIssue(vulnerability)>
+                                                            <a href="${issueLink(vulnerability.id())}"
+                                                            target="_blank">
+                                                                ${vulnerability.id()}
+                                                            </a>
+                                                        <#else>
+                                                            <a href="${body.snykSignup}"
+                                                                target="_blank">
+                                                                Sign up for a free Snyk account
+                                                            </a>to learn about the vulnerabilities found
+                                                        </#if>
                                                     </#if>
                                                 </td>
                                             </tr>

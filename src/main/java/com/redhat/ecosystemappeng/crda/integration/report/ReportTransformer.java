@@ -30,11 +30,15 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import org.apache.camel.Body;
 import org.apache.camel.Exchange;
+import org.apache.camel.ExchangeProperty;
+import org.apache.camel.Header;
 import org.apache.camel.attachment.AttachmentMessage;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.traverse.BreadthFirstIterator;
 
+import com.redhat.ecosystemappeng.crda.integration.Constants;
 import com.redhat.ecosystemappeng.crda.integration.GraphUtils;
 import com.redhat.ecosystemappeng.crda.model.AnalysisReport;
 import com.redhat.ecosystemappeng.crda.model.DependenciesSummary;
@@ -55,7 +59,7 @@ import jakarta.ws.rs.core.MediaType;
 @RegisterForReflection
 public class ReportTransformer {
 
-    public AnalysisReport transform(GraphRequest request) {
+    public AnalysisReport transform(@Body GraphRequest request) {
         List<DependencyReport> depsReport = new ArrayList<>();
         List<PackageRef> direct = GraphUtils.getFirstLevel(request.graph());
         VulnerabilityCounter counter = new VulnerabilityCounter();
@@ -131,6 +135,18 @@ public class ReportTransformer {
                 break;
         }
         counter.total.incrementAndGet();
+    }
+
+    public AnalysisReport hideJsonPrivateData(
+            @Body AnalysisReport report,
+            @Header(Constants.VERBOSE_MODE_HEADER) Boolean verbose,
+            @ExchangeProperty(Constants.PROVIDER_PRIVATE_DATA_PROPERTY)
+                    List<String> providerPrivateData) {
+        if (Boolean.FALSE.equals(verbose)
+                || (providerPrivateData != null && !providerPrivateData.isEmpty())) {
+            return new AnalysisReport(report.summary(), Collections.emptyList());
+        }
+        return report;
     }
 
     public void attachHtmlReport(Exchange exchange) {

@@ -32,7 +32,8 @@ public record Issue(
         CvssVector cvss,
         Float cvssScore,
         Severity severity,
-        Set<String> cves) {
+        Set<String> cves,
+        boolean unique) {
 
     public Issue {
         Objects.requireNonNull(id);
@@ -54,6 +55,7 @@ public record Issue(
         Float cvssScore;
         Severity severity;
         Set<String> cves;
+        boolean unique;
 
         public Builder(String id) {
             this.id = id;
@@ -89,8 +91,13 @@ public record Issue(
             return this;
         }
 
+        public Builder unique(boolean unique) {
+            this.unique = unique;
+            return this;
+        }
+
         public Issue build() {
-            return new Issue(id, title, source, cvss, cvssScore, severity, cves);
+            return new Issue(id, title, source, cvss, cvssScore, severity, cves, unique);
         }
     }
 }

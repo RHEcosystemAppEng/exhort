@@ -81,7 +81,8 @@ public class SnykAggregationStrategy {
                 .severity(Severity.fromValue(data.get("severity").asText()))
                 .cvss(CvssParser.fromVectorString(cvssV3))
                 .cvssScore(data.get("cvssScore").floatValue())
-                .cves(cves);
+                .cves(cves)
+                .unique(cves.isEmpty());
         return builder.build();
     }
 }

@@ -66,10 +66,53 @@ $ http :8080/api/v3/dependency-analysis/maven Content-Type:"text/vnd.graphviz" @
 ]
 ```
 
+### Verbose Mode
+
+When the Dependency Graph Analysis returns a JSON report it contains all vulnerability data by default. The _Verbose mode_ can be disabled
+in order to retrieve just a Summary. Use the `verbose=false` Query parameter to disable it.
+
+```bash
+$ http :8080/api/v3/dependency-analysis/maven Content-Type:"text/vnd.graphviz" Accept:"application/json" @'target/dependencies.txt' verbose==false
+
+{
+    "dependencies": [],
+    "summary": {
+        "dependencies": {
+            "scanned": 11,
+            "transitive": 217
+        },
+        "vulnerabilities": {
+            "critical": 1,
+            "direct": 6,
+            "high": 4,
+            "low": 5,
+            "medium": 10,
+            "total": 20
+        }
+    }
+}
+```
+
+### Client Token Authentication
+
+If clients don't provide the token to authenticate against the Vulnerability Provider the default one will be used instead but only the summary
+will be returned in the JSON response.
+
+To provide the client authentication tokens use HTTP Headers in the request. The format for the tokens Headers is `crda-provider-token`. e.g. `crda-snyk-token`:
+
+```bash
+http :8080/api/v3/dependency-analysis/maven Content-Type:"text/vnd.graphviz" Accept:"text/html" @'target/dependencies.txt' crda-snyk-token:the-client-token
+```
+
 ### HTML Report
 
 By default the response Content-Type will be `application/json` but if the `text/html` media type is requested instead, the response
 will be processed and converted into HTML.
+
+The HTML report will show limited information:
+
+- Public vulnerabilities retrieved with the default token will not show the _Exploit Maturity_
+- Private vulnerabilities (i.e. vulnerabilities reported by the provider) will not be displayed.
 
 ```bash
 $ http :8080/api/v3/dependency-analysis/maven Content-Type:"text/vnd.graphviz" Accept:"text/html" @'./src/test/resources/dependencies.txt'

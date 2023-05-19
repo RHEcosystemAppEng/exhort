@@ -250,6 +250,8 @@ components:
           type: array
           items:
             type: string
+        unique:
+          type: boolean
       example:
         id: SNYK-JAVA-COMFASTERXMLJACKSONCORE-3038426
         title: Denial of Service (DoS)
