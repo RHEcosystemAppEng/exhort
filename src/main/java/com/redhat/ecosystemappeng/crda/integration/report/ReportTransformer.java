@@ -38,6 +38,9 @@ import org.apache.camel.attachment.AttachmentMessage;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.traverse.BreadthFirstIterator;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.redhat.ecosystemappeng.crda.config.ObjectMapperProducer;
 import com.redhat.ecosystemappeng.crda.integration.Constants;
 import com.redhat.ecosystemappeng.crda.integration.GraphUtils;
 import com.redhat.ecosystemappeng.crda.model.AnalysisReport;
@@ -58,6 +61,8 @@ import jakarta.ws.rs.core.MediaType;
 
 @RegisterForReflection
 public class ReportTransformer {
+
+    private final ObjectMapper mapper = ObjectMapperProducer.newInstance();
 
     public AnalysisReport transform(@Body GraphRequest request) {
         List<DependencyReport> depsReport = new ArrayList<>();
@@ -198,6 +203,38 @@ public class ReportTransformer {
                             }
                         });
         return result;
+    }
+
+    public List<com.redhat.ecosystemappeng.crda.model.old.DependencyReport> toOldModel(
+            AnalysisReport report) {
+        List<com.redhat.ecosystemappeng.crda.model.old.DependencyReport> deps = new ArrayList<>();
+        report.dependencies().forEach(d -> deps.add(toOldDep(d)));
+        return deps;
+    }
+
+    private com.redhat.ecosystemappeng.crda.model.old.DependencyReport toOldDep(
+            DependencyReport dep) {
+        return new com.redhat.ecosystemappeng.crda.model.old.DependencyReport(
+                dep.ref(),
+                toOldIssues(dep.issues()),
+                Collections.emptyList(),
+                dep.remediations(),
+                dep.recommendation());
+    }
+
+    private List<com.redhat.ecosystemappeng.crda.model.old.Issue> toOldIssues(List<Issue> issues) {
+        return issues.stream().map(this::toOldIssue).toList();
+    }
+
+    private com.redhat.ecosystemappeng.crda.model.old.Issue toOldIssue(Issue issue) {
+        ObjectNode rawData = mapper.createObjectNode();
+        rawData.put("id", issue.id())
+                .put("title", issue.title())
+                .put("CVSSv3", issue.cvss().cvss())
+                .put("cvssScore", issue.cvssScore());
+
+        return new com.redhat.ecosystemappeng.crda.model.old.Issue(
+                issue.id(), issue.source(), issue.cves(), rawData);
     }
 
     static final record VulnerabilityCounter(

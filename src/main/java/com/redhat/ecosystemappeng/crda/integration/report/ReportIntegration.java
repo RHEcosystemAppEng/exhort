@@ -43,7 +43,6 @@ public class ReportIntegration extends EndpointRouteBuilder {
                     .to(direct("multipartReport"))
                 .otherwise()
                     .bean(ReportTransformer.class, "transform")
-                    .bean(ReportTransformer.class, "hideJsonPrivateData")
                     .marshal().json()
             .end();
 
@@ -58,12 +57,12 @@ public class ReportIntegration extends EndpointRouteBuilder {
             .to(direct("htmlReport"))
             .bean(ReportTransformer.class, "attachHtmlReport")
             .setBody(exchangeProperty(Constants.REPORT_PROPERTY))
-            .bean(ReportTransformer.class, "hideJsonPrivateData")
             .marshal().json()
             .marshal().mimeMultipart(Constants.MULTIPART_MIXED_TYPE.getSubtype(), false, false, true);
 
         from(direct("jsonReport"))
             .bean(ReportTransformer.class, "transform")
+            .bean(ReportTransformer.class, "toOldModel")
             .marshal().json();
         //fmt:on
     }
