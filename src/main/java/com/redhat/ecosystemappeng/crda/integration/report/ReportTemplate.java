@@ -56,6 +56,10 @@ public class ReportTemplate {
     @ConfigProperty(name = "report.sbom.link")
     String sbomPath;
 
+    @ConfigProperty(name = "snyk.signup.link")
+    String snykSignup;
+
+
     public Map<String, Object> setVariables(
             @Body AnalysisReport report,
             @ExchangeProperty(Constants.PROVIDER_PRIVATE_DATA_PROPERTY)
@@ -70,6 +74,8 @@ public class ReportTemplate {
         params.put("issueVisibilityHelper", new IssueVisibilityHelper(providerPrivateData));
         params.put("vexPath", vexPath);
         params.put("sbomPath", sbomPath);
+        params.put("snykSignup", snykSignup);
+
 
         return params;
     }

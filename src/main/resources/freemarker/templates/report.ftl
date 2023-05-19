@@ -206,9 +206,9 @@
                                         <thead>
                                         <tr>
                                             <th scope="col">Severity</th>
-                                            <th scope="col">Exploit Maturity</th>
+                                            <th scope="col" style="width: 18%">Exploit Maturity</th>
                                             <th scope="col">Description</th>
-                                            <th scope="col" style="width: 15%">CVSS</th>
+                                            <th scope="col" style="width: 13%">CVSS</th>
                                             <th scope="col">CVE</th>
                                             <th scope="col">Remediation</th>
                                         </tr>
@@ -230,7 +230,15 @@
                                                     </span>
                                                 </span>
                                                 </td>
-                                                <td>${vulnerability.cvss().exploitCodeMaturity()!"No known exploit"}</td>
+                                                <#if body.issueVisibilityHelper.showIssue(vulnerability)>
+                                                    <td>${vulnerability.cvss().exploitCodeMaturity()!"No known exploit"}</td>
+                                                <#else>
+                                                    <td><a href="${body.snykSignup}"
+                                                           target="_blank">
+                                                            Sign up for a free Snyk account
+                                                        </a>to find out which vulnerabilities have a publicly known exploits
+                                                    </td>
+                                                </#if>
                                                 <td>${vulnerability.title()}</td>
                                                 <td>
                                                     <#assign barNum = vulnerability.cvssScore() *10>
@@ -296,9 +304,9 @@
                                 <tr>
                                     <th scope="col" style="width: 21%">Dependencies</th>
                                     <th scope="col">Severity</th>
-                                    <th scope="col">Exploit Maturity</th>
+                                    <th scope="col" style="width: 18%">Exploit Maturity</th>
                                     <th scope="col">Description</th>
-                                    <th scope="col" style="width: 15%">CVSS</th>
+                                    <th scope="col" style="width: 13%">CVSS</th>
                                     <th scope="col">CVE</th>
                                     <th scope="col">Remediation</th>
                                 </tr>
@@ -331,7 +339,15 @@
                                                             </span>
                                                         </span>
                                                 </td>
-                                                <td>${vulnerability.cvss().exploitCodeMaturity()!"No known exploit"}</td>
+                                                <#if body.issueVisibilityHelper.showIssue(vulnerability)>
+                                                    <td>${vulnerability.cvss().exploitCodeMaturity()!"No known exploit"}</td>
+                                                <#else>
+                                                    <td><a href="${body.snykSignup}"
+                                                           target="_blank">
+                                                            Sign up for a free Snyk account
+                                                        </a>to find out which vulnerabilities have a publicly known exploits
+                                                    </td>
+                                                </#if>
                                                 <td>${vulnerability.title()}</td>
                                                 <td>
                                                     <#assign barNum = vulnerability.cvssScore() *10>
