@@ -73,7 +73,8 @@ public class CrdaBackendIntegration extends EndpointRouteBuilder {
                 .setBody().method(GraphUtils.class, "fromPackages")
                 .to(direct("findVulnerabilities"))
                 .to(direct("recommendAllTrustedContent"))
-                .to(direct("report"));
+                .to(direct("jsonReport"))
+                .to(direct("cleanUpResponse"));
 
 
         from(direct("fullDepAnalysis"))
@@ -84,7 +85,8 @@ public class CrdaBackendIntegration extends EndpointRouteBuilder {
             .bean(GraphUtils.class, "fromDotFile")
             .to(direct("findVulnerabilities"))
             .to(direct("recommendVexContent"))
-            .to(direct("report"));
+            .to(direct("report"))
+            .to(direct("cleanUpResponse"));
 
         from(direct("findVulnerabilities"))
             .multicast(AggregationStrategies.bean(ProviderAggregationStrategy.class, "aggregate"))
@@ -92,6 +94,10 @@ public class CrdaBackendIntegration extends EndpointRouteBuilder {
                     .recipientList(method(vulnerabilityProvider, "getProviderEndpoints"))
                 .end()
             .end();
+
+        from(direct("cleanUpResponse"))
+            .removeHeader(Constants.PKG_MANAGER_HEADER)
+            .removeHeader(Constants.VERBOSE_MODE_HEADER);
         //fmt:on
     }
 }

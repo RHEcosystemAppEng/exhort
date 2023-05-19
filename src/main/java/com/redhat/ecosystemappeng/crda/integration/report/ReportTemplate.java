@@ -47,7 +47,7 @@ public class ReportTemplate {
     @ConfigProperty(name = "report.snyk.link")
     String packagePath;
 
-    @ConfigProperty(name = "api.snyk.issue.regex")
+    @ConfigProperty(name = "report.snyk.issue.regex")
     String issuePathRegex;
 
     @ConfigProperty(name = "report.vex.link")
@@ -56,9 +56,8 @@ public class ReportTemplate {
     @ConfigProperty(name = "report.sbom.link")
     String sbomPath;
 
-    @ConfigProperty(name = "snyk.signup.link")
+    @ConfigProperty(name = "report.snyk.signup.link")
     String snykSignup;
-
 
     public Map<String, Object> setVariables(
             @Body AnalysisReport report,
@@ -76,7 +75,6 @@ public class ReportTemplate {
         params.put("sbomPath", sbomPath);
         params.put("snykSignup", snykSignup);
 
-
         return params;
     }
 
@@ -91,10 +89,10 @@ public class ReportTemplate {
     @RegisterForReflection
     public static record IssueVisibilityHelper(List<String> providerData) {
         public boolean showIssue(Issue issue) {
-            if (!issue.unique()) {
+            if (!issue.unique() || providerData == null) {
                 return true;
             }
-            return providerData.contains(issue.source());
+            return !providerData.contains(issue.source());
         }
     }
 }

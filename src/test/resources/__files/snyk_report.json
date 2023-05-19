@@ -129,7 +129,6 @@
           },
           "identifiers": {
               "CVE": [
-                  "CVE-2022-42004"
               ],
               "CWE": [
                   "CWE-400"
@@ -321,7 +320,7 @@
       }
   ],
   "org": {
-      "id": "bec5d7b5-5168-4b9f-a53f-834f1433437b",
-      "name": "rubens-playground"
+      "id": "abcd-efgh-0123-4567",
+      "name": "example-org"
   }
 }

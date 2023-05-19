@@ -1,92 +1,255 @@
-[
-  {
-    "packageRef": {
-      "name": "org.postgresql:postgresql",
-      "version": "45.0.5"
-    },
-    "transitive": [
-      {
-        "packageRef": {
-
-        },
-        "issues": [],
-        "recommendations": []
-      }
-    ],
-    "issues": [
-      {
-        "id": "SNYK-JAVA-IONETTY-1070799",
-        "source": "snyk",
-        "rawData": {
-          "id": "SNYK-JAVA-IONETTY-1070799",
-          "title": "Information Disclosure",
-          "CVSSv3": "CVSS:3.1/AV:L/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
-          "credit": [
-            "Jonathan Leitschuh"
-          ],
-          "semver": {
-            "vulnerable": [
-              "[4.0.0.Final, 4.1.59.Final)"
-            ]
-          },
-          "fixedIn": [
-            "4.1.59.Final"
-          ],
-          "insights": {
-            "triageAdvice": "This vulnerability is only applicable on Linux operating systems"
-          },
-          "language": "java",
-          "severity": "medium",
-          "cvssScore": 6.2,
-          "moduleName": "io.netty:netty-codec-http",
-          "cvssDetails": [
-            {
-              "assigner": "Red Hat",
-              "severity": "medium",
-              "cvssV3Vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
-              "cvssV3BaseScore": 6.2,
-              "modificationTime": "2023-03-26T14:47:50.011213Z"
-            },
-            {
-              "assigner": "NVD",
-              "severity": "medium",
-              "cvssV3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:N/A:N",
-              "cvssV3BaseScore": 5.5,
-              "modificationTime": "2022-05-13T01:10:58.276413Z"
-            }
-          ],
-          "description": "## Overview\n[io.netty:netty-codec-http](https://mvnrepository.com/artifact/io.netty/netty-codec-http) is a network application framework for rapid development of maintainable high performance protocol servers & clients.\nAffected versions of this package are vulnerable to Information Disclosure via the `AbstractDiskHttpData` method, and on Unix-like systems.\r\n\r\nWhen `netty`'s multipart decoders are used, local information disclosure can occur via the local system temporary directory if temporary storing uploads on the disk are enabled.\r\nOn unix-like systems, the temporary directory is shared between all users. As such, writing to this directory using API's that do not explicitly set the file/directory permissions can lead to information disclosure.\r\nThe method `File.createTempFile` on unix-like systems creates a random file, but, by default will create this file with the permissions `-rw-r--r--`. Sensitive information is written to this file in `AbstractDiskHttpData`, and other local users can read it.\n## Remediation\nUpgrade `io.netty:netty-codec-http` to version 4.1.59.Final or higher.\n## References\n- [GitHub Commit](https://github.com/netty/netty/commit/c735357bf29d07856ad171c6611a2e1a0e0000ec)\n",
-          "identifiers": {
-            "CVE": [
-              "CVE-2021-21290"
-            ],
-            "CWE": [
-              "CWE-378"
-            ],
-            "GHSA": [
-              "GHSA-5mcr-gq6c-3hq2"
-            ]
-          },
-          "packageName": "io.netty:netty-codec-http",
-          "proprietary": false,
-          "disclosureTime": "2021-02-09T09:57:33Z",
-          "packageManager": "maven",
-          "mavenModuleName": {
-            "groupId": "io.netty",
-            "artifactId": "netty-codec-http"
-          }
-        }
-      }
-    ],
-    "recommendations": [
-      {
-        "id": "CVE-2021-21290",
-        "status": "fixed",
-        "package": {
-          "name": "io.quarkus:quarkus-jdbc-postgresql",
-          "version": "1.2.3-redhat-0002"
-        }
-      }
-    ]
-  }
-]
+{
+	"summary": {
+		"dependencies": {
+			"scanned": 2,
+			"transitive": 7
+		},
+		"vulnerabilities": {
+			"total": 4,
+			"direct": 2,
+			"critical": 0,
+			"high": 1,
+			"medium": 3,
+			"low": 0
+		}
+	},
+	"dependencies": [{
+		"ref": {
+			"name": "io.quarkus:quarkus-hibernate-orm",
+			"version": "2.13.5.Final"
+		},
+		"highestVulnerability": {
+			"id": "SNYK-JAVA-COMFASTERXMLJACKSONCORE-2421244",
+			"title": "Denial of Service (DoS)",
+			"source": "snyk",
+			"cvss": {
+				"attackVector": "Network",
+				"attackComplexity": "Low",
+				"privilegesRequired": "None",
+				"userInteraction": "None",
+				"scope": "Unchanged",
+				"confidentialityImpact": "None",
+				"integrityImpact": "None",
+				"availabilityImpact": "High",
+				"exploitCodeMaturity": null,
+				"remediationLevel": null,
+				"reportConfidence": null,
+				"cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+			},
+			"cvssScore": 7.5,
+			"severity": "HIGH",
+			"cves": ["CVE-2020-36518"],
+			"unique": false
+		},
+		"issues": [],
+		"transitive": [{
+			"ref": {
+				"name": "com.fasterxml.jackson.core:jackson-databind",
+				"version": "2.13.1"
+			},
+			"highestVulnerability": {
+				"id": "SNYK-JAVA-COMFASTERXMLJACKSONCORE-2421244",
+				"title": "Denial of Service (DoS)",
+				"source": "snyk",
+				"cvss": {
+					"attackVector": "Network",
+					"attackComplexity": "Low",
+					"privilegesRequired": "None",
+					"userInteraction": "None",
+					"scope": "Unchanged",
+					"confidentialityImpact": "None",
+					"integrityImpact": "None",
+					"availabilityImpact": "High",
+					"exploitCodeMaturity": null,
+					"remediationLevel": null,
+					"reportConfidence": null,
+					"cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+				},
+				"cvssScore": 7.5,
+				"severity": "HIGH",
+				"cves": ["CVE-2020-36518"],
+				"unique": false
+			},
+			"issues": [{
+				"id": "SNYK-JAVA-COMFASTERXMLJACKSONCORE-2421244",
+				"title": "Denial of Service (DoS)",
+				"source": "snyk",
+				"cvss": {
+					"attackVector": "Network",
+					"attackComplexity": "Low",
+					"privilegesRequired": "None",
+					"userInteraction": "None",
+					"scope": "Unchanged",
+					"confidentialityImpact": "None",
+					"integrityImpact": "None",
+					"availabilityImpact": "High",
+					"exploitCodeMaturity": null,
+					"remediationLevel": null,
+					"reportConfidence": null,
+					"cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+				},
+				"cvssScore": 7.5,
+				"severity": "HIGH",
+				"cves": ["CVE-2020-36518"],
+				"unique": false
+			}, {
+				"id": "SNYK-JAVA-COMFASTERXMLJACKSONCORE-3038424",
+				"title": "Denial of Service (DoS)",
+				"source": "snyk",
+				"cvss": {
+					"attackVector": "Network",
+					"attackComplexity": "High",
+					"privilegesRequired": "None",
+					"userInteraction": "None",
+					"scope": "Unchanged",
+					"confidentialityImpact": "None",
+					"integrityImpact": "None",
+					"availabilityImpact": "High",
+					"exploitCodeMaturity": "Proof of concept code",
+					"remediationLevel": null,
+					"reportConfidence": null,
+					"cvss": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H/E:P"
+				},
+				"cvssScore": 5.9,
+				"severity": "MEDIUM",
+				"cves": [],
+				"unique": true
+			}, {
+				"id": "SNYK-JAVA-COMFASTERXMLJACKSONCORE-3038426",
+				"title": "Denial of Service (DoS)",
+				"source": "snyk",
+				"cvss": {
+					"attackVector": "Network",
+					"attackComplexity": "High",
+					"privilegesRequired": "None",
+					"userInteraction": "None",
+					"scope": "Unchanged",
+					"confidentialityImpact": "None",
+					"integrityImpact": "None",
+					"availabilityImpact": "High",
+					"exploitCodeMaturity": "Proof of concept code",
+					"remediationLevel": null,
+					"reportConfidence": null,
+					"cvss": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H/E:P"
+				},
+				"cvssScore": 5.9,
+				"severity": "MEDIUM",
+				"cves": ["CVE-2022-42003"],
+				"unique": false
+			}],
+			"remediations": {
+				"CVE-2022-42003": {
+					"issueRef": "CVE-2022-42003",
+					"mavenPackage": {
+						"name": "com.fasterxml.jackson.core:jackson-databind",
+						"version": "2.13.1.Final-redhat-00002"
+					},
+					"productStatus": "known_not_affected"
+				},
+				"CVE-2020-36518": {
+					"issueRef": "CVE-2020-36518",
+					"mavenPackage": {
+						"name": "com.fasterxml.jackson.core:jackson-databind",
+						"version": "2.13.1.Final-redhat-00002"
+					},
+					"productStatus": "known_affected"
+				}
+			}
+		}],
+		"remediations": {},
+		"recommendation": null
+	}, {
+		"ref": {
+			"name": "io.quarkus:quarkus-jdbc-postgresql",
+			"version": "2.13.5.Final"
+		},
+		"highestVulnerability": {
+			"id": "SNYK-JAVA-ORGPOSTGRESQL-3146847",
+			"title": "Information Exposure",
+			"source": "snyk",
+			"cvss": {
+				"attackVector": "Local",
+				"attackComplexity": "High",
+				"privilegesRequired": "Low",
+				"userInteraction": "None",
+				"scope": "Unchanged",
+				"confidentialityImpact": "High",
+				"integrityImpact": "None",
+				"availabilityImpact": "None",
+				"exploitCodeMaturity": null,
+				"remediationLevel": null,
+				"reportConfidence": null,
+				"cvss": "CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:H/I:N/A:N"
+			},
+			"cvssScore": 4.7,
+			"severity": "MEDIUM",
+			"cves": ["CVE-2022-41946"],
+			"unique": false
+		},
+		"issues": [],
+		"transitive": [{
+			"ref": {
+				"name": "org.postgresql:postgresql",
+				"version": "42.5.0"
+			},
+			"highestVulnerability": {
+				"id": "SNYK-JAVA-ORGPOSTGRESQL-3146847",
+				"title": "Information Exposure",
+				"source": "snyk",
+				"cvss": {
+					"attackVector": "Local",
+					"attackComplexity": "High",
+					"privilegesRequired": "Low",
+					"userInteraction": "None",
+					"scope": "Unchanged",
+					"confidentialityImpact": "High",
+					"integrityImpact": "None",
+					"availabilityImpact": "None",
+					"exploitCodeMaturity": null,
+					"remediationLevel": null,
+					"reportConfidence": null,
+					"cvss": "CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:H/I:N/A:N"
+				},
+				"cvssScore": 4.7,
+				"severity": "MEDIUM",
+				"cves": ["CVE-2022-41946"],
+				"unique": false
+			},
+			"issues": [{
+				"id": "SNYK-JAVA-ORGPOSTGRESQL-3146847",
+				"title": "Information Exposure",
+				"source": "snyk",
+				"cvss": {
+					"attackVector": "Local",
+					"attackComplexity": "High",
+					"privilegesRequired": "Low",
+					"userInteraction": "None",
+					"scope": "Unchanged",
+					"confidentialityImpact": "High",
+					"integrityImpact": "None",
+					"availabilityImpact": "None",
+					"exploitCodeMaturity": null,
+					"remediationLevel": null,
+					"reportConfidence": null,
+					"cvss": "CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:H/I:N/A:N"
+				},
+				"cvssScore": 4.7,
+				"severity": "MEDIUM",
+				"cves": ["CVE-2022-41946"],
+				"unique": false
+			}],
+			"remediations": {
+				"CVE-2022-41946": {
+					"issueRef": "CVE-2022-41946",
+					"mavenPackage": {
+						"name": "io.quarkus:quarkus-jdbc-postgresql",
+						"version": "2.13.7.Final-redhat-00003"
+					},
+					"productStatus": "fixed"
+				}
+			}
+		}],
+		"remediations": {},
+		"recommendation": null
+	}]
+}

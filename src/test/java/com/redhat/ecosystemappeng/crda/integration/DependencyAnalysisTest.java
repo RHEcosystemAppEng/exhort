@@ -45,7 +45,7 @@ import jakarta.ws.rs.core.MediaType;
 public class DependencyAnalysisTest extends AbstractAnalysisTest {
 
     @Test
-    public void testDepAnalysisWithWrongProvider() {
+    public void testWithWrongProvider() {
         given().header(CONTENT_TYPE, Constants.TEXT_VND_GRAPHVIZ)
                 .queryParam(Constants.PROVIDERS_PARAM, "unknown")
                 .body(loadDependenciesFile())
@@ -61,7 +61,7 @@ public class DependencyAnalysisTest extends AbstractAnalysisTest {
     }
 
     @Test
-    public void testDepAnalysisWithWrongPkgManager() {
+    public void testWrongPkgManager() {
         given().header(CONTENT_TYPE, Constants.TEXT_VND_GRAPHVIZ)
                 .queryParam(Constants.PROVIDERS_PARAM, Constants.SNYK_PROVIDER)
                 .body(loadDependenciesFile())
@@ -77,13 +77,45 @@ public class DependencyAnalysisTest extends AbstractAnalysisTest {
     }
 
     @Test
-    public void testDepAnalysisWithSnyk() {
+    public void testSnyk() {
         stubSnykRequest(null);
+        stubTCVexRequest();
+
+        AnalysisReport report =
+                given().header(CONTENT_TYPE, Constants.TEXT_VND_GRAPHVIZ)
+                        .header("Accept", MediaType.APPLICATION_JSON)
+                        .queryParam(Constants.PROVIDERS_PARAM, Constants.SNYK_PROVIDER)
+                        .body(loadDependenciesFile())
+                        .when()
+                        .post(
+                                "/api/v3/dependency-analysis/{pkgManager}",
+                                Constants.MAVEN_PKG_MANAGER)
+                        .then()
+                        .assertThat()
+                        .statusCode(200)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .extract()
+                        .body()
+                        .as(AnalysisReport.class);
+
+        assertSummary(report.summary());
+        assertTrue(report.dependencies().isEmpty());
+        verifyNoInteractionsWithTCGav();
+        verifyNoInteractionsWithTidelift();
+        verifySnykRequest(null);
+        verifyTCVexRequest();
+    }
+
+    @Test
+    public void testSnykWithToken() {
+        String snykToken = "my-snyk-token";
+        stubSnykRequest(snykToken);
         stubTCVexRequest();
 
         String body =
                 given().header(CONTENT_TYPE, Constants.TEXT_VND_GRAPHVIZ)
                         .header("Accept", MediaType.APPLICATION_JSON)
+                        .header(Constants.SNYK_TOKEN_HEADER, snykToken)
                         .queryParam(Constants.PROVIDERS_PARAM, Constants.SNYK_PROVIDER)
                         .body(loadDependenciesFile())
                         .when()
@@ -101,13 +133,13 @@ public class DependencyAnalysisTest extends AbstractAnalysisTest {
         assertJson("expected_dep_snyk.json", body);
         verifyNoInteractionsWithTCGav();
         verifyNoInteractionsWithTidelift();
-        verifySnykRequest(null);
+        verifySnykRequest(snykToken);
         verifyTCVexRequest();
     }
 
     @Test
     @Disabled
-    public void testDepAnalysisWithTidelift() {
+    public void testTidelift() {
         stubTideliftRequest(null);
 
         String body =
@@ -163,7 +195,7 @@ public class DependencyAnalysisTest extends AbstractAnalysisTest {
     }
 
     @Test
-    public void testFullDepAnalysisJson() {
+    public void testJson() {
         stubSnykRequest(null);
         // stubTideliftRequest(null);
         stubTCVexRequest();
@@ -185,7 +217,7 @@ public class DependencyAnalysisTest extends AbstractAnalysisTest {
                         .as(AnalysisReport.class);
 
         assertSummary(report.summary());
-        assertDependenciesReport(report.dependencies());
+        assertTrue(report.dependencies().isEmpty());
 
         verifyTCVexRequest();
         verifySnykRequest(null);
@@ -194,7 +226,7 @@ public class DependencyAnalysisTest extends AbstractAnalysisTest {
     }
 
     @Test
-    public void testFullDepAnalysisWithToken() {
+    public void testWithToken() {
         String snykToken = "my-snyk-token";
         stubSnykRequest(snykToken);
         String tideliftToken = "my-tidelift-token";
@@ -228,7 +260,74 @@ public class DependencyAnalysisTest extends AbstractAnalysisTest {
     }
 
     @Test
-    public void testFullDepAnalysisHtml() {
+    public void testNonVerboseJson() {
+        stubSnykRequest(null);
+        // stubTideliftRequest(null);
+        stubTCVexRequest();
+
+        AnalysisReport report =
+                given().header(CONTENT_TYPE, Constants.TEXT_VND_GRAPHVIZ)
+                        .body(loadDependenciesFile())
+                        .header("Accept", MediaType.APPLICATION_JSON)
+                        .queryParam(Constants.VERBOSE_MODE_HEADER, Boolean.FALSE)
+                        .when()
+                        .post(
+                                "/api/v3/dependency-analysis/{pkgManager}",
+                                Constants.MAVEN_PKG_MANAGER)
+                        .then()
+                        .assertThat()
+                        .statusCode(200)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .extract()
+                        .body()
+                        .as(AnalysisReport.class);
+
+        assertSummary(report.summary());
+        assertTrue(report.dependencies().isEmpty());
+
+        verifyTCVexRequest();
+        verifySnykRequest(null);
+        verifyNoInteractionsWithTCGav();
+        verifyNoInteractionsWithTidelift();
+    }
+
+    @Test
+    public void testNonVerboseWithToken() {
+        String snykToken = "my-snyk-token";
+        stubSnykRequest(snykToken);
+        String tideliftToken = "my-tidelift-token";
+        stubTCVexRequest();
+
+        AnalysisReport report =
+                given().header(CONTENT_TYPE, Constants.TEXT_VND_GRAPHVIZ)
+                        .header("Accept", MediaType.APPLICATION_JSON)
+                        .header(Constants.TIDELIFT_TOKEN_HEADER, tideliftToken)
+                        .header(Constants.SNYK_TOKEN_HEADER, snykToken)
+                        .queryParam(Constants.VERBOSE_MODE_HEADER, Boolean.FALSE)
+                        .body(loadDependenciesFile())
+                        .when()
+                        .post(
+                                "/api/v3/dependency-analysis/{pkgManager}",
+                                Constants.MAVEN_PKG_MANAGER)
+                        .then()
+                        .assertThat()
+                        .statusCode(200)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .extract()
+                        .body()
+                        .as(AnalysisReport.class);
+
+        assertSummary(report.summary());
+        assertTrue(report.dependencies().isEmpty());
+
+        verifySnykRequest(snykToken);
+        verifyTCVexRequest();
+        verifyNoInteractionsWithTidelift();
+        verifyNoInteractionsWithTCGav();
+    }
+
+    @Test
+    public void testHtmlWithoutToken() {
         stubTCVexRequest();
         stubSnykRequest(null);
 
@@ -248,7 +347,7 @@ public class DependencyAnalysisTest extends AbstractAnalysisTest {
                         .body()
                         .asString();
 
-        assertHtml("full_report.html", body);
+        assertHtml("full_report_no_token.html", body);
 
         verifySnykRequest(null);
         verifyTCVexRequest();
@@ -257,7 +356,38 @@ public class DependencyAnalysisTest extends AbstractAnalysisTest {
     }
 
     @Test
-    public void testFullDepAnalysisUnknownMediaType() {
+    public void testHtmlWithToken() {
+        String snykToken = "my-snyk-token";
+        stubSnykRequest(snykToken);
+        stubTCVexRequest();
+
+        String body =
+                given().header(CONTENT_TYPE, Constants.TEXT_VND_GRAPHVIZ)
+                        .body(loadDependenciesFile())
+                        .header("Accept", MediaType.TEXT_HTML)
+                        .header(Constants.SNYK_TOKEN_HEADER, snykToken)
+                        .when()
+                        .post(
+                                "/api/v3/dependency-analysis/{pkgManager}",
+                                Constants.MAVEN_PKG_MANAGER)
+                        .then()
+                        .assertThat()
+                        .statusCode(200)
+                        .contentType(MediaType.TEXT_HTML)
+                        .extract()
+                        .body()
+                        .asString();
+
+        assertHtml("full_report_token.html", body);
+
+        verifySnykRequest(snykToken);
+        verifyTCVexRequest();
+        verifyNoInteractionsWithTidelift();
+        verifyNoInteractionsWithTCGav();
+    }
+
+    @Test
+    public void testUnknownMediaType() {
         given().header(CONTENT_TYPE, Constants.TEXT_VND_GRAPHVIZ)
                 .body(loadDependenciesFile())
                 .header("Accept", MediaType.APPLICATION_XML)
@@ -307,9 +437,7 @@ public class DependencyAnalysisTest extends AbstractAnalysisTest {
         assertEquals(
                 new PackageRef(jackson.name(), "2.13.1.Final-redhat-00002"),
                 tReport.remediations().get("CVE-2020-36518").mavenPackage());
-        assertEquals(
-                new PackageRef(jackson.name(), "2.13.1.Final-redhat-00002"),
-                tReport.remediations().get("CVE-2022-42004").mavenPackage());
+
         assertNull(tReport.remediations().get("CVE-2022-42003"));
     }
 

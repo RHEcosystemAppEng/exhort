@@ -144,7 +144,7 @@ public class ReportTransformer {
                     List<String> providerPrivateData) {
         if (Boolean.FALSE.equals(verbose)
                 || (providerPrivateData != null && !providerPrivateData.isEmpty())) {
-            return new AnalysisReport(report.summary(), null);
+            return new AnalysisReport(report.summary(), Collections.emptyList());
         }
         return report;
     }
