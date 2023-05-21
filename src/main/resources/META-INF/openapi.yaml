@@ -105,11 +105,6 @@ paths:
                     $ref: '#/components/schemas/AnalysisReport'
                   html_report:
                     type: object
-              encoding:
-                summary:
-                  contentType: application/json
-                report:
-                  contentType: text/html
 components:
   schemas:
     AnalysisReport:
