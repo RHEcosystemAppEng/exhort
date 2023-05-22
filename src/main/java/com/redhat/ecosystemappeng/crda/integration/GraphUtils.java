@@ -45,6 +45,13 @@ public class GraphUtils {
     public static final String DEFAULT_APP_VERSION = "0.0.1";
     public static final PackageRef DEFAULT_ROOT =
             new PackageRef(DEFAULT_APP_NAME, DEFAULT_APP_VERSION);
+    public static final Graph<PackageRef, DefaultEdge> EMPTY_GRAPH =
+            GraphTypeBuilder.directed()
+                    .allowingSelfLoops(false)
+                    .vertexClass(PackageRef.class)
+                    .edgeSupplier(DefaultEdge::new)
+                    .buildGraphBuilder()
+                    .buildAsUnmodifiable();
 
     public GraphRequest fromPackages(
             @Body List<PackageRef> body,
@@ -116,5 +123,9 @@ public class GraphUtils {
                 .map(e -> graph.getEdgeTarget(e))
                 .forEach(firstLevel::add);
         return firstLevel;
+    }
+
+    public static Graph<PackageRef, DefaultEdge> emptyGraph() {
+        return EMPTY_GRAPH;
     }
 }

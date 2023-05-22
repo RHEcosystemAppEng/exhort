@@ -19,12 +19,15 @@
 package com.redhat.ecosystemappeng.crda.integration;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.redhat.ecosystemappeng.crda.model.GraphRequest;
 import com.redhat.ecosystemappeng.crda.model.Issue;
 import com.redhat.ecosystemappeng.crda.model.PackageRef;
+import com.redhat.ecosystemappeng.crda.model.ProviderStatus;
 import com.redhat.ecosystemappeng.crda.model.Remediation;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
@@ -57,10 +60,14 @@ public class ProviderAggregationStrategy {
         Map<String, PackageRef> recommendations = new HashMap<>(oldRequest.recommendations());
         recommendations.putAll(newRequest.recommendations());
 
+        Set<ProviderStatus> providerStatuses = new HashSet<>(oldRequest.providerStatuses());
+        providerStatuses.addAll(newRequest.providerStatuses());
+
         return new GraphRequest.Builder(oldRequest)
                 .issues(issues)
                 .remediations(remediations)
                 .recommendations(recommendations)
+                .providerStatuses(List.copyOf(providerStatuses))
                 .build();
     }
 }

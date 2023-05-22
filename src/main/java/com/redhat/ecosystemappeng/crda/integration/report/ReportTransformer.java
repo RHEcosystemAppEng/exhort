@@ -104,7 +104,7 @@ public class ReportTransformer {
         int total = request.graph().vertexSet().size() - direct.size() - 1;
         DependenciesSummary deps = new DependenciesSummary(direct.size(), total);
         counter.direct.set(result.size());
-        Summary summary = new Summary(deps, counter.getSummary());
+        Summary summary = new Summary(deps, counter.getSummary(), request.providerStatuses());
         return new AnalysisReport(summary, result);
     }
 

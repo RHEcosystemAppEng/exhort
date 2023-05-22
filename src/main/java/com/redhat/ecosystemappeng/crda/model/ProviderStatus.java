@@ -18,12 +18,7 @@
 
 package com.redhat.ecosystemappeng.crda.model;
 
-import java.util.List;
-
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @RegisterForReflection
-public record Summary(
-        DependenciesSummary dependencies,
-        VulnerabilitiesSummary vulnerabilities,
-        List<ProviderStatus> providerStatuses) {}
+public record ProviderStatus(boolean ok, String provider, int status, String message) {}

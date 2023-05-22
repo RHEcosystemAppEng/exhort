@@ -22,6 +22,7 @@ import static io.restassured.RestAssured.given;
 import static org.apache.camel.Exchange.CONTENT_TYPE;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -34,12 +35,14 @@ import org.junit.jupiter.api.Test;
 import com.redhat.ecosystemappeng.crda.model.AnalysisReport;
 import com.redhat.ecosystemappeng.crda.model.DependencyReport;
 import com.redhat.ecosystemappeng.crda.model.PackageRef;
+import com.redhat.ecosystemappeng.crda.model.ProviderStatus;
 import com.redhat.ecosystemappeng.crda.model.Summary;
 import com.redhat.ecosystemappeng.crda.model.TransitiveDependencyReport;
 
 import io.quarkus.test.junit.QuarkusTest;
 
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 @QuarkusTest
 public class DependencyAnalysisTest extends AbstractAnalysisTest {
@@ -187,6 +190,40 @@ public class DependencyAnalysisTest extends AbstractAnalysisTest {
                         .asPrettyString();
 
         assertJson("empty_response.json", body);
+
+        verifyTCVexRequest();
+        verifySnykRequest(null);
+        verifyNoInteractionsWithTCGav();
+        verifyNoInteractionsWithTidelift();
+    }
+
+    @Test
+    public void testUnauthorizedRequest() {
+        stubUnauthSnykRequest();
+        // stubTideliftRequest(null);
+        stubTCVexRequest();
+
+        AnalysisReport report =
+                given().header(CONTENT_TYPE, Constants.TEXT_VND_GRAPHVIZ)
+                        .body(loadEmptyDependenciesFile())
+                        .header("Accept", MediaType.APPLICATION_JSON)
+                        .when()
+                        .post(
+                                "/api/v3/dependency-analysis/{pkgManager}",
+                                Constants.MAVEN_PKG_MANAGER)
+                        .then()
+                        .assertThat()
+                        .statusCode(200)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .extract()
+                        .body()
+                        .as(AnalysisReport.class);
+
+        assertEquals(1, report.summary().providerStatuses().size());
+        ProviderStatus status = report.summary().providerStatuses().get(0);
+        assertFalse(status.ok());
+        assertEquals(Constants.SNYK_PROVIDER, status.provider());
+        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), status.status());
 
         verifyTCVexRequest();
         verifySnykRequest(null);

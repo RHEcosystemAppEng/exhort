@@ -18,6 +18,7 @@
 
 package com.redhat.ecosystemappeng.crda.model;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -41,12 +42,12 @@ public record GraphRequest(
         Graph<PackageRef, DefaultEdge> graph,
         Map<String, List<Issue>> issues,
         Map<String, Remediation> remediations,
-        Map<String, PackageRef> recommendations) {
+        Map<String, PackageRef> recommendations,
+        List<ProviderStatus> providerStatuses) {
 
     public GraphRequest {
         Objects.requireNonNull(pkgManager);
         Objects.requireNonNull(providers);
-        Objects.requireNonNull(graph);
         if (!Constants.PKG_MANAGERS.contains(pkgManager)) {
             throw new IllegalArgumentException("Unsupported package manager: " + pkgManager);
         }
@@ -79,6 +80,11 @@ public record GraphRequest(
         } else {
             recommendations = Collections.emptyMap();
         }
+        if (providerStatuses != null) {
+            providerStatuses = Collections.unmodifiableList(providerStatuses);
+        } else {
+            providerStatuses = Collections.emptyList();
+        }
     }
 
     public static class Builder {
@@ -89,6 +95,7 @@ public record GraphRequest(
         Map<String, List<Issue>> issues;
         Map<String, Remediation> remediations;
         Map<String, PackageRef> recommendations;
+        List<ProviderStatus> providerStatuses;
 
         public Builder(String pkgManager, List<String> providers) {
             this.pkgManager = pkgManager;
@@ -110,6 +117,10 @@ public record GraphRequest(
 
             if (copy.recommendations != null) {
                 this.recommendations = new HashMap<>(copy.recommendations);
+            }
+
+            if (copy.providerStatuses != null) {
+                this.providerStatuses = new ArrayList<>(copy.providerStatuses);
             }
         }
 
@@ -134,9 +145,20 @@ public record GraphRequest(
             return this;
         }
 
+        public Builder providerStatuses(List<ProviderStatus> providerStatuses) {
+            this.providerStatuses = providerStatuses;
+            return this;
+        }
+
         public GraphRequest build() {
             return new GraphRequest(
-                    pkgManager, providers, graph, issues, remediations, recommendations);
+                    pkgManager,
+                    providers,
+                    graph,
+                    issues,
+                    remediations,
+                    recommendations,
+                    providerStatuses);
         }
     }
 }
