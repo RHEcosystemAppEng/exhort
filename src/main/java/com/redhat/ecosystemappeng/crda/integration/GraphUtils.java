@@ -18,6 +18,7 @@
 
 package com.redhat.ecosystemappeng.crda.integration;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,18 +26,31 @@ import java.util.List;
 import java.util.Scanner;
 
 import org.apache.camel.Body;
+import org.apache.camel.Exchange;
 import org.apache.camel.ExchangeProperty;
 import org.apache.camel.Header;
+import org.cyclonedx.model.Bom;
+import org.cyclonedx.model.Dependency;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.builder.GraphBuilder;
 import org.jgrapht.graph.builder.GraphTypeBuilder;
 import org.jgrapht.traverse.BreadthFirstIterator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.redhat.ecosystemappeng.crda.config.ObjectMapperProducer;
 import com.redhat.ecosystemappeng.crda.model.GraphRequest;
 import com.redhat.ecosystemappeng.crda.model.PackageRef;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
+
+import jakarta.mail.internet.ContentType;
+import jakarta.mail.internet.ParseException;
+import jakarta.ws.rs.ClientErrorException;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 @RegisterForReflection
 public class GraphUtils {
@@ -52,6 +66,9 @@ public class GraphUtils {
                     .edgeSupplier(DefaultEdge::new)
                     .buildGraphBuilder()
                     .buildAsUnmodifiable();
+
+    private static final ObjectMapper mapper = ObjectMapperProducer.newInstance();
+    private static final Logger LOGGER = LoggerFactory.getLogger(GraphUtils.class);
 
     public GraphRequest fromPackages(
             @Body List<PackageRef> body,
@@ -70,16 +87,47 @@ public class GraphUtils {
                 .build();
     }
 
-    public GraphRequest fromDotFile(
+    public GraphRequest fromDepGraph(
             @Body InputStream file,
             @ExchangeProperty(Constants.PROVIDERS_PARAM) List<String> providers,
-            @Header(Constants.PKG_MANAGER_HEADER) String pkgManager) {
+            @Header(Constants.PKG_MANAGER_HEADER) String pkgManager,
+            @Header(Exchange.CONTENT_TYPE) String contentType) {
         GraphBuilder<PackageRef, DefaultEdge, Graph<PackageRef, DefaultEdge>> builder =
                 GraphTypeBuilder.directed()
                         .allowingSelfLoops(false)
                         .vertexClass(PackageRef.class)
                         .edgeSupplier(DefaultEdge::new)
                         .buildGraphBuilder();
+        boolean empty = true;
+        ContentType ct;
+        try {
+            ct = new ContentType(contentType);
+        } catch (ParseException e) {
+            throw new ClientErrorException(Response.Status.UNSUPPORTED_MEDIA_TYPE, e);
+        }
+        switch (ct.getBaseType()) {
+            case Constants.TEXT_VND_GRAPHVIZ:
+                empty = fromDotFile(file, builder);
+                break;
+            case MediaType.APPLICATION_JSON:
+                empty = fromSbom(file, builder);
+                break;
+            default:
+                throw new ClientErrorException(
+                        "Unsupported Content-Type header: " + contentType,
+                        Response.Status.UNSUPPORTED_MEDIA_TYPE);
+        }
+        if (empty) {
+            builder.addVertex(DEFAULT_ROOT);
+        }
+        return new GraphRequest.Builder(pkgManager, providers)
+                .graph(builder.buildAsUnmodifiable())
+                .build();
+    }
+
+    private boolean fromDotFile(
+            InputStream file,
+            GraphBuilder<PackageRef, DefaultEdge, Graph<PackageRef, DefaultEdge>> builder) {
         boolean empty = true;
         try (Scanner scanner = new Scanner(file)) {
             while (scanner.hasNextLine()) {
@@ -99,12 +147,33 @@ public class GraphUtils {
                 }
             }
         }
-        if (empty) {
-            builder.addVertex(DEFAULT_ROOT);
+        return empty;
+    }
+
+    private boolean fromSbom(
+            InputStream file,
+            GraphBuilder<PackageRef, DefaultEdge, Graph<PackageRef, DefaultEdge>> builder) {
+        try {
+            Bom bom = mapper.readValue(file, Bom.class);
+            if (bom.getDependencies().isEmpty()) {
+                return true;
+            }
+            bom.getDependencies().stream().forEach(d -> addDependency(builder, d));
+            return false;
+        } catch (IOException e) {
+            LOGGER.error("Unable to parse the SBOM file", e);
+            throw new ClientErrorException(
+                    "Unable to parse received SBOM file", Response.Status.BAD_REQUEST);
         }
-        return new GraphRequest.Builder(pkgManager, providers)
-                .graph(builder.buildAsUnmodifiable())
-                .build();
+    }
+
+    private void addDependency(
+            GraphBuilder<PackageRef, DefaultEdge, Graph<PackageRef, DefaultEdge>> builder,
+            Dependency dep) {
+        PackageRef source = PackageRef.fromPurl(dep.getRef());
+        dep.getDependencies().stream()
+                .map(d -> PackageRef.fromPurl(d.getRef()))
+                .forEach(target -> builder.addEdge(source, target));
     }
 
     public static List<PackageRef> getFirstLevel(Graph<PackageRef, DefaultEdge> graph) {
