@@ -65,7 +65,6 @@ public class CrdaBackendIntegration extends EndpointRouteBuilder {
                 .consumes(MediaType.APPLICATION_JSON)
                 .to("direct:componentAnalysis")
             .post("/dependency-analysis/{pkgManager}")
-                .consumes(Constants.TEXT_VND_GRAPHVIZ)
                 .to("direct:fullDepAnalysis")
             .get("/token")
                 .to("direct:validateToken");
@@ -85,7 +84,7 @@ public class CrdaBackendIntegration extends EndpointRouteBuilder {
             .setProperty(REQUEST_CONTENT_PROPERTY, method(BackendUtils.class, "getResponseMediaType"))
             .removeHeader(Constants.ACCEPT_HEADER)
             .removeHeader(Constants.ACCEPT_ENCODING_HEADER)
-            .bean(GraphUtils.class, "fromDotFile")
+            .bean(GraphUtils.class, "fromDepGraph")
             .to(direct("findVulnerabilities"))
             .to(direct("recommendVexContent"))
             .to(direct("report"))

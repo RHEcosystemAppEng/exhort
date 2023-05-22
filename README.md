@@ -41,6 +41,8 @@ Only `maven` is currently supported.
 
 ## Dependency Graph Analysis `/api/v3/dependency-analysis/<pkgManager>`
 
+### DOT Graph
+
 With Maven it is possible to generate a [DOT graph](https://graphviz.org/doc/info/lang.html) with all the resolved dependencies.
 The following command will generate a `dependencies.txt` file in the project target folder.
 
@@ -55,15 +57,25 @@ This is an example for `maven`:
 
 ```bash
 $ http :8080/api/v3/dependency-analysis/maven Content-Type:"text/vnd.graphviz" @'./src/test/resources/dependencies.txt'
-[
-    {
-    "ref": {
-        "name": "io.quarkus:quarkus-hibernate-orm",
-        "version": "2.13.5.Final"
-    },
-    ...
-    }
-]
+```
+
+### SBOM File
+
+The CycloneDX Maven plugin generates CycloneDX Software Bill of Materials (SBOM) containing the aggregate of all direct and transitive
+dependencies of a project. CycloneDX is a lightweight software bill of materials (SBOM) standard designed for use in application security
+contexts and supply chain component analysis.
+
+You can generate a JSON SBOM with the following command:
+
+```bash
+mvn org.cyclonedx:cyclonedx-maven-plugin:2.7.6:makeBom -DoutputFormat=json -DexcludeTestProject
+```
+
+The generated file will be located under `./target/bom.json`. Make sure the request `Content-Type` is set to `application/json`.
+Then you can analyise the vulnerabilities with the following command:
+
+```bash
+$ http :8080/api/v3/dependency-analysis/maven Content-Type:"application/json" Accept:"application/json" @'target/bom.json'
 ```
 
 ### Verbose Mode
