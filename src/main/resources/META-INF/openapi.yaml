@@ -105,11 +105,6 @@ paths:
                     $ref: '#/components/schemas/AnalysisReport'
                   html_report:
                     type: object
-              encoding:
-                summary:
-                  contentType: application/json
-                report:
-                  contentType: text/html
 components:
   schemas:
     AnalysisReport:
@@ -159,7 +154,8 @@ components:
             $ref: '#/components/schemas/TransitiveDependencyReport'
         recommendation:
           description: Trusted Content recommendation that is not related to any security vulnerability
-          $ref: '#/components/schemas/PackageRef'
+          allOf:
+            - $ref: '#/components/schemas/PackageRef'
         remediations:
           description: Trusted Content remediation related to identified security vulnerabilities
           type: object
@@ -168,7 +164,8 @@ components:
         highestVulnerability:
           description: Highest vulnerability found for this dependency
           type: object
-          $ref: '#/components/schemas/Issue'
+          allOf:
+            - $ref: '#/components/schemas/Issue'
       example:
         ref:
           name: io.quarkus:quarkus-jdbc-postgresql
