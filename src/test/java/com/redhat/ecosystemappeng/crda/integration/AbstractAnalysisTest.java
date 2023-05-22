@@ -144,6 +144,17 @@ public abstract class AbstractAnalysisTest {
                                         .withBodyFile("empty_snyk_report.json")));
     }
 
+    protected void stubUnauthSnykRequest() {
+        server.stubFor(
+                post(Constants.SNYK_DEP_GRAPH_API_PATH)
+                        .withHeader(
+                                "Authorization",
+                                WireMock.equalTo("token " + WiremockV3Extension.SNYK_TOKEN))
+                        .withHeader(
+                                Exchange.CONTENT_TYPE, WireMock.equalTo(MediaType.APPLICATION_JSON))
+                        .willReturn(aResponse().withStatus(401)));
+    }
+
     protected void verifySnykRequest(String token) {
         if (token == null) {
             token = WiremockV3Extension.SNYK_TOKEN;

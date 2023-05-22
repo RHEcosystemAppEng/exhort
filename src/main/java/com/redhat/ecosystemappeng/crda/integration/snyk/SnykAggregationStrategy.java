@@ -18,12 +18,16 @@
 
 package com.redhat.ecosystemappeng.crda.integration.snyk;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -34,20 +38,47 @@ import com.redhat.ecosystemappeng.crda.config.ObjectMapperProducer;
 import com.redhat.ecosystemappeng.crda.integration.Constants;
 import com.redhat.ecosystemappeng.crda.model.GraphRequest;
 import com.redhat.ecosystemappeng.crda.model.Issue;
+import com.redhat.ecosystemappeng.crda.model.ProviderStatus;
 import com.redhat.ecosystemappeng.crda.model.Severity;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
+import jakarta.ws.rs.core.Response;
+
 @RegisterForReflection
 public class SnykAggregationStrategy {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(SnykAggregationStrategy.class);
     private final ObjectMapper mapper = ObjectMapperProducer.newInstance();
 
-    public GraphRequest aggregate(GraphRequest graphReq, String newExchange)
+    public GraphRequest aggregate(GraphRequest graphReq, Object newExchange)
             throws JsonMappingException, JsonProcessingException {
-        JsonNode snykResponse = mapper.readTree(newExchange);
-        Map<String, List<Issue>> issuesData = getIssues(snykResponse);
-        return new GraphRequest.Builder(graphReq).issues(issuesData).build();
+
+        GraphRequest.Builder builder = new GraphRequest.Builder(graphReq);
+        if (newExchange instanceof ProviderStatus) {
+            return builder.providerStatuses(List.of((ProviderStatus) newExchange)).build();
+        }
+        ProviderStatus status;
+        try {
+            JsonNode snykResponse = mapper.readTree((byte[]) newExchange);
+            Map<String, List<Issue>> issuesData = getIssues(snykResponse);
+            builder.issues(issuesData);
+            status =
+                    new ProviderStatus(
+                            true,
+                            Constants.SNYK_PROVIDER,
+                            Response.Status.OK.getStatusCode(),
+                            Response.Status.OK.name());
+        } catch (IOException e) {
+            LOGGER.error("Unable to read Json from Snyk Response", e);
+            status =
+                    new ProviderStatus(
+                            false,
+                            Constants.SNYK_PROVIDER,
+                            Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
+                            e.getMessage());
+        }
+        return builder.providerStatuses(List.of(status)).build();
     }
 
     private Map<String, List<Issue>> getIssues(JsonNode snykResponse) {

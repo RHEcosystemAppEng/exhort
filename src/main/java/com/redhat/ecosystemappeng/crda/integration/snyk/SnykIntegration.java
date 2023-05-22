@@ -19,11 +19,14 @@
 package com.redhat.ecosystemappeng.crda.integration.snyk;
 
 import org.apache.camel.Exchange;
+import org.apache.camel.Processor;
 import org.apache.camel.builder.AggregationStrategies;
 import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
+import org.apache.camel.http.base.HttpOperationFailedException;
 
 import com.redhat.ecosystemappeng.crda.integration.Constants;
 import com.redhat.ecosystemappeng.crda.integration.VulnerabilityProvider;
+import com.redhat.ecosystemappeng.crda.model.ProviderStatus;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.core.MediaType;
@@ -33,7 +36,20 @@ public class SnykIntegration extends EndpointRouteBuilder {
 
     @Override
     public void configure() {
+
         // fmt:off
+        onException(HttpOperationFailedException.class)
+            .logStackTrace(false)
+            .process(new Processor() {
+                @Override
+                public void process(Exchange exchange) throws Exception {
+                    HttpOperationFailedException e = exchange.getProperty(Exchange.EXCEPTION_CAUGHT, HttpOperationFailedException.class);
+                    exchange.getIn().setBody(new ProviderStatus(false, Constants.SNYK_PROVIDER, e.getStatusCode(), e.getMessage()));
+                }
+        
+            })
+            .handled(true);
+
         from(direct("snykDepGraph"))
             .choice()
                 .when(header(Constants.SNYK_TOKEN_HEADER).isNotNull())

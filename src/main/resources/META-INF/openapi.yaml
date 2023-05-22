@@ -331,6 +331,10 @@ components:
           $ref: '#/components/schemas/DependenciesSummary'
         vulnerabilities:
           $ref: '#/components/schemas/VulnerabilitiesSummary'
+        providerStatuses:
+          type: array
+          items:
+              $ref: '#/components/schemas/ProviderStatus'
     DependenciesSummary:
       type: object
       properties:
@@ -353,6 +357,17 @@ components:
           type: number
         low:
           type: number
+    ProviderStatus:
+      type: object
+      properties:
+        ok:
+          type: boolean
+        provider:
+          type: string
+        status:
+          type: number
+        message:
+          type: string
     CvssVector:
       type: object
       properties:
