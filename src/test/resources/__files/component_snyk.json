@@ -11,7 +11,13 @@
 			"high": 2,
 			"medium": 4,
 			"low": 0
-		}
+		},
+		"providerStatuses": [{
+			"ok": true,
+			"provider": "snyk",
+			"status": 200,
+			"message": "OK"
+		}]
 	},
 	"dependencies": [{
 		"ref": {

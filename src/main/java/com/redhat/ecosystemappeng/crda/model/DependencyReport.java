@@ -34,13 +34,20 @@ public record DependencyReport(
         List<Issue> issues,
         List<TransitiveDependencyReport> transitive,
         Map<String, Remediation> remediations,
-        PackageRef recommendation) {
+        PackageRef recommendation)
+        implements CvssScoreComparable {
 
     public DependencyReport {
         if (issues != null) {
             issues =
                     issues.stream()
                             .sorted(Comparator.comparing(Issue::cvssScore).reversed())
+                            .collect(Collectors.toUnmodifiableList());
+        }
+        if (transitive != null) {
+            transitive =
+                    transitive.stream()
+                            .sorted(new CvssScoreComparator().reversed())
                             .collect(Collectors.toUnmodifiableList());
         }
     }
