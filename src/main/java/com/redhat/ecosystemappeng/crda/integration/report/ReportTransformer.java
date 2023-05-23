@@ -44,6 +44,7 @@ import com.redhat.ecosystemappeng.crda.config.ObjectMapperProducer;
 import com.redhat.ecosystemappeng.crda.integration.Constants;
 import com.redhat.ecosystemappeng.crda.integration.GraphUtils;
 import com.redhat.ecosystemappeng.crda.model.AnalysisReport;
+import com.redhat.ecosystemappeng.crda.model.CvssScoreComparable.CvssScoreComparator;
 import com.redhat.ecosystemappeng.crda.model.DependenciesSummary;
 import com.redhat.ecosystemappeng.crda.model.DependencyReport;
 import com.redhat.ecosystemappeng.crda.model.GraphRequest;
@@ -105,6 +106,7 @@ public class ReportTransformer {
                                         (r.issues() != null && !r.issues().isEmpty())
                                                 || !r.transitive().isEmpty()
                                                 || r.recommendation() != null)
+                        .sorted(new CvssScoreComparator().reversed())
                         .collect(Collectors.toList());
         int total = request.graph().vertexSet().size() - direct.size() - 1;
         DependenciesSummary deps = new DependenciesSummary(direct.size(), total);
