@@ -89,10 +89,7 @@ public class ReportTemplate {
     @RegisterForReflection
     public static record IssueVisibilityHelper(List<String> providerData) {
         public boolean showIssue(Issue issue) {
-            if (!issue.unique() || providerData == null) {
-                return true;
-            }
-            return !providerData.contains(issue.source());
+            return true;
         }
     }
 }
