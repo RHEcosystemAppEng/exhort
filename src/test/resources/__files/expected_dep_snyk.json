@@ -12,14 +12,12 @@
 			"medium": 3,
 			"low": 0
 		},
-        "providerStatuses": [
-            {
-                "message": "OK",
-                "ok": true,
-                "provider": "snyk",
-                "status": 200
-            }
-        ]
+		"providerStatuses": [{
+			"ok": true,
+			"provider": "snyk",
+			"status": 200,
+			"message": "OK"
+		}]
 	},
 	"dependencies": [{
 		"ref": {

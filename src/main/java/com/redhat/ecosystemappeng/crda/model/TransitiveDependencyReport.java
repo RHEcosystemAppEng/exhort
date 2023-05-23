@@ -30,7 +30,8 @@ public record TransitiveDependencyReport(
         PackageRef ref,
         Issue highestVulnerability,
         List<Issue> issues,
-        Map<String, Remediation> remediations) {
+        Map<String, Remediation> remediations)
+        implements CvssScoreComparable {
 
     public TransitiveDependencyReport {
         if (issues != null) {
