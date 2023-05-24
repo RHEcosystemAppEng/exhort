@@ -56,7 +56,7 @@
           integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
     <title>CRDA Dependency Analysis</title>
 </head>
-<body class="p-4 container-fluid">
+<body class="p-2 container-fluid">
 
 <div class="card">
     <div class="card-header">
@@ -109,14 +109,14 @@
     <table class="pf-c-table pf-m-expandable pf-m-compact pf-m-grid-md">
         <thead class="">
         <tr>
-            <th role="columnheader" scope="col"></th>
-            <th role="columnheader" scope="col">#</th>
-            <th role="columnheader" scope="col">Dependencies</th>
-            <th role="columnheader" scope="col"># Direct</th>
-            <th role="columnheader" scope="col"># Transitive</th>
-            <th role="columnheader" scope="col">Highest CVSS</th>
-            <th role="columnheader" scope="col">Highest Severity</th>
-            <th role="columnheader" scope="col">Red Hat remediation available</th>
+            <th scope="col"></th>
+            <th scope="col">#</th>
+            <th scope="col">Dependencies</th>
+            <th scope="col"># Direct</th>
+            <th scope="col"># Transitive</th>
+            <th scope="col">Highest CVSS</th>
+            <th scope="col">Highest Severity</th>
+            <th scope="col">Red Hat remediation available</th>
         </tr>
         </thead>
         <tbody>
@@ -321,17 +321,17 @@
                                 aria-controls="${htmlRef(dependency.ref())}transTable">
                             Transitive Dependencies with vulnerabilites <i class="fa fa-angle-down"></i>
                         </button>
-                        <div class="p-3 collapse" id="${htmlRef(dependency.ref())}transTable">
+                        <div class="collapse" id="${htmlRef(dependency.ref())}transTable">
                             <table class="pf-c-table pf-m-expandable pf-m-compact pf-m-grid-md">
                                 <thead>
                                 <tr>
-                                    <th scope="col" style="width: 21%">Dependencies</th>
+                                    <th scope="col" style="width: 19%">Dependencies</th>
                                     <th scope="col">Severity</th>
-                                    <th scope="col" style="width: 18%">Exploit Maturity</th>
+                                    <th scope="col" >Exploit Maturity</th>
                                     <th scope="col">Description</th>
                                     <th scope="col" style="width: 13%">CVSS</th>
-                                    <th scope="col">CVE</th>
-                                    <th scope="col">Remediation</th>
+                                    <th scope="col" style="width: 13%">CVE</th>
+                                    <th scope="col" style="width: 26%">Remediation</th>
                                 </tr>
                                 </thead>
                                 <tbody>
