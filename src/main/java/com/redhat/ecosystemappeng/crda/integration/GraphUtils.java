@@ -20,9 +20,15 @@ package com.redhat.ecosystemappeng.crda.integration;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Scanner;
 
 import org.apache.camel.Body;
@@ -30,6 +36,7 @@ import org.apache.camel.Exchange;
 import org.apache.camel.ExchangeProperty;
 import org.apache.camel.Header;
 import org.cyclonedx.model.Bom;
+import org.cyclonedx.model.Component;
 import org.cyclonedx.model.Dependency;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultEdge;
@@ -40,6 +47,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.packageurl.MalformedPackageURLException;
+import com.github.packageurl.PackageURL;
 import com.redhat.ecosystemappeng.crda.config.ObjectMapperProducer;
 import com.redhat.ecosystemappeng.crda.model.GraphRequest;
 import com.redhat.ecosystemappeng.crda.model.PackageRef;
@@ -110,7 +119,7 @@ public class GraphUtils {
                 empty = fromDotFile(file, builder);
                 break;
             case MediaType.APPLICATION_JSON:
-                empty = fromSbom(file, builder);
+                empty = fromSbom(file, builder, pkgManager);
                 break;
             default:
                 throw new ClientErrorException(
@@ -152,13 +161,64 @@ public class GraphUtils {
 
     private boolean fromSbom(
             InputStream file,
-            GraphBuilder<PackageRef, DefaultEdge, Graph<PackageRef, DefaultEdge>> builder) {
+            GraphBuilder<PackageRef, DefaultEdge, Graph<PackageRef, DefaultEdge>> builder,
+            String pkgManager) {
         try {
             Bom bom = mapper.readValue(file, Bom.class);
             if (bom.getDependencies().isEmpty()) {
                 return true;
             }
-            bom.getDependencies().stream().forEach(d -> addDependency(builder, d));
+            Map<String, PackageRef> componentPurls = new HashMap<>();
+            bom.getComponents().forEach(c -> addComponents(componentPurls, c, pkgManager));
+
+            Component rootComponent = bom.getMetadata().getComponent();
+            final Optional<Dependency> rootDependency;
+            if (rootComponent != null) {
+                rootDependency =
+                        bom.getDependencies().stream()
+                                .filter(d -> d.getRef().equals(rootComponent.getBomRef()))
+                                .findFirst();
+                if (rootDependency.isEmpty()) {
+                    throw new IllegalArgumentException(
+                            "Expected metadata.component as dependency in SBOM. "
+                                    + rootComponent.getBomRef());
+                }
+                PackageRef rootRef =
+                        fromPurl(rootComponent.getPurl(), requiresDecoding(pkgManager));
+                addDependency(
+                        builder, rootRef, rootDependency.get().getDependencies(), componentPurls);
+                bom.getDependencies().stream()
+                        .filter(
+                                d ->
+                                        !d.getRef()
+                                                .equals(
+                                                        rootDependency
+                                                                .orElse(
+                                                                        new Dependency(
+                                                                                DEFAULT_ROOT
+                                                                                        .toGav()))
+                                                                .getRef()))
+                        .forEach(
+                                d ->
+                                        addDependency(
+                                                builder,
+                                                componentPurls.get(d.getRef()),
+                                                d.getDependencies(),
+                                                componentPurls));
+            } else { // flat rootless SBOM
+                rootDependency = Optional.of(new Dependency(DEFAULT_ROOT.toGav()));
+                addDependency(builder, DEFAULT_ROOT, bom.getDependencies(), componentPurls);
+                componentPurls
+                        .values()
+                        .forEach(
+                                purl ->
+                                        addDependency(
+                                                builder,
+                                                purl,
+                                                Collections.emptyList(),
+                                                componentPurls));
+            }
+
             return false;
         } catch (IOException e) {
             LOGGER.error("Unable to parse the SBOM file", e);
@@ -167,13 +227,49 @@ public class GraphUtils {
         }
     }
 
+    private boolean requiresDecoding(String pkgManager) {
+        return Constants.PIP_PKG_MANAGER.equals(pkgManager);
+    }
+
+    private void addComponents(
+            Map<String, PackageRef> componentPurls, Component component, String pkgManager) {
+        componentPurls.put(
+                component.getBomRef(), fromPurl(component.getPurl(), requiresDecoding(pkgManager)));
+        if (component.getComponents() != null) {
+            component.getComponents().forEach(c -> addComponents(componentPurls, c, pkgManager));
+        }
+    }
+
+    private PackageRef fromPurl(String purl, boolean decode) {
+        PackageURL packageUrl;
+        try {
+            if (decode) {
+                packageUrl = new PackageURL(URLDecoder.decode(purl, StandardCharsets.UTF_8.name()));
+            } else {
+                packageUrl = new PackageURL(purl);
+            }
+            if (packageUrl.getNamespace() != null) {
+                return new PackageRef(
+                        packageUrl.getNamespace() + ":" + packageUrl.getName(),
+                        packageUrl.getVersion());
+            }
+            return new PackageRef(packageUrl.getName(), packageUrl.getVersion());
+        } catch (MalformedPackageURLException | UnsupportedEncodingException e) {
+            LOGGER.warn("Unsupported PURL format {}", purl, e);
+            throw new IllegalArgumentException("Unsupported PURL format: " + purl, e);
+        }
+    }
+
     private void addDependency(
             GraphBuilder<PackageRef, DefaultEdge, Graph<PackageRef, DefaultEdge>> builder,
-            Dependency dep) {
-        PackageRef source = PackageRef.fromPurl(dep.getRef());
-        dep.getDependencies().stream()
-                .map(d -> PackageRef.fromPurl(d.getRef()))
-                .forEach(target -> builder.addEdge(source, target));
+            PackageRef source,
+            List<Dependency> deps,
+            Map<String, PackageRef> componentPurls) {
+        if (deps != null) {
+            deps.stream()
+                    .map(d -> componentPurls.get(d.getRef()))
+                    .forEach(target -> builder.addEdge(source, target));
+        }
     }
 
     public static List<PackageRef> getFirstLevel(Graph<PackageRef, DefaultEdge> graph) {

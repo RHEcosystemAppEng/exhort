@@ -21,8 +21,6 @@ package com.redhat.ecosystemappeng.crda.model;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.github.packageurl.MalformedPackageURLException;
-import com.github.packageurl.PackageURL;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -65,18 +63,6 @@ public record PackageRef(String name, String version) {
             return new PackageRef(name, parts[3]);
         }
         return new PackageRef(name, parts[4]);
-    }
-
-    public static PackageRef fromPurl(String purl) {
-        PackageURL packageUrl;
-        try {
-            packageUrl = new PackageURL(purl);
-            return new PackageRef(
-                    packageUrl.getNamespace() + ":" + packageUrl.getName(),
-                    packageUrl.getVersion());
-        } catch (MalformedPackageURLException e) {
-            throw new IllegalArgumentException("Unsupported PURL format", e);
-        }
     }
 
     public String toGav() {
