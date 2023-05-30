@@ -105,6 +105,39 @@ paths:
                     $ref: '#/components/schemas/AnalysisReport'
                   html_report:
                     type: object
+  /token:
+    get:
+      operationId: validateToken
+      summary: Validates a vulnerability provider token
+      parameters:
+      - name: crda-snyk-token
+        in: header
+        description: Snyk authentication token
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful token validation
+          content:
+            text/plain:
+              schema:
+                type: string
+                description: Response message
+        '401':
+          description: Invalid token
+          content:
+            text/plain:
+              schema:
+                type: string
+                description: Error message
+        '400':
+          description: Invalid request
+          content:
+            text/plain:
+              schema:
+                type: string
+                description: Missing token
+
 components:
   schemas:
     AnalysisReport:

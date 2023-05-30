@@ -35,6 +35,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.ClientErrorException;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 @ApplicationScoped
 public class CrdaBackendIntegration extends EndpointRouteBuilder {
@@ -65,7 +66,9 @@ public class CrdaBackendIntegration extends EndpointRouteBuilder {
                 .to("direct:componentAnalysis")
             .post("/dependency-analysis/{pkgManager}")
                 .consumes(Constants.TEXT_VND_GRAPHVIZ)
-                .to("direct:fullDepAnalysis");
+                .to("direct:fullDepAnalysis")
+            .get("/token")
+                .to("direct:validateToken");
 
         from(direct("componentAnalysis"))
                 .unmarshal(new ListJacksonDataFormat(PackageRef.class))
@@ -98,6 +101,18 @@ public class CrdaBackendIntegration extends EndpointRouteBuilder {
         from(direct("cleanUpResponse"))
             .removeHeader(Constants.PKG_MANAGER_HEADER)
             .removeHeader(Constants.VERBOSE_MODE_HEADER);
+
+        from(direct("validateToken"))
+            .choice()
+                .when(header(Constants.SNYK_TOKEN_HEADER).isNotNull())
+                    .to(direct("validateSnykToken"))
+                .otherwise()
+                    .setProperty(Constants.RESPONSE_STATUS_PROPERTY, constant(Response.Status.BAD_REQUEST.getStatusCode()))
+                    .setBody(constant("Missing authentication header"))
+            .end()
+            .removeHeaders("*")
+            .setHeader(Exchange.HTTP_RESPONSE_CODE, exchangeProperty(Constants.RESPONSE_STATUS_PROPERTY))
+            .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.TEXT_PLAIN));
         //fmt:on
     }
 }

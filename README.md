@@ -215,6 +215,25 @@ $ curl 'http://localhost:8080/api/v3/component-analysis/maven' \
 }
 ```
 
+## Token validation
+
+Clients are allowed to validate the vulnerability provider token with a specific endpoint. That will allow IDEs and the CLI to persist the different
+tokens and validate them when saving them.
+
+The request will be a GET to the `/token` path containing the HTTP header with the token. The header format will follow the same rules as for the
+other HTTP requests. i.e. `crda-<provider>-token`
+
+```bash
+http -v :8080/api/v3/token crda-snyk-token==example-token
+```
+
+The possible responses are:
+
+- 200 - Token validated successfully
+- 400 - Missing authentication header
+- 401 - Invalid auth token provided
+- 500 - Server error
+
 ## Deploy on OpenShift
 
 The required parameters can be injected as environment variables through a secret. Create the `crda-secret` Secret before deploying the application.
