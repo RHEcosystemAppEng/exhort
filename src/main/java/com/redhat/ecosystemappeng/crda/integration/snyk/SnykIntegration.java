@@ -30,6 +30,7 @@ import com.redhat.ecosystemappeng.crda.model.ProviderStatus;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 @ApplicationScoped
 public class SnykIntegration extends EndpointRouteBuilder {
@@ -71,6 +72,23 @@ public class SnykIntegration extends EndpointRouteBuilder {
             .setHeader(Exchange.HTTP_PATH, constant(Constants.SNYK_DEP_GRAPH_API_PATH))
             .setHeader(Exchange.HTTP_METHOD, constant("POST"))
             .to(vertxHttp("{{api.snyk.host}}"));
+        
+        from(direct("validateSnykToken"))
+            .removeHeader(Exchange.HTTP_PATH)
+            .removeHeader(Exchange.HTTP_QUERY)
+            .removeHeader(Exchange.HTTP_URI)
+            .removeHeader("Accept-Encoding")    
+            .setHeader("Authorization", simple("token ${header.crda-snyk-token}"))
+            .setHeader(Exchange.HTTP_PATH, constant(Constants.SNYK_TOKEN_API_PATH))
+            .setHeader(Exchange.HTTP_METHOD, constant("GET"))
+            .to(vertxHttp("{{api.snyk.host}}").throwExceptionOnFailure(false))
+            .setProperty(Constants.RESPONSE_STATUS_PROPERTY, header(Exchange.HTTP_RESPONSE_CODE))
+            .choice().when(header(Exchange.HTTP_RESPONSE_CODE).isEqualTo(Response.Status.OK.getStatusCode())) 
+                .setBody(constant("Token validated successfully"))
+            .when(header(Exchange.HTTP_RESPONSE_CODE).isGreaterThanOrEqualTo(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+                .setBody(constant("Unable to validate Snyk token"))
+            .otherwise()
+                .setBody(jsonpath("$.error"));
         //fmt:on
     }
 }
