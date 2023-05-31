@@ -16,9 +16,9 @@
     .pf-c-table thead, .pf-c-table .pf-m-truncate {
         --pf-c-table--cell--MinWidth: none !important;
     }
-        .hiddenRow {
-            padding: 0 !important;
-        }
+    .hiddenRow {
+        padding: 0 !important;
+    }
     .accordion {
         background-color: #eee;
         /*color: #444;*/

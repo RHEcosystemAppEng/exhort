@@ -37,8 +37,6 @@ import jakarta.ws.rs.core.MediaType;
 @QuarkusTest
 public class TokenValidationTest extends AbstractAnalysisTest {
 
-    private static final String ERROR_TOKEN = "fail";
-
     @Test
     public void testMissingToken() {
         stubSnykToken(null);
