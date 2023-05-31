@@ -56,6 +56,9 @@ import jakarta.ws.rs.core.MediaType;
 @QuarkusTestResource(WiremockV3Extension.class)
 public abstract class AbstractAnalysisTest {
 
+    static final String ERROR_TOKEN = "fail";
+    static final String WIREMOCK_URL_TEMPLATE = "__WIREMOCK_URL__";
+
     @InjectWireMock WireMockServer server;
 
     static {
@@ -96,6 +99,7 @@ public abstract class AbstractAnalysisTest {
                                     .getClassLoader()
                                     .getResourceAsStream("__files/" + expectedFile),
                             Charset.defaultCharset());
+            expected = expected.replaceAll(WIREMOCK_URL_TEMPLATE, server.baseUrl());
             assertEquals(expected, currentBody);
         } catch (IOException e) {
             fail("Unable to read HTML file", e);
@@ -126,6 +130,21 @@ public abstract class AbstractAnalysisTest {
                                         .withHeader(
                                                 Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON)
                                         .withBodyFile("snyk_report.json")));
+        server.stubFor(
+                post(Constants.SNYK_DEP_GRAPH_API_PATH)
+                        .withHeader(
+                                "Authorization", WireMock.not(WireMock.equalTo("token " + token)))
+                        .willReturn(
+                                aResponse()
+                                        .withStatus(401)
+                                        .withBody(
+                                                "{\"code\": 401, \"error\": \"Invalid auth token"
+                                                        + " provided\", \"message\": \"Invalid auth"
+                                                        + " token provided\"}")));
+        server.stubFor(
+                post(Constants.SNYK_DEP_GRAPH_API_PATH)
+                        .withHeader("Authorization", WireMock.equalTo("token " + ERROR_TOKEN))
+                        .willReturn(aResponse().withStatus(500)));
     }
 
     protected void stubEmptySnykRequest() {

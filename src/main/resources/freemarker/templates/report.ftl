@@ -97,6 +97,49 @@
     </div>
 </div>
 
+<#list body.report.summary().providerStatuses() as providerStatus>
+<#if (providerStatus.status() >= 500)>
+<div
+  class="pf-c-alert pf-m-danger pf-m-inline"
+  aria-label="Inline danger alert"
+>
+  <div class="pf-c-alert__icon">
+    <i class="fas fa-fw fa-exclamation-circle" aria-hidden="true"></i>
+  </div>
+  <p class="pf-c-alert__title">
+    <span class="pf-screen-reader">${providerStatus.provider()}:</span>
+    ${providerStatus.provider()?cap_first}: ${providerStatus.message()}
+  </p>
+</div>
+<br />
+<#elseif (providerStatus.status() >= 400)>
+<div
+  class="pf-c-alert pf-m-warning pf-m-inline"
+  aria-label="Inline warning alert"
+>
+  <div class="pf-c-alert__icon">
+    <i class="fas fa-fw fa-exclamation-triangle" aria-hidden="true"></i>
+  </div>
+  <p class="pf-c-alert__title">
+    <span class="pf-screen-reader">${providerStatus.provider()}:</span>
+    ${providerStatus.provider()?cap_first}: ${providerStatus.message()}
+  </p>
+</div>
+<br />
+</#if>
+</#list>
+<#if body.report.dependencies()?size == 0>
+<div class="pf-c-empty-state">
+  <div class="pf-c-empty-state__content">
+    <i class="fas fa-cubes pf-c-empty-state__icon" aria-hidden="true"></i>
+
+    <h1 class="pf-c-title pf-m-lg">No vulnerabilities found</h1>
+    <div
+      class="pf-c-empty-state__body"
+    >The vulnerability scan did not find any vulnerabilities in your project.</div>
+  </div>
+</div>
+<#else>
 <div class="ml-3 mt-4">
     <div class="d-inline p-2 bg-light">Commonly Known Vulnerabilities</div>
 </div>
@@ -438,6 +481,7 @@
         </tbody>
     </table>
 </div>
+</#if>
 
 <!-- Modal -->
 <div class="modal fade" id="modal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">

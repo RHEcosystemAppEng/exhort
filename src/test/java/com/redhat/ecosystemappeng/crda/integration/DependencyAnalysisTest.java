@@ -384,7 +384,7 @@ public class DependencyAnalysisTest extends AbstractAnalysisTest {
                         .body()
                         .asString();
 
-        assertHtml("full_report_no_token.html", body);
+        assertHtml("report_no_token.html", body);
 
         verifySnykRequest(null);
         verifyTCVexRequest();
@@ -415,9 +415,70 @@ public class DependencyAnalysisTest extends AbstractAnalysisTest {
                         .body()
                         .asString();
 
-        assertHtml("full_report_token.html", body);
+        assertHtml("report_token.html", body);
 
         verifySnykRequest(snykToken);
+        verifyTCVexRequest();
+        verifyNoInteractionsWithTidelift();
+        verifyNoInteractionsWithTCGav();
+    }
+
+    @Test
+    public void testHtmlUnauthorized() {
+        String snykToken = "other";
+        stubSnykRequest("some-token");
+        stubTCVexRequest();
+
+        String body =
+                given().header(CONTENT_TYPE, Constants.TEXT_VND_GRAPHVIZ)
+                        .body(loadDependenciesFile())
+                        .header("Accept", MediaType.TEXT_HTML)
+                        .header(Constants.SNYK_TOKEN_HEADER, snykToken)
+                        .when()
+                        .post(
+                                "/api/v3/dependency-analysis/{pkgManager}",
+                                Constants.MAVEN_PKG_MANAGER)
+                        .then()
+                        .assertThat()
+                        .statusCode(200)
+                        .contentType(MediaType.TEXT_HTML)
+                        .extract()
+                        .body()
+                        .asString();
+
+        assertHtml("report_unauthorized.html", body);
+
+        verifySnykRequest(snykToken);
+        verifyTCVexRequest();
+        verifyNoInteractionsWithTidelift();
+        verifyNoInteractionsWithTCGav();
+    }
+
+    @Test
+    public void testHtmlError() {
+        stubSnykRequest("some-token");
+        stubTCVexRequest();
+
+        String body =
+                given().header(CONTENT_TYPE, Constants.TEXT_VND_GRAPHVIZ)
+                        .body(loadDependenciesFile())
+                        .header("Accept", MediaType.TEXT_HTML)
+                        .header(Constants.SNYK_TOKEN_HEADER, ERROR_TOKEN)
+                        .when()
+                        .post(
+                                "/api/v3/dependency-analysis/{pkgManager}",
+                                Constants.MAVEN_PKG_MANAGER)
+                        .then()
+                        .assertThat()
+                        .statusCode(200)
+                        .contentType(MediaType.TEXT_HTML)
+                        .extract()
+                        .body()
+                        .asString();
+
+        assertHtml("report_error.html", body);
+
+        verifySnykRequest(ERROR_TOKEN);
         verifyTCVexRequest();
         verifyNoInteractionsWithTidelift();
         verifyNoInteractionsWithTCGav();
