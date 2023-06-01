@@ -25,11 +25,11 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 import org.apache.camel.Body;
 import org.apache.camel.Exchange;
@@ -168,23 +168,32 @@ public class GraphUtils {
             if (bom.getDependencies().isEmpty()) {
                 return true;
             }
-            Map<String, PackageRef> componentPurls = new HashMap<>();
-            bom.getComponents().forEach(c -> addComponents(componentPurls, c, pkgManager));
-
-            Component rootComponent = bom.getMetadata().getComponent();
+            Map<String, PackageRef> componentPurls =
+                    bom.getComponents().stream()
+                            .collect(
+                                    Collectors.toMap(
+                                            Component::getBomRef,
+                                            c ->
+                                                    fromPurl(
+                                                            c.getPurl(),
+                                                            requiresDecoding(pkgManager))));
+            Optional<Component> rootComponent =
+                    bom.getComponents().stream()
+                            .filter(c -> c.equals(bom.getMetadata().getComponent()))
+                            .findFirst();
             final Optional<Dependency> rootDependency;
-            if (rootComponent != null) {
+            if (rootComponent.isPresent()) {
                 rootDependency =
                         bom.getDependencies().stream()
-                                .filter(d -> d.getRef().equals(rootComponent.getBomRef()))
+                                .filter(d -> d.getRef().equals(rootComponent.get().getBomRef()))
                                 .findFirst();
                 if (rootDependency.isEmpty()) {
                     throw new IllegalArgumentException(
-                            "Expected metadata.component as dependency in SBOM. "
-                                    + rootComponent.getBomRef());
+                            "SBOM: Missing matching metadata.component in the dependencies."
+                                    + rootComponent.get().getName());
                 }
                 PackageRef rootRef =
-                        fromPurl(rootComponent.getPurl(), requiresDecoding(pkgManager));
+                        fromPurl(rootComponent.get().getPurl(), requiresDecoding(pkgManager));
                 addDependency(
                         builder, rootRef, rootDependency.get().getDependencies(), componentPurls);
                 bom.getDependencies().stream()
@@ -229,15 +238,6 @@ public class GraphUtils {
 
     private boolean requiresDecoding(String pkgManager) {
         return Constants.PIP_PKG_MANAGER.equals(pkgManager);
-    }
-
-    private void addComponents(
-            Map<String, PackageRef> componentPurls, Component component, String pkgManager) {
-        componentPurls.put(
-                component.getBomRef(), fromPurl(component.getPurl(), requiresDecoding(pkgManager)));
-        if (component.getComponents() != null) {
-            component.getComponents().forEach(c -> addComponents(componentPurls, c, pkgManager));
-        }
     }
 
     private PackageRef fromPurl(String purl, boolean decode) {
