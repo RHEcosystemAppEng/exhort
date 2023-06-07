@@ -30,6 +30,12 @@
         font-family: Arial;
         padding: 20px;
     }
+    .accordion-toggle[aria-expanded="true"] i.fas.fa-angle-down {
+        display: none;
+    }
+    .accordion-toggle[aria-expanded="false"] i.fas.fa-angle-up {
+        display: none;
+    }
     .pf-c-table thead,
     .pf-c-table .pf-m-truncate {
         --pf-c-table--cell--MaxWidth: none !important;

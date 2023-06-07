@@ -165,10 +165,11 @@
         <tbody>
         <#assign numOfPkg = 0>
         <#list body.report.dependencies() as dependency>
-            <tr data-toggle="collapse" data-target="#${htmlRef(dependency.ref())}" class="accordion-toggle">
+            <tr data-toggle="collapse" data-target="#${htmlRef(dependency.ref())}" class="accordion-toggle" aria-expanded="false">
                 <td role="cell">
                     <div class="pf-c-table__toggle-icon">
                         <i class="fas fa-angle-down" aria-hidden="true"></i>
+                        <i class="fas fa-angle-up" aria-hidden="true"></i>
                     </div>
                 </td>
                 <#assign numOfPkg++>

@@ -30,6 +30,12 @@
         font-family: Arial;
         padding: 20px;
     }
+    .accordion-toggle[aria-expanded="true"] i.fas.fa-angle-down {
+        display: none;
+    }
+    .accordion-toggle[aria-expanded="false"] i.fas.fa-angle-up {
+        display: none;
+    }
     .pf-c-table thead,
     .pf-c-table .pf-m-truncate {
         --pf-c-table--cell--MaxWidth: none !important;
@@ -191,10 +197,11 @@
         </tr>
         </thead>
         <tbody>
-            <tr data-toggle="collapse" data-target="#ioquarkusquarkushibernateorm" class="accordion-toggle">
+            <tr data-toggle="collapse" data-target="#ioquarkusquarkushibernateorm" class="accordion-toggle" aria-expanded="false">
                 <td role="cell">
                     <div class="pf-c-table__toggle-icon">
                         <i class="fas fa-angle-down" aria-hidden="true"></i>
+                        <i class="fas fa-angle-up" aria-hidden="true"></i>
                     </div>
                 </td>
                 <td>#1</td>
@@ -385,10 +392,11 @@
                     </div>
                 </td>
             </tr>
-            <tr data-toggle="collapse" data-target="#ioquarkusquarkusjdbcpostgresql" class="accordion-toggle">
+            <tr data-toggle="collapse" data-target="#ioquarkusquarkusjdbcpostgresql" class="accordion-toggle" aria-expanded="false">
                 <td role="cell">
                     <div class="pf-c-table__toggle-icon">
                         <i class="fas fa-angle-down" aria-hidden="true"></i>
+                        <i class="fas fa-angle-up" aria-hidden="true"></i>
                     </div>
                 </td>
                 <td>#2</td>
