@@ -50,7 +50,8 @@ public record PackageRef(String name, String version) {
         if (!(other instanceof PackageRef)) {
             return false;
         }
-        return Objects.equals(name, ((PackageRef) other).name);
+        return Objects.equals(name, ((PackageRef) other).name)
+                && Objects.equals(version, ((PackageRef) other).version);
     }
 
     public static PackageRef parse(String gav) {

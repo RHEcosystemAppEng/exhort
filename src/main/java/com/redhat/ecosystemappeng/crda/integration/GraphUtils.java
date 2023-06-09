@@ -64,7 +64,7 @@ public class GraphUtils {
                         .edgeSupplier(DefaultEdge::new)
                         .buildGraphBuilder();
         builder.addVertex(DEFAULT_ROOT);
-        body.forEach(d -> builder.addEdge(DEFAULT_ROOT, d));
+        body.stream().distinct().forEach(d -> builder.addEdge(DEFAULT_ROOT, d));
         return new GraphRequest.Builder(pkgManager, providers)
                 .graph(builder.buildAsUnmodifiable())
                 .build();
