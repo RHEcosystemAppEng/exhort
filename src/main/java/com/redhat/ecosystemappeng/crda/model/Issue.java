@@ -26,78 +26,78 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @RegisterForReflection
 public record Issue(
-        String id,
-        String title,
-        String source,
-        CvssVector cvss,
-        Float cvssScore,
-        Severity severity,
-        Set<String> cves,
-        boolean unique) {
+    String id,
+    String title,
+    String source,
+    CvssVector cvss,
+    Float cvssScore,
+    Severity severity,
+    Set<String> cves,
+    boolean unique) {
 
-    public Issue {
-        Objects.requireNonNull(id);
-        Objects.requireNonNull(title);
-        Objects.requireNonNull(source);
-        Objects.requireNonNull(severity);
-        Objects.requireNonNull(cvssScore);
-        if (cves != null) {
-            cves = Collections.unmodifiableSet(cves);
-        }
+  public Issue {
+    Objects.requireNonNull(id);
+    Objects.requireNonNull(title);
+    Objects.requireNonNull(source);
+    Objects.requireNonNull(severity);
+    Objects.requireNonNull(cvssScore);
+    if (cves != null) {
+      cves = Collections.unmodifiableSet(cves);
+    }
+  }
+
+  public static class Builder {
+
+    String id;
+    String title;
+    String source;
+    CvssVector cvss;
+    Float cvssScore;
+    Severity severity;
+    Set<String> cves;
+    boolean unique;
+
+    public Builder(String id) {
+      this.id = id;
     }
 
-    public static class Builder {
-
-        String id;
-        String title;
-        String source;
-        CvssVector cvss;
-        Float cvssScore;
-        Severity severity;
-        Set<String> cves;
-        boolean unique;
-
-        public Builder(String id) {
-            this.id = id;
-        }
-
-        public Builder title(String title) {
-            this.title = title;
-            return this;
-        }
-
-        public Builder source(String source) {
-            this.source = source;
-            return this;
-        }
-
-        public Builder cvss(CvssVector cvss) {
-            this.cvss = cvss;
-            return this;
-        }
-
-        public Builder cvssScore(Float cvssScore) {
-            this.cvssScore = cvssScore;
-            return this;
-        }
-
-        public Builder cves(Set<String> cves) {
-            this.cves = cves;
-            return this;
-        }
-
-        public Builder severity(Severity severity) {
-            this.severity = severity;
-            return this;
-        }
-
-        public Builder unique(boolean unique) {
-            this.unique = unique;
-            return this;
-        }
-
-        public Issue build() {
-            return new Issue(id, title, source, cvss, cvssScore, severity, cves, unique);
-        }
+    public Builder title(String title) {
+      this.title = title;
+      return this;
     }
+
+    public Builder source(String source) {
+      this.source = source;
+      return this;
+    }
+
+    public Builder cvss(CvssVector cvss) {
+      this.cvss = cvss;
+      return this;
+    }
+
+    public Builder cvssScore(Float cvssScore) {
+      this.cvssScore = cvssScore;
+      return this;
+    }
+
+    public Builder cves(Set<String> cves) {
+      this.cves = cves;
+      return this;
+    }
+
+    public Builder severity(Severity severity) {
+      this.severity = severity;
+      return this;
+    }
+
+    public Builder unique(boolean unique) {
+      this.unique = unique;
+      return this;
+    }
+
+    public Issue build() {
+      return new Issue(id, title, source, cvss, cvssScore, severity, cves, unique);
+    }
+  }
 }

@@ -37,128 +37,122 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @RegisterForReflection
 public record GraphRequest(
-        String pkgManager,
-        List<String> providers,
-        Graph<PackageRef, DefaultEdge> graph,
-        Map<String, List<Issue>> issues,
-        Map<String, Remediation> remediations,
-        Map<String, PackageRef> recommendations,
-        List<ProviderStatus> providerStatuses) {
+    String pkgManager,
+    List<String> providers,
+    Graph<PackageRef, DefaultEdge> graph,
+    Map<String, List<Issue>> issues,
+    Map<String, Remediation> remediations,
+    Map<String, PackageRef> recommendations,
+    List<ProviderStatus> providerStatuses) {
 
-    public GraphRequest {
-        Objects.requireNonNull(pkgManager);
-        Objects.requireNonNull(providers);
-        if (!Constants.PKG_MANAGERS.contains(pkgManager)) {
-            throw new IllegalArgumentException("Unsupported package manager: " + pkgManager);
-        }
-        List<String> invalidProviders =
-                providers.stream()
-                        .filter(Predicate.not(Constants.PROVIDERS::contains))
-                        .collect(Collectors.toList());
-        if (!invalidProviders.isEmpty()) {
-            throw new IllegalArgumentException("Unsupported providers: " + invalidProviders);
-        }
-        if (graph != null) {
-            graph =
-                    GraphTypeBuilder.forGraph(graph)
-                            .buildGraphBuilder()
-                            .addGraph(graph)
-                            .buildAsUnmodifiable();
-        }
-        if (issues != null) {
-            issues = Collections.unmodifiableMap(issues);
-        } else {
-            issues = Collections.emptyMap();
-        }
-        if (remediations != null) {
-            remediations = Collections.unmodifiableMap(remediations);
-        } else {
-            remediations = Collections.emptyMap();
-        }
-        if (recommendations != null) {
-            recommendations = Collections.unmodifiableMap(recommendations);
-        } else {
-            recommendations = Collections.emptyMap();
-        }
-        if (providerStatuses != null) {
-            providerStatuses = Collections.unmodifiableList(providerStatuses);
-        } else {
-            providerStatuses = Collections.emptyList();
-        }
+  public GraphRequest {
+    Objects.requireNonNull(pkgManager);
+    Objects.requireNonNull(providers);
+    if (!Constants.PKG_MANAGERS.contains(pkgManager)) {
+      throw new IllegalArgumentException("Unsupported package manager: " + pkgManager);
+    }
+    List<String> invalidProviders =
+        providers.stream()
+            .filter(Predicate.not(Constants.PROVIDERS::contains))
+            .collect(Collectors.toList());
+    if (!invalidProviders.isEmpty()) {
+      throw new IllegalArgumentException("Unsupported providers: " + invalidProviders);
+    }
+    if (graph != null) {
+      graph =
+          GraphTypeBuilder.forGraph(graph)
+              .buildGraphBuilder()
+              .addGraph(graph)
+              .buildAsUnmodifiable();
+    }
+    if (issues != null) {
+      issues = Collections.unmodifiableMap(issues);
+    } else {
+      issues = Collections.emptyMap();
+    }
+    if (remediations != null) {
+      remediations = Collections.unmodifiableMap(remediations);
+    } else {
+      remediations = Collections.emptyMap();
+    }
+    if (recommendations != null) {
+      recommendations = Collections.unmodifiableMap(recommendations);
+    } else {
+      recommendations = Collections.emptyMap();
+    }
+    if (providerStatuses != null) {
+      providerStatuses = Collections.unmodifiableList(providerStatuses);
+    } else {
+      providerStatuses = Collections.emptyList();
+    }
+  }
+
+  public static class Builder {
+
+    String pkgManager;
+    List<String> providers;
+    Graph<PackageRef, DefaultEdge> graph;
+    Map<String, List<Issue>> issues;
+    Map<String, Remediation> remediations;
+    Map<String, PackageRef> recommendations;
+    List<ProviderStatus> providerStatuses;
+
+    public Builder(String pkgManager, List<String> providers) {
+      this.pkgManager = pkgManager;
+      this.providers = providers;
     }
 
-    public static class Builder {
+    public Builder(GraphRequest copy) {
+      this.pkgManager = copy.pkgManager;
+      this.providers = copy.providers;
+      this.graph = copy.graph;
 
-        String pkgManager;
-        List<String> providers;
-        Graph<PackageRef, DefaultEdge> graph;
-        Map<String, List<Issue>> issues;
-        Map<String, Remediation> remediations;
-        Map<String, PackageRef> recommendations;
-        List<ProviderStatus> providerStatuses;
+      if (copy.issues != null) {
+        this.issues = new HashMap<>(copy.issues);
+      }
 
-        public Builder(String pkgManager, List<String> providers) {
-            this.pkgManager = pkgManager;
-            this.providers = providers;
-        }
+      if (copy.remediations != null) {
+        this.remediations = new HashMap<>(copy.remediations);
+      }
 
-        public Builder(GraphRequest copy) {
-            this.pkgManager = copy.pkgManager;
-            this.providers = copy.providers;
-            this.graph = copy.graph;
+      if (copy.recommendations != null) {
+        this.recommendations = new HashMap<>(copy.recommendations);
+      }
 
-            if (copy.issues != null) {
-                this.issues = new HashMap<>(copy.issues);
-            }
-
-            if (copy.remediations != null) {
-                this.remediations = new HashMap<>(copy.remediations);
-            }
-
-            if (copy.recommendations != null) {
-                this.recommendations = new HashMap<>(copy.recommendations);
-            }
-
-            if (copy.providerStatuses != null) {
-                this.providerStatuses = new ArrayList<>(copy.providerStatuses);
-            }
-        }
-
-        public Builder graph(Graph<PackageRef, DefaultEdge> graph) {
-            this.graph = graph;
-            return this;
-        }
-
-        public Builder issues(Map<String, List<Issue>> issues) {
-            this.issues = issues;
-            return this;
-        }
-        ;
-
-        public Builder remediations(Map<String, Remediation> remediations) {
-            this.remediations = remediations;
-            return this;
-        }
-
-        public Builder recommendations(Map<String, PackageRef> recommendations) {
-            this.recommendations = recommendations;
-            return this;
-        }
-
-        public Builder providerStatuses(List<ProviderStatus> providerStatuses) {
-            this.providerStatuses = providerStatuses;
-            return this;
-        }
-
-        public GraphRequest build() {
-            return new GraphRequest(
-                    pkgManager,
-                    providers,
-                    graph,
-                    issues,
-                    remediations,
-                    recommendations,
-                    providerStatuses);
-        }
+      if (copy.providerStatuses != null) {
+        this.providerStatuses = new ArrayList<>(copy.providerStatuses);
+      }
     }
+
+    public Builder graph(Graph<PackageRef, DefaultEdge> graph) {
+      this.graph = graph;
+      return this;
+    }
+
+    public Builder issues(Map<String, List<Issue>> issues) {
+      this.issues = issues;
+      return this;
+    }
+    ;
+
+    public Builder remediations(Map<String, Remediation> remediations) {
+      this.remediations = remediations;
+      return this;
+    }
+
+    public Builder recommendations(Map<String, PackageRef> recommendations) {
+      this.recommendations = recommendations;
+      return this;
+    }
+
+    public Builder providerStatuses(List<ProviderStatus> providerStatuses) {
+      this.providerStatuses = providerStatuses;
+      return this;
+    }
+
+    public GraphRequest build() {
+      return new GraphRequest(
+          pkgManager, providers, graph, issues, remediations, recommendations, providerStatuses);
+    }
+  }
 }

@@ -41,81 +41,78 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 @RegisterForReflection
 public class TrustedContentBodyMapper {
 
-    public VexRequest buildVexRequest(@Body GraphRequest graph) {
-        return new VexRequest(
-                graph.issues().values().stream()
-                        .flatMap(Collection::stream)
-                        .map(e -> e.cves())
-                        .filter(Objects::nonNull)
-                        .flatMap(Set::stream)
-                        .collect(Collectors.toUnmodifiableList()));
+  public VexRequest buildVexRequest(@Body GraphRequest graph) {
+    return new VexRequest(
+        graph.issues().values().stream()
+            .flatMap(Collection::stream)
+            .map(e -> e.cves())
+            .filter(Objects::nonNull)
+            .flatMap(Set::stream)
+            .collect(Collectors.toUnmodifiableList()));
+  }
+
+  public Map<String, Remediation> createRemediations(VexRequest request, List<VexResult> response) {
+    Map<String, Remediation> remediations = new HashMap<>();
+    for (int i = 0; i < request.cves().size(); i++) {
+      VexResult result = response.get(i);
+      if (result != null) {
+        String cve = request.cves().get(i);
+        PackageRef ref =
+            new PackageRef(
+                result.mavenPackage().groupId() + ":" + result.mavenPackage().artifactId(),
+                result.mavenPackage().version());
+        Remediation r = new Remediation(cve, ref, result.productStatus());
+        remediations.put(cve, r);
+      }
+    }
+    return remediations;
+  }
+
+  public GraphRequest filterRecommendations(
+      GraphRequest req, Map<String, Remediation> recommendations) {
+    if (recommendations == null || recommendations.isEmpty()) {
+      return req;
+    }
+    Map<String, Remediation> merged = new HashMap<>();
+    if (req.remediations() != null) {
+      merged.putAll(req.remediations());
+    }
+    recommendations.entrySet().stream()
+        .filter(Objects::nonNull)
+        .filter(r -> req.graph().containsVertex(r.getValue().mavenPackage()))
+        .forEach(e -> merged.put(e.getKey(), e.getValue()));
+    return new GraphRequest.Builder(req).remediations(merged).build();
+  }
+
+  public List<String> buildGavRequest(@Body GraphRequest request) {
+    return GraphUtils.getFirstLevel(request.graph()).stream()
+        .map(PackageRef::toGav)
+        .collect(Collectors.toUnmodifiableList());
+  }
+
+  public GraphRequest addRecommendations(
+      GraphRequest req, Map<String, PackageRef> recommendations) {
+    if (recommendations == null || recommendations.isEmpty()) {
+      return req;
     }
 
-    public Map<String, Remediation> createRemediations(
-            VexRequest request, List<VexResult> response) {
-        Map<String, Remediation> remediations = new HashMap<>();
-        for (int i = 0; i < request.cves().size(); i++) {
-            VexResult result = response.get(i);
-            if (result != null) {
-                String cve = request.cves().get(i);
-                PackageRef ref =
-                        new PackageRef(
-                                result.mavenPackage().groupId()
-                                        + ":"
-                                        + result.mavenPackage().artifactId(),
-                                result.mavenPackage().version());
-                Remediation r = new Remediation(cve, ref, result.productStatus());
-                remediations.put(cve, r);
-            }
-        }
-        return remediations;
+    Map<String, PackageRef> merged = new HashMap<>(recommendations);
+    if (req.recommendations() != null) {
+      merged.putAll(req.recommendations());
     }
+    return new GraphRequest.Builder(req).recommendations(merged).build();
+  }
 
-    public GraphRequest filterRecommendations(
-            GraphRequest req, Map<String, Remediation> recommendations) {
-        if (recommendations == null || recommendations.isEmpty()) {
-            return req;
-        }
-        Map<String, Remediation> merged = new HashMap<>();
-        if (req.remediations() != null) {
-            merged.putAll(req.remediations());
-        }
-        recommendations.entrySet().stream()
-                .filter(Objects::nonNull)
-                .filter(r -> req.graph().containsVertex(r.getValue().mavenPackage()))
-                .forEach(e -> merged.put(e.getKey(), e.getValue()));
-        return new GraphRequest.Builder(req).remediations(merged).build();
+  public Map<String, PackageRef> createGavRecommendations(
+      List<String> gavRequest, List<MavenPackage> recommendations) {
+    Map<String, PackageRef> result = new HashMap<>();
+    for (int i = 0; i < gavRequest.size(); i++) {
+      MavenPackage pkg = recommendations.get(i);
+      if (pkg != null) {
+        String pkgName = String.format("%s:%s", pkg.groupId(), pkg.artifactId());
+        result.put(gavRequest.get(i), new PackageRef(pkgName, pkg.version()));
+      }
     }
-
-    public List<String> buildGavRequest(@Body GraphRequest request) {
-        return GraphUtils.getFirstLevel(request.graph()).stream()
-                .map(PackageRef::toGav)
-                .collect(Collectors.toUnmodifiableList());
-    }
-
-    public GraphRequest addRecommendations(
-            GraphRequest req, Map<String, PackageRef> recommendations) {
-        if (recommendations == null || recommendations.isEmpty()) {
-            return req;
-        }
-
-        Map<String, PackageRef> merged = new HashMap<>(recommendations);
-        if (req.recommendations() != null) {
-            merged.putAll(req.recommendations());
-        }
-        return new GraphRequest.Builder(req).recommendations(merged).build();
-    }
-
-    public Map<String, PackageRef> createGavRecommendations(
-            List<String> gavRequest, List<MavenPackage> recommendations) {
-        Map<String, PackageRef> result = new HashMap<>();
-        for (int i = 0; i < gavRequest.size(); i++) {
-            MavenPackage pkg = recommendations.get(i);
-            if (pkg != null) {
-                String pkgName = String.format("%s:%s", pkg.groupId(), pkg.artifactId());
-                result.put(gavRequest.get(i), new PackageRef(pkgName, pkg.version()));
-            }
-        }
-        return result;
-    }
+    return result;
+  }
 }

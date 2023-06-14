@@ -27,45 +27,45 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 @RegisterForReflection
 public record PackageRef(String name, String version) {
 
-    public PackageRef {
-        Objects.requireNonNull(name);
-        Objects.requireNonNull(version);
-    }
+  public PackageRef {
+    Objects.requireNonNull(name);
+    Objects.requireNonNull(version);
+  }
 
-    @JsonIgnore
-    public String getId() {
-        return name + "@" + version;
-    }
+  @JsonIgnore
+  public String getId() {
+    return name + "@" + version;
+  }
 
-    @Override
-    public int hashCode() {
-        return name.hashCode();
-    }
+  @Override
+  public int hashCode() {
+    return name.hashCode();
+  }
 
-    @Override
-    public boolean equals(Object other) {
-        if (other == null) {
-            return false;
-        }
-        if (!(other instanceof PackageRef)) {
-            return false;
-        }
-        return Objects.equals(name, ((PackageRef) other).name);
+  @Override
+  public boolean equals(Object other) {
+    if (other == null) {
+      return false;
     }
+    if (!(other instanceof PackageRef)) {
+      return false;
+    }
+    return Objects.equals(name, ((PackageRef) other).name);
+  }
 
-    public static PackageRef parse(String gav) {
-        String[] parts = gav.split(":");
-        if (parts.length < 4 || parts.length > 6) {
-            throw new IllegalArgumentException("Unexpected GAV format. " + gav);
-        }
-        String name = parts[0] + ":" + parts[1];
-        if (parts.length < 6) {
-            return new PackageRef(name, parts[3]);
-        }
-        return new PackageRef(name, parts[4]);
+  public static PackageRef parse(String gav) {
+    String[] parts = gav.split(":");
+    if (parts.length < 4 || parts.length > 6) {
+      throw new IllegalArgumentException("Unexpected GAV format. " + gav);
     }
+    String name = parts[0] + ":" + parts[1];
+    if (parts.length < 6) {
+      return new PackageRef(name, parts[3]);
+    }
+    return new PackageRef(name, parts[4]);
+  }
 
-    public String toGav() {
-        return String.format("%s:%s", name, version);
-    }
+  public String toGav() {
+    return String.format("%s:%s", name, version);
+  }
 }

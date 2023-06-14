@@ -38,92 +38,88 @@ import com.redhat.ecosystemappeng.crda.model.Severity;
 
 public class ReportTransformerTest {
 
-    @Test
-    public void testFilterDepsWithoutIssues() {
-        Map<String, List<Issue>> issues = Map.of("aa", List.of(buildIssue(1, 5f)));
-        GraphRequest req =
-                new GraphRequest.Builder(
-                                Constants.MAVEN_PKG_MANAGER, List.of(Constants.SNYK_PROVIDER))
-                        .graph(buildGraph())
-                        .issues(issues)
-                        .build();
+  @Test
+  public void testFilterDepsWithoutIssues() {
+    Map<String, List<Issue>> issues = Map.of("aa", List.of(buildIssue(1, 5f)));
+    GraphRequest req =
+        new GraphRequest.Builder(Constants.MAVEN_PKG_MANAGER, List.of(Constants.SNYK_PROVIDER))
+            .graph(buildGraph())
+            .issues(issues)
+            .build();
 
-        AnalysisReport report = new ReportTransformer().transform(req);
+    AnalysisReport report = new ReportTransformer().transform(req);
 
-        assertNotNull(report);
-        assertEquals(1, report.dependencies().size());
+    assertNotNull(report);
+    assertEquals(1, report.dependencies().size());
 
-        assertEquals("aa", report.dependencies().get(0).ref().name());
-    }
+    assertEquals("aa", report.dependencies().get(0).ref().name());
+  }
 
-    @Test
-    public void testFilterTransitiveWithoutIssues() {
-        Map<String, List<Issue>> issues =
-                Map.of(
-                        "aa", List.of(buildIssue(1, 5f)),
-                        "aaa", List.of(buildIssue(2, 5f)),
-                        "aba", List.of(buildIssue(3, 5f)));
-        GraphRequest req =
-                new GraphRequest.Builder(
-                                Constants.MAVEN_PKG_MANAGER, List.of(Constants.SNYK_PROVIDER))
-                        .graph(buildGraph())
-                        .issues(issues)
-                        .build();
+  @Test
+  public void testFilterTransitiveWithoutIssues() {
+    Map<String, List<Issue>> issues =
+        Map.of(
+            "aa", List.of(buildIssue(1, 5f)),
+            "aaa", List.of(buildIssue(2, 5f)),
+            "aba", List.of(buildIssue(3, 5f)));
+    GraphRequest req =
+        new GraphRequest.Builder(Constants.MAVEN_PKG_MANAGER, List.of(Constants.SNYK_PROVIDER))
+            .graph(buildGraph())
+            .issues(issues)
+            .build();
 
-        AnalysisReport report = new ReportTransformer().transform(req);
+    AnalysisReport report = new ReportTransformer().transform(req);
 
-        assertNotNull(report);
-        assertEquals(2, report.dependencies().size());
+    assertNotNull(report);
+    assertEquals(2, report.dependencies().size());
 
-        assertEquals("aa", report.dependencies().get(0).ref().name());
-        assertEquals("ab", report.dependencies().get(1).ref().name());
+    assertEquals("aa", report.dependencies().get(0).ref().name());
+    assertEquals("ab", report.dependencies().get(1).ref().name());
 
-        assertEquals(1, report.dependencies().get(0).transitive().size());
-        assertEquals(1, report.dependencies().get(1).transitive().size());
-    }
+    assertEquals(1, report.dependencies().get(0).transitive().size());
+    assertEquals(1, report.dependencies().get(1).transitive().size());
+  }
 
-    @Test
-    public void testFilterRecommendations() {
-        Map<String, PackageRef> recommendations =
-                Map.of("aa:1", new PackageRef("aa", "1.redhat-0001"));
-        GraphRequest req =
-                new GraphRequest.Builder(
-                                Constants.MAVEN_PKG_MANAGER, List.of(Constants.SNYK_PROVIDER))
-                        .graph(buildGraph())
-                        .recommendations(recommendations)
-                        .build();
+  @Test
+  public void testFilterRecommendations() {
+    Map<String, PackageRef> recommendations = Map.of("aa:1", new PackageRef("aa", "1.redhat-0001"));
+    GraphRequest req =
+        new GraphRequest.Builder(Constants.MAVEN_PKG_MANAGER, List.of(Constants.SNYK_PROVIDER))
+            .graph(buildGraph())
+            .recommendations(recommendations)
+            .build();
 
-        AnalysisReport report = new ReportTransformer().transform(req);
+    AnalysisReport report = new ReportTransformer().transform(req);
 
-        assertNotNull(report);
-        assertEquals(1, report.dependencies().size());
+    assertNotNull(report);
+    assertEquals(1, report.dependencies().size());
 
-        assertEquals("aa", report.dependencies().get(0).ref().name());
-        assertEquals("1.redhat-0001", report.dependencies().get(0).recommendation().version());
-    }
+    assertEquals("aa", report.dependencies().get(0).ref().name());
+    assertEquals("1.redhat-0001", report.dependencies().get(0).recommendation().version());
+  }
 
-    private Graph<PackageRef, DefaultEdge> buildGraph() {
-        return GraphTypeBuilder.directed()
-                .allowingSelfLoops(false)
-                .vertexClass(PackageRef.class)
-                .edgeClass(DefaultEdge.class)
-                .buildGraphBuilder()
-                .addEdge(new PackageRef("a", "1"), new PackageRef("aa", "1"))
-                .addEdge(new PackageRef("a", "1"), new PackageRef("ab", "1"))
-                .addEdge(new PackageRef("aa", "1"), new PackageRef("aaa", "1"))
-                .addEdge(new PackageRef("aa", "1"), new PackageRef("aab", "1"))
-                .addEdge(new PackageRef("ab", "1"), new PackageRef("aba", "1"))
-                .addEdge(new PackageRef("ab", "1"), new PackageRef("abb", "1"))
-                .addEdge(new PackageRef("ab", "1"), new PackageRef("abc", "1"))
-                .buildAsUnmodifiable();
-    }
+  private Graph<PackageRef, DefaultEdge> buildGraph() {
+    return GraphTypeBuilder.directed()
+        .allowingSelfLoops(false)
+        .vertexClass(PackageRef.class)
+        .edgeClass(DefaultEdge.class)
+        .buildGraphBuilder()
+        .addEdge(new PackageRef("a", "1"), new PackageRef("aa", "1"))
+        .addEdge(new PackageRef("a", "1"), new PackageRef("ab", "1"))
+        .addEdge(new PackageRef("aa", "1"), new PackageRef("aaa", "1"))
+        .addEdge(new PackageRef("aa", "1"), new PackageRef("aab", "1"))
+        .addEdge(new PackageRef("ab", "1"), new PackageRef("aba", "1"))
+        .addEdge(new PackageRef("ab", "1"), new PackageRef("abb", "1"))
+        .addEdge(new PackageRef("ab", "1"), new PackageRef("abc", "1"))
+        .buildAsUnmodifiable();
+  }
 
-    private Issue buildIssue(int id, Float score) {
-        return new Issue.Builder(String.format("ISSUE-00%d", id))
-                .title(String.format("ISSUE Example 00%d", id))
-                .source(Constants.SNYK_PROVIDER)
-                .severity(Severity.values()[id % Severity.values().length])
-                .cvssScore(score)
-                .build();
-    }
+  private Issue buildIssue(int id, Float score) {
+    return new Issue.Builder(String.format("ISSUE-00%d", id))
+        .title(String.format("ISSUE Example 00%d", id))
+        .source(Constants.SNYK_PROVIDER)
+        .severity(Severity.values()[id % Severity.values().length])
+        .cvssScore(score)
+        .build();
+  }
 }

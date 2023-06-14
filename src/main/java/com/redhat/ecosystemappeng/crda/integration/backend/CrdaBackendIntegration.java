@@ -40,11 +40,11 @@ import jakarta.ws.rs.core.Response;
 @ApplicationScoped
 public class CrdaBackendIntegration extends EndpointRouteBuilder {
 
-    @Inject VulnerabilityProvider vulnerabilityProvider;
+  @Inject VulnerabilityProvider vulnerabilityProvider;
 
-    @Override
-    public void configure() {
-        // fmt:off
+  @Override
+  public void configure() {
+    // fmt:off
         restConfiguration().contextPath("/api/v3/")
             .clientRequestValidation(true);
 
@@ -113,5 +113,5 @@ public class CrdaBackendIntegration extends EndpointRouteBuilder {
             .setHeader(Exchange.HTTP_RESPONSE_CODE, exchangeProperty(Constants.RESPONSE_STATUS_PROPERTY))
             .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.TEXT_PLAIN));
         //fmt:on
-    }
+  }
 }

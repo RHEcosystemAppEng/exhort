@@ -34,21 +34,20 @@ import jakarta.ws.rs.core.Response.Status;
 @RegisterForReflection
 public class BackendUtils {
 
-    public String getResponseMediaType(@Header(Constants.ACCEPT_HEADER) String acceptHeader) {
-        if (acceptHeader == null || acceptHeader.isBlank()) {
-            return Constants.DEFAULT_ACCEPT_MEDIA_TYPE;
-        }
-        List<MediaType> requested = MediaTypeHelper.parseHeader(acceptHeader);
-        MediaType match =
-                MediaTypeHelper.getBestMatch(Constants.VALID_RESPONSE_MEDIA_TYPES, requested);
-        if (match == null) {
-            throw new ClientErrorException(
-                    "Unexpected Accept header "
-                            + acceptHeader
-                            + ". Supported content types are: "
-                            + Constants.VALID_RESPONSE_MEDIA_TYPES,
-                    Status.UNSUPPORTED_MEDIA_TYPE);
-        }
-        return match.toString();
+  public String getResponseMediaType(@Header(Constants.ACCEPT_HEADER) String acceptHeader) {
+    if (acceptHeader == null || acceptHeader.isBlank()) {
+      return Constants.DEFAULT_ACCEPT_MEDIA_TYPE;
     }
+    List<MediaType> requested = MediaTypeHelper.parseHeader(acceptHeader);
+    MediaType match = MediaTypeHelper.getBestMatch(Constants.VALID_RESPONSE_MEDIA_TYPES, requested);
+    if (match == null) {
+      throw new ClientErrorException(
+          "Unexpected Accept header "
+              + acceptHeader
+              + ". Supported content types are: "
+              + Constants.VALID_RESPONSE_MEDIA_TYPES,
+          Status.UNSUPPORTED_MEDIA_TYPE);
+    }
+    return match.toString();
+  }
 }

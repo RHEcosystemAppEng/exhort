@@ -35,39 +35,39 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 @RegisterForReflection
 public class ProviderAggregationStrategy {
 
-    public GraphRequest aggregate(GraphRequest oldRequest, GraphRequest newRequest) {
-        if (oldRequest == null) {
-            return newRequest;
-        }
-        Map<String, List<Issue>> issues = new HashMap<>(oldRequest.issues());
-        newRequest
-                .issues()
-                .entrySet()
-                .forEach(
-                        e -> {
-                            List<Issue> newIssues = oldRequest.issues().get(e.getKey());
-                            if (newIssues == null) {
-                                newIssues = e.getValue();
-                                oldRequest.issues().put(e.getKey(), newIssues);
-                            } else {
-                                newIssues.addAll(e.getValue());
-                            }
-                        });
-
-        Map<String, Remediation> remediations = new HashMap<>(oldRequest.remediations());
-        remediations.putAll(newRequest.remediations());
-
-        Map<String, PackageRef> recommendations = new HashMap<>(oldRequest.recommendations());
-        recommendations.putAll(newRequest.recommendations());
-
-        Set<ProviderStatus> providerStatuses = new HashSet<>(oldRequest.providerStatuses());
-        providerStatuses.addAll(newRequest.providerStatuses());
-
-        return new GraphRequest.Builder(oldRequest)
-                .issues(issues)
-                .remediations(remediations)
-                .recommendations(recommendations)
-                .providerStatuses(List.copyOf(providerStatuses))
-                .build();
+  public GraphRequest aggregate(GraphRequest oldRequest, GraphRequest newRequest) {
+    if (oldRequest == null) {
+      return newRequest;
     }
+    Map<String, List<Issue>> issues = new HashMap<>(oldRequest.issues());
+    newRequest
+        .issues()
+        .entrySet()
+        .forEach(
+            e -> {
+              List<Issue> newIssues = oldRequest.issues().get(e.getKey());
+              if (newIssues == null) {
+                newIssues = e.getValue();
+                oldRequest.issues().put(e.getKey(), newIssues);
+              } else {
+                newIssues.addAll(e.getValue());
+              }
+            });
+
+    Map<String, Remediation> remediations = new HashMap<>(oldRequest.remediations());
+    remediations.putAll(newRequest.remediations());
+
+    Map<String, PackageRef> recommendations = new HashMap<>(oldRequest.recommendations());
+    recommendations.putAll(newRequest.recommendations());
+
+    Set<ProviderStatus> providerStatuses = new HashSet<>(oldRequest.providerStatuses());
+    providerStatuses.addAll(newRequest.providerStatuses());
+
+    return new GraphRequest.Builder(oldRequest)
+        .issues(issues)
+        .remediations(remediations)
+        .recommendations(recommendations)
+        .providerStatuses(List.copyOf(providerStatuses))
+        .build();
+  }
 }

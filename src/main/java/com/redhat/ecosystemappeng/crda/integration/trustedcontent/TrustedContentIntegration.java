@@ -32,9 +32,9 @@ import jakarta.ws.rs.core.MediaType;
 
 public class TrustedContentIntegration extends EndpointRouteBuilder {
 
-    @Override
-    public void configure() {
-        // fmt:off
+  @Override
+  public void configure() {
+    // fmt:off
         from(direct("recommendAllTrustedContent"))
             .multicast(AggregationStrategies.bean(ProviderAggregationStrategy.class, "aggregate"))
                 .parallelProcessing()
@@ -82,5 +82,5 @@ public class TrustedContentIntegration extends EndpointRouteBuilder {
                 .to(vertxHttp("{{api.trustedContent.gav.host}}"))
                 .unmarshal(new ListJacksonDataFormat(MavenPackage.class));
         //fmt:on
-    }
+  }
 }

@@ -30,11 +30,11 @@ import jakarta.ws.rs.core.MediaType;
 @ApplicationScoped
 public class ReportIntegration extends EndpointRouteBuilder {
 
-    @Inject ReportTemplate reportTemplate;
+  @Inject ReportTemplate reportTemplate;
 
-    @Override
-    public void configure() {
-        // fmt:off
+  @Override
+  public void configure() {
+    // fmt:off
         from(direct("report"))
             .choice()
                 .when(exchangeProperty(Constants.REQUEST_CONTENT_PROPERTY).isEqualTo(MediaType.TEXT_HTML))
@@ -66,5 +66,5 @@ public class ReportIntegration extends EndpointRouteBuilder {
             .bean(ReportTransformer.class, "transform")
             .marshal().json();
         //fmt:on
-    }
+  }
 }

@@ -27,18 +27,18 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @RegisterForReflection
 public record TransitiveDependencyReport(
-        PackageRef ref,
-        Issue highestVulnerability,
-        List<Issue> issues,
-        Map<String, Remediation> remediations)
-        implements CvssScoreComparable {
+    PackageRef ref,
+    Issue highestVulnerability,
+    List<Issue> issues,
+    Map<String, Remediation> remediations)
+    implements CvssScoreComparable {
 
-    public TransitiveDependencyReport {
-        if (issues != null) {
-            issues =
-                    issues.stream()
-                            .sorted(Comparator.comparing(Issue::cvssScore).reversed())
-                            .collect(Collectors.toUnmodifiableList());
-        }
+  public TransitiveDependencyReport {
+    if (issues != null) {
+      issues =
+          issues.stream()
+              .sorted(Comparator.comparing(Issue::cvssScore).reversed())
+              .collect(Collectors.toUnmodifiableList());
     }
+  }
 }

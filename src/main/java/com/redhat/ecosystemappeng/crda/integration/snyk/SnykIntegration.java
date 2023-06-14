@@ -35,10 +35,10 @@ import jakarta.ws.rs.core.Response;
 @ApplicationScoped
 public class SnykIntegration extends EndpointRouteBuilder {
 
-    @Override
-    public void configure() {
+  @Override
+  public void configure() {
 
-        // fmt:off
+    // fmt:off
         onException(HttpOperationFailedException.class)
             .logStackTrace(false)
             .process(new Processor() {
@@ -91,5 +91,5 @@ public class SnykIntegration extends EndpointRouteBuilder {
             .otherwise()
                 .setBody(jsonpath("$.error"));
         //fmt:on
-    }
+  }
 }

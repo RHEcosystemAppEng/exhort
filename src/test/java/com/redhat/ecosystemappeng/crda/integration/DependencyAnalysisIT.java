@@ -23,6 +23,6 @@ import io.quarkus.test.junit.QuarkusIntegrationTest;
 @QuarkusIntegrationTest
 public class DependencyAnalysisIT extends DependencyAnalysisTest {
 
-    // Run the same tests
+  // Run the same tests
 
 }
