@@ -32,11 +32,11 @@ import jakarta.ws.rs.core.MediaType;
 
 public class TideliftIntegration extends EndpointRouteBuilder {
 
-    @Override
-    public void configure() throws Exception {
+  @Override
+  public void configure() throws Exception {
 
-        ObjectNode emptyNode = ObjectMapperProducer.newInstance().createObjectNode();
-        // fmt:off
+    ObjectNode emptyNode = ObjectMapperProducer.newInstance().createObjectNode();
+    // fmt:off
         from(direct("tideliftReleases"))
             .to(direct("preTidelift"))
             .setHeader(Constants.PKG_MANAGER_HEADER, simple("${body.pkgManager()}"))
@@ -72,5 +72,5 @@ public class TideliftIntegration extends EndpointRouteBuilder {
                 .setBody(constant(emptyNode)).marshal().json();
            
         //fmt:on
-    }
+  }
 }

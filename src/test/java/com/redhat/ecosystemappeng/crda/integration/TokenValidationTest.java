@@ -37,123 +37,125 @@ import jakarta.ws.rs.core.MediaType;
 @QuarkusTest
 public class TokenValidationTest extends AbstractAnalysisTest {
 
-    @Test
-    public void testMissingToken() {
-        stubSnykToken(null);
+  @Test
+  public void testMissingToken() {
+    stubSnykToken(null);
 
-        String msg =
-                given().when()
-                        .get("/api/v3/token")
-                        .then()
-                        .assertThat()
-                        .statusCode(400)
-                        .contentType(MediaType.TEXT_PLAIN)
-                        .extract()
-                        .body()
-                        .asString();
-        assertEquals("Missing authentication header", msg);
+    String msg =
+        given()
+            .when()
+            .get("/api/v3/token")
+            .then()
+            .assertThat()
+            .statusCode(400)
+            .contentType(MediaType.TEXT_PLAIN)
+            .extract()
+            .body()
+            .asString();
+    assertEquals("Missing authentication header", msg);
 
-        verifyNoTokenInteractions();
-    }
+    verifyNoTokenInteractions();
+  }
 
-    @Test
-    public void testServerError() {
-        stubSnykToken(ERROR_TOKEN);
+  @Test
+  public void testServerError() {
+    stubSnykToken(ERROR_TOKEN);
 
-        String msg =
-                given().when()
-                        .header(Constants.SNYK_TOKEN_HEADER, ERROR_TOKEN)
-                        .get("/api/v3/token")
-                        .then()
-                        .assertThat()
-                        .statusCode(500)
-                        .contentType(MediaType.TEXT_PLAIN)
-                        .extract()
-                        .body()
-                        .asString();
-        assertEquals("Unable to validate Snyk token", msg);
+    String msg =
+        given()
+            .when()
+            .header(Constants.SNYK_TOKEN_HEADER, ERROR_TOKEN)
+            .get("/api/v3/token")
+            .then()
+            .assertThat()
+            .statusCode(500)
+            .contentType(MediaType.TEXT_PLAIN)
+            .extract()
+            .body()
+            .asString();
+    assertEquals("Unable to validate Snyk token", msg);
 
-        verifyTokenApiCall(ERROR_TOKEN);
-    }
+    verifyTokenApiCall(ERROR_TOKEN);
+  }
 
-    @Test
-    public void testUnauthorizedError() {
-        String token = "other";
-        stubSnykToken("some token");
+  @Test
+  public void testUnauthorizedError() {
+    String token = "other";
+    stubSnykToken("some token");
 
-        String msg =
-                given().when()
-                        .header(Constants.SNYK_TOKEN_HEADER, token)
-                        .get("/api/v3/token")
-                        .then()
-                        .assertThat()
-                        .statusCode(401)
-                        .contentType(MediaType.TEXT_PLAIN)
-                        .extract()
-                        .body()
-                        .asString();
-        assertEquals("Invalid auth token provided", msg);
+    String msg =
+        given()
+            .when()
+            .header(Constants.SNYK_TOKEN_HEADER, token)
+            .get("/api/v3/token")
+            .then()
+            .assertThat()
+            .statusCode(401)
+            .contentType(MediaType.TEXT_PLAIN)
+            .extract()
+            .body()
+            .asString();
+    assertEquals("Invalid auth token provided", msg);
 
-        verifyTokenApiCall(token);
-    }
+    verifyTokenApiCall(token);
+  }
 
-    @Test
-    public void testValidToken() {
-        String token = "some token";
-        stubSnykToken(token);
+  @Test
+  public void testValidToken() {
+    String token = "some token";
+    stubSnykToken(token);
 
-        String msg =
-                given().when()
-                        .header(Constants.SNYK_TOKEN_HEADER, token)
-                        .get("/api/v3/token")
-                        .then()
-                        .assertThat()
-                        .statusCode(200)
-                        .contentType(MediaType.TEXT_PLAIN)
-                        .extract()
-                        .body()
-                        .asString();
-        assertEquals("Token validated successfully", msg);
+    String msg =
+        given()
+            .when()
+            .header(Constants.SNYK_TOKEN_HEADER, token)
+            .get("/api/v3/token")
+            .then()
+            .assertThat()
+            .statusCode(200)
+            .contentType(MediaType.TEXT_PLAIN)
+            .extract()
+            .body()
+            .asString();
+    assertEquals("Token validated successfully", msg);
 
-        verifyTokenApiCall(token);
-    }
+    verifyTokenApiCall(token);
+  }
 
-    private void stubSnykToken(String token) {
-        server.stubFor(
-                get(Constants.SNYK_TOKEN_API_PATH)
-                        .withHeader("Authorization", WireMock.equalTo("token " + token))
-                        .willReturn(
-                                aResponse()
-                                        .withStatus(200)
-                                        .withHeader(
-                                                Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                                        .withBodyFile("snyk_report.json")));
-        server.stubFor(
-                get(Constants.SNYK_TOKEN_API_PATH)
-                        .withHeader(
-                                "Authorization", WireMock.not(WireMock.equalTo("token " + token)))
-                        .willReturn(
-                                aResponse()
-                                        .withStatus(401)
-                                        .withBody(
-                                                "{\"code\": 401, \"error\": \"Invalid auth token"
-                                                        + " provided\", \"message\": \"Invalid auth"
-                                                        + " token provided\"}")));
+  private void stubSnykToken(String token) {
+    server.stubFor(
+        get(Constants.SNYK_TOKEN_API_PATH)
+            .withHeader("Authorization", WireMock.equalTo("token " + token))
+            .willReturn(
+                aResponse()
+                    .withStatus(200)
+                    .withHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                    .withBodyFile("snyk_report.json")));
+    server.stubFor(
+        get(Constants.SNYK_TOKEN_API_PATH)
+            .withHeader("Authorization", WireMock.not(WireMock.equalTo("token " + token)))
+            .willReturn(
+                aResponse()
+                    .withStatus(401)
+                    .withBody(
+                        "{\"code\": 401, \"error\": \"Invalid auth token"
+                            + " provided\", \"message\": \"Invalid auth"
+                            + " token provided\"}")));
 
-        server.stubFor(
-                get(Constants.SNYK_TOKEN_API_PATH)
-                        .withHeader("Authorization", WireMock.equalTo("token " + ERROR_TOKEN))
-                        .willReturn(aResponse().withStatus(500)));
-    }
+    server.stubFor(
+        get(Constants.SNYK_TOKEN_API_PATH)
+            .withHeader("Authorization", WireMock.equalTo("token " + ERROR_TOKEN))
+            .willReturn(aResponse().withStatus(500)));
+  }
 
-    private void verifyNoTokenInteractions() {
-        server.verify(0, getRequestedFor(urlEqualTo(Constants.SNYK_TOKEN_API_PATH)));
-    }
+  private void verifyNoTokenInteractions() {
+    server.verify(0, getRequestedFor(urlEqualTo(Constants.SNYK_TOKEN_API_PATH)));
+  }
 
-    private void verifyTokenApiCall(String token) {
-        server.verify(
-                1,
-                getRequestedFor(urlEqualTo(Constants.SNYK_TOKEN_API_PATH))
-                        .withHeader("Authorization", WireMock.equalTo("token " + token)));
-    }
+  private void verifyTokenApiCall(String token) {
+    server.verify(
+        1,
+        getRequestedFor(urlEqualTo(Constants.SNYK_TOKEN_API_PATH))
+            .withHeader("Authorization", WireMock.equalTo("token " + token)));
+  }
 }

@@ -23,7 +23,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 
 public class ObjectMapperProducer {
 
-    public static ObjectMapper newInstance() {
-        return new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
-    }
+  public static ObjectMapper newInstance() {
+    return new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
+  }
 }

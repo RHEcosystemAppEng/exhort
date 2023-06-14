@@ -28,11 +28,11 @@ import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
 
 @RegisterForReflection(
-        targets = {
-            HttpOperationFailedException.class,
-            WebApplicationException.class,
-            ClientErrorException.class,
-            Response.class,
-            ResponseImpl.class
-        })
+    targets = {
+      HttpOperationFailedException.class,
+      WebApplicationException.class,
+      ClientErrorException.class,
+      Response.class,
+      ResponseImpl.class
+    })
 public class CustomReflectionConfiguration {}

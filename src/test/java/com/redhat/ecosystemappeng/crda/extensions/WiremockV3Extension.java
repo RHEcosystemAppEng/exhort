@@ -28,36 +28,35 @@ import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
 
 public class WiremockV3Extension implements QuarkusTestResourceLifecycleManager {
 
-    public static final String SNYK_TOKEN = "snyk-token-xyz";
-    public static final String TIDELIFT_TOKEN = "tidelift-token-abc";
+  public static final String SNYK_TOKEN = "snyk-token-xyz";
+  public static final String TIDELIFT_TOKEN = "tidelift-token-abc";
 
-    private final WireMockServer server = new WireMockServer(options().dynamicPort());
+  private final WireMockServer server = new WireMockServer(options().dynamicPort());
 
-    @Override
-    public Map<String, String> start() {
-        server.start();
+  @Override
+  public Map<String, String> start() {
+    server.start();
 
-        return Map.of(
-                "api.snyk.host", server.baseUrl(),
-                "api.snyk.token", SNYK_TOKEN,
-                "api.tidelift.host", server.baseUrl(),
-                "api.tidelift.token", TIDELIFT_TOKEN,
-                "api.trustedContent.gav.host", server.baseUrl(),
-                "api.trustedContent.vex.host", server.baseUrl());
+    return Map.of(
+        "api.snyk.host", server.baseUrl(),
+        "api.snyk.token", SNYK_TOKEN,
+        "api.tidelift.host", server.baseUrl(),
+        "api.tidelift.token", TIDELIFT_TOKEN,
+        "api.trustedContent.gav.host", server.baseUrl(),
+        "api.trustedContent.vex.host", server.baseUrl());
+  }
+
+  @Override
+  public void stop() {
+    if (server != null) {
+      server.stop();
     }
+  }
 
-    @Override
-    public void stop() {
-        if (server != null) {
-            server.stop();
-        }
-    }
-
-    @Override
-    public void inject(TestInjector testInjector) {
-        testInjector.injectIntoFields(
-                server,
-                new TestInjector.AnnotatedAndMatchesType(
-                        InjectWireMock.class, WireMockServer.class));
-    }
+  @Override
+  public void inject(TestInjector testInjector) {
+    testInjector.injectIntoFields(
+        server,
+        new TestInjector.AnnotatedAndMatchesType(InjectWireMock.class, WireMockServer.class));
+  }
 }

@@ -41,58 +41,57 @@ import jakarta.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class ReportTemplate {
 
-    @ConfigProperty(name = "report.trustedContent.link")
-    String remediationPath;
+  @ConfigProperty(name = "report.trustedContent.link")
+  String remediationPath;
 
-    @ConfigProperty(name = "report.snyk.link")
-    String packagePath;
+  @ConfigProperty(name = "report.snyk.link")
+  String packagePath;
 
-    @ConfigProperty(name = "report.snyk.issue.regex")
-    String issuePathRegex;
+  @ConfigProperty(name = "report.snyk.issue.regex")
+  String issuePathRegex;
 
-    @ConfigProperty(name = "report.vex.link")
-    String vexPath;
+  @ConfigProperty(name = "report.vex.link")
+  String vexPath;
 
-    @ConfigProperty(name = "report.sbom.link")
-    String sbomPath;
+  @ConfigProperty(name = "report.sbom.link")
+  String sbomPath;
 
-    @ConfigProperty(name = "report.snyk.signup.link")
-    String snykSignup;
+  @ConfigProperty(name = "report.snyk.signup.link")
+  String snykSignup;
 
-    public Map<String, Object> setVariables(
-            @Body AnalysisReport report,
-            @ExchangeProperty(Constants.PROVIDER_PRIVATE_DATA_PROPERTY)
-                    List<String> providerPrivateData)
-            throws JsonMappingException, JsonProcessingException, IOException {
+  public Map<String, Object> setVariables(
+      @Body AnalysisReport report,
+      @ExchangeProperty(Constants.PROVIDER_PRIVATE_DATA_PROPERTY) List<String> providerPrivateData)
+      throws JsonMappingException, JsonProcessingException, IOException {
 
-        Map<String, Object> params = new HashMap<>();
-        params.put("report", report);
-        params.put("remediationPath", remediationPath);
-        params.put("packagePath", packagePath);
-        params.put("issueLinkFormatter", new IssueLinkFormatter(issuePathRegex));
-        params.put("issueVisibilityHelper", new IssueVisibilityHelper(providerPrivateData));
-        params.put("vexPath", vexPath);
-        params.put("sbomPath", sbomPath);
-        params.put("snykSignup", snykSignup);
+    Map<String, Object> params = new HashMap<>();
+    params.put("report", report);
+    params.put("remediationPath", remediationPath);
+    params.put("packagePath", packagePath);
+    params.put("issueLinkFormatter", new IssueLinkFormatter(issuePathRegex));
+    params.put("issueVisibilityHelper", new IssueVisibilityHelper(providerPrivateData));
+    params.put("vexPath", vexPath);
+    params.put("sbomPath", sbomPath);
+    params.put("snykSignup", snykSignup);
 
-        return params;
+    return params;
+  }
+
+  @RegisterForReflection
+  public static record IssueLinkFormatter(String issuePathRegex) {
+
+    public String format(String id) {
+      return String.format(issuePathRegex, id, id);
     }
+  }
 
-    @RegisterForReflection
-    public static record IssueLinkFormatter(String issuePathRegex) {
-
-        public String format(String id) {
-            return String.format(issuePathRegex, id, id);
-        }
+  @RegisterForReflection
+  public static record IssueVisibilityHelper(List<String> providerData) {
+    public boolean showIssue(Issue issue) {
+      if (!issue.unique() || providerData == null) {
+        return true;
+      }
+      return !providerData.contains(issue.source());
     }
-
-    @RegisterForReflection
-    public static record IssueVisibilityHelper(List<String> providerData) {
-        public boolean showIssue(Issue issue) {
-            if (!issue.unique() || providerData == null) {
-                return true;
-            }
-            return !providerData.contains(issue.source());
-        }
-    }
+  }
 }

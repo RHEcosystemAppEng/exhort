@@ -22,23 +22,23 @@ import java.util.Comparator;
 
 public interface CvssScoreComparable {
 
-    Issue highestVulnerability();
+  Issue highestVulnerability();
 
-    public static class CvssScoreComparator implements Comparator<CvssScoreComparable> {
+  public static class CvssScoreComparator implements Comparator<CvssScoreComparable> {
 
-        @Override
-        public int compare(CvssScoreComparable d1, CvssScoreComparable d2) {
-            if (d1.highestVulnerability() == null && d2.highestVulnerability() == null) {
-                return 0;
-            }
-            if (d1.highestVulnerability() != null && d2.highestVulnerability() == null) {
-                return 1;
-            }
-            if (d1.highestVulnerability() == null && d2.highestVulnerability() != null) {
-                return -1;
-            }
-            return Float.compare(
-                    d1.highestVulnerability().cvssScore(), d2.highestVulnerability().cvssScore());
-        }
+    @Override
+    public int compare(CvssScoreComparable d1, CvssScoreComparable d2) {
+      if (d1.highestVulnerability() == null && d2.highestVulnerability() == null) {
+        return 0;
+      }
+      if (d1.highestVulnerability() != null && d2.highestVulnerability() == null) {
+        return 1;
+      }
+      if (d1.highestVulnerability() == null && d2.highestVulnerability() != null) {
+        return -1;
+      }
+      return Float.compare(
+          d1.highestVulnerability().cvssScore(), d2.highestVulnerability().cvssScore());
     }
+  }
 }

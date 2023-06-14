@@ -23,6 +23,6 @@ import io.quarkus.test.junit.QuarkusIntegrationTest;
 @QuarkusIntegrationTest
 public class TokenValidationIT extends TokenValidationTest {
 
-    // run the same tests
+  // run the same tests
 
 }

@@ -36,56 +36,55 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 @RegisterForReflection
 public class SnykRequestBuilder {
 
-    private ObjectMapper mapper = ObjectMapperProducer.newInstance();
+  private ObjectMapper mapper = ObjectMapperProducer.newInstance();
 
-    public String fromDiGraph(GraphRequest req) throws JsonProcessingException {
-        ObjectNode depGraph = mapper.createObjectNode();
-        depGraph.put("schemaVersion", "1.2.0");
-        depGraph.set("pkgManager", mapper.createObjectNode().put("name", req.pkgManager()));
+  public String fromDiGraph(GraphRequest req) throws JsonProcessingException {
+    ObjectNode depGraph = mapper.createObjectNode();
+    depGraph.put("schemaVersion", "1.2.0");
+    depGraph.set("pkgManager", mapper.createObjectNode().put("name", req.pkgManager()));
 
-        depGraph.set("pkgs", addPackages(depGraph, req.graph()));
-        ObjectNode root = mapper.createObjectNode().set("depGraph", depGraph);
-        return mapper.writeValueAsString(root);
+    depGraph.set("pkgs", addPackages(depGraph, req.graph()));
+    ObjectNode root = mapper.createObjectNode().set("depGraph", depGraph);
+    return mapper.writeValueAsString(root);
+  }
+
+  private JsonNode addPackages(ObjectNode depGraph, Graph<PackageRef, DefaultEdge> graph) {
+    ArrayNode pkgs = mapper.createArrayNode();
+    ArrayNode nodes = mapper.createArrayNode();
+    PackageRef root = null;
+    BreadthFirstIterator<PackageRef, DefaultEdge> iterator = new BreadthFirstIterator<>(graph);
+    while (iterator.hasNext()) {
+      PackageRef dep = iterator.next();
+      if (root == null) {
+        root = dep;
+      }
+      nodes.add(createNode(dep, graph));
+      pkgs.add(
+          mapper
+              .createObjectNode()
+              .put("id", dep.getId())
+              .set(
+                  "info",
+                  mapper.createObjectNode().put("name", dep.name()).put("version", dep.version())));
     }
+    depGraph.set("pkgs", pkgs);
+    depGraph.set(
+        "graph", mapper.createObjectNode().put("rootNodeId", root.getId()).set("nodes", nodes));
+    return pkgs;
+  }
 
-    private JsonNode addPackages(ObjectNode depGraph, Graph<PackageRef, DefaultEdge> graph) {
-        ArrayNode pkgs = mapper.createArrayNode();
-        ArrayNode nodes = mapper.createArrayNode();
-        PackageRef root = null;
-        BreadthFirstIterator<PackageRef, DefaultEdge> iterator = new BreadthFirstIterator<>(graph);
-        while (iterator.hasNext()) {
-            PackageRef dep = iterator.next();
-            if (root == null) {
-                root = dep;
-            }
-            nodes.add(createNode(dep, graph));
-            pkgs.add(
-                    mapper.createObjectNode()
-                            .put("id", dep.getId())
-                            .set(
-                                    "info",
-                                    mapper.createObjectNode()
-                                            .put("name", dep.name())
-                                            .put("version", dep.version())));
-        }
-        depGraph.set("pkgs", pkgs);
-        depGraph.set(
-                "graph",
-                mapper.createObjectNode().put("rootNodeId", root.getId()).set("nodes", nodes));
-        return pkgs;
-    }
-
-    private ObjectNode createNode(PackageRef dep, Graph<PackageRef, DefaultEdge> graph) {
-        ArrayNode depsNode = mapper.createArrayNode();
-        graph.outgoingEdgesOf(dep)
-                .forEach(
-                        e ->
-                                depsNode.add(
-                                        mapper.createObjectNode()
-                                                .put("nodeId", graph.getEdgeTarget(e).getId())));
-        return mapper.createObjectNode()
-                .put("nodeId", dep.getId())
-                .put("pkgId", dep.getId())
-                .set("deps", depsNode);
-    }
+  private ObjectNode createNode(PackageRef dep, Graph<PackageRef, DefaultEdge> graph) {
+    ArrayNode depsNode = mapper.createArrayNode();
+    graph
+        .outgoingEdgesOf(dep)
+        .forEach(
+            e ->
+                depsNode.add(
+                    mapper.createObjectNode().put("nodeId", graph.getEdgeTarget(e).getId())));
+    return mapper
+        .createObjectNode()
+        .put("nodeId", dep.getId())
+        .put("pkgId", dep.getId())
+        .set("deps", depsNode);
+  }
 }

@@ -20,7 +20,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
     <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-    <quarkus.platform.version>3.0.2.Final</quarkus.platform.version>
+    <quarkus.platform.version>3.1.1.Final</quarkus.platform.version>
     <skipITs>true</skipITs>
     <jgraph.version>1.5.1</jgraph.version>
     <cyclonedx.version>7.3.2</cyclonedx.version>
@@ -122,6 +122,12 @@
       <groupId>io.rest-assured</groupId>
       <artifactId>rest-assured</artifactId>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.hamcrest</groupId>
+          <artifactId>hamcrest</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>com.github.tomakehurst</groupId>
@@ -214,7 +220,7 @@
             </toggleOffOn>
             <googleJavaFormat>
               <version>${google-java-format.version}</version>
-              <style>AOSP</style>
+              <style>GOOGLE</style>
               <reflowLongStrings>true</reflowLongStrings>
             </googleJavaFormat>
             <formatAnnotations />

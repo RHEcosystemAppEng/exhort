@@ -37,203 +37,200 @@ import jakarta.ws.rs.core.MediaType;
 @QuarkusTest
 public class ComponentAnalysisTest extends AbstractAnalysisTest {
 
-    @Test
-    public void testComponentAnalysisWithWrongProvider() {
-        List<PackageRef> req = Collections.emptyList();
-        given().header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                .queryParam(Constants.PROVIDERS_PARAM, "unknown")
-                .body(req)
-                .when()
-                .post("/api/v3/component-analysis/{pkgManager}", Constants.MAVEN_PKG_MANAGER)
-                .then()
-                .assertThat()
-                .statusCode(422)
-                .contentType(MediaType.TEXT_PLAIN)
-                .body(equalTo("Unsupported providers: [unknown]"));
+  @Test
+  public void testComponentAnalysisWithWrongProvider() {
+    List<PackageRef> req = Collections.emptyList();
+    given()
+        .header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
+        .queryParam(Constants.PROVIDERS_PARAM, "unknown")
+        .body(req)
+        .when()
+        .post("/api/v3/component-analysis/{pkgManager}", Constants.MAVEN_PKG_MANAGER)
+        .then()
+        .assertThat()
+        .statusCode(422)
+        .contentType(MediaType.TEXT_PLAIN)
+        .body(equalTo("Unsupported providers: [unknown]"));
 
-        verifyNoInteractions();
-    }
+    verifyNoInteractions();
+  }
 
-    @Test
-    public void testComponentAnalysisWithWrongPkgManager() {
-        List<PackageRef> req = Collections.emptyList();
-        given().header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                .body(req)
-                .when()
-                .post("/api/v3/component-analysis/{pkgManager}", "unknown")
-                .then()
-                .assertThat()
-                .statusCode(422)
-                .contentType(MediaType.TEXT_PLAIN)
-                .body(equalTo("Unsupported package manager: unknown"));
+  @Test
+  public void testComponentAnalysisWithWrongPkgManager() {
+    List<PackageRef> req = Collections.emptyList();
+    given()
+        .header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
+        .body(req)
+        .when()
+        .post("/api/v3/component-analysis/{pkgManager}", "unknown")
+        .then()
+        .assertThat()
+        .statusCode(422)
+        .contentType(MediaType.TEXT_PLAIN)
+        .body(equalTo("Unsupported package manager: unknown"));
 
-        verifyNoInteractions();
-    }
+    verifyNoInteractions();
+  }
 
-    @Test
-    public void testComponentAnalysisWithSnyk() {
-        stubSnykRequest(null);
-        stubTCGavRequest();
-        stubTCVexRequest();
+  @Test
+  public void testComponentAnalysisWithSnyk() {
+    stubSnykRequest(null);
+    stubTCGavRequest();
+    stubTCVexRequest();
 
-        List<PackageRef> pkgs =
-                List.of(
-                        new PackageRef("com.fasterxml.jackson.core:jackson-databind", "2.13.1"),
-                        new PackageRef("io.quarkus:quarkus-jdbc-postgresql", "2.13.5"));
-        new PackageRef("com.acme:example", "1.2.3");
+    List<PackageRef> pkgs =
+        List.of(
+            new PackageRef("com.fasterxml.jackson.core:jackson-databind", "2.13.1"),
+            new PackageRef("io.quarkus:quarkus-jdbc-postgresql", "2.13.5"));
+    new PackageRef("com.acme:example", "1.2.3");
 
-        String body =
-                given().header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                        .queryParam(Constants.PROVIDERS_PARAM, Constants.SNYK_PROVIDER)
-                        .body(pkgs)
-                        .when()
-                        .post(
-                                "/api/v3/component-analysis/{pkgManager}",
-                                Constants.MAVEN_PKG_MANAGER)
-                        .then()
-                        .assertThat()
-                        .statusCode(200)
-                        .extract()
-                        .body()
-                        .asPrettyString();
+    String body =
+        given()
+            .header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
+            .queryParam(Constants.PROVIDERS_PARAM, Constants.SNYK_PROVIDER)
+            .body(pkgs)
+            .when()
+            .post("/api/v3/component-analysis/{pkgManager}", Constants.MAVEN_PKG_MANAGER)
+            .then()
+            .assertThat()
+            .statusCode(200)
+            .extract()
+            .body()
+            .asPrettyString();
 
-        assertJson("component_snyk.json", body);
-        verifyNoInteractionsWithTidelift();
-        verifySnykRequest(null);
-        verifyTCVexRequest();
-        verifyTCGavRequest();
-    }
+    assertJson("component_snyk.json", body);
+    verifyNoInteractionsWithTidelift();
+    verifySnykRequest(null);
+    verifyTCVexRequest();
+    verifyTCGavRequest();
+  }
 
-    @Test
-    @Disabled
-    public void testComponentAnalysisWithTidelift() {
-        stubTideliftRequest(null);
-        List<PackageRef> pkgs =
-                List.of(
-                        new PackageRef("log4j:log4j", "1.2.17"),
-                        new PackageRef("io.netty:netty-common", "4.1.86"));
+  @Test
+  @Disabled
+  public void testComponentAnalysisWithTidelift() {
+    stubTideliftRequest(null);
+    List<PackageRef> pkgs =
+        List.of(
+            new PackageRef("log4j:log4j", "1.2.17"),
+            new PackageRef("io.netty:netty-common", "4.1.86"));
 
-        String body =
-                given().header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                        .queryParam(Constants.PROVIDERS_PARAM, Constants.TIDELIFT_PROVIDER)
-                        .body(pkgs)
-                        .when()
-                        .post(
-                                "/api/v3/component-analysis/{pkgManager}",
-                                Constants.MAVEN_PKG_MANAGER)
-                        .then()
-                        .assertThat()
-                        .statusCode(200)
-                        .extract()
-                        .body()
-                        .asPrettyString();
+    String body =
+        given()
+            .header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
+            .queryParam(Constants.PROVIDERS_PARAM, Constants.TIDELIFT_PROVIDER)
+            .body(pkgs)
+            .when()
+            .post("/api/v3/component-analysis/{pkgManager}", Constants.MAVEN_PKG_MANAGER)
+            .then()
+            .assertThat()
+            .statusCode(200)
+            .extract()
+            .body()
+            .asPrettyString();
 
-        assertJson("tidelift_component_report.json", body);
-        verifyNoInteractionsWithTCGav();
-        verifyNoInteractionsWithSnyk();
-        verifyTideliftRequest(3, null);
-    }
+    assertJson("tidelift_component_report.json", body);
+    verifyNoInteractionsWithTCGav();
+    verifyNoInteractionsWithSnyk();
+    verifyTideliftRequest(3, null);
+  }
 
-    @Test
-    public void testSnykClientToken() {
-        String token = "client-token";
-        stubSnykRequest(token);
-        stubTCVexRequest();
-        stubTCGavRequest();
+  @Test
+  public void testSnykClientToken() {
+    String token = "client-token";
+    stubSnykRequest(token);
+    stubTCVexRequest();
+    stubTCGavRequest();
 
-        List<PackageRef> pkgs =
-                List.of(
-                        new PackageRef("com.fasterxml.jackson.core:jackson-databind", "2.13.1"),
-                        new PackageRef("io.quarkus:quarkus-jdbc-postgresql", "2.13.5"));
-        new PackageRef("com.acme:example", "1.2.3");
+    List<PackageRef> pkgs =
+        List.of(
+            new PackageRef("com.fasterxml.jackson.core:jackson-databind", "2.13.1"),
+            new PackageRef("io.quarkus:quarkus-jdbc-postgresql", "2.13.5"));
+    new PackageRef("com.acme:example", "1.2.3");
 
-        String body =
-                given().header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                        .header(Constants.SNYK_TOKEN_HEADER, token)
-                        .queryParam(Constants.PROVIDERS_PARAM, Constants.SNYK_PROVIDER)
-                        .body(pkgs)
-                        .when()
-                        .post(
-                                "/api/v3/component-analysis/{pkgManager}",
-                                Constants.MAVEN_PKG_MANAGER)
-                        .then()
-                        .assertThat()
-                        .statusCode(200)
-                        .extract()
-                        .body()
-                        .asPrettyString();
+    String body =
+        given()
+            .header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
+            .header(Constants.SNYK_TOKEN_HEADER, token)
+            .queryParam(Constants.PROVIDERS_PARAM, Constants.SNYK_PROVIDER)
+            .body(pkgs)
+            .when()
+            .post("/api/v3/component-analysis/{pkgManager}", Constants.MAVEN_PKG_MANAGER)
+            .then()
+            .assertThat()
+            .statusCode(200)
+            .extract()
+            .body()
+            .asPrettyString();
 
-        assertJson("component_snyk.json", body);
+    assertJson("component_snyk.json", body);
 
-        verifySnykRequest(token);
-        verifyTCVexRequest();
-        verifyTCGavRequest();
+    verifySnykRequest(token);
+    verifyTCVexRequest();
+    verifyTCGavRequest();
 
-        verifyNoInteractionsWithTidelift();
-    }
+    verifyNoInteractionsWithTidelift();
+  }
 
-    @Test
-    @Disabled
-    public void testTideliftClientToken() {
-        String token = "client-token";
-        stubTideliftRequest(token);
+  @Test
+  @Disabled
+  public void testTideliftClientToken() {
+    String token = "client-token";
+    stubTideliftRequest(token);
 
-        List<PackageRef> pkgs =
-                List.of(
-                        new PackageRef("log4j:log4j", "1.2.17"),
-                        new PackageRef("io.netty:netty-common", "4.1.86"));
+    List<PackageRef> pkgs =
+        List.of(
+            new PackageRef("log4j:log4j", "1.2.17"),
+            new PackageRef("io.netty:netty-common", "4.1.86"));
 
-        String body =
-                given().header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                        .header(Constants.TIDELIFT_TOKEN_HEADER, token)
-                        .queryParam(Constants.PROVIDERS_PARAM, Constants.TIDELIFT_PROVIDER)
-                        .body(pkgs)
-                        .when()
-                        .post(
-                                "/api/v3/component-analysis/{pkgManager}",
-                                Constants.MAVEN_PKG_MANAGER)
-                        .then()
-                        .assertThat()
-                        .statusCode(200)
-                        .extract()
-                        .body()
-                        .asPrettyString();
+    String body =
+        given()
+            .header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
+            .header(Constants.TIDELIFT_TOKEN_HEADER, token)
+            .queryParam(Constants.PROVIDERS_PARAM, Constants.TIDELIFT_PROVIDER)
+            .body(pkgs)
+            .when()
+            .post("/api/v3/component-analysis/{pkgManager}", Constants.MAVEN_PKG_MANAGER)
+            .then()
+            .assertThat()
+            .statusCode(200)
+            .extract()
+            .body()
+            .asPrettyString();
 
-        assertJson("tidelift_component_report.json", body);
-        verifyNoInteractionsWithTCGav();
-        verifyNoInteractionsWithSnyk();
-        verifyTideliftRequest(3, token);
-    }
+    assertJson("tidelift_component_report.json", body);
+    verifyNoInteractionsWithTCGav();
+    verifyNoInteractionsWithSnyk();
+    verifyTideliftRequest(3, token);
+  }
 
-    @Test
-    public void testEmptyRequest() {
-        stubSnykRequest(null);
-        stubTCVexRequest();
-        stubTCGavRequest();
+  @Test
+  public void testEmptyRequest() {
+    stubSnykRequest(null);
+    stubTCVexRequest();
+    stubTCGavRequest();
 
-        List<PackageRef> pkgs = Collections.emptyList();
+    List<PackageRef> pkgs = Collections.emptyList();
 
-        String body =
-                given().header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                        .queryParam(Constants.PROVIDERS_PARAM, Constants.SNYK_PROVIDER)
-                        .body(pkgs)
-                        .when()
-                        .post(
-                                "/api/v3/component-analysis/{pkgManager}",
-                                Constants.MAVEN_PKG_MANAGER)
-                        .then()
-                        .assertThat()
-                        .statusCode(200)
-                        .extract()
-                        .body()
-                        .asPrettyString();
+    String body =
+        given()
+            .header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
+            .queryParam(Constants.PROVIDERS_PARAM, Constants.SNYK_PROVIDER)
+            .body(pkgs)
+            .when()
+            .post("/api/v3/component-analysis/{pkgManager}", Constants.MAVEN_PKG_MANAGER)
+            .then()
+            .assertThat()
+            .statusCode(200)
+            .extract()
+            .body()
+            .asPrettyString();
 
-        assertJson("empty_response.json", body);
+    assertJson("empty_response.json", body);
 
-        verifySnykRequest(null);
-        verifyTCVexRequest();
-        verifyTCGavRequest();
+    verifySnykRequest(null);
+    verifyTCVexRequest();
+    verifyTCGavRequest();
 
-        verifyNoInteractionsWithTidelift();
-    }
+    verifyNoInteractionsWithTidelift();
+  }
 }

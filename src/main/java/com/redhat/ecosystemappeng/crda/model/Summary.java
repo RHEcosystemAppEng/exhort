@@ -24,6 +24,6 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @RegisterForReflection
 public record Summary(
-        DependenciesSummary dependencies,
-        VulnerabilitiesSummary vulnerabilities,
-        List<ProviderStatus> providerStatuses) {}
+    DependenciesSummary dependencies,
+    VulnerabilitiesSummary vulnerabilities,
+    List<ProviderStatus> providerStatuses) {}

@@ -29,78 +29,78 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @RegisterForReflection
 public record DependencyReport(
-        PackageRef ref,
-        Issue highestVulnerability,
-        List<Issue> issues,
-        List<TransitiveDependencyReport> transitive,
-        Map<String, Remediation> remediations,
-        PackageRef recommendation)
-        implements CvssScoreComparable {
+    PackageRef ref,
+    Issue highestVulnerability,
+    List<Issue> issues,
+    List<TransitiveDependencyReport> transitive,
+    Map<String, Remediation> remediations,
+    PackageRef recommendation)
+    implements CvssScoreComparable {
 
-    public DependencyReport {
-        if (issues != null) {
-            issues =
-                    issues.stream()
-                            .sorted(Comparator.comparing(Issue::cvssScore).reversed())
-                            .collect(Collectors.toUnmodifiableList());
-        }
-        if (transitive != null) {
-            transitive =
-                    transitive.stream()
-                            .sorted(new CvssScoreComparator().reversed())
-                            .collect(Collectors.toUnmodifiableList());
-        }
+  public DependencyReport {
+    if (issues != null) {
+      issues =
+          issues.stream()
+              .sorted(Comparator.comparing(Issue::cvssScore).reversed())
+              .collect(Collectors.toUnmodifiableList());
     }
-
-    public int transitiveIssuesCount() {
-        return transitive.stream().mapToInt(t -> t.issues().size()).sum();
+    if (transitive != null) {
+      transitive =
+          transitive.stream()
+              .sorted(new CvssScoreComparator().reversed())
+              .collect(Collectors.toUnmodifiableList());
     }
+  }
 
-    public boolean hasRemediation() {
-        if (!remediations.isEmpty()) {
-            return true;
-        }
-        return transitive != null && transitive.stream().anyMatch(t -> !t.remediations().isEmpty());
+  public int transitiveIssuesCount() {
+    return transitive.stream().mapToInt(t -> t.issues().size()).sum();
+  }
+
+  public boolean hasRemediation() {
+    if (!remediations.isEmpty()) {
+      return true;
     }
+    return transitive != null && transitive.stream().anyMatch(t -> !t.remediations().isEmpty());
+  }
 
-    public int transitiveRemediationCount() {
-        return transitive.stream().mapToInt(t -> t.remediations().size()).sum();
+  public int transitiveRemediationCount() {
+    return transitive.stream().mapToInt(t -> t.remediations().size()).sum();
+  }
+
+  public PackageRef findRemediationByIssue(Issue issue) {
+    if (issue.cves().isEmpty()) {
+      return null;
     }
+    List<Remediation> result = new ArrayList<>();
+    issue.cves().stream()
+        .map(cve -> remediations.get(cve))
+        .filter(Objects::nonNull)
+        .forEach(result::add);
 
-    public PackageRef findRemediationByIssue(Issue issue) {
-        if (issue.cves().isEmpty()) {
-            return null;
-        }
-        List<Remediation> result = new ArrayList<>();
-        issue.cves().stream()
-                .map(cve -> remediations.get(cve))
-                .filter(Objects::nonNull)
-                .forEach(result::add);
-
-        if (result.isEmpty()) {
-            return null;
-        }
-        // Assuming there's only one CVE by issue
-        return result.get(0).mavenPackage();
+    if (result.isEmpty()) {
+      return null;
     }
+    // Assuming there's only one CVE by issue
+    return result.get(0).mavenPackage();
+  }
 
-    public PackageRef findTransitiveRemediationByIssue(Issue issue) {
-        if (issue.cves().isEmpty()) {
-            return null;
-        }
-        List<Remediation> result = new ArrayList<>();
-        issue.cves().stream()
-                .forEach(
-                        cve ->
-                                transitive.stream()
-                                        .map(t -> t.remediations().get(cve))
-                                        .filter(Objects::nonNull)
-                                        .forEach(result::add));
-
-        if (result.isEmpty()) {
-            return null;
-        }
-        // Assuming there's only one CVE by issue
-        return result.get(0).mavenPackage();
+  public PackageRef findTransitiveRemediationByIssue(Issue issue) {
+    if (issue.cves().isEmpty()) {
+      return null;
     }
+    List<Remediation> result = new ArrayList<>();
+    issue.cves().stream()
+        .forEach(
+            cve ->
+                transitive.stream()
+                    .map(t -> t.remediations().get(cve))
+                    .filter(Objects::nonNull)
+                    .forEach(result::add));
+
+    if (result.isEmpty()) {
+      return null;
+    }
+    // Assuming there's only one CVE by issue
+    return result.get(0).mavenPackage();
+  }
 }
