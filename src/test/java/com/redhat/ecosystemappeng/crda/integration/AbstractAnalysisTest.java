@@ -116,7 +116,7 @@ public abstract class AbstractAnalysisTest {
     }
 
     protected File loadSBOMFile() {
-        return new File(getClass().getClassLoader().getResource("example_sbom.json").getPath());
+        return new File(getClass().getClassLoader().getResource("sboms/maven-sbom.json").getPath());
     }
 
     protected void stubSnykRequest(String token) {

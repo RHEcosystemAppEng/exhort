@@ -178,9 +178,7 @@ public class GraphUtils {
                                                             c.getPurl(),
                                                             requiresDecoding(pkgManager))));
             Optional<Component> rootComponent =
-                    bom.getComponents().stream()
-                            .filter(c -> c.equals(bom.getMetadata().getComponent()))
-                            .findFirst();
+                    Optional.ofNullable(bom.getMetadata().getComponent());
             final Optional<Dependency> rootDependency;
             if (rootComponent.isPresent()) {
                 rootDependency =

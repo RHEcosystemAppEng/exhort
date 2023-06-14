@@ -58,15 +58,6 @@
     },
     "components" : [
       {
-        "group" : "org.acme.dbaas",
-        "name" : "postgresql-orm-quarkus",
-        "version" : "1.0.0-SNAPSHOT",
-        "licenses" : [ ],
-        "purl" : "pkg:maven/org.acme.dbaas/postgresql-orm-quarkus@1.0.0-SNAPSHOT?type=jar",
-        "type" : "library",
-        "bom-ref" : "pkg:maven/org.acme.dbaas/postgresql-orm-quarkus@1.0.0-SNAPSHOT?type=jar"
-      },
-      {
         "publisher" : "JBoss by Red Hat",
         "group" : "io.quarkus",
         "name" : "quarkus-hibernate-orm",
@@ -514,7 +505,7 @@
         "publisher" : "FasterXML",
         "group" : "com.fasterxml.jackson.core",
         "name" : "jackson-databind",
-        "version" : "2.13.1",
+        "version" : "2.13.4.2",
         "description" : "General data-binding functionality for Jackson: works on core streaming API",
         "scope" : "required",
         "hashes" : [
@@ -558,7 +549,7 @@
             }
           }
         ],
-        "purl" : "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.1?type=jar",
+        "purl" : "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.2?type=jar",
         "externalReferences" : [
           {
             "type" : "website",
@@ -578,7 +569,7 @@
           }
         ],
         "type" : "library",
-        "bom-ref" : "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.1?type=jar"
+        "bom-ref" : "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.2?type=jar"
       },
       {
         "publisher" : "JBoss by Red Hat",
@@ -750,7 +741,7 @@
       {
         "ref" : "pkg:maven/io.quarkus/quarkus-core@2.13.5.Final?type=jar",
         "dependsOn" : [
-          "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.1?type=jar",
+          "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.2?type=jar",
           "pkg:maven/jakarta.enterprise/jakarta.enterprise.cdi-api@2.0.2?type=jar"
         ]
       },
@@ -759,7 +750,7 @@
         "dependsOn" : [ ]
       },
       {
-        "ref" : "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.1?type=jar",
+        "ref" : "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.2?type=jar",
         "dependsOn" : [ ]
       },
       {

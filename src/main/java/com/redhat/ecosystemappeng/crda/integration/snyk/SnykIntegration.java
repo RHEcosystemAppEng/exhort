@@ -81,6 +81,7 @@ public class SnykIntegration extends EndpointRouteBuilder {
             .setHeader("Authorization", simple("token ${header.crda-snyk-token}"))
             .setHeader(Exchange.HTTP_PATH, constant(Constants.SNYK_TOKEN_API_PATH))
             .setHeader(Exchange.HTTP_METHOD, constant("GET"))
+            // TODO: Consider using circuit breaker
             .to(vertxHttp("{{api.snyk.host}}").throwExceptionOnFailure(false))
             .setProperty(Constants.RESPONSE_STATUS_PROPERTY, header(Exchange.HTTP_RESPONSE_CODE))
             .choice().when(header(Exchange.HTTP_RESPONSE_CODE).isEqualTo(Response.Status.OK.getStatusCode())) 
