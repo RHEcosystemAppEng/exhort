@@ -41,7 +41,7 @@ public class SnykRequestBuilder {
     public String fromDiGraph(GraphRequest req) throws JsonProcessingException {
         ObjectNode depGraph = mapper.createObjectNode();
         depGraph.put("schemaVersion", "1.2.0");
-        depGraph.set("pkgManager", mapper.createObjectNode().put("name", "maven"));
+        depGraph.set("pkgManager", mapper.createObjectNode().put("name", req.pkgManager()));
 
         depGraph.set("pkgs", addPackages(depGraph, req.graph()));
         ObjectNode root = mapper.createObjectNode().set("depGraph", depGraph);

@@ -86,9 +86,12 @@ paths:
         example: snyk
       requestBody:
         required: true
-        description: Dependency graph in DOT format
+        description: Dependency graph in DOT or SBOM formats
         content:
           text/vnd.graphviz:
+            schema:
+              type: object
+          application/json:
             schema:
               type: object
       responses:

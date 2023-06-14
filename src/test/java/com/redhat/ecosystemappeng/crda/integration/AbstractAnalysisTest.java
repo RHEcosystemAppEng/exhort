@@ -115,6 +115,10 @@ public abstract class AbstractAnalysisTest {
                 getClass().getClassLoader().getResource("empty_dependencies.txt").getPath());
     }
 
+    protected File loadSBOMFile() {
+        return new File(getClass().getClassLoader().getResource("sboms/maven-sbom.json").getPath());
+    }
+
     protected void stubSnykRequest(String token) {
         if (token == null) {
             token = WiremockV3Extension.SNYK_TOKEN;

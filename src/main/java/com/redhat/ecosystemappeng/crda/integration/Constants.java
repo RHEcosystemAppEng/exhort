@@ -48,6 +48,11 @@ public final class Constants {
     public static final String TIDELIFT_PROVIDER = "tidelift";
 
     public static final String MAVEN_PKG_MANAGER = "maven";
+    public static final String NPM_PKG_MANAGER = "npm";
+    public static final String GRADLE_PKG_MANAGER = "gradle";
+    public static final String PIP_PKG_MANAGER = "pip";
+    public static final String GOMOD_PKG_MANAGER = "gomodules";
+
     public static final String REQUEST_CONTENT_PROPERTY = "requestContent";
     public static final String REPORT_PROPERTY = "report";
     public static final String PROVIDER_PRIVATE_DATA_PROPERTY = "providerPrivateData";
@@ -68,6 +73,10 @@ public final class Constants {
                     new ArrayList<>() {
                         {
                             add(MAVEN_PKG_MANAGER);
+                            add(NPM_PKG_MANAGER);
+                            add(GRADLE_PKG_MANAGER);
+                            add(PIP_PKG_MANAGER);
+                            add(GOMOD_PKG_MANAGER);
                         }
                     });
 

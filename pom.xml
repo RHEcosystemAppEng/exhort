@@ -23,6 +23,7 @@
     <quarkus.platform.version>3.0.2.Final</quarkus.platform.version>
     <skipITs>true</skipITs>
     <jgraph.version>1.5.1</jgraph.version>
+    <cyclonedx.version>7.3.2</cyclonedx.version>
     <wiremock.version>3.0.0-beta-8</wiremock.version>
     <compiler-plugin.version>3.10.1</compiler-plugin.version>
     <surefire-plugin.version>3.0.0</surefire-plugin.version>
@@ -105,6 +106,11 @@
       <groupId>org.jgrapht</groupId>
       <artifactId>jgrapht-io</artifactId>
       <version>${jgraph.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.cyclonedx</groupId>
+        <artifactId>cyclonedx-core-java</artifactId>
+        <version>${cyclonedx.version}</version>
     </dependency>
     <!-- Test -->
     <dependency>

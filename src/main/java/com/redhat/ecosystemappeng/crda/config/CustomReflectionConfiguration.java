@@ -30,8 +30,8 @@ import jakarta.ws.rs.core.Response;
 @RegisterForReflection(
         targets = {
             HttpOperationFailedException.class,
-            ClientErrorException.class,
             WebApplicationException.class,
+            ClientErrorException.class,
             Response.class,
             ResponseImpl.class
         })

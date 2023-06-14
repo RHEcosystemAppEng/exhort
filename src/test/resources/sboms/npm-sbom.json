@@ -1,0 +1,930 @@
+{
+  "$schema": "http://cyclonedx.org/schema/bom-1.4.schema.json",
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.4",
+  "version": 1,
+  "serialNumber": "urn:uuid:bafb80af-ae60-41c4-aab0-fa23ed480dc9",
+  "metadata": {
+    "timestamp": "2023-06-08T11:54:56.108Z",
+    "tools": [
+      {
+        "vendor": "@cyclonedx",
+        "name": "cyclonedx-npm",
+        "version": "1.12.0",
+        "externalReferences": [
+          {
+            "url": "git+https://github.com/CycloneDX/cyclonedx-node-npm.git",
+            "type": "vcs",
+            "comment": "as detected from PackageJson property \"repository.url\""
+          },
+          {
+            "url": "https://github.com/CycloneDX/cyclonedx-node-npm#readme",
+            "type": "website",
+            "comment": "as detected from PackageJson property \"homepage\""
+          },
+          {
+            "url": "https://github.com/CycloneDX/cyclonedx-node-npm/issues",
+            "type": "issue-tracker",
+            "comment": "as detected from PackageJson property \"bugs.url\""
+          }
+        ]
+      },
+      {
+        "vendor": "@cyclonedx",
+        "name": "cyclonedx-library",
+        "version": "2.0.0",
+        "externalReferences": [
+          {
+            "url": "git+https://github.com/CycloneDX/cyclonedx-javascript-library.git",
+            "type": "vcs",
+            "comment": "as detected from PackageJson property \"repository.url\""
+          },
+          {
+            "url": "https://github.com/CycloneDX/cyclonedx-javascript-library#readme",
+            "type": "website",
+            "comment": "as detected from PackageJson property \"homepage\""
+          },
+          {
+            "url": "https://github.com/CycloneDX/cyclonedx-javascript-library/issues",
+            "type": "issue-tracker",
+            "comment": "as detected from PackageJson property \"bugs.url\""
+          }
+        ]
+      }
+    ],
+    "component": {
+      "type": "application",
+      "name": "fabric8-analytics-lsp-server",
+      "version": "0.0.0-development",
+      "bom-ref": "fabric8-analytics-lsp-server@0.0.0-development",
+      "author": "Pavel Odvody",
+      "description": "LSP Server for Dependency Analytics",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "purl": "pkg:npm/fabric8-analytics-lsp-server@0.0.0-development?vcs_url=git%2Bhttps%3A//github.com/fabric8-analytics/fabric8-analytics-lsp-server.git",
+      "externalReferences": [
+        {
+          "url": "git+https://github.com/fabric8-analytics/fabric8-analytics-lsp-server.git",
+          "type": "vcs",
+          "comment": "as detected from PackageJson property \"repository.url\""
+        },
+        {
+          "url": "https://github.com/fabric8-analytics/fabric8-analytics-lsp-server#readme",
+          "type": "website",
+          "comment": "as detected from PackageJson property \"homepage\""
+        },
+        {
+          "url": "https://github.com/fabric8-analytics/fabric8-analytics-lsp-server/issues",
+          "type": "issue-tracker",
+          "comment": "as detected from PackageJson property \"bugs.url\""
+        }
+      ],
+      "properties": [
+        {
+          "name": "cdx:npm:package:path",
+          "value": ""
+        }
+      ]
+    }
+  },
+  "components": [
+    {
+      "type": "library",
+      "name": "ast",
+      "group": "@xml-tools",
+      "version": "5.0.5",
+      "bom-ref": "@xml-tools/ast@5.0.5",
+      "description": "XML Ast and Utilities",
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "6afbf34cebc6a650b1f4948a76c4dedef2be002bec1f2d87c557e471f22a3f3bbe905e424f8af0e5a515cecd2d245e1c9c3c8c455912c95c51d3b5f43f1f203c"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "purl": "pkg:npm/%40xml-tools/ast@5.0.5",
+      "externalReferences": [
+        {
+          "url": "git+https://github.com/sap/xml-tools.git",
+          "type": "vcs",
+          "comment": "as detected from PackageJson property \"repository.url\""
+        },
+        {
+          "url": "https://github.com/sap/xml-tools#readme",
+          "type": "website",
+          "comment": "as detected from PackageJson property \"homepage\""
+        },
+        {
+          "url": "https://github.com/sap/xml-tools/issues",
+          "type": "issue-tracker",
+          "comment": "as detected from PackageJson property \"bugs.url\""
+        },
+        {
+          "url": "https://registry.npmjs.org/@xml-tools/ast/-/ast-5.0.5.tgz",
+          "type": "distribution",
+          "comment": "as detected from npm-ls property \"resolved\""
+        }
+      ],
+      "properties": [
+        {
+          "name": "cdx:npm:package:path",
+          "value": "node_modules/@xml-tools/ast"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "common",
+      "group": "@xml-tools",
+      "version": "0.1.6",
+      "bom-ref": "@xml-tools/common@0.1.6",
+      "description": "XML-Tools Common Utilities",
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "eda55978461c72cd4a23f02c77a28a9eb0787530165d392344c8c6e34029184529e4da5f408bd62c406f32ff392a88f695b4a96a0700111c03cbda8cb1f58674"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "purl": "pkg:npm/%40xml-tools/common@0.1.6",
+      "externalReferences": [
+        {
+          "url": "git+https://github.com/sap/xml-tools.git",
+          "type": "vcs",
+          "comment": "as detected from PackageJson property \"repository.url\""
+        },
+        {
+          "url": "https://github.com/sap/xml-tools#readme",
+          "type": "website",
+          "comment": "as detected from PackageJson property \"homepage\""
+        },
+        {
+          "url": "https://github.com/sap/xml-tools/issues",
+          "type": "issue-tracker",
+          "comment": "as detected from PackageJson property \"bugs.url\""
+        },
+        {
+          "url": "https://registry.npmjs.org/@xml-tools/common/-/common-0.1.6.tgz",
+          "type": "distribution",
+          "comment": "as detected from npm-ls property \"resolved\""
+        }
+      ],
+      "properties": [
+        {
+          "name": "cdx:npm:package:path",
+          "value": "node_modules/@xml-tools/common"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "lodash",
+      "version": "4.17.21",
+      "bom-ref": "lodash@4.17.21",
+      "author": "John-David Dalton",
+      "description": "Lodash modular utilities.",
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "bf690311ee7b95e713ba568322e3533f2dd1cb880b189e99d4edef13592b81764daec43e2c54c61d5c558dc5cfb35ecb85b65519e74026ff17675b6f8f916f4a"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "purl": "pkg:npm/lodash@4.17.21",
+      "externalReferences": [
+        {
+          "url": "git+https://github.com/lodash/lodash.git",
+          "type": "vcs",
+          "comment": "as detected from PackageJson property \"repository.url\""
+        },
+        {
+          "url": "https://lodash.com/",
+          "type": "website",
+          "comment": "as detected from PackageJson property \"homepage\""
+        },
+        {
+          "url": "https://github.com/lodash/lodash/issues",
+          "type": "issue-tracker",
+          "comment": "as detected from PackageJson property \"bugs.url\""
+        },
+        {
+          "url": "https://registry.npmjs.org/lodash/-/lodash-4.17.21.tgz",
+          "type": "distribution",
+          "comment": "as detected from npm-ls property \"resolved\""
+        }
+      ],
+      "properties": [
+        {
+          "name": "cdx:npm:package:path",
+          "value": "node_modules/lodash"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "parser",
+      "group": "@xml-tools",
+      "version": "1.0.11",
+      "bom-ref": "@xml-tools/parser@1.0.11",
+      "description": "XML Parser Implemented in JavaScript",
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "68aa90d3bed79d1fa842d1c996b01f95a65a2fba99b2e95673f8bf644a286abe498968f578bb74f96836f1ca5af972e77b2d74ef05ea9de0bea06d4866fc644c"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "purl": "pkg:npm/%40xml-tools/parser@1.0.11",
+      "externalReferences": [
+        {
+          "url": "git+https://github.com/sap/xml-tools.git",
+          "type": "vcs",
+          "comment": "as detected from PackageJson property \"repository.url\""
+        },
+        {
+          "url": "https://github.com/sap/xml-tools#readme",
+          "type": "website",
+          "comment": "as detected from PackageJson property \"homepage\""
+        },
+        {
+          "url": "https://github.com/sap/xml-tools/issues",
+          "type": "issue-tracker",
+          "comment": "as detected from PackageJson property \"bugs.url\""
+        },
+        {
+          "url": "https://registry.npmjs.org/@xml-tools/parser/-/parser-1.0.11.tgz",
+          "type": "distribution",
+          "comment": "as detected from npm-ls property \"resolved\""
+        }
+      ],
+      "properties": [
+        {
+          "name": "cdx:npm:package:path",
+          "value": "node_modules/@xml-tools/parser"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "chevrotain",
+      "version": "7.1.1",
+      "bom-ref": "chevrotain@7.1.1",
+      "author": "Shahar Soel",
+      "description": "Chevrotain is a high performance fault tolerant javascript parsing DSL for building recursive decent parsers",
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "c32de60b5c78c9ef8ef909048a754990f7f9bb6becac32185bd1bb66ec0597abff62ed0bc14b93d8f3ac6fe354580a5e6f2c5f910abafb20df444c5b9c8e6b73"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "purl": "pkg:npm/chevrotain@7.1.1",
+      "externalReferences": [
+        {
+          "url": "git://github.com/SAP/chevrotain.git",
+          "type": "vcs",
+          "comment": "as detected from PackageJson property \"repository.url\""
+        },
+        {
+          "url": "https://sap.github.io/chevrotain/docs/",
+          "type": "website",
+          "comment": "as detected from PackageJson property \"homepage\""
+        },
+        {
+          "url": "https://github.com/SAP/chevrotain/issues",
+          "type": "issue-tracker",
+          "comment": "as detected from PackageJson property \"bugs.url\""
+        },
+        {
+          "url": "https://registry.npmjs.org/chevrotain/-/chevrotain-7.1.1.tgz",
+          "type": "distribution",
+          "comment": "as detected from npm-ls property \"resolved\""
+        }
+      ],
+      "properties": [
+        {
+          "name": "cdx:npm:package:path",
+          "value": "node_modules/chevrotain"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "regexp-to-ast",
+      "version": "0.5.0",
+      "bom-ref": "regexp-to-ast@0.5.0",
+      "author": "Shahar Soel",
+      "description": "Parses a Regular Expression and outputs an AST",
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "b656c9a9c3079cf288f734abcacb629162b01e406abb66bf4a0c34d61df3163bd8accc440d81f3ce83199d4adb21fa53144b284679ef88e5cd0b316249ce7843"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "purl": "pkg:npm/regexp-to-ast@0.5.0",
+      "externalReferences": [
+        {
+          "url": "git+https://github.com/bd82/regexp-to-ast.git",
+          "type": "vcs",
+          "comment": "as detected from PackageJson property \"repository.url\""
+        },
+        {
+          "url": "https://github.com/bd82/regexp-to-ast#readme",
+          "type": "website",
+          "comment": "as detected from PackageJson property \"homepage\""
+        },
+        {
+          "url": "https://github.com/bd82/regexp-to-ast/issues",
+          "type": "issue-tracker",
+          "comment": "as detected from PackageJson property \"bugs.url\""
+        },
+        {
+          "url": "https://registry.npmjs.org/regexp-to-ast/-/regexp-to-ast-0.5.0.tgz",
+          "type": "distribution",
+          "comment": "as detected from npm-ls property \"resolved\""
+        }
+      ],
+      "properties": [
+        {
+          "name": "cdx:npm:package:path",
+          "value": "node_modules/regexp-to-ast"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "compare-versions",
+      "version": "6.0.0-rc.1",
+      "bom-ref": "compare-versions@6.0.0-rc.1",
+      "author": "Ole Michelsen",
+      "description": "Compare semver version strings to find greater, equal or lesser.",
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "7058648db198d632c558857b29e80409b7eec983f1486be01a47647ccfa26dba100e83f08361511e6e4148d4ce02989ab91073248407eeabce26cdac5b9b9e29"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "purl": "pkg:npm/compare-versions@6.0.0-rc.1",
+      "externalReferences": [
+        {
+          "url": "git+https://github.com/omichelsen/compare-versions.git",
+          "type": "vcs",
+          "comment": "as detected from PackageJson property \"repository.url\""
+        },
+        {
+          "url": "https://github.com/omichelsen/compare-versions#readme",
+          "type": "website",
+          "comment": "as detected from PackageJson property \"homepage\""
+        },
+        {
+          "url": "https://github.com/omichelsen/compare-versions/issues",
+          "type": "issue-tracker",
+          "comment": "as detected from PackageJson property \"bugs.url\""
+        },
+        {
+          "url": "https://registry.npmjs.org/compare-versions/-/compare-versions-6.0.0-rc.1.tgz",
+          "type": "distribution",
+          "comment": "as detected from npm-ls property \"resolved\""
+        }
+      ],
+      "properties": [
+        {
+          "name": "cdx:npm:package:path",
+          "value": "node_modules/compare-versions"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "json-to-ast",
+      "version": "2.1.0",
+      "bom-ref": "json-to-ast@2.1.0",
+      "author": "Vlad Trushin",
+      "description": "JSON AST parser",
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "5bd2eadf8eebf2d0350df32f0069fd40d720626e169bb61cfa4f1eeaf7b3a4c9d14fe3476ed97180d0574558d77bd60ce9e4e7ebea7f30a3a557f6800497129d"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "purl": "pkg:npm/json-to-ast@2.1.0",
+      "externalReferences": [
+        {
+          "url": "git+https://github.com/vtrushin/json-to-ast.git",
+          "type": "vcs",
+          "comment": "as detected from PackageJson property \"repository.url\""
+        },
+        {
+          "url": "https://github.com/vtrushin/json-to-ast",
+          "type": "website",
+          "comment": "as detected from PackageJson property \"homepage\""
+        },
+        {
+          "url": "https://github.com/vtrushin/json-to-ast/issues",
+          "type": "issue-tracker",
+          "comment": "as detected from PackageJson property \"bugs.url\""
+        },
+        {
+          "url": "https://registry.npmjs.org/json-to-ast/-/json-to-ast-2.1.0.tgz",
+          "type": "distribution",
+          "comment": "as detected from npm-ls property \"resolved\""
+        }
+      ],
+      "properties": [
+        {
+          "name": "cdx:npm:package:path",
+          "value": "node_modules/json-to-ast"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "code-error-fragment",
+      "version": "0.0.230",
+      "bom-ref": "code-error-fragment@0.0.230",
+      "author": "Vlad Trushin",
+      "description": "Shows code error fragment of input file",
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "71a7647caa7af77d87f14921cc4fe0714aa144c35ff231f390037bfb933269bb306a086ee310014e03c70c28d6f9d0402718ff4a9913628929cc3a98e290b343"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "purl": "pkg:npm/code-error-fragment@0.0.230",
+      "externalReferences": [
+        {
+          "url": "git+https://github.com/vtrushin/code-error-fragment.git",
+          "type": "vcs",
+          "comment": "as detected from PackageJson property \"repository.url\""
+        },
+        {
+          "url": "https://github.com/vtrushin/code-error-fragment",
+          "type": "website",
+          "comment": "as detected from PackageJson property \"homepage\""
+        },
+        {
+          "url": "https://github.com/vtrushin/code-error-fragment/issues",
+          "type": "issue-tracker",
+          "comment": "as detected from PackageJson property \"bugs.url\""
+        },
+        {
+          "url": "https://registry.npmjs.org/code-error-fragment/-/code-error-fragment-0.0.230.tgz",
+          "type": "distribution",
+          "comment": "as detected from npm-ls property \"resolved\""
+        }
+      ],
+      "properties": [
+        {
+          "name": "cdx:npm:package:path",
+          "value": "node_modules/code-error-fragment"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "grapheme-splitter",
+      "version": "1.0.4",
+      "bom-ref": "grapheme-splitter@1.0.4",
+      "author": "Orlin Georgiev",
+      "description": "A JavaScript library that breaks strings into their individual user-perceived characters. It supports emojis!",
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "6f3879d035bd9133ccd344fccb8a3cbd083cf438bda0b2552d6fca68e1885c958ffe2a8237a58a6246cd385d38bc52c987072961487dc9d87ffb9be93aa57861"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "purl": "pkg:npm/grapheme-splitter@1.0.4",
+      "externalReferences": [
+        {
+          "url": "git+https://github.com/orling/grapheme-splitter.git",
+          "type": "vcs",
+          "comment": "as detected from PackageJson property \"repository.url\""
+        },
+        {
+          "url": "https://github.com/orling/grapheme-splitter",
+          "type": "website",
+          "comment": "as detected from PackageJson property \"homepage\""
+        },
+        {
+          "url": "https://github.com/orling/grapheme-splitter/issues",
+          "type": "issue-tracker",
+          "comment": "as detected from PackageJson property \"bugs.url\""
+        },
+        {
+          "url": "https://registry.npmjs.org/grapheme-splitter/-/grapheme-splitter-1.0.4.tgz",
+          "type": "distribution",
+          "comment": "as detected from npm-ls property \"resolved\""
+        }
+      ],
+      "properties": [
+        {
+          "name": "cdx:npm:package:path",
+          "value": "node_modules/grapheme-splitter"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "vscode-languageserver-textdocument",
+      "version": "1.0.8",
+      "bom-ref": "vscode-languageserver-textdocument@1.0.8",
+      "author": "Microsoft Corporation",
+      "description": "A simple text document implementation for Node LSP servers",
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "d5ba27906a90b39fdfc464f951c8538231959dfcac2f43bcbf50183018ea4db5904c59fbdb5cda3c60d816438ab5f0e01624a05ccdcac1a1b714c19f5b811df5"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "purl": "pkg:npm/vscode-languageserver-textdocument@1.0.8#textDocument",
+      "externalReferences": [
+        {
+          "url": "git+https://github.com/Microsoft/vscode-languageserver-node.git#textDocument",
+          "type": "vcs",
+          "comment": "as detected from PackageJson property \"repository.url\" and \"repository.directory\""
+        },
+        {
+          "url": "https://github.com/Microsoft/vscode-languageserver-node#readme",
+          "type": "website",
+          "comment": "as detected from PackageJson property \"homepage\""
+        },
+        {
+          "url": "https://github.com/Microsoft/vscode-languageserver-node/issues",
+          "type": "issue-tracker",
+          "comment": "as detected from PackageJson property \"bugs.url\""
+        },
+        {
+          "url": "https://registry.npmjs.org/vscode-languageserver-textdocument/-/vscode-languageserver-textdocument-1.0.8.tgz",
+          "type": "distribution",
+          "comment": "as detected from npm-ls property \"resolved\""
+        }
+      ],
+      "properties": [
+        {
+          "name": "cdx:npm:package:path",
+          "value": "node_modules/vscode-languageserver-textdocument"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "vscode-languageserver",
+      "version": "8.1.0",
+      "bom-ref": "vscode-languageserver@8.1.0",
+      "author": "Microsoft Corporation",
+      "description": "Language server implementation for node",
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "794b7c7f5cf637620450306c29a35aa64cfb8e5e50a6c90dd98d06d354ff22d331071c357c9c2fb7248607d40c79c6ad9def2314858919623ad5d5a3c932d0b3"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "purl": "pkg:npm/vscode-languageserver@8.1.0#server",
+      "externalReferences": [
+        {
+          "url": "git+https://github.com/Microsoft/vscode-languageserver-node.git#server",
+          "type": "vcs",
+          "comment": "as detected from PackageJson property \"repository.url\" and \"repository.directory\""
+        },
+        {
+          "url": "https://github.com/Microsoft/vscode-languageserver-node#readme",
+          "type": "website",
+          "comment": "as detected from PackageJson property \"homepage\""
+        },
+        {
+          "url": "https://github.com/Microsoft/vscode-languageserver-node/issues",
+          "type": "issue-tracker",
+          "comment": "as detected from PackageJson property \"bugs.url\""
+        },
+        {
+          "url": "https://registry.npmjs.org/vscode-languageserver/-/vscode-languageserver-8.1.0.tgz",
+          "type": "distribution",
+          "comment": "as detected from npm-ls property \"resolved\""
+        }
+      ],
+      "properties": [
+        {
+          "name": "cdx:npm:package:path",
+          "value": "node_modules/vscode-languageserver"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "vscode-languageserver-protocol",
+      "version": "3.17.3",
+      "bom-ref": "vscode-languageserver-protocol@3.17.3",
+      "author": "Microsoft Corporation",
+      "description": "VSCode Language Server Protocol implementation",
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "f76e3f87402ab0cb40e722b6d8680cb4262231d08eb564d21a050e9201035fec24d9bd31e2c01f2e23b8371071a9b895b73ecaeffd7f46056b548d0d0a5670a8"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "purl": "pkg:npm/vscode-languageserver-protocol@3.17.3#protocol",
+      "externalReferences": [
+        {
+          "url": "git+https://github.com/Microsoft/vscode-languageserver-node.git#protocol",
+          "type": "vcs",
+          "comment": "as detected from PackageJson property \"repository.url\" and \"repository.directory\""
+        },
+        {
+          "url": "https://github.com/Microsoft/vscode-languageserver-node#readme",
+          "type": "website",
+          "comment": "as detected from PackageJson property \"homepage\""
+        },
+        {
+          "url": "https://github.com/Microsoft/vscode-languageserver-node/issues",
+          "type": "issue-tracker",
+          "comment": "as detected from PackageJson property \"bugs.url\""
+        },
+        {
+          "url": "https://registry.npmjs.org/vscode-languageserver-protocol/-/vscode-languageserver-protocol-3.17.3.tgz",
+          "type": "distribution",
+          "comment": "as detected from npm-ls property \"resolved\""
+        }
+      ],
+      "properties": [
+        {
+          "name": "cdx:npm:package:path",
+          "value": "node_modules/vscode-languageserver-protocol"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "vscode-jsonrpc",
+      "version": "8.1.0",
+      "bom-ref": "vscode-jsonrpc@8.1.0",
+      "author": "Microsoft Corporation",
+      "description": "A json rpc implementation over streams",
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "e930f2fda6d3424fb30c661ace06c83dcfb82685ddc02f0d1d4f4f6e7e1424fd5f7a1532666338447a7922d857ec0e8be4a4b7d0f46e8be8feb5b6cc30c69f77"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "purl": "pkg:npm/vscode-jsonrpc@8.1.0#jsonrpc",
+      "externalReferences": [
+        {
+          "url": "git+https://github.com/Microsoft/vscode-languageserver-node.git#jsonrpc",
+          "type": "vcs",
+          "comment": "as detected from PackageJson property \"repository.url\" and \"repository.directory\""
+        },
+        {
+          "url": "https://github.com/Microsoft/vscode-languageserver-node#readme",
+          "type": "website",
+          "comment": "as detected from PackageJson property \"homepage\""
+        },
+        {
+          "url": "https://github.com/Microsoft/vscode-languageserver-node/issues",
+          "type": "issue-tracker",
+          "comment": "as detected from PackageJson property \"bugs.url\""
+        },
+        {
+          "url": "https://registry.npmjs.org/vscode-jsonrpc/-/vscode-jsonrpc-8.1.0.tgz",
+          "type": "distribution",
+          "comment": "as detected from npm-ls property \"resolved\""
+        }
+      ],
+      "properties": [
+        {
+          "name": "cdx:npm:package:path",
+          "value": "node_modules/vscode-jsonrpc"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "vscode-languageserver-types",
+      "version": "3.17.3",
+      "bom-ref": "vscode-languageserver-types@3.17.3",
+      "author": "Microsoft Corporation",
+      "description": "Types used by the Language server for node",
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "498538cf574bd0fc8831de158fc60ea85bc7bbb1f3fde9db5ada5f9d56c91d4e0d77560d631f2ed1e9e7ba673a878f0640d78e2f19b0c929a7003a2e4ff02e64"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "purl": "pkg:npm/vscode-languageserver-types@3.17.3#types",
+      "externalReferences": [
+        {
+          "url": "git+https://github.com/Microsoft/vscode-languageserver-node.git#types",
+          "type": "vcs",
+          "comment": "as detected from PackageJson property \"repository.url\" and \"repository.directory\""
+        },
+        {
+          "url": "https://github.com/Microsoft/vscode-languageserver-node#readme",
+          "type": "website",
+          "comment": "as detected from PackageJson property \"homepage\""
+        },
+        {
+          "url": "https://github.com/Microsoft/vscode-languageserver-node/issues",
+          "type": "issue-tracker",
+          "comment": "as detected from PackageJson property \"bugs.url\""
+        },
+        {
+          "url": "https://registry.npmjs.org/vscode-languageserver-types/-/vscode-languageserver-types-3.17.3.tgz",
+          "type": "distribution",
+          "comment": "as detected from npm-ls property \"resolved\""
+        }
+      ],
+      "properties": [
+        {
+          "name": "cdx:npm:package:path",
+          "value": "node_modules/vscode-languageserver-types"
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "fabric8-analytics-lsp-server@0.0.0-development",
+      "dependsOn": [
+        "@xml-tools/ast@5.0.5",
+        "@xml-tools/parser@1.0.11",
+        "compare-versions@6.0.0-rc.1",
+        "json-to-ast@2.1.0",
+        "vscode-languageserver-textdocument@1.0.8",
+        "vscode-languageserver@8.1.0"
+      ]
+    },
+    {
+      "ref": "@xml-tools/ast@5.0.5",
+      "dependsOn": [
+        "@xml-tools/common@0.1.6",
+        "@xml-tools/parser@1.0.11",
+        "lodash@4.17.21"
+      ]
+    },
+    {
+      "ref": "@xml-tools/common@0.1.6",
+      "dependsOn": [
+        "lodash@4.17.21"
+      ]
+    },
+    {
+      "ref": "lodash@4.17.21"
+    },
+    {
+      "ref": "@xml-tools/parser@1.0.11",
+      "dependsOn": [
+        "chevrotain@7.1.1"
+      ]
+    },
+    {
+      "ref": "chevrotain@7.1.1",
+      "dependsOn": [
+        "regexp-to-ast@0.5.0"
+      ]
+    },
+    {
+      "ref": "regexp-to-ast@0.5.0"
+    },
+    {
+      "ref": "compare-versions@6.0.0-rc.1"
+    },
+    {
+      "ref": "json-to-ast@2.1.0",
+      "dependsOn": [
+        "code-error-fragment@0.0.230",
+        "grapheme-splitter@1.0.4"
+      ]
+    },
+    {
+      "ref": "code-error-fragment@0.0.230"
+    },
+    {
+      "ref": "grapheme-splitter@1.0.4"
+    },
+    {
+      "ref": "vscode-languageserver-textdocument@1.0.8"
+    },
+    {
+      "ref": "vscode-languageserver@8.1.0",
+      "dependsOn": [
+        "vscode-languageserver-protocol@3.17.3"
+      ]
+    },
+    {
+      "ref": "vscode-languageserver-protocol@3.17.3",
+      "dependsOn": [
+        "vscode-jsonrpc@8.1.0",
+        "vscode-languageserver-types@3.17.3"
+      ]
+    },
+    {
+      "ref": "vscode-jsonrpc@8.1.0"
+    },
+    {
+      "ref": "vscode-languageserver-types@3.17.3"
+    }
+  ]
+}

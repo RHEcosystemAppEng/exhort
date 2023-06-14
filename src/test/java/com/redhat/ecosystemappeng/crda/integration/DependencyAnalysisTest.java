@@ -297,6 +297,39 @@ public class DependencyAnalysisTest extends AbstractAnalysisTest {
     }
 
     @Test
+    public void testSBOMJsonWithToken() {
+        String snykToken = "my-snyk-token";
+        stubSnykRequest(snykToken);
+        // stubTideliftRequest(null);
+        stubTCVexRequest();
+
+        AnalysisReport report =
+                given().header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                        .body(loadSBOMFile())
+                        .header("Accept", MediaType.APPLICATION_JSON)
+                        .header(Constants.SNYK_TOKEN_HEADER, snykToken)
+                        .when()
+                        .post(
+                                "/api/v3/dependency-analysis/{pkgManager}",
+                                Constants.MAVEN_PKG_MANAGER)
+                        .then()
+                        .assertThat()
+                        .statusCode(200)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .extract()
+                        .body()
+                        .as(AnalysisReport.class);
+
+        assertSummary(report.summary());
+        assertDependenciesReport(report.dependencies());
+
+        verifyTCVexRequest();
+        verifySnykRequest(snykToken);
+        verifyNoInteractionsWithTCGav();
+        verifyNoInteractionsWithTidelift();
+    }
+
+    @Test
     public void testNonVerboseJson() {
         stubSnykRequest(null);
         // stubTideliftRequest(null);

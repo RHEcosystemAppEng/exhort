@@ -1,0 +1,113 @@
+{
+    "bomFormat" : "CycloneDX",
+    "specVersion" : "1.4",
+    "serialNumber" : "urn:uuid:21e8d828-b07f-4fd3-bd14-0458f7188d40",
+    "version" : 1,
+    "metadata" : {
+      "timestamp" : "2023-05-16T14:37:58Z",
+      "tools" : [
+        {
+          "vendor" : "OWASP Foundation",
+          "name" : "CycloneDX Maven plugin makeAggregateBom compile+provided+runtime+system",
+          "version" : "2.7.6",
+          "hashes" : [
+            {
+              "alg" : "MD5",
+              "content" : "639c35c7f79c5514f3abe11247999b70"
+            },
+            {
+              "alg" : "SHA-1",
+              "content" : "649239e622d8d454bb9ab6fafd6746c85cd11b7d"
+            },
+            {
+              "alg" : "SHA-256",
+              "content" : "1e3bc10146c370fe8b8f0a2edcb64329907d61dbc2f445db6ac1034cd3221ce3"
+            },
+            {
+              "alg" : "SHA-512",
+              "content" : "894a4b5762d32c88cc58ae1a35a3cc3d45a3c494accadb31b55b5832af65f60c0f8164623521a81de73e3ed6a4c994cca0f1951c8368b9d07fb41c82eaa84bbd"
+            },
+            {
+              "alg" : "SHA-384",
+              "content" : "3c385acc773a41056fb58ea27096c8ec86d46d8bd74a2eee9cf0913051981611afc68cf13a88d31af16590a489a97c0e"
+            },
+            {
+              "alg" : "SHA3-384",
+              "content" : "93695160055039f4791ecebd61c7aa6130f074f50a823de6e5aff7217c35548062829ec2b930658c2702cd47ea3118a1"
+            },
+            {
+              "alg" : "SHA3-256",
+              "content" : "4c9f5d3ab2b6ab9b4b4a8968a7ee2373b85a496bec34eefd96ed7c8260d2a45b"
+            },
+            {
+              "alg" : "SHA3-512",
+              "content" : "c2af46fe07c4be746fdc0b54e9eb3285231055c5401bcfb34c2d9392efe27fe9c16a0edd91615970bfae3f4a59846e89c3d88a6a36d4ba110a6d140a04fe184d"
+            }
+          ]
+        }
+      ],
+      "component" : {
+        "group" : "org.acme.dbaas",
+        "name" : "postgresql-orm-quarkus",
+        "version" : "1.0.0-SNAPSHOT",
+        "licenses" : [ ],
+        "purl" : "pkg:maven/org.acme.dbaas/postgresql-orm-quarkus@1.0.0-SNAPSHOT?type=jar",
+        "type" : "library",
+        "bom-ref" : "pkg:maven/org.acme.dbaas/postgresql-orm-quarkus@1.0.0-SNAPSHOT?type=jar"
+      }
+    },
+    "components" : [
+      {
+        "publisher" : "JBoss by Red Hat",
+        "group" : "io.quarkus",
+        "name" : "quarkus-hibernate-orm",
+        "version" : "2.13.5.Final",
+        "description" : "Define your persistent model with Hibernate ORM and JPA",
+        "scope" : "optional",
+        "hashes" : [
+          {
+            "alg" : "MD5",
+            "content" : "554642d35d4e0322a1cefd2de8ccb0b5"
+          },
+          {
+            "alg" : "SHA-1",
+            "content" : "eac78fba00b75d8e5df0b9c0afcbf531b7b20c4c"
+          },
+          {
+            "alg" : "SHA-256",
+            "content" : "16689e5fb3f818be9ce0be466b1672f1deccb038a76be0ea453ec7ca7968373a"
+          },
+          {
+            "alg" : "SHA-512",
+            "content" : "6d94394d5ddf5ec02e19dffcca1d95d4803e7b128e00a9b66330f1ad74976b597b66193d245d9b564eb72470618930b9bb397898be481037df99eceda6f3b00f"
+          },
+          {
+            "alg" : "SHA-384",
+            "content" : "1b9ca4d1a08060a5a271fb9b590cd635e47db8086c09d9fe0e676751714921b3c5f8eae1c2007b1e0c3dbdb7415ae965"
+          },
+          {
+            "alg" : "SHA3-384",
+            "content" : "db0bf5fec70bc4eec8feee210b1efe3cd5bf1f171d157e770d9c3e71c6425cd9b70cbaf5be19cae9caf9d25f3fba606e"
+          },
+          {
+            "alg" : "SHA3-256",
+            "content" : "e6444c6655bd551b0b3f2658a1ef0aedfa9ec63237fa70dd6b0918504735e09c"
+          },
+          {
+            "alg" : "SHA3-512",
+            "content" : "278a83ac7d96d4816bd62683e96ef3e8aecc7437fbc7194d16925098c40200592a6961e9a23d141626ae6a6bdc913d488465371f24a2ab06d032f1c61ca954bd"
+          }
+        ],
+        "licenses" : [
+          {
+            "license" : {
+              "id" : "Apache-2.0"
+            }
+          }
+        ]
+      }  
+    ],
+    "dependencies" : [
+
+    ]
+  }
