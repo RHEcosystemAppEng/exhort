@@ -25,6 +25,7 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -107,7 +108,6 @@ public class GraphUtils {
             .vertexClass(PackageRef.class)
             .edgeSupplier(DefaultEdge::new)
             .buildGraphBuilder();
-    boolean empty = true;
     ContentType ct;
     try {
       ct = new ContentType(contentType);
@@ -116,25 +116,22 @@ public class GraphUtils {
     }
     switch (ct.getBaseType()) {
       case Constants.TEXT_VND_GRAPHVIZ:
-        empty = fromDotFile(file, builder);
+        fromDotFile(file, builder);
         break;
       case MediaType.APPLICATION_JSON:
-        empty = fromSbom(file, builder, pkgManager);
+        fromSbom(file, builder, pkgManager);
         break;
       default:
         throw new ClientErrorException(
             "Unsupported Content-Type header: " + contentType,
             Response.Status.UNSUPPORTED_MEDIA_TYPE);
     }
-    if (empty) {
-      builder.addVertex(DEFAULT_ROOT);
-    }
     return new GraphRequest.Builder(pkgManager, providers)
         .graph(builder.buildAsUnmodifiable())
         .build();
   }
 
-  private boolean fromDotFile(
+  private void fromDotFile(
       InputStream file,
       GraphBuilder<PackageRef, DefaultEdge, Graph<PackageRef, DefaultEdge>> builder) {
     boolean empty = true;
@@ -156,51 +153,56 @@ public class GraphUtils {
         }
       }
     }
-    return empty;
+    if (empty) {
+      builder.addVertex(DEFAULT_ROOT);
+    }
   }
 
-  private boolean fromSbom(
+  private void fromSbom(
       InputStream file,
       GraphBuilder<PackageRef, DefaultEdge, Graph<PackageRef, DefaultEdge>> builder,
       String pkgManager) {
     try {
       Bom bom = mapper.readValue(file, Bom.class);
-      if (bom.getDependencies().isEmpty()) {
-        return true;
-      }
-      Map<String, PackageRef> componentPurls =
-          bom.getComponents().stream()
-              .collect(
-                  Collectors.toMap(
-                      Component::getBomRef,
-                      c -> fromPurl(c.getPurl(), requiresDecoding(pkgManager))));
       Optional<Component> rootComponent = Optional.ofNullable(bom.getMetadata().getComponent());
+      Map<String, PackageRef> componentPurls = new HashMap<>();
+      if (bom.getComponents() != null) {
+        componentPurls.putAll(
+            bom.getComponents().stream()
+                .filter(c -> c.getBomRef() != null)
+                .collect(
+                    Collectors.toMap(
+                        Component::getBomRef,
+                        c -> fromPurl(c.getPurl(), requiresDecoding(pkgManager)))));
+      }
       final Optional<Dependency> rootDependency;
       if (rootComponent.isPresent()) {
+        String rootPurl = rootComponent.get().getPurl();
+        PackageRef rootRef = fromPurl(rootPurl, requiresDecoding(pkgManager));
+        if (!componentPurls.containsKey(rootPurl)) {
+          componentPurls.put(rootPurl, fromPurl(rootPurl, requiresDecoding(pkgManager)));
+        }
+        builder.addVertex(rootRef);
         rootDependency =
             bom.getDependencies().stream()
                 .filter(d -> d.getRef().equals(rootComponent.get().getBomRef()))
                 .findFirst();
-        if (rootDependency.isEmpty()) {
-          throw new IllegalArgumentException(
-              "SBOM: Missing matching metadata.component in the dependencies."
-                  + rootComponent.get().getName());
+        if (!rootDependency.isEmpty()) {
+          addDependency(builder, rootRef, rootDependency.get().getDependencies(), componentPurls);
+          bom.getDependencies().stream()
+              .filter(
+                  d ->
+                      !d.getRef()
+                          .equals(
+                              rootDependency.orElse(new Dependency(DEFAULT_ROOT.toGav())).getRef()))
+              .forEach(
+                  d ->
+                      addDependency(
+                          builder,
+                          componentPurls.get(d.getRef()),
+                          d.getDependencies(),
+                          componentPurls));
         }
-        PackageRef rootRef = fromPurl(rootComponent.get().getPurl(), requiresDecoding(pkgManager));
-        addDependency(builder, rootRef, rootDependency.get().getDependencies(), componentPurls);
-        bom.getDependencies().stream()
-            .filter(
-                d ->
-                    !d.getRef()
-                        .equals(
-                            rootDependency.orElse(new Dependency(DEFAULT_ROOT.toGav())).getRef()))
-            .forEach(
-                d ->
-                    addDependency(
-                        builder,
-                        componentPurls.get(d.getRef()),
-                        d.getDependencies(),
-                        componentPurls));
       } else { // flat rootless SBOM
         rootDependency = Optional.of(new Dependency(DEFAULT_ROOT.toGav()));
         addDependency(builder, DEFAULT_ROOT, bom.getDependencies(), componentPurls);
@@ -208,8 +210,6 @@ public class GraphUtils {
             .values()
             .forEach(purl -> addDependency(builder, purl, Collections.emptyList(), componentPurls));
       }
-
-      return false;
     } catch (IOException e) {
       LOGGER.error("Unable to parse the SBOM file", e);
       throw new ClientErrorException(
