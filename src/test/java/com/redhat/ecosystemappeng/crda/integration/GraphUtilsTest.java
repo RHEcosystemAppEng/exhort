@@ -88,7 +88,22 @@ public class GraphUtilsTest {
     assertEquals(providers, request.providers());
     assertEquals(0, request.graph().edgeSet().size());
     assertEquals(1, request.graph().vertexSet().size());
-    assertEquals(GraphUtils.DEFAULT_ROOT, request.graph().vertexSet().iterator().next());
+    assertEquals(EXPECTED_ROOT, request.graph().vertexSet().iterator().next());
+  }
+
+  @Test
+  public void testSBOMWithoutDependencies() {
+    InputStream file = getClass().getClassLoader().getResourceAsStream("sboms/no-deps-sbom.json");
+    List<String> providers = List.of(Constants.SNYK_PROVIDER);
+
+    GraphRequest request =
+        new GraphUtils()
+            .fromDepGraph(file, providers, Constants.MAVEN_PKG_MANAGER, MediaType.APPLICATION_JSON);
+    assertEquals(Constants.MAVEN_PKG_MANAGER, request.pkgManager());
+    assertEquals(providers, request.providers());
+    assertEquals(0, request.graph().edgeSet().size());
+    assertEquals(1, request.graph().vertexSet().size());
+    assertEquals(EXPECTED_ROOT, request.graph().vertexSet().iterator().next());
   }
 
   @Test
