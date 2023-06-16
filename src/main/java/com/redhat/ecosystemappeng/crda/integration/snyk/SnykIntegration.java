@@ -40,6 +40,7 @@ public class SnykIntegration extends EndpointRouteBuilder {
 
     // fmt:off
         onException(HttpOperationFailedException.class)
+            .routeId("onSnykHttpOperationFailedException")
             .logStackTrace(false)
             .process(new Processor() {
                 @Override
@@ -52,6 +53,7 @@ public class SnykIntegration extends EndpointRouteBuilder {
             .handled(true);
 
         from(direct("snykDepGraph"))
+            .routeId("snykDepGraph")
             .choice()
                 .when(header(Constants.SNYK_TOKEN_HEADER).isNotNull())
                     .setHeader("Authorization", simple("token ${header.crda-snyk-token}"))
@@ -62,6 +64,7 @@ public class SnykIntegration extends EndpointRouteBuilder {
             .enrich(direct("snykRequest"), AggregationStrategies.bean(SnykAggregationStrategy.class, "aggregate"));
 
         from(direct("snykRequest"))
+            .routeId("snykRequest")
             .transform().method(SnykRequestBuilder.class, "fromDiGraph")
             .removeHeader(Exchange.HTTP_PATH)
             .removeHeader(Exchange.HTTP_QUERY)
@@ -74,6 +77,7 @@ public class SnykIntegration extends EndpointRouteBuilder {
             .to(vertxHttp("{{api.snyk.host}}"));
         
         from(direct("validateSnykToken"))
+            .routeId("snykValidateToken")
             .removeHeader(Exchange.HTTP_PATH)
             .removeHeader(Exchange.HTTP_QUERY)
             .removeHeader(Exchange.HTTP_URI)

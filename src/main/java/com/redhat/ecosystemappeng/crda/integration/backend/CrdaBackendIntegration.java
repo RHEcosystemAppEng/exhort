@@ -49,12 +49,14 @@ public class CrdaBackendIntegration extends EndpointRouteBuilder {
             .clientRequestValidation(true);
 
         onException(IllegalArgumentException.class)
+            .routeId("onCrdaIllegalArgumentException")
             .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(422))
             .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.TEXT_PLAIN))
             .handled(true)
             .setBody().simple("${exception.message}");
 
         onException(ClientErrorException.class)
+            .routeId("onCrdaClientErrorException")
             .setHeader(Exchange.HTTP_RESPONSE_CODE, simple("${exception.getResponse().getStatus()}"))
             .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.TEXT_PLAIN))
             .handled(true)
@@ -62,24 +64,29 @@ public class CrdaBackendIntegration extends EndpointRouteBuilder {
 
         rest()
             .post("/component-analysis/{pkgManager}")
+                .routeId("restComponentAnalysis")
                 .consumes(MediaType.APPLICATION_JSON)
                 .to("direct:componentAnalysis")
             .post("/dependency-analysis/{pkgManager}")
+                .routeId("restDependencyAnalysis")
                 .to("direct:fullDepAnalysis")
             .get("/token")
+                .routeId("restTokenValidation")
                 .to("direct:validateToken");
 
         from(direct("componentAnalysis"))
-                .unmarshal(new ListJacksonDataFormat(PackageRef.class))
-                .setProperty(Constants.PROVIDERS_PARAM, method(vulnerabilityProvider, "getProvidersFromQueryParam"))
-                .setBody().method(GraphUtils.class, "fromPackages")
-                .to(direct("findVulnerabilities"))
-                .to(direct("recommendAllTrustedContent"))
-                .to(direct("jsonReport"))
-                .to(direct("cleanUpResponse"));
+            .routeId("componentAnalysis")
+            .unmarshal(new ListJacksonDataFormat(PackageRef.class))
+            .setProperty(Constants.PROVIDERS_PARAM, method(vulnerabilityProvider, "getProvidersFromQueryParam"))
+            .setBody().method(GraphUtils.class, "fromPackages")
+            .to(direct("findVulnerabilities"))
+            .to(direct("recommendAllTrustedContent"))
+            .to(direct("jsonReport"))
+            .to(direct("cleanUpResponse"));
 
 
         from(direct("fullDepAnalysis"))
+            .routeId("fullDependencyAnalysis")
             .setProperty(Constants.PROVIDERS_PARAM, method(vulnerabilityProvider, "getProvidersFromQueryParam"))
             .setProperty(REQUEST_CONTENT_PROPERTY, method(BackendUtils.class, "getResponseMediaType"))
             .removeHeader(Constants.ACCEPT_HEADER)
@@ -91,6 +98,7 @@ public class CrdaBackendIntegration extends EndpointRouteBuilder {
             .to(direct("cleanUpResponse"));
 
         from(direct("findVulnerabilities"))
+            .routeId("findVulnerabilities")
             .multicast(AggregationStrategies.bean(ProviderAggregationStrategy.class, "aggregate"))
                 .parallelProcessing()
                     .recipientList(method(vulnerabilityProvider, "getProviderEndpoints"))
@@ -98,10 +106,12 @@ public class CrdaBackendIntegration extends EndpointRouteBuilder {
             .end();
 
         from(direct("cleanUpResponse"))
+            .routeId("cleanUpResponseHeaders")
             .removeHeader(Constants.PKG_MANAGER_HEADER)
             .removeHeader(Constants.VERBOSE_MODE_HEADER);
 
         from(direct("validateToken"))
+            .routeId("validateToken")
             .choice()
                 .when(header(Constants.SNYK_TOKEN_HEADER).isNotNull())
                     .to(direct("validateSnykToken"))
