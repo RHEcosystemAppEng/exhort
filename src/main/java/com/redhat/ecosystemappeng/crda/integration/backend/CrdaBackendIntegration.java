@@ -129,11 +129,9 @@ public class CrdaBackendIntegration extends EndpointRouteBuilder {
             .when(header(Constants.SNYK_TOKEN_HEADER).isNotNull())
                 .to(direct("validateSnykToken"))
             .otherwise()
-                .setProperty(Constants.RESPONSE_STATUS_PROPERTY, constant(Response.Status.BAD_REQUEST.getStatusCode()))
+                .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(Response.Status.BAD_REQUEST.getStatusCode()))
                 .setBody(constant("Missing authentication header"))
         .end()
-        .removeHeaders("*")
-        .setHeader(Exchange.HTTP_RESPONSE_CODE, exchangeProperty(Constants.RESPONSE_STATUS_PROPERTY))
         .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.TEXT_PLAIN));
     //fmt:on
   }

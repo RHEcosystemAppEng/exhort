@@ -73,7 +73,7 @@ public class TokenValidationTest extends AbstractAnalysisTest {
             .extract()
             .body()
             .asString();
-    assertEquals("Unable to validate Snyk token", msg);
+    assertEquals("Unable to validate Snyk Token: Server Error", msg);
 
     verifyTokenApiCall(ERROR_TOKEN);
   }
@@ -95,7 +95,7 @@ public class TokenValidationTest extends AbstractAnalysisTest {
             .extract()
             .body()
             .asString();
-    assertEquals("Invalid auth token provided", msg);
+    assertEquals("Invalid token provided. Unauthorized", msg);
 
     verifyTokenApiCall(token);
   }
