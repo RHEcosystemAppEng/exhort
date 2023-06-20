@@ -19,77 +19,145 @@
 package com.redhat.ecosystemappeng.crda.integration.snyk;
 
 import org.apache.camel.Exchange;
-import org.apache.camel.Processor;
+import org.apache.camel.Message;
 import org.apache.camel.builder.AggregationStrategies;
 import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
 import org.apache.camel.http.base.HttpOperationFailedException;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import com.redhat.ecosystemappeng.crda.integration.Constants;
 import com.redhat.ecosystemappeng.crda.integration.VulnerabilityProvider;
 import com.redhat.ecosystemappeng.crda.model.ProviderStatus;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.HttpMethod;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 @ApplicationScoped
 public class SnykIntegration extends EndpointRouteBuilder {
 
+  @ConfigProperty(name = "api.snyk.timeout", defaultValue = "20s")
+  String timeout;
+
+  @ConfigProperty(name = "api.snyk.token")
+  String defaultToken;
+
+  @Inject VulnerabilityProvider vulnerabilityProvider;
+
   @Override
   public void configure() {
 
     // fmt:off
-        onException(HttpOperationFailedException.class)
-            .logStackTrace(false)
-            .process(new Processor() {
-                @Override
-                public void process(Exchange exchange) throws Exception {
-                    HttpOperationFailedException e = exchange.getProperty(Exchange.EXCEPTION_CAUGHT, HttpOperationFailedException.class);
-                    exchange.getIn().setBody(new ProviderStatus(false, Constants.SNYK_PROVIDER, e.getStatusCode(), e.getMessage()));
-                }
-        
-            })
-            .handled(true);
+    from(direct("snykDepGraph"))
+        .routeId("snykDepGraph")
+        .process(this::setAuthToken)
+        .enrich(direct("snykRequest"), AggregationStrategies.bean(SnykAggregationStrategy.class, "aggregate"));
 
-        from(direct("snykDepGraph"))
-            .choice()
-                .when(header(Constants.SNYK_TOKEN_HEADER).isNotNull())
-                    .setHeader("Authorization", simple("token ${header.crda-snyk-token}"))
-            .otherwise()
-                .setHeader("Authorization", simple("token {{api.snyk.token}}"))
-                .setProperty(Constants.PROVIDER_PRIVATE_DATA_PROPERTY, method(VulnerabilityProvider.class, "providersPrivateData(${exchangeProperty." + Constants.PROVIDER_PRIVATE_DATA_PROPERTY + "}, " + Constants.SNYK_PROVIDER + ")"))
-            .end()
-            .enrich(direct("snykRequest"), AggregationStrategies.bean(SnykAggregationStrategy.class, "aggregate"));
+    from(direct("snykRequest"))
+        .routeId("snykRequest")
+        .transform().method(SnykRequestBuilder.class, "fromDiGraph")
+        .process(this::processDepGraphRequest)
+        .circuitBreaker()
+          .faultToleranceConfiguration()
+            .timeoutEnabled(true)
+            .timeoutDuration(timeout)
+          .end()
+            .to(vertxHttp("{{api.snyk.host}}"))
+        .onFallback()
+          .process(this::processSnykResponseError);
 
-        from(direct("snykRequest"))
-            .transform().method(SnykRequestBuilder.class, "fromDiGraph")
-            .removeHeader(Exchange.HTTP_PATH)
-            .removeHeader(Exchange.HTTP_QUERY)
-            .removeHeader(Exchange.HTTP_URI)
-            .removeHeader("Accept-Encoding")
-            .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.APPLICATION_JSON))
-            .setHeader("Accept", constant(MediaType.APPLICATION_JSON))
-            .setHeader(Exchange.HTTP_PATH, constant(Constants.SNYK_DEP_GRAPH_API_PATH))
-            .setHeader(Exchange.HTTP_METHOD, constant("POST"))
-            .to(vertxHttp("{{api.snyk.host}}"));
-        
-        from(direct("validateSnykToken"))
-            .removeHeader(Exchange.HTTP_PATH)
-            .removeHeader(Exchange.HTTP_QUERY)
-            .removeHeader(Exchange.HTTP_URI)
-            .removeHeader("Accept-Encoding")    
-            .setHeader("Authorization", simple("token ${header.crda-snyk-token}"))
-            .setHeader(Exchange.HTTP_PATH, constant(Constants.SNYK_TOKEN_API_PATH))
-            .setHeader(Exchange.HTTP_METHOD, constant("GET"))
-            // TODO: Consider using circuit breaker
-            .to(vertxHttp("{{api.snyk.host}}").throwExceptionOnFailure(false))
-            .setProperty(Constants.RESPONSE_STATUS_PROPERTY, header(Exchange.HTTP_RESPONSE_CODE))
-            .choice().when(header(Exchange.HTTP_RESPONSE_CODE).isEqualTo(Response.Status.OK.getStatusCode())) 
-                .setBody(constant("Token validated successfully"))
-            .when(header(Exchange.HTTP_RESPONSE_CODE).isGreaterThanOrEqualTo(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
-                .setBody(constant("Unable to validate Snyk token"))
-            .otherwise()
-                .setBody(jsonpath("$.error"));
-        //fmt:on
+    from(direct("validateSnykToken"))
+        .routeId("snykValidateToken")
+        .process(this::processTokenRequest)
+        .circuitBreaker()
+          .faultToleranceConfiguration()
+            .timeoutEnabled(true)
+            .timeoutDuration(timeout)
+          .end()
+          .to(vertxHttp("{{api.snyk.host}}"))
+          .setBody(constant("Token validated successfully"))
+        .onFallback()
+          .process(this::processTokenFallBack);
+    // fmt:on
+  }
+
+  private void setAuthToken(Exchange exchange) {
+    Message message = exchange.getMessage();
+    String token = message.getHeader(Constants.SNYK_TOKEN_HEADER, String.class);
+    if (token == null) {
+      token = defaultToken;
+      vulnerabilityProvider.addProviderPrivateData(exchange, Constants.SNYK_PROVIDER);
+    }
+    message.setHeader("Authorization", "token " + token);
+  }
+
+  private void processDepGraphRequest(Exchange exchange) {
+    Message message = exchange.getMessage();
+    processRequestHeaders(message);
+    message.setHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON);
+    message.setHeader(Exchange.HTTP_PATH, Constants.SNYK_DEP_GRAPH_API_PATH);
+    message.setHeader(Exchange.HTTP_METHOD, HttpMethod.POST);
+  }
+
+  private void processTokenRequest(Exchange exchange) {
+    Message message = exchange.getMessage();
+    processRequestHeaders(message);
+    message.setHeader("Authorization", "token " + message.getHeader(Constants.SNYK_TOKEN_HEADER));
+    message.setHeader(Exchange.HTTP_PATH, Constants.SNYK_TOKEN_API_PATH);
+    message.setHeader(Exchange.HTTP_METHOD, HttpMethod.GET);
+  }
+
+  private void processRequestHeaders(Message message) {
+    message.removeHeader(Exchange.HTTP_PATH);
+    message.removeHeader(Exchange.HTTP_QUERY);
+    message.removeHeader(Exchange.HTTP_URI);
+    message.removeHeader("Accept-Encoding");
+  }
+
+  private void processTokenFallBack(Exchange exchange) {
+    Exception exception = (Exception) exchange.getProperty(Exchange.EXCEPTION_CAUGHT);
+    Throwable cause = exception.getCause();
+    String body;
+    int code = Response.Status.INTERNAL_SERVER_ERROR.getStatusCode();
+
+    if (cause instanceof HttpOperationFailedException) {
+      HttpOperationFailedException httpException = (HttpOperationFailedException) cause;
+      code = httpException.getStatusCode();
+      if (code == Response.Status.UNAUTHORIZED.getStatusCode()) {
+        body = "Invalid token provided. Unauthorized";
+      } else {
+        body = "Unable to validate Snyk Token: " + httpException.getStatusText();
+      }
+    } else {
+      body = "Unable to validate Snyk Token: " + cause.getMessage();
+    }
+    exchange.getMessage().setHeader(Exchange.HTTP_RESPONSE_CODE, code);
+    exchange.getMessage().setBody(body);
+  }
+
+  private void processSnykResponseError(Exchange exchange) {
+    ProviderStatus.Builder builder =
+        ProviderStatus.builder().ok(false).provider(Constants.SNYK_PROVIDER);
+    Exception exception = (Exception) exchange.getProperty(Exchange.EXCEPTION_CAUGHT);
+    Throwable cause = exception.getCause();
+
+    if (cause != null) {
+      if (cause instanceof HttpOperationFailedException) {
+        HttpOperationFailedException httpException = (HttpOperationFailedException) cause;
+        builder.message(httpException.getMessage()).status(httpException.getStatusCode());
+
+      } else {
+        builder
+            .message(cause.getMessage())
+            .status(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
+      }
+    } else {
+      builder
+          .message(exception.getMessage())
+          .status(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
+    }
+    exchange.getMessage().setBody(builder.build());
   }
 }

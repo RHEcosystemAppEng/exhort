@@ -38,6 +38,7 @@ public class TideliftIntegration extends EndpointRouteBuilder {
     ObjectNode emptyNode = ObjectMapperProducer.newInstance().createObjectNode();
     // fmt:off
         from(direct("tideliftReleases"))
+            .routeId("tideliftReleases")
             .to(direct("preTidelift"))
             .setHeader(Constants.PKG_MANAGER_HEADER, simple("${body.pkgManager()}"))
             .split().body(GraphRequest.class, g -> g.graph().vertexSet())
@@ -51,6 +52,7 @@ public class TideliftIntegration extends EndpointRouteBuilder {
             .marshal().json();
             
         from(direct("preTidelift"))
+            .routeId("prepareTideliftRequest")
             .removeHeader(Exchange.HTTP_PATH)
             .removeHeader(Exchange.HTTP_QUERY)
             .removeHeader(Exchange.HTTP_URI)
@@ -64,12 +66,13 @@ public class TideliftIntegration extends EndpointRouteBuilder {
             .setHeader("Accept", constant(MediaType.APPLICATION_JSON));
 
         from(direct("tideliftRequest"))
-        .doTry()
-            .to(vertxHttp("{{api.tidelift.host}}"))
-        .doCatch(HttpOperationFailedException.class)
-            // Ignore not found packages and just add an empty object
-            .onWhen(simple("${exception.getStatusCode()} == 404"))
-                .setBody(constant(emptyNode)).marshal().json();
+            .routeId("tideliftRequest")
+            .doTry()
+                .to(vertxHttp("{{api.tidelift.host}}"))
+            .doCatch(HttpOperationFailedException.class)
+                // Ignore not found packages and just add an empty object
+                .onWhen(simple("${exception.getStatusCode()} == 404"))
+                    .setBody(constant(emptyNode)).marshal().json();
            
         //fmt:on
   }

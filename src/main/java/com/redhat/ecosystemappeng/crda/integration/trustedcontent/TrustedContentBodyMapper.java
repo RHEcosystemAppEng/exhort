@@ -41,7 +41,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 @RegisterForReflection
 public class TrustedContentBodyMapper {
 
-  public VexRequest buildVexRequest(@Body GraphRequest graph) {
+  public static VexRequest buildVexRequest(@Body GraphRequest graph) {
     return new VexRequest(
         graph.issues().values().stream()
             .flatMap(Collection::stream)

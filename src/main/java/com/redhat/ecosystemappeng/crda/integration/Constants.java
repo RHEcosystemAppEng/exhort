@@ -47,6 +47,8 @@ public final class Constants {
   public static final String SNYK_PROVIDER = "snyk";
   public static final String TIDELIFT_PROVIDER = "tidelift";
 
+  public static final String TRUSTED_CONTENT_NAME = "trusted-content";
+
   public static final String MAVEN_PKG_MANAGER = "maven";
   public static final String NPM_PKG_MANAGER = "npm";
   public static final String GRADLE_PKG_MANAGER = "gradle";

@@ -36,6 +36,7 @@ public class ReportIntegration extends EndpointRouteBuilder {
   public void configure() {
     // fmt:off
         from(direct("report"))
+            .routeId("report")
             .choice()
                 .when(exchangeProperty(Constants.REQUEST_CONTENT_PROPERTY).isEqualTo(MediaType.TEXT_HTML))
                     .to(direct("htmlReport"))
@@ -48,6 +49,7 @@ public class ReportIntegration extends EndpointRouteBuilder {
             .end();
 
         from(direct("htmlReport"))
+            .routeId("htmlReport")
             .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.TEXT_HTML))
             .bean(ReportTransformer.class, "transform")
             .setProperty(Constants.REPORT_PROPERTY, body())
@@ -55,6 +57,7 @@ public class ReportIntegration extends EndpointRouteBuilder {
             .to(freemarker("report.ftl"));
 
         from(direct("multipartReport"))
+            .routeId("multipartReport")
             .to(direct("htmlReport"))
             .bean(ReportTransformer.class, "attachHtmlReport")
             .setBody(exchangeProperty(Constants.REPORT_PROPERTY))
@@ -63,6 +66,7 @@ public class ReportIntegration extends EndpointRouteBuilder {
             .marshal().mimeMultipart(Constants.MULTIPART_MIXED_TYPE.getSubtype(), false, false, true);
 
         from(direct("jsonReport"))
+            .routeId("jsonReport")
             .bean(ReportTransformer.class, "transform")
             .marshal().json();
         //fmt:on
