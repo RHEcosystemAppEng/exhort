@@ -19,6 +19,7 @@
 package com.redhat.ecosystemappeng.crda.integration.report;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -35,18 +36,15 @@ import org.apache.camel.Exchange;
 import org.apache.camel.ExchangeProperty;
 import org.apache.camel.Header;
 import org.apache.camel.attachment.AttachmentMessage;
-import org.jgrapht.graph.DefaultEdge;
-import org.jgrapht.traverse.BreadthFirstIterator;
 
 import com.redhat.ecosystemappeng.crda.integration.Constants;
-import com.redhat.ecosystemappeng.crda.integration.GraphUtils;
 import com.redhat.ecosystemappeng.crda.model.AnalysisReport;
 import com.redhat.ecosystemappeng.crda.model.CvssScoreComparable.CvssScoreComparator;
 import com.redhat.ecosystemappeng.crda.model.DependenciesSummary;
 import com.redhat.ecosystemappeng.crda.model.DependencyReport;
+import com.redhat.ecosystemappeng.crda.model.DirectDependency;
 import com.redhat.ecosystemappeng.crda.model.GraphRequest;
 import com.redhat.ecosystemappeng.crda.model.Issue;
-import com.redhat.ecosystemappeng.crda.model.PackageRef;
 import com.redhat.ecosystemappeng.crda.model.Remediation;
 import com.redhat.ecosystemappeng.crda.model.Summary;
 import com.redhat.ecosystemappeng.crda.model.TransitiveDependencyReport;
@@ -62,11 +60,11 @@ public class ReportTransformer {
 
   public AnalysisReport transform(@Body GraphRequest request) {
     List<DependencyReport> depsReport = new ArrayList<>();
-    List<PackageRef> direct = GraphUtils.getFirstLevel(request.graph());
+    Collection<DirectDependency> direct = request.tree().dependencies().values();
     VulnerabilityCounter counter = new VulnerabilityCounter();
     direct.forEach(
         d -> {
-          List<Issue> issues = request.issues().get(d.name());
+          List<Issue> issues = request.issues().get(d.ref().name());
           if (issues == null) {
             issues = Collections.emptyList();
           }
@@ -86,12 +84,12 @@ public class ReportTransformer {
           }
           depsReport.add(
               new DependencyReport(
-                  d,
+                  d.ref(),
                   highestVulnerability.orElse(null),
                   issues,
                   transitiveReport,
                   getRemediations(issues, request.remediations()),
-                  request.recommendations().get(d.toGav())));
+                  request.recommendations().get(d.ref().toGav())));
         });
     List<DependencyReport> result =
         depsReport.stream()
@@ -102,8 +100,8 @@ public class ReportTransformer {
                         || r.recommendation() != null)
             .sorted(new CvssScoreComparator().reversed())
             .collect(Collectors.toList());
-    int total = request.graph().vertexSet().size() - direct.size() - 1;
-    DependenciesSummary deps = new DependenciesSummary(direct.size(), total);
+    DependenciesSummary deps =
+        new DependenciesSummary(request.tree().directCount(), request.tree().transitiveCount());
     counter.direct.set(result.size());
     Summary summary = new Summary(deps, counter.getSummary(), request.providerStatuses());
     return new AnalysisReport(summary, result);
@@ -159,25 +157,24 @@ public class ReportTransformer {
   }
 
   private List<TransitiveDependencyReport> getTransitiveDependenciesReport(
-      PackageRef start, GraphRequest request) {
-    List<PackageRef> directDeps = GraphUtils.getNextLevel(request.graph(), start);
-    BreadthFirstIterator<PackageRef, DefaultEdge> i =
-        new BreadthFirstIterator<>(request.graph(), directDeps);
+      DirectDependency start, GraphRequest request) {
+
     List<TransitiveDependencyReport> result = new ArrayList<>();
-    while (i.hasNext()) {
-      PackageRef ref = i.next();
-      List<Issue> issues = request.issues().get(ref.name());
-      if (issues != null && !issues.isEmpty()) {
-        Optional<Issue> highestVulnerability =
-            issues.stream().max(Comparator.comparing(Issue::cvssScore));
-        result.add(
-            new TransitiveDependencyReport(
-                ref,
-                highestVulnerability.orElse(null),
-                issues,
-                getRemediations(issues, request.remediations())));
-      }
-    }
+    start.transitive().stream()
+        .forEach(
+            d -> {
+              List<Issue> issues = request.issues().get(d.name());
+              if (issues != null && !issues.isEmpty()) {
+                Optional<Issue> highestVulnerability =
+                    issues.stream().max(Comparator.comparing(Issue::cvssScore));
+                result.add(
+                    new TransitiveDependencyReport(
+                        d,
+                        highestVulnerability.orElse(null),
+                        issues,
+                        getRemediations(issues, request.remediations())));
+              }
+            });
     return result;
   }
 

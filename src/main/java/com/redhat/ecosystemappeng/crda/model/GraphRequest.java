@@ -27,10 +27,6 @@ import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import org.jgrapht.Graph;
-import org.jgrapht.graph.DefaultEdge;
-import org.jgrapht.graph.builder.GraphTypeBuilder;
-
 import com.redhat.ecosystemappeng.crda.integration.Constants;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
@@ -39,7 +35,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 public record GraphRequest(
     String pkgManager,
     List<String> providers,
-    Graph<PackageRef, DefaultEdge> graph,
+    DependencyTree tree,
     Map<String, List<Issue>> issues,
     Map<String, Remediation> remediations,
     Map<String, PackageRef> recommendations,
@@ -48,6 +44,8 @@ public record GraphRequest(
   public GraphRequest {
     Objects.requireNonNull(pkgManager);
     Objects.requireNonNull(providers);
+    Objects.requireNonNull(tree);
+
     if (!Constants.PKG_MANAGERS.contains(pkgManager)) {
       throw new IllegalArgumentException("Unsupported package manager: " + pkgManager);
     }
@@ -58,13 +56,7 @@ public record GraphRequest(
     if (!invalidProviders.isEmpty()) {
       throw new IllegalArgumentException("Unsupported providers: " + invalidProviders);
     }
-    if (graph != null) {
-      graph =
-          GraphTypeBuilder.forGraph(graph)
-              .buildGraphBuilder()
-              .addGraph(graph)
-              .buildAsUnmodifiable();
-    }
+
     if (issues != null) {
       issues = Collections.unmodifiableMap(issues);
     } else {
@@ -91,7 +83,7 @@ public record GraphRequest(
 
     String pkgManager;
     List<String> providers;
-    Graph<PackageRef, DefaultEdge> graph;
+    DependencyTree tree;
     Map<String, List<Issue>> issues;
     Map<String, Remediation> remediations;
     Map<String, PackageRef> recommendations;
@@ -105,7 +97,7 @@ public record GraphRequest(
     public Builder(GraphRequest copy) {
       this.pkgManager = copy.pkgManager;
       this.providers = copy.providers;
-      this.graph = copy.graph;
+      this.tree = copy.tree;
 
       if (copy.issues != null) {
         this.issues = new HashMap<>(copy.issues);
@@ -124,8 +116,8 @@ public record GraphRequest(
       }
     }
 
-    public Builder graph(Graph<PackageRef, DefaultEdge> graph) {
-      this.graph = graph;
+    public Builder tree(DependencyTree tree) {
+      this.tree = tree;
       return this;
     }
 
@@ -152,7 +144,7 @@ public record GraphRequest(
 
     public GraphRequest build() {
       return new GraphRequest(
-          pkgManager, providers, graph, issues, remediations, recommendations, providerStatuses);
+          pkgManager, providers, tree, issues, remediations, recommendations, providerStatuses);
     }
   }
 }

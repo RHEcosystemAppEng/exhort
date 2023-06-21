@@ -18,9 +18,8 @@
 
 package com.redhat.ecosystemappeng.crda.integration.snyk;
 
-import org.jgrapht.Graph;
-import org.jgrapht.graph.DefaultEdge;
-import org.jgrapht.traverse.BreadthFirstIterator;
+import java.util.Collections;
+import java.util.Set;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -28,6 +27,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.redhat.ecosystemappeng.crda.config.ObjectMapperProducer;
+import com.redhat.ecosystemappeng.crda.model.DependencyTree;
 import com.redhat.ecosystemappeng.crda.model.GraphRequest;
 import com.redhat.ecosystemappeng.crda.model.PackageRef;
 
@@ -43,48 +43,46 @@ public class SnykRequestBuilder {
     depGraph.put("schemaVersion", "1.2.0");
     depGraph.set("pkgManager", mapper.createObjectNode().put("name", req.pkgManager()));
 
-    depGraph.set("pkgs", addPackages(depGraph, req.graph()));
+    depGraph.set("pkgs", addPackages(depGraph, req.tree()));
     ObjectNode root = mapper.createObjectNode().set("depGraph", depGraph);
     return mapper.writeValueAsString(root);
   }
 
-  private JsonNode addPackages(ObjectNode depGraph, Graph<PackageRef, DefaultEdge> graph) {
-    ArrayNode pkgs = mapper.createArrayNode();
-    ArrayNode nodes = mapper.createArrayNode();
-    PackageRef root = null;
-    BreadthFirstIterator<PackageRef, DefaultEdge> iterator = new BreadthFirstIterator<>(graph);
-    while (iterator.hasNext()) {
-      PackageRef dep = iterator.next();
-      if (root == null) {
-        root = dep;
-      }
-      nodes.add(createNode(dep, graph));
-      pkgs.add(
-          mapper
-              .createObjectNode()
-              .put("id", dep.getId())
-              .set(
-                  "info",
-                  mapper.createObjectNode().put("name", dep.name()).put("version", dep.version())));
-    }
+  private JsonNode addPackages(ObjectNode depGraph, DependencyTree tree) {
+    Set<PackageRef> allDeps = tree.getAll();
+    ObjectNode rootNode = createNode(tree.root(), allDeps);
+    ArrayNode nodes = mapper.createArrayNode().add(rootNode);
+    ArrayNode pkgs = mapper.createArrayNode().add(createPkg(tree.root()));
+
+    allDeps.stream()
+        .forEach(
+            d -> {
+              pkgs.add(createPkg(d));
+              nodes.add(createNode(d, Collections.emptySet()));
+            });
     depGraph.set("pkgs", pkgs);
     depGraph.set(
-        "graph", mapper.createObjectNode().put("rootNodeId", root.getId()).set("nodes", nodes));
+        "graph",
+        mapper.createObjectNode().put("rootNodeId", tree.root().getId()).set("nodes", nodes));
     return pkgs;
   }
 
-  private ObjectNode createNode(PackageRef dep, Graph<PackageRef, DefaultEdge> graph) {
-    ArrayNode depsNode = mapper.createArrayNode();
-    graph
-        .outgoingEdgesOf(dep)
-        .forEach(
-            e ->
-                depsNode.add(
-                    mapper.createObjectNode().put("nodeId", graph.getEdgeTarget(e).getId())));
+  private ObjectNode createPkg(PackageRef source) {
     return mapper
         .createObjectNode()
-        .put("nodeId", dep.getId())
-        .put("pkgId", dep.getId())
+        .put("id", source.getId())
+        .set(
+            "info",
+            mapper.createObjectNode().put("name", source.name()).put("version", source.version()));
+  }
+
+  private ObjectNode createNode(PackageRef source, Set<PackageRef> deps) {
+    ArrayNode depsNode = mapper.createArrayNode();
+    deps.forEach(e -> depsNode.add(mapper.createObjectNode().put("nodeId", e.getId())));
+    return mapper
+        .createObjectNode()
+        .put("nodeId", source.getId())
+        .put("pkgId", source.getId())
         .set("deps", depsNode);
   }
 }

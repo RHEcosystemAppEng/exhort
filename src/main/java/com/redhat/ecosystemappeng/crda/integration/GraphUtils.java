@@ -23,9 +23,8 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -38,12 +37,6 @@ import org.apache.camel.ExchangeProperty;
 import org.apache.camel.Header;
 import org.cyclonedx.model.Bom;
 import org.cyclonedx.model.Component;
-import org.cyclonedx.model.Dependency;
-import org.jgrapht.Graph;
-import org.jgrapht.graph.DefaultEdge;
-import org.jgrapht.graph.builder.GraphBuilder;
-import org.jgrapht.graph.builder.GraphTypeBuilder;
-import org.jgrapht.traverse.BreadthFirstIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,6 +44,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.packageurl.MalformedPackageURLException;
 import com.github.packageurl.PackageURL;
 import com.redhat.ecosystemappeng.crda.config.ObjectMapperProducer;
+import com.redhat.ecosystemappeng.crda.model.DependencyTree;
+import com.redhat.ecosystemappeng.crda.model.DirectDependency;
 import com.redhat.ecosystemappeng.crda.model.GraphRequest;
 import com.redhat.ecosystemappeng.crda.model.PackageRef;
 
@@ -69,13 +64,6 @@ public class GraphUtils {
   public static final String DEFAULT_APP_VERSION = "0.0.1";
   public static final PackageRef DEFAULT_ROOT =
       new PackageRef(DEFAULT_APP_NAME, DEFAULT_APP_VERSION);
-  public static final Graph<PackageRef, DefaultEdge> EMPTY_GRAPH =
-      GraphTypeBuilder.directed()
-          .allowingSelfLoops(false)
-          .vertexClass(PackageRef.class)
-          .edgeSupplier(DefaultEdge::new)
-          .buildGraphBuilder()
-          .buildAsUnmodifiable();
 
   private static final ObjectMapper mapper = ObjectMapperProducer.newInstance();
   private static final Logger LOGGER = LoggerFactory.getLogger(GraphUtils.class);
@@ -84,17 +72,17 @@ public class GraphUtils {
       @Body List<PackageRef> body,
       @ExchangeProperty(Constants.PROVIDERS_PARAM) List<String> providers,
       @Header(Constants.PKG_MANAGER_HEADER) String pkgManager) {
-    GraphBuilder<PackageRef, DefaultEdge, Graph<PackageRef, DefaultEdge>> builder =
-        GraphTypeBuilder.directed()
-            .allowingSelfLoops(false)
-            .vertexClass(PackageRef.class)
-            .edgeSupplier(DefaultEdge::new)
-            .buildGraphBuilder();
-    builder.addVertex(DEFAULT_ROOT);
-    body.forEach(d -> builder.addEdge(DEFAULT_ROOT, d));
-    return new GraphRequest.Builder(pkgManager, providers)
-        .graph(builder.buildAsUnmodifiable())
-        .build();
+    DependencyTree tree =
+        DependencyTree.builder()
+            .root(DEFAULT_ROOT)
+            .dependencies(
+                body.stream()
+                    .distinct()
+                    .collect(
+                        Collectors.toUnmodifiableMap(
+                            d -> d, d -> DirectDependency.builder().ref(d).build())))
+            .build();
+    return new GraphRequest.Builder(pkgManager, providers).tree(tree).build();
   }
 
   public GraphRequest fromDepGraph(
@@ -102,12 +90,7 @@ public class GraphUtils {
       @ExchangeProperty(Constants.PROVIDERS_PARAM) List<String> providers,
       @Header(Constants.PKG_MANAGER_HEADER) String pkgManager,
       @Header(Exchange.CONTENT_TYPE) String contentType) {
-    GraphBuilder<PackageRef, DefaultEdge, Graph<PackageRef, DefaultEdge>> builder =
-        GraphTypeBuilder.directed()
-            .allowingSelfLoops(false)
-            .vertexClass(PackageRef.class)
-            .edgeSupplier(DefaultEdge::new)
-            .buildGraphBuilder();
+    DependencyTree tree;
     ContentType ct;
     try {
       ct = new ContentType(contentType);
@@ -116,25 +99,24 @@ public class GraphUtils {
     }
     switch (ct.getBaseType()) {
       case Constants.TEXT_VND_GRAPHVIZ:
-        fromDotFile(file, builder);
+        // fromDot(file, builder);
+        tree = fromDot(file);
         break;
       case MediaType.APPLICATION_JSON:
-        fromSbom(file, builder, pkgManager);
+        // fromSbom(file, builder, pkgManager);
+        tree = fromSbom(file, pkgManager);
         break;
       default:
         throw new ClientErrorException(
             "Unsupported Content-Type header: " + contentType,
             Response.Status.UNSUPPORTED_MEDIA_TYPE);
     }
-    return new GraphRequest.Builder(pkgManager, providers)
-        .graph(builder.buildAsUnmodifiable())
-        .build();
+    return new GraphRequest.Builder(pkgManager, providers).tree(tree).build();
   }
 
-  private void fromDotFile(
-      InputStream file,
-      GraphBuilder<PackageRef, DefaultEdge, Graph<PackageRef, DefaultEdge>> builder) {
-    boolean empty = true;
+  private DependencyTree fromDot(InputStream file) {
+    DependencyTree.Builder treeBuilder = DependencyTree.builder();
+    Map<PackageRef, DirectDependency.Builder> direct = new HashMap<>();
     try (Scanner scanner = new Scanner(file)) {
       while (scanner.hasNextLine()) {
         String line = scanner.nextLine();
@@ -142,29 +124,51 @@ public class GraphUtils {
           // ignore
         } else {
           String[] vertices = line.replace(";", "").replaceAll("\"", "").split("->");
+          PackageRef source;
+          PackageRef target;
           try {
-            PackageRef source = PackageRef.parse(vertices[0].trim());
-            PackageRef target = PackageRef.parse(vertices[1].trim());
-            builder.addEdge(source, target);
-            empty = false;
+            source = PackageRef.parse(vertices[0].trim());
+            target = PackageRef.parse(vertices[1].trim());
           } catch (IllegalArgumentException e) {
             // ignore loops caused by classifiers
+            continue;
+          }
+          if (treeBuilder.root == null) {
+            treeBuilder.root(source);
+          }
+          if (source.equals(treeBuilder.root)) {
+            direct.put(target, DirectDependency.builder().ref(target).transitive(new HashSet<>()));
+          } else {
+            DirectDependency.Builder directBuilder = direct.get(source);
+            if (directBuilder == null) {
+              direct.values().stream()
+                  .filter(d -> d.transitive.contains(source))
+                  .forEach(d -> d.transitive.add(target));
+            } else {
+              directBuilder.transitive.add(target);
+            }
           }
         }
       }
+      Map<PackageRef, DirectDependency> deps =
+          direct.entrySet().stream()
+              .map(e -> Map.entry(e.getKey(), e.getValue().build()))
+              .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
+      treeBuilder.dependencies(deps);
     }
-    if (empty) {
-      builder.addVertex(DEFAULT_ROOT);
+    if (treeBuilder.root == null) {
+      treeBuilder.root(DEFAULT_ROOT);
     }
+    return treeBuilder.build();
   }
 
-  private void fromSbom(
-      InputStream file,
-      GraphBuilder<PackageRef, DefaultEdge, Graph<PackageRef, DefaultEdge>> builder,
-      String pkgManager) {
+  private DependencyTree fromSbom(InputStream file, String pkgManager) {
     try {
+      boolean decode = requiresDecoding(pkgManager);
+      DependencyTree.Builder treeBuilder = DependencyTree.builder();
+      Map<PackageRef, DirectDependency.Builder> direct = new HashMap<>();
+
       Bom bom = mapper.readValue(file, Bom.class);
-      Optional<Component> rootComponent = Optional.ofNullable(bom.getMetadata().getComponent());
       Map<String, PackageRef> componentPurls = new HashMap<>();
       if (bom.getComponents() != null) {
         componentPurls.putAll(
@@ -175,41 +179,59 @@ public class GraphUtils {
                         Component::getBomRef,
                         c -> fromPurl(c.getPurl(), requiresDecoding(pkgManager)))));
       }
-      final Optional<Dependency> rootDependency;
+
+      Optional<Component> rootComponent = Optional.ofNullable(bom.getMetadata().getComponent());
       if (rootComponent.isPresent()) {
         String rootPurl = rootComponent.get().getPurl();
-        PackageRef rootRef = fromPurl(rootPurl, requiresDecoding(pkgManager));
-        if (!componentPurls.containsKey(rootPurl)) {
-          componentPurls.put(rootPurl, fromPurl(rootPurl, requiresDecoding(pkgManager)));
-        }
-        builder.addVertex(rootRef);
-        rootDependency =
-            bom.getDependencies().stream()
-                .filter(d -> d.getRef().equals(rootComponent.get().getBomRef()))
-                .findFirst();
-        if (!rootDependency.isEmpty()) {
-          addDependency(builder, rootRef, rootDependency.get().getDependencies(), componentPurls);
-          bom.getDependencies().stream()
-              .filter(
-                  d ->
-                      !d.getRef()
-                          .equals(
-                              rootDependency.orElse(new Dependency(DEFAULT_ROOT.toGav())).getRef()))
-              .forEach(
-                  d ->
-                      addDependency(
-                          builder,
-                          componentPurls.get(d.getRef()),
-                          d.getDependencies(),
-                          componentPurls));
-        }
-      } else { // flat rootless SBOM
-        rootDependency = Optional.of(new Dependency(DEFAULT_ROOT.toGav()));
-        addDependency(builder, DEFAULT_ROOT, bom.getDependencies(), componentPurls);
-        componentPurls
-            .values()
-            .forEach(purl -> addDependency(builder, purl, Collections.emptyList(), componentPurls));
+        treeBuilder.root(fromPurl(rootPurl, decode));
+      } else { // rootless SBOM
+        treeBuilder.root(DEFAULT_ROOT);
       }
+
+      bom.getDependencies().stream()
+          .forEach(
+              d -> {
+                if (rootComponent.isEmpty()) {
+                  PackageRef ref = componentPurls.get(d.getRef());
+                  direct.put(ref, DirectDependency.builder().ref(ref));
+                } else if (d.getRef().equals(rootComponent.get().getBomRef())) {
+                  d.getDependencies()
+                      .forEach(
+                          rootDep -> {
+                            PackageRef ref = componentPurls.get(rootDep.getRef());
+                            direct.put(
+                                ref,
+                                DirectDependency.builder().ref(ref).transitive(new HashSet<>()));
+                          });
+                } else if (d.getDependencies() != null) {
+                  PackageRef source = componentPurls.get(d.getRef());
+                  DirectDependency.Builder directBuilder = direct.get(source);
+                  if (directBuilder == null) {
+                    direct.values().stream()
+                        .filter(v -> v.transitive.contains(source))
+                        .forEach(
+                            v ->
+                                d.getDependencies()
+                                    .forEach(
+                                        t -> {
+                                          PackageRef target = componentPurls.get(t.getRef());
+                                          v.transitive.add(target);
+                                        }));
+                  } else {
+                    d.getDependencies()
+                        .forEach(
+                            t -> {
+                              PackageRef target = componentPurls.get(t.getRef());
+                              directBuilder.transitive.add(target);
+                            });
+                  }
+                }
+              });
+      Map<PackageRef, DirectDependency> deps =
+          direct.entrySet().stream()
+              .map(e -> Map.entry(e.getKey(), e.getValue().build()))
+              .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
+      return treeBuilder.dependencies(deps).build();
     } catch (IOException e) {
       LOGGER.error("Unable to parse the SBOM file", e);
       throw new ClientErrorException(
@@ -238,37 +260,5 @@ public class GraphUtils {
       LOGGER.warn("Unsupported PURL format {}", purl, e);
       throw new IllegalArgumentException("Unsupported PURL format: " + purl, e);
     }
-  }
-
-  private void addDependency(
-      GraphBuilder<PackageRef, DefaultEdge, Graph<PackageRef, DefaultEdge>> builder,
-      PackageRef source,
-      List<Dependency> deps,
-      Map<String, PackageRef> componentPurls) {
-    if (deps != null) {
-      deps.stream()
-          .map(d -> componentPurls.get(d.getRef()))
-          .forEach(target -> builder.addEdge(source, target));
-    }
-  }
-
-  public static List<PackageRef> getFirstLevel(Graph<PackageRef, DefaultEdge> graph) {
-    BreadthFirstIterator<PackageRef, DefaultEdge> i = new BreadthFirstIterator<>(graph);
-    if (!i.hasNext()) {
-      return Collections.emptyList();
-    }
-    PackageRef start = i.next();
-    return getNextLevel(graph, start);
-  }
-
-  public static List<PackageRef> getNextLevel(
-      Graph<PackageRef, DefaultEdge> graph, PackageRef ref) {
-    List<PackageRef> firstLevel = new ArrayList<>();
-    graph.outgoingEdgesOf(ref).stream().map(e -> graph.getEdgeTarget(e)).forEach(firstLevel::add);
-    return firstLevel;
-  }
-
-  public static Graph<PackageRef, DefaultEdge> emptyGraph() {
-    return EMPTY_GRAPH;
   }
 }

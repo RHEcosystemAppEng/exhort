@@ -22,7 +22,6 @@
     <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
     <quarkus.platform.version>3.1.1.Final</quarkus.platform.version>
     <skipITs>true</skipITs>
-    <jgraph.version>1.5.2</jgraph.version>
     <cyclonedx.version>7.3.2</cyclonedx.version>
     <wiremock.version>3.0.0-beta-8</wiremock.version>
     <compiler-plugin.version>3.11.0</compiler-plugin.version>
@@ -115,11 +114,6 @@
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-smallrye-openapi</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jgrapht</groupId>
-      <artifactId>jgrapht-io</artifactId>
-      <version>${jgraph.version}</version>
     </dependency>
     <dependency>
         <groupId>org.cyclonedx</groupId>
