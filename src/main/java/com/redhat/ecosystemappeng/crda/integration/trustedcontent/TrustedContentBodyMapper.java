@@ -28,7 +28,6 @@ import java.util.stream.Collectors;
 
 import org.apache.camel.Body;
 
-import com.redhat.ecosystemappeng.crda.integration.GraphUtils;
 import com.redhat.ecosystemappeng.crda.model.GraphRequest;
 import com.redhat.ecosystemappeng.crda.model.PackageRef;
 import com.redhat.ecosystemappeng.crda.model.Remediation;
@@ -79,13 +78,13 @@ public class TrustedContentBodyMapper {
     }
     recommendations.entrySet().stream()
         .filter(Objects::nonNull)
-        .filter(r -> req.graph().containsVertex(r.getValue().mavenPackage()))
+        .filter(r -> req.tree().getAll().contains(r.getValue().mavenPackage()))
         .forEach(e -> merged.put(e.getKey(), e.getValue()));
     return new GraphRequest.Builder(req).remediations(merged).build();
   }
 
   public List<String> buildGavRequest(@Body GraphRequest request) {
-    return GraphUtils.getFirstLevel(request.graph()).stream()
+    return request.tree().getAll().stream()
         .map(PackageRef::toGav)
         .collect(Collectors.toUnmodifiableList());
   }

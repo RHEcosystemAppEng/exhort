@@ -68,4 +68,9 @@ public record PackageRef(String name, String version) {
   public String toGav() {
     return String.format("%s:%s", name, version);
   }
+
+  @Override
+  public String toString() {
+    return toGav();
+  }
 }

@@ -20,17 +20,18 @@ package com.redhat.ecosystemappeng.crda.integration.report;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-import org.jgrapht.Graph;
-import org.jgrapht.graph.DefaultEdge;
-import org.jgrapht.graph.builder.GraphTypeBuilder;
 import org.junit.jupiter.api.Test;
 
 import com.redhat.ecosystemappeng.crda.integration.Constants;
 import com.redhat.ecosystemappeng.crda.model.AnalysisReport;
+import com.redhat.ecosystemappeng.crda.model.DependencyTree;
+import com.redhat.ecosystemappeng.crda.model.DirectDependency;
 import com.redhat.ecosystemappeng.crda.model.GraphRequest;
 import com.redhat.ecosystemappeng.crda.model.Issue;
 import com.redhat.ecosystemappeng.crda.model.PackageRef;
@@ -43,7 +44,7 @@ public class ReportTransformerTest {
     Map<String, List<Issue>> issues = Map.of("aa", List.of(buildIssue(1, 5f)));
     GraphRequest req =
         new GraphRequest.Builder(Constants.MAVEN_PKG_MANAGER, List.of(Constants.SNYK_PROVIDER))
-            .graph(buildGraph())
+            .tree(buildTree())
             .issues(issues)
             .build();
 
@@ -64,7 +65,7 @@ public class ReportTransformerTest {
             "aba", List.of(buildIssue(3, 5f)));
     GraphRequest req =
         new GraphRequest.Builder(Constants.MAVEN_PKG_MANAGER, List.of(Constants.SNYK_PROVIDER))
-            .graph(buildGraph())
+            .tree(buildTree())
             .issues(issues)
             .build();
 
@@ -73,8 +74,8 @@ public class ReportTransformerTest {
     assertNotNull(report);
     assertEquals(2, report.dependencies().size());
 
-    assertEquals("aa", report.dependencies().get(0).ref().name());
-    assertEquals("ab", report.dependencies().get(1).ref().name());
+    assertTrue(report.dependencies().stream().anyMatch(d -> d.ref().name().equals("aa")));
+    assertTrue(report.dependencies().stream().anyMatch(d -> d.ref().name().equals("aa")));
 
     assertEquals(1, report.dependencies().get(0).transitive().size());
     assertEquals(1, report.dependencies().get(1).transitive().size());
@@ -85,7 +86,7 @@ public class ReportTransformerTest {
     Map<String, PackageRef> recommendations = Map.of("aa:1", new PackageRef("aa", "1.redhat-0001"));
     GraphRequest req =
         new GraphRequest.Builder(Constants.MAVEN_PKG_MANAGER, List.of(Constants.SNYK_PROVIDER))
-            .graph(buildGraph())
+            .tree(buildTree())
             .recommendations(recommendations)
             .build();
 
@@ -98,20 +99,24 @@ public class ReportTransformerTest {
     assertEquals("1.redhat-0001", report.dependencies().get(0).recommendation().version());
   }
 
-  private Graph<PackageRef, DefaultEdge> buildGraph() {
-    return GraphTypeBuilder.directed()
-        .allowingSelfLoops(false)
-        .vertexClass(PackageRef.class)
-        .edgeClass(DefaultEdge.class)
-        .buildGraphBuilder()
-        .addEdge(new PackageRef("a", "1"), new PackageRef("aa", "1"))
-        .addEdge(new PackageRef("a", "1"), new PackageRef("ab", "1"))
-        .addEdge(new PackageRef("aa", "1"), new PackageRef("aaa", "1"))
-        .addEdge(new PackageRef("aa", "1"), new PackageRef("aab", "1"))
-        .addEdge(new PackageRef("ab", "1"), new PackageRef("aba", "1"))
-        .addEdge(new PackageRef("ab", "1"), new PackageRef("abb", "1"))
-        .addEdge(new PackageRef("ab", "1"), new PackageRef("abc", "1"))
-        .buildAsUnmodifiable();
+  private DependencyTree buildTree() {
+    Map<PackageRef, DirectDependency> direct =
+        Map.of(
+            new PackageRef("aa", "1"),
+                DirectDependency.builder()
+                    .ref(new PackageRef("aa", "1"))
+                    .transitive(Set.of(new PackageRef("aaa", "1"), new PackageRef("aab", "1")))
+                    .build(),
+            new PackageRef("ab", "1"),
+                DirectDependency.builder()
+                    .ref(new PackageRef("ab", "1"))
+                    .transitive(
+                        Set.of(
+                            new PackageRef("aba", "1"),
+                            new PackageRef("abb", "1"),
+                            new PackageRef("abc", "1")))
+                    .build());
+    return DependencyTree.builder().root(new PackageRef("a", "1")).dependencies(direct).build();
   }
 
   private Issue buildIssue(int id, Float score) {

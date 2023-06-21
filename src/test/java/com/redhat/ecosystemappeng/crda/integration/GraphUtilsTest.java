@@ -26,7 +26,6 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Stream;
 
-import org.jgrapht.traverse.BreadthFirstIterator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -55,13 +54,13 @@ public class GraphUtilsTest {
                 file, providers, Constants.MAVEN_PKG_MANAGER, Constants.TEXT_VND_GRAPHVIZ);
     assertEquals(Constants.MAVEN_PKG_MANAGER, request.pkgManager());
     assertEquals(providers, request.providers());
-    assertEquals(0, request.graph().edgeSet().size());
-    assertEquals(1, request.graph().vertexSet().size());
-    assertEquals(GraphUtils.DEFAULT_ROOT, request.graph().vertexSet().iterator().next());
+    assertEquals(providers, request.providers());
+    assertEquals(0, request.tree().dependencies().size());
+    assertEquals(GraphUtils.DEFAULT_ROOT, request.tree().root());
   }
 
   @Test
-  public void testParseDotFile() {
+  public void testFromDot() {
     InputStream file = getClass().getClassLoader().getResourceAsStream("dependencies.txt");
     List<String> providers = List.of(Constants.SNYK_PROVIDER);
 
@@ -71,9 +70,24 @@ public class GraphUtilsTest {
                 file, providers, Constants.MAVEN_PKG_MANAGER, Constants.TEXT_VND_GRAPHVIZ);
     assertEquals(Constants.MAVEN_PKG_MANAGER, request.pkgManager());
     assertEquals(providers, request.providers());
-    assertEquals(9, request.graph().edgeSet().size());
-    assertEquals(10, request.graph().vertexSet().size());
-    assertEquals(EXPECTED_ROOT, new BreadthFirstIterator<>(request.graph()).next());
+    assertEquals(EXPECTED_ROOT, request.tree().root());
+    assertEquals(2, request.tree().dependencies().size());
+    assertEquals(
+        6,
+        request
+            .tree()
+            .dependencies()
+            .get(PackageRef.parse("io.quarkus:quarkus-hibernate-orm:jar:2.13.5.Final"))
+            .transitive()
+            .size());
+    assertEquals(
+        1,
+        request
+            .tree()
+            .dependencies()
+            .get(PackageRef.parse("io.quarkus:quarkus-jdbc-postgresql:jar:2.13.5.Final"))
+            .transitive()
+            .size());
   }
 
   @Test
@@ -86,9 +100,9 @@ public class GraphUtilsTest {
             .fromDepGraph(file, providers, Constants.MAVEN_PKG_MANAGER, MediaType.APPLICATION_JSON);
     assertEquals(Constants.MAVEN_PKG_MANAGER, request.pkgManager());
     assertEquals(providers, request.providers());
-    assertEquals(0, request.graph().edgeSet().size());
-    assertEquals(1, request.graph().vertexSet().size());
-    assertEquals(EXPECTED_ROOT, request.graph().vertexSet().iterator().next());
+    assertEquals(providers, request.providers());
+    assertEquals(0, request.tree().dependencies().size());
+    assertEquals(EXPECTED_ROOT, request.tree().root());
   }
 
   @Test
@@ -101,9 +115,8 @@ public class GraphUtilsTest {
             .fromDepGraph(file, providers, Constants.MAVEN_PKG_MANAGER, MediaType.APPLICATION_JSON);
     assertEquals(Constants.MAVEN_PKG_MANAGER, request.pkgManager());
     assertEquals(providers, request.providers());
-    assertEquals(0, request.graph().edgeSet().size());
-    assertEquals(1, request.graph().vertexSet().size());
-    assertEquals(EXPECTED_ROOT, request.graph().vertexSet().iterator().next());
+    assertEquals(0, request.tree().dependencies().size());
+    assertEquals(EXPECTED_ROOT, request.tree().root());
   }
 
   @Test
@@ -139,7 +152,7 @@ public class GraphUtilsTest {
 
   @ParameterizedTest
   @MethodSource("getSbomUseCases")
-  void testSbom(String pkgManager, int edges, int vertices, PackageRef root) {
+  void testSbom(String pkgManager, int direct, int transitive, PackageRef root) {
     String fileName = String.format("sboms/%s-sbom.json", pkgManager);
     InputStream file = getClass().getClassLoader().getResourceAsStream(fileName);
     List<String> providers = List.of(Constants.SNYK_PROVIDER);
@@ -148,26 +161,26 @@ public class GraphUtilsTest {
         new GraphUtils().fromDepGraph(file, providers, pkgManager, MediaType.APPLICATION_JSON);
     assertEquals(pkgManager, request.pkgManager());
     assertEquals(providers, request.providers());
-    assertEquals(edges, request.graph().edgeSet().size());
-    assertEquals(vertices, request.graph().vertexSet().size());
-    assertEquals(root, new BreadthFirstIterator<>(request.graph()).next());
+    assertEquals(direct, request.tree().dependencies().size());
+    assertEquals(transitive, request.tree().transitiveCount());
+    assertEquals(root, request.tree().root());
   }
 
   static Stream<Arguments> getSbomUseCases() {
     return Stream.of(
-        arguments(Constants.MAVEN_PKG_MANAGER, 9, 10, EXPECTED_ROOT),
-        arguments(Constants.GRADLE_PKG_MANAGER, 338, 146, EXPECTED_ROOT),
+        arguments(Constants.MAVEN_PKG_MANAGER, 2, 7, EXPECTED_ROOT),
+        arguments(Constants.GRADLE_PKG_MANAGER, 9, 15, EXPECTED_ROOT),
         arguments(
             Constants.GOMOD_PKG_MANAGER,
-            52,
-            36,
+            12,
+            35,
             new PackageRef(
                 "github.com/fabric8-analytics:cli-tools", "v0.2.6-0.20211007133944-2af417bfb988")),
         arguments(
             Constants.NPM_PKG_MANAGER,
-            17,
-            16,
+            6,
+            10,
             new PackageRef("fabric8-analytics-lsp-server", "0.0.0-development")),
-        arguments(Constants.PIP_PKG_MANAGER, 96, 97, GraphUtils.DEFAULT_ROOT));
+        arguments(Constants.PIP_PKG_MANAGER, 96, 0, GraphUtils.DEFAULT_ROOT));
   }
 }
