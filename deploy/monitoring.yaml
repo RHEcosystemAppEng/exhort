@@ -1,0 +1,16 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    k8s-app: crda-monitor
+  name: crda-monitor
+  namespace: crda
+spec:
+  endpoints:
+  - interval: 30s
+    port: "web"
+    scheme: http
+    path: /q/metrics
+  selector:
+    matchLabels:
+      app: crda-backend

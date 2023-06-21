@@ -48,7 +48,7 @@ metadata:
   namespace: crda
 spec:
   ports:
-  - name: "8080"
+  - name: web
     port: 8080
     protocol: TCP
     targetPort: 8080
