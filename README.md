@@ -108,8 +108,8 @@ $ http :8080/api/v3/dependency-analysis/maven Content-Type:"text/vnd.graphviz" A
 
 ### Client Token Authentication
 
-If clients don't provide the token to authenticate against the Vulnerability Provider the default one will be used instead but only the summary
-will be returned in the JSON response.
+If clients don't provide the token to authenticate against the Vulnerability Provider the default one will be used instead but vulnerabilities unique to
+that specific provider will not show all the details.
 
 To provide the client authentication tokens use HTTP Headers in the request. The format for the tokens Headers is `crda-provider-token`. e.g. `crda-snyk-token`:
 

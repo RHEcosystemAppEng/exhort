@@ -82,35 +82,6 @@ public class DependencyAnalysisTest extends AbstractAnalysisTest {
   }
 
   @Test
-  public void testSnyk() {
-    stubSnykRequest(null);
-    stubTCVexRequest();
-
-    AnalysisReport report =
-        given()
-            .header(CONTENT_TYPE, Constants.TEXT_VND_GRAPHVIZ)
-            .header("Accept", MediaType.APPLICATION_JSON)
-            .queryParam(Constants.PROVIDERS_PARAM, Constants.SNYK_PROVIDER)
-            .body(loadDependenciesFile())
-            .when()
-            .post("/api/v3/dependency-analysis/{pkgManager}", Constants.MAVEN_PKG_MANAGER)
-            .then()
-            .assertThat()
-            .statusCode(200)
-            .contentType(MediaType.APPLICATION_JSON)
-            .extract()
-            .body()
-            .as(AnalysisReport.class);
-
-    assertSummary(report.summary());
-    assertTrue(report.dependencies().isEmpty());
-    verifyNoInteractionsWithTCGav();
-    verifyNoInteractionsWithTidelift();
-    verifySnykRequest(null);
-    verifyTCVexRequest();
-  }
-
-  @Test
   public void testSnykWithToken() {
     String snykToken = "my-snyk-token";
     stubSnykRequest(snykToken);
@@ -133,10 +104,38 @@ public class DependencyAnalysisTest extends AbstractAnalysisTest {
             .body()
             .asPrettyString();
 
-    assertJson("expected_dep_snyk.json", body);
+    assertJson("report_snyk_token.json", body);
     verifyNoInteractionsWithTCGav();
     verifyNoInteractionsWithTidelift();
     verifySnykRequest(snykToken);
+    verifyTCVexRequest();
+  }
+
+  @Test
+  public void testSnykWithNoToken() {
+    stubSnykRequest(null);
+    stubTCVexRequest();
+
+    String body =
+        given()
+            .header(CONTENT_TYPE, Constants.TEXT_VND_GRAPHVIZ)
+            .header("Accept", MediaType.APPLICATION_JSON)
+            .queryParam(Constants.PROVIDERS_PARAM, Constants.SNYK_PROVIDER)
+            .body(loadDependenciesFile())
+            .when()
+            .post("/api/v3/dependency-analysis/{pkgManager}", Constants.MAVEN_PKG_MANAGER)
+            .then()
+            .assertThat()
+            .statusCode(200)
+            .contentType(MediaType.APPLICATION_JSON)
+            .extract()
+            .body()
+            .asPrettyString();
+
+    assertJson("report_no_snyk_token.json", body);
+    verifyNoInteractionsWithTCGav();
+    verifyNoInteractionsWithTidelift();
+    verifySnykRequest(null);
     verifyTCVexRequest();
   }
 
@@ -221,36 +220,6 @@ public class DependencyAnalysisTest extends AbstractAnalysisTest {
     assertFalse(status.ok());
     assertEquals(Constants.SNYK_PROVIDER, status.provider());
     assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), status.status());
-
-    verifyTCVexRequest();
-    verifySnykRequest(null);
-    verifyNoInteractionsWithTCGav();
-    verifyNoInteractionsWithTidelift();
-  }
-
-  @Test
-  public void testJson() {
-    stubSnykRequest(null);
-    // stubTideliftRequest(null);
-    stubTCVexRequest();
-
-    AnalysisReport report =
-        given()
-            .header(CONTENT_TYPE, Constants.TEXT_VND_GRAPHVIZ)
-            .body(loadDependenciesFile())
-            .header("Accept", MediaType.APPLICATION_JSON)
-            .when()
-            .post("/api/v3/dependency-analysis/{pkgManager}", Constants.MAVEN_PKG_MANAGER)
-            .then()
-            .assertThat()
-            .statusCode(200)
-            .contentType(MediaType.APPLICATION_JSON)
-            .extract()
-            .body()
-            .as(AnalysisReport.class);
-
-    assertSummary(report.summary());
-    assertTrue(report.dependencies().isEmpty());
 
     verifyTCVexRequest();
     verifySnykRequest(null);
@@ -408,7 +377,7 @@ public class DependencyAnalysisTest extends AbstractAnalysisTest {
             .body()
             .asString();
 
-    assertHtml("report_no_token.html", body);
+    assertHtml("report_no_snyk_token.html", body);
 
     verifySnykRequest(null);
     verifyTCVexRequest();
@@ -438,7 +407,7 @@ public class DependencyAnalysisTest extends AbstractAnalysisTest {
             .body()
             .asString();
 
-    assertHtml("report_token.html", body);
+    assertHtml("report_snyk_token.html", body);
 
     verifySnykRequest(snykToken);
     verifyTCVexRequest();

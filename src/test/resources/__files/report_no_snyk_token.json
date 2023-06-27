@@ -11,7 +11,13 @@
 			"high": 1,
 			"medium": 3,
 			"low": 0
-		}
+		},
+		"providerStatuses": [{
+			"ok": true,
+			"provider": "snyk",
+			"status": 200,
+			"message": "OK"
+		}]
 	},
 	"dependencies": [{
 		"ref": {
@@ -93,23 +99,9 @@
 				"cves": ["CVE-2020-36518"],
 				"unique": false
 			}, {
-				"id": "SNYK-JAVA-COMFASTERXMLJACKSONCORE-3038424",
-				"title": "Denial of Service (DoS)",
+				"id": "SNYK-PRIVATE-VULNERABILITY",
+				"title": "Sign up for a free Snyk account to learn aboutn the vulnerabilities found",
 				"source": "snyk",
-				"cvss": {
-					"attackVector": "Network",
-					"attackComplexity": "High",
-					"privilegesRequired": "None",
-					"userInteraction": "None",
-					"scope": "Unchanged",
-					"confidentialityImpact": "None",
-					"integrityImpact": "None",
-					"availabilityImpact": "High",
-					"exploitCodeMaturity": "Proof of concept code",
-					"remediationLevel": null,
-					"reportConfidence": null,
-					"cvss": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H/E:P"
-				},
 				"cvssScore": 5.9,
 				"severity": "MEDIUM",
 				"cves": [],
@@ -138,14 +130,6 @@
 				"unique": false
 			}],
 			"remediations": {
-				"CVE-2022-42003": {
-					"issueRef": "CVE-2022-42003",
-					"mavenPackage": {
-						"name": "com.fasterxml.jackson.core:jackson-databind",
-						"version": "2.13.1.Final-redhat-00002"
-					},
-					"productStatus": "known_not_affected"
-				},
 				"CVE-2020-36518": {
 					"issueRef": "CVE-2020-36518",
 					"mavenPackage": {

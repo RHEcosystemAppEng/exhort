@@ -43,9 +43,7 @@ public class ReportIntegration extends EndpointRouteBuilder {
                 .when(exchangeProperty(Constants.REQUEST_CONTENT_PROPERTY).isEqualTo(Constants.MULTIPART_MIXED))
                     .to(direct("multipartReport"))
                 .otherwise()
-                    .bean(ReportTransformer.class, "transform")
-                    .bean(ReportTransformer.class, "hideJsonPrivateData")
-                    .marshal().json()
+                    .to(direct("jsonReport"))
             .end();
 
         from(direct("htmlReport"))
@@ -61,13 +59,14 @@ public class ReportIntegration extends EndpointRouteBuilder {
             .to(direct("htmlReport"))
             .bean(ReportTransformer.class, "attachHtmlReport")
             .setBody(exchangeProperty(Constants.REPORT_PROPERTY))
-            .bean(ReportTransformer.class, "hideJsonPrivateData")
+            .bean(ReportTransformer.class, "filterVerboseResult")
             .marshal().json()
             .marshal().mimeMultipart(Constants.MULTIPART_MIXED_TYPE.getSubtype(), false, false, true);
 
         from(direct("jsonReport"))
             .routeId("jsonReport")
             .bean(ReportTransformer.class, "transform")
+            .bean(ReportTransformer.class, "filterVerboseResult")
             .marshal().json();
         //fmt:on
   }

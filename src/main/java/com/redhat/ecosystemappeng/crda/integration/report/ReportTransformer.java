@@ -33,7 +33,6 @@ import java.util.stream.Collectors;
 
 import org.apache.camel.Body;
 import org.apache.camel.Exchange;
-import org.apache.camel.ExchangeProperty;
 import org.apache.camel.Header;
 import org.apache.camel.attachment.AttachmentMessage;
 
@@ -136,13 +135,9 @@ public class ReportTransformer {
     counter.total.incrementAndGet();
   }
 
-  public AnalysisReport hideJsonPrivateData(
-      @Body AnalysisReport report,
-      @Header(Constants.VERBOSE_MODE_HEADER) Boolean verbose,
-      @ExchangeProperty(Constants.PROVIDER_PRIVATE_DATA_PROPERTY)
-          List<String> providerPrivateData) {
-    if (Boolean.FALSE.equals(verbose)
-        || (providerPrivateData != null && !providerPrivateData.isEmpty())) {
+  public AnalysisReport filterVerboseResult(
+      @Body AnalysisReport report, @Header(Constants.VERBOSE_MODE_HEADER) Boolean verbose) {
+    if (Boolean.FALSE.equals(verbose)) {
       return new AnalysisReport(report.summary(), Collections.emptyList());
     }
     return report;
