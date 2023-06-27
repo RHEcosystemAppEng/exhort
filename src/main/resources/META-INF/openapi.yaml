@@ -50,7 +50,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AnalysisReport'
+                type: array
+                items:
+                  $ref: '#/components/schemas/DependencyReport'
         '422':
           description: Invalid request
           content:
@@ -118,7 +120,7 @@ paths:
             text/plain:
               schema:
                 type: string
-                description: Error message  
+                description: Error message
   /token:
     get:
       operationId: validateToken
