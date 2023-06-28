@@ -22,9 +22,13 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @RegisterForReflection
+@JsonInclude(Include.NON_NULL)
 public record Issue(
     String id,
     String title,
@@ -43,6 +47,8 @@ public record Issue(
     Objects.requireNonNull(cvssScore);
     if (cves != null) {
       cves = Collections.unmodifiableSet(cves);
+    } else {
+      cves = Collections.emptySet();
     }
   }
 

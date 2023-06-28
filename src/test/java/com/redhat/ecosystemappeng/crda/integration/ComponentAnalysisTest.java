@@ -38,7 +38,7 @@ import jakarta.ws.rs.core.MediaType;
 public class ComponentAnalysisTest extends AbstractAnalysisTest {
 
   @Test
-  public void testComponentAnalysisWithWrongProvider() {
+  public void testWithWrongProvider() {
     List<PackageRef> req = Collections.emptyList();
     given()
         .header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
@@ -56,7 +56,7 @@ public class ComponentAnalysisTest extends AbstractAnalysisTest {
   }
 
   @Test
-  public void testComponentAnalysisWithWrongPkgManager() {
+  public void testWithWrongPkgManager() {
     List<PackageRef> req = Collections.emptyList();
     given()
         .header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
@@ -73,7 +73,7 @@ public class ComponentAnalysisTest extends AbstractAnalysisTest {
   }
 
   @Test
-  public void testComponentAnalysisWithSnyk() {
+  public void testWithNoSnykToken() {
     stubSnykRequest(null);
     stubTCGavRequest();
     stubTCVexRequest();
@@ -98,7 +98,7 @@ public class ComponentAnalysisTest extends AbstractAnalysisTest {
             .body()
             .asPrettyString();
 
-    assertJson("component_snyk.json", body);
+    assertJson("component_no_snyk_token.json", body);
     verifyNoInteractionsWithTidelift();
     verifySnykRequest(null);
     verifyTCVexRequest();
@@ -106,8 +106,43 @@ public class ComponentAnalysisTest extends AbstractAnalysisTest {
   }
 
   @Test
+  public void testWithSnykToken() {
+    String snykToken = "my-snyk-token";
+    stubSnykRequest(snykToken);
+    stubTCGavRequest();
+    stubTCVexRequest();
+
+    List<PackageRef> pkgs =
+        List.of(
+            new PackageRef("com.fasterxml.jackson.core:jackson-databind", "2.13.1"),
+            new PackageRef("io.quarkus:quarkus-jdbc-postgresql", "2.13.5"));
+    new PackageRef("com.acme:example", "1.2.3");
+
+    String body =
+        given()
+            .header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
+            .queryParam(Constants.PROVIDERS_PARAM, Constants.SNYK_PROVIDER)
+            .header(Constants.SNYK_TOKEN_HEADER, snykToken)
+            .body(pkgs)
+            .when()
+            .post("/api/v3/component-analysis/{pkgManager}", Constants.MAVEN_PKG_MANAGER)
+            .then()
+            .assertThat()
+            .statusCode(200)
+            .extract()
+            .body()
+            .asPrettyString();
+
+    assertJson("component_snyk_token.json", body);
+    verifyNoInteractionsWithTidelift();
+    verifySnykRequest(snykToken);
+    verifyTCVexRequest();
+    verifyTCGavRequest();
+  }
+
+  @Test
   @Disabled
-  public void testComponentAnalysisWithTidelift() {
+  public void testWithTidelift() {
     stubTideliftRequest(null);
     List<PackageRef> pkgs =
         List.of(
@@ -132,43 +167,6 @@ public class ComponentAnalysisTest extends AbstractAnalysisTest {
     verifyNoInteractionsWithTCGav();
     verifyNoInteractionsWithSnyk();
     verifyTideliftRequest(3, null);
-  }
-
-  @Test
-  public void testSnykClientToken() {
-    String token = "client-token";
-    stubSnykRequest(token);
-    stubTCVexRequest();
-    stubTCGavRequest();
-
-    List<PackageRef> pkgs =
-        List.of(
-            new PackageRef("com.fasterxml.jackson.core:jackson-databind", "2.13.1"),
-            new PackageRef("io.quarkus:quarkus-jdbc-postgresql", "2.13.5"));
-    new PackageRef("com.acme:example", "1.2.3");
-
-    String body =
-        given()
-            .header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
-            .header(Constants.SNYK_TOKEN_HEADER, token)
-            .queryParam(Constants.PROVIDERS_PARAM, Constants.SNYK_PROVIDER)
-            .body(pkgs)
-            .when()
-            .post("/api/v3/component-analysis/{pkgManager}", Constants.MAVEN_PKG_MANAGER)
-            .then()
-            .assertThat()
-            .statusCode(200)
-            .extract()
-            .body()
-            .asPrettyString();
-
-    assertJson("component_snyk.json", body);
-
-    verifySnykRequest(token);
-    verifyTCVexRequest();
-    verifyTCGavRequest();
-
-    verifyNoInteractionsWithTidelift();
   }
 
   @Test
