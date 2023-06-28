@@ -245,6 +245,8 @@ The possible responses are:
 - 200 - Token validated successfully
 - 400 - Missing authentication header
 - 401 - Invalid auth token provided
+- 403 - The token is not authorized
+- 429 - Rate limit exceeded
 - 500 - Server error
 
 ## Deploy on OpenShift
