@@ -140,6 +140,20 @@ paths:
               schema:
                 type: string
                 description: Error message
+        '403':
+          description: Forbidden. The token does not have permissions
+          content:
+            text/plain:
+              schema:
+                type: string
+                description: Error message
+        '429':
+          description: Too many requests. Rate limit exceeded
+          content:
+            text/plain:
+              schema:
+                type: string
+                description: Error message
         '400':
           description: Invalid request
           content:

@@ -146,8 +146,7 @@ public class SnykIntegration extends EndpointRouteBuilder {
     if (cause != null) {
       if (cause instanceof HttpOperationFailedException) {
         HttpOperationFailedException httpException = (HttpOperationFailedException) cause;
-        builder.message(httpException.getMessage()).status(httpException.getStatusCode());
-
+        builder.message(prettifyHttpError(httpException)).status(httpException.getStatusCode());
       } else {
         builder
             .message(cause.getMessage())
@@ -159,5 +158,19 @@ public class SnykIntegration extends EndpointRouteBuilder {
           .status(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
     }
     exchange.getMessage().setBody(builder.build());
+  }
+
+  private String prettifyHttpError(HttpOperationFailedException httpException) {
+    String text = httpException.getStatusText();
+    switch (httpException.getStatusCode()) {
+      case 401:
+        return text + ": Verify the provided credentials are valid.";
+      case 403:
+        return text + ": The provided credentials don't have the required permissions.";
+      case 429:
+        return text + ": The rate limit has been exceeded.";
+      default:
+        return text;
+    }
   }
 }
