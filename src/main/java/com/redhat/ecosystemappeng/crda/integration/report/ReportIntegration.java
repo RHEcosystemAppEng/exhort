@@ -61,7 +61,9 @@ public class ReportIntegration extends EndpointRouteBuilder {
             .setBody(exchangeProperty(Constants.REPORT_PROPERTY))
             .bean(ReportTransformer.class, "filterVerboseResult")
             .marshal().json()
-            .marshal().mimeMultipart(Constants.MULTIPART_MIXED_TYPE.getSubtype(), false, false, true);
+            .marshal().mimeMultipart(Constants.MULTIPART_MIXED_TYPE.getSubtype(), false, false, true)
+            // original Content-Type header contains special characters that breaks java's built-in http client
+            .setHeader(Exchange.CONTENT_TYPE, header(Exchange.CONTENT_TYPE).regexReplaceAll("[\t|\r|\n]", ""));
 
         from(direct("jsonReport"))
             .routeId("jsonReport")
