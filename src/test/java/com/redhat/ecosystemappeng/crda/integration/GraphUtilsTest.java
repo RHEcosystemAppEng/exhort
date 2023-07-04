@@ -41,7 +41,12 @@ import jakarta.ws.rs.core.Response;
 public class GraphUtilsTest {
 
   private static final PackageRef EXPECTED_ROOT =
-      new PackageRef("org.acme.dbaas:postgresql-orm-quarkus", "1.0.0-SNAPSHOT");
+      PackageRef.builder()
+          .namespace("org.acme.dbaas")
+          .name("postgresql-orm-quarkus")
+          .version("1.0.0-SNAPSHOT")
+          .pkgManager(Constants.MAVEN_PKG_MANAGER)
+          .build();
 
   @Test
   public void testParseEmptyDotFile() {
@@ -77,7 +82,10 @@ public class GraphUtilsTest {
         request
             .tree()
             .dependencies()
-            .get(PackageRef.parse("io.quarkus:quarkus-hibernate-orm:jar:2.13.5.Final"))
+            .get(
+                PackageRef.parse(
+                    "io.quarkus:quarkus-hibernate-orm:jar:2.13.5.Final",
+                    Constants.MAVEN_PKG_MANAGER))
             .transitive()
             .size());
     assertEquals(
@@ -85,7 +93,10 @@ public class GraphUtilsTest {
         request
             .tree()
             .dependencies()
-            .get(PackageRef.parse("io.quarkus:quarkus-jdbc-postgresql:jar:2.13.5.Final"))
+            .get(
+                PackageRef.parse(
+                    "io.quarkus:quarkus-jdbc-postgresql:jar:2.13.5.Final",
+                    Constants.MAVEN_PKG_MANAGER))
             .transitive()
             .size());
   }
@@ -174,13 +185,21 @@ public class GraphUtilsTest {
             Constants.GOMOD_PKG_MANAGER,
             12,
             35,
-            new PackageRef(
-                "github.com/fabric8-analytics:cli-tools", "v0.2.6-0.20211007133944-2af417bfb988")),
+            PackageRef.builder()
+                .namespace("github.com/fabric8-analytics")
+                .name("cli-tools")
+                .version("v0.2.6-0.20211007133944-2af417bfb988")
+                .pkgManager(Constants.NPM_PKG_MANAGER)
+                .build()),
         arguments(
             Constants.NPM_PKG_MANAGER,
             6,
             10,
-            new PackageRef("fabric8-analytics-lsp-server", "0.0.0-development")),
+            PackageRef.builder()
+                .name("fabric8-analytics-lsp-server")
+                .version("0.0.0-development")
+                .pkgManager(Constants.NPM_PKG_MANAGER)
+                .build()),
         arguments(Constants.PIP_PKG_MANAGER, 96, 0, GraphUtils.DEFAULT_ROOT));
   }
 }

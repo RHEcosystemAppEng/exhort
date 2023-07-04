@@ -19,18 +19,23 @@
 package com.redhat.ecosystemappeng.crda.integration;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
+import static com.redhat.ecosystemappeng.crda.extensions.WiremockV3Extension.SNYK_TOKEN;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.Collection;
+import java.util.Map;
 
 import org.apache.camel.Exchange;
 import org.junit.jupiter.api.AfterEach;
@@ -39,7 +44,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.jknack.handlebars.internal.Files;
 import com.github.tomakehurst.wiremock.WireMockServer;
-import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.client.BasicCredentials;
+import com.google.common.base.Charsets;
 import com.redhat.ecosystemappeng.crda.config.ObjectMapperProducer;
 import com.redhat.ecosystemappeng.crda.extensions.InjectWireMock;
 import com.redhat.ecosystemappeng.crda.extensions.WiremockV3Extension;
@@ -56,7 +62,13 @@ import jakarta.ws.rs.core.MediaType;
 @QuarkusTestResource(WiremockV3Extension.class)
 public abstract class AbstractAnalysisTest {
 
+  static final String OK_USER = "test-user";
+  static final String OK_TOKEN = "test-token";
   static final String ERROR_TOKEN = "fail";
+  static final String INVALID_TOKEN = "invalid-token";
+  static final String UNAUTH_TOKEN = "test-not-authorized";
+  static final String RATE_LIMIT_TOKEN = "too-many-requests-token";
+
   static final String WIREMOCK_URL_TEMPLATE = "__WIREMOCK_URL__";
 
   @InjectWireMock WireMockServer server;
@@ -114,22 +126,115 @@ public abstract class AbstractAnalysisTest {
     return new File(getClass().getClassLoader().getResource("sboms/maven-sbom.json").getPath());
   }
 
-  protected void stubSnykRequest(String token) {
-    if (token == null) {
-      token = WiremockV3Extension.SNYK_TOKEN;
+  protected String loadFileAsString(String file) {
+    try {
+      return Files.read(getClass().getClassLoader().getResourceAsStream(file), Charsets.UTF_8);
+    } catch (IOException e) {
+      fail("Unable to read expected file: " + file, e);
+      return null;
     }
+  }
+
+  protected void verifyRequest(String provider, Map<String, String> headers, boolean isEmpty) {
+    switch (provider) {
+      case Constants.SNYK_PROVIDER:
+        verifySnykRequest(headers.get(Constants.SNYK_TOKEN_HEADER));
+        break;
+      case Constants.OSS_INDEX_PROVIDER:
+        verifyOssRequest(
+            headers.get(Constants.OSS_INDEX_USER_HEADER),
+            headers.get(Constants.OSS_INDEX_TOKEN_HEADER),
+            isEmpty);
+    }
+  }
+
+  protected void verifySnykRequest(String token) {
+    if (token == null) {
+      server.verify(1, postRequestedFor(urlEqualTo(Constants.SNYK_DEP_GRAPH_API_PATH)));
+    } else {
+      server.verify(
+          1,
+          postRequestedFor(urlEqualTo(Constants.SNYK_DEP_GRAPH_API_PATH))
+              .withHeader("Authorization", equalTo("token " + token)));
+    }
+  }
+
+  protected void verifyTokenRequest(String provider, Map<String, String> headers) {
+    switch (provider) {
+      case Constants.SNYK_PROVIDER:
+        verifySnykTokenRequest(headers.get(Constants.SNYK_TOKEN_HEADER));
+        break;
+      case Constants.OSS_INDEX_PROVIDER:
+        verifyOssRequest(
+            headers.get(Constants.OSS_INDEX_USER_HEADER),
+            headers.get(Constants.OSS_INDEX_TOKEN_HEADER),
+            false);
+    }
+  }
+
+  protected void verifySnykTokenRequest(String token) {
+    if (token == null) {
+      server.verify(1, getRequestedFor(urlEqualTo(Constants.SNYK_TOKEN_API_PATH)));
+    } else {
+      server.verify(
+          1,
+          getRequestedFor(urlEqualTo(Constants.SNYK_TOKEN_API_PATH))
+              .withHeader("Authorization", equalTo("token " + token)));
+    }
+  }
+
+  protected void stubAllProviders() {
+    stubSnykRequests();
+    stubOssToken();
+  }
+
+  protected void verifyProviders(
+      Collection<String> providers, Map<String, String> credentials, boolean isEmpty) {
+    providers.stream()
+        .forEach(
+            p -> {
+              switch (p) {
+                case Constants.SNYK_PROVIDER:
+                  verifySnykRequest(credentials.get(Constants.SNYK_TOKEN_HEADER));
+                  break;
+                case Constants.OSS_INDEX_PROVIDER:
+                  verifyOssRequest(
+                      credentials.get(Constants.OSS_INDEX_USER_HEADER),
+                      credentials.get(Constants.OSS_INDEX_TOKEN_HEADER),
+                      isEmpty);
+                  break;
+              }
+            });
+  }
+
+  protected void stubSnykTokenRequests() {
+    // Missing token
     server.stubFor(
-        post(Constants.SNYK_DEP_GRAPH_API_PATH)
-            .withHeader("Authorization", WireMock.equalTo("token " + token))
-            .withHeader(Exchange.CONTENT_TYPE, WireMock.equalTo(MediaType.APPLICATION_JSON))
+        get(Constants.SNYK_TOKEN_API_PATH)
+            .willReturn(
+                aResponse()
+                    .withStatus(401)
+                    .withBody(
+                        "{\"code\": 401, \"error\": \"Not authorised\""
+                            + ", \"message\": \"Not authorised\"}")));
+    // Default request
+    server.stubFor(
+        get(Constants.SNYK_TOKEN_API_PATH)
+            .withHeader("Authorization", equalTo("token " + OK_TOKEN))
             .willReturn(
                 aResponse()
                     .withStatus(200)
                     .withHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                    .withBodyFile("snyk_report.json")));
+                    .withBodyFile("snyk/user_validation.json")));
+    // Internal Error
     server.stubFor(
-        post(Constants.SNYK_DEP_GRAPH_API_PATH)
-            .withHeader("Authorization", WireMock.not(WireMock.equalTo("token " + token)))
+        get(Constants.SNYK_TOKEN_API_PATH)
+            .withHeader("Authorization", equalTo("token " + ERROR_TOKEN))
+            .willReturn(aResponse().withStatus(500)));
+    // Invalid token
+    server.stubFor(
+        get(Constants.SNYK_TOKEN_API_PATH)
+            .withHeader("Authorization", equalTo("token " + INVALID_TOKEN))
             .willReturn(
                 aResponse()
                     .withStatus(401)
@@ -137,42 +242,174 @@ public abstract class AbstractAnalysisTest {
                         "{\"code\": 401, \"error\": \"Invalid auth token"
                             + " provided\", \"message\": \"Invalid auth"
                             + " token provided\"}")));
+    // Too many requests
     server.stubFor(
-        post(Constants.SNYK_DEP_GRAPH_API_PATH)
-            .withHeader("Authorization", WireMock.equalTo("token " + ERROR_TOKEN))
-            .willReturn(aResponse().withStatus(500)));
+        get(Constants.SNYK_TOKEN_API_PATH)
+            .withHeader("Authorization", equalTo("token " + RATE_LIMIT_TOKEN))
+            .willReturn(
+                aResponse()
+                    .withStatus(429)
+                    .withBody(
+                        "{\"message\": \"The org acme (82be6926-dff6-4c22-a54a-8fb25ed4ee43)"
+                            + " has exceeded the rate limit.\""
+                            + ", \"error\": \"true\"}")));
   }
 
-  protected void stubEmptySnykRequest() {
+  protected void stubSnykRequests() {
+    // Missing token
+    server.stubFor(
+        post(Constants.SNYK_DEP_GRAPH_API_PATH)
+            .willReturn(
+                aResponse()
+                    .withStatus(401)
+                    .withBody(
+                        "{\"code\": 401, \"error\": \"Not authorised\""
+                            + ", \"message\": \"Not authorised\"}")));
+    // Other requests
+    Constants.PKG_MANAGERS.forEach(this::stubSnykEmptyRequest);
+    // Dependency request
     server.stubFor(
         post(Constants.SNYK_DEP_GRAPH_API_PATH)
             .withHeader(
-                "Authorization", WireMock.equalTo("token " + WiremockV3Extension.SNYK_TOKEN))
-            .withHeader(Exchange.CONTENT_TYPE, WireMock.equalTo(MediaType.APPLICATION_JSON))
+                "Authorization", equalTo("token " + OK_TOKEN).or(equalTo("token " + SNYK_TOKEN)))
+            .withHeader(Exchange.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON))
+            .withRequestBody(equalToJson(loadFileAsString("__files/snyk/maven_request.json")))
             .willReturn(
                 aResponse()
                     .withStatus(200)
                     .withHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                    .withBodyFile("empty_snyk_report.json")));
-  }
-
-  protected void stubUnauthSnykRequest() {
+                    .withBodyFile("snyk/maven_report.json")));
+    // Component request
     server.stubFor(
         post(Constants.SNYK_DEP_GRAPH_API_PATH)
             .withHeader(
-                "Authorization", WireMock.equalTo("token " + WiremockV3Extension.SNYK_TOKEN))
-            .withHeader(Exchange.CONTENT_TYPE, WireMock.equalTo(MediaType.APPLICATION_JSON))
-            .willReturn(aResponse().withStatus(401)));
+                "Authorization", equalTo("token " + OK_TOKEN).or(equalTo("token " + SNYK_TOKEN)))
+            .withHeader(Exchange.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON))
+            .withRequestBody(
+                equalToJson(loadFileAsString("__files/snyk/component_maven_request.json")))
+            .willReturn(
+                aResponse()
+                    .withStatus(200)
+                    .withHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                    .withBodyFile("snyk/maven_report.json")));
+
+    // Internal Error
+    server.stubFor(
+        post(Constants.SNYK_DEP_GRAPH_API_PATH)
+            .withHeader("Authorization", equalTo("token " + ERROR_TOKEN))
+            .willReturn(aResponse().withStatus(500)));
+    // Invalid token
+    server.stubFor(
+        post(Constants.SNYK_DEP_GRAPH_API_PATH)
+            .withHeader("Authorization", equalTo("token " + INVALID_TOKEN))
+            .willReturn(
+                aResponse()
+                    .withStatus(401)
+                    .withBody(
+                        "{\"code\": 401, \"error\": \"Invalid auth token"
+                            + " provided\", \"message\": \"Invalid auth"
+                            + " token provided\"}")));
+    // Forbidden (i.e. token does not have access to the API)
+    server.stubFor(
+        post(Constants.SNYK_DEP_GRAPH_API_PATH)
+            .withHeader("Authorization", equalTo("token " + UNAUTH_TOKEN))
+            .willReturn(
+                aResponse()
+                    .withStatus(403)
+                    .withBody(
+                        "{\"message\": \"The org acme (82be6926-dff6-4c22-a54a-8fb25ed4ee43) is not"
+                            + " entitled for api access. Please upgrade your plan to access this"
+                            + " capability\", \"error\": \"true\"}")));
+    // Too many requests
+    server.stubFor(
+        post(Constants.SNYK_DEP_GRAPH_API_PATH)
+            .withHeader("Authorization", equalTo("token " + RATE_LIMIT_TOKEN))
+            .willReturn(
+                aResponse()
+                    .withStatus(429)
+                    .withBody(
+                        "{\"message\": \"The org acme (82be6926-dff6-4c22-a54a-8fb25ed4ee43)"
+                            + " has exceeded the rate limit.\""
+                            + ", \"error\": \"true\"}")));
   }
 
-  protected void verifySnykRequest(String token) {
-    if (token == null) {
-      token = WiremockV3Extension.SNYK_TOKEN;
+  private void stubSnykEmptyRequest(String provider) {
+    // Empty request
+    server.stubFor(
+        post(Constants.SNYK_DEP_GRAPH_API_PATH)
+            .withHeader(
+                "Authorization", equalTo("token " + OK_TOKEN).or(equalTo("token " + SNYK_TOKEN)))
+            .withHeader(Exchange.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON))
+            .withRequestBody(
+                equalToJson(
+                    loadFileAsString("__files/snyk/empty_request.json")
+                        .replaceAll("__PKG_MANAGER__", provider)))
+            .willReturn(
+                aResponse()
+                    .withStatus(200)
+                    .withHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                    .withBody(
+                        loadFileAsString("__files/snyk/empty_report.json")
+                            .replaceAll("__PKG_MANAGER__", provider))));
+  }
+
+  protected void stubOssToken() {
+
+    server.stubFor(
+        post(Constants.OSS_INDEX_AUTH_COMPONENT_API_PATH)
+            .withHeader(Exchange.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON))
+            .willReturn(
+                aResponse()
+                    .withStatus(401)
+                    .withBody(
+                        "{\"code\": 401, \"error\": \"Not authorised\""
+                            + ", \"message\": \"Not authorised\"}")));
+    server.stubFor(
+        post(Constants.OSS_INDEX_AUTH_COMPONENT_API_PATH)
+            .withBasicAuth(OK_USER, OK_TOKEN)
+            .withHeader(Exchange.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON))
+            .withRequestBody(equalToJson(loadFileAsString("__files/ossindex/empty_request.json")))
+            .willReturn(aResponse().withStatus(200).withBodyFile("ossindex/empty_report.json")));
+    server.stubFor(
+        post(Constants.OSS_INDEX_AUTH_COMPONENT_API_PATH)
+            .withBasicAuth(OK_USER, OK_TOKEN)
+            .withHeader(Exchange.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON))
+            .withRequestBody(
+                equalToJson(loadFileAsString("__files/ossindex/component_maven_request.json")))
+            .willReturn(aResponse().withStatus(200).withBodyFile("ossindex/maven_report.json")));
+    server.stubFor(
+        post(Constants.OSS_INDEX_AUTH_COMPONENT_API_PATH)
+            .withBasicAuth(OK_USER, OK_TOKEN)
+            .withHeader(Exchange.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON))
+            .withRequestBody(equalToJson(loadFileAsString("__files/ossindex/maven_request.json")))
+            .willReturn(aResponse().withStatus(200).withBodyFile("ossindex/maven_report.json")));
+    server.stubFor(
+        post(Constants.OSS_INDEX_AUTH_COMPONENT_API_PATH)
+            .withBasicAuth(OK_USER, RATE_LIMIT_TOKEN)
+            .withHeader(Exchange.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON))
+            .willReturn(
+                aResponse()
+                    .withStatus(429)
+                    .withBody(
+                        "{\"message\": \"The org acme (82be6926-dff6-4c22-a54a-8fb25ed4ee43)"
+                            + " has exceeded the rate limit.\""
+                            + ", \"error\": \"true\"}")));
+    server.stubFor(
+        post(Constants.OSS_INDEX_AUTH_COMPONENT_API_PATH)
+            .withBasicAuth(OK_USER, ERROR_TOKEN)
+            .withHeader(Exchange.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON))
+            .willReturn(aResponse().withStatus(500)));
+  }
+
+  protected void verifyOssRequest(String user, String pass, boolean isEmpty) {
+    if (user == null || pass == null || isEmpty) {
+      server.verify(0, postRequestedFor(urlEqualTo(Constants.OSS_INDEX_AUTH_COMPONENT_API_PATH)));
+    } else {
+      server.verify(
+          1,
+          postRequestedFor(urlEqualTo(Constants.OSS_INDEX_AUTH_COMPONENT_API_PATH))
+              .withBasicAuth(new BasicCredentials(user, pass)));
     }
-    server.verify(
-        1,
-        postRequestedFor(urlEqualTo(Constants.SNYK_DEP_GRAPH_API_PATH))
-            .withHeader("Authorization", WireMock.equalTo("token " + token)));
   }
 
   protected void stubTideliftRequest(String token) {
@@ -181,38 +418,38 @@ public abstract class AbstractAnalysisTest {
     }
     server.stubFor(
         get(Constants.TIDELIFT_API_BASE_PATH + "/maven/log4j:log4j/releases/1.2.17")
-            .withHeader("Authorization", WireMock.equalTo("Bearer " + token))
+            .withHeader("Authorization", equalTo("Bearer " + token))
             .willReturn(
                 aResponse()
                     .withStatus(200)
                     .withHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                    .withBodyFile("tidelift_log4j_report.json")));
+                    .withBodyFile("tidelift/log4j_report.json")));
     server.stubFor(
         get(Constants.TIDELIFT_API_BASE_PATH + "/maven/io.netty:netty-buffer/releases/4.1.86.Final")
-            .withHeader("Authorization", WireMock.equalTo("Bearer " + token))
+            .withHeader("Authorization", equalTo("Bearer " + token))
             .willReturn(
                 aResponse()
                     .withStatus(200)
                     .withHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                    .withBodyFile("tidelift_netty_buffer_report.json")));
+                    .withBodyFile("tidelift/netty_buffer_report.json")));
     server.stubFor(
         get(Constants.TIDELIFT_API_BASE_PATH
                 + "/maven/commons-beanutils:commons-beanutils/releases/1.9.4")
-            .withHeader("Authorization", WireMock.equalTo("Bearer " + token))
+            .withHeader("Authorization", equalTo("Bearer " + token))
             .willReturn(
                 aResponse()
                     .withStatus(200)
                     .withHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                    .withBodyFile("tidelift_commons_beanutils_report.json")));
+                    .withBodyFile("tidelift/commons_beanutils_report.json")));
 
     server.stubFor(
         get(Constants.TIDELIFT_API_BASE_PATH + "/maven/org.slf4j:slf4j-api/releases/1.7.36")
-            .withHeader("Authorization", WireMock.equalTo("Bearer " + token))
+            .withHeader("Authorization", equalTo("Bearer " + token))
             .willReturn(
                 aResponse()
                     .withStatus(200)
                     .withHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                    .withBodyFile("tidelift_slf4j_report.json")));
+                    .withBodyFile("tidelift/slf4j_report.json")));
   }
 
   protected void verifyTideliftRequest(int times, String token) {
@@ -222,19 +459,19 @@ public abstract class AbstractAnalysisTest {
     server.verify(
         times,
         getRequestedFor(urlMatching(Constants.TIDELIFT_API_BASE_PATH + ".*"))
-            .withHeader("Authorization", WireMock.equalTo("Bearer " + token)));
+            .withHeader("Authorization", equalTo("Bearer " + token)));
   }
 
   protected void stubTCGavRequest() {
     server.stubFor(
         post(urlMatching(Constants.TRUSTED_CONTENT_PATH + ".*"))
-            .withHeader(Exchange.CONTENT_TYPE, WireMock.equalTo(MediaType.APPLICATION_JSON))
+            .withHeader(Exchange.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON))
             .willReturn(
                 aResponse()
                     .withStatus(200)
                     .withHeader(Exchange.CONTENT_ENCODING, "identity")
                     .withHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                    .withBodyFile("trustedContent_gav_report.json")));
+                    .withBodyFile("trustedcontent/gav_report.json")));
   }
 
   protected void verifyTCGavRequest() {
@@ -244,13 +481,37 @@ public abstract class AbstractAnalysisTest {
   protected void stubTCVexRequest() {
     server.stubFor(
         post(urlMatching(Constants.TRUSTED_CONTENT_VEX_PATH))
-            .withHeader(Exchange.CONTENT_TYPE, WireMock.equalTo(MediaType.APPLICATION_JSON))
+            .withHeader(Exchange.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON))
+            .withRequestBody(
+                equalToJson(loadFileAsString("__files/trustedcontent/oss_vulns_vex_request.json")))
             .willReturn(
                 aResponse()
                     .withStatus(200)
                     .withHeader(Exchange.CONTENT_ENCODING, "identity")
                     .withHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                    .withBodyFile("trustedContent_vex_report.json")));
+                    .withBodyFile("trustedcontent/short_vex_report.json")));
+    server.stubFor(
+        post(urlMatching(Constants.TRUSTED_CONTENT_VEX_PATH))
+            .withHeader(Exchange.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON))
+            .withRequestBody(
+                equalToJson(loadFileAsString("__files/trustedcontent/snyk_vulns_vex_request.json")))
+            .willReturn(
+                aResponse()
+                    .withStatus(200)
+                    .withHeader(Exchange.CONTENT_ENCODING, "identity")
+                    .withHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                    .withBodyFile("trustedcontent/short_vex_report.json")));
+    server.stubFor(
+        post(urlMatching(Constants.TRUSTED_CONTENT_VEX_PATH))
+            .withHeader(Exchange.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON))
+            .withRequestBody(
+                equalToJson(loadFileAsString("__files/trustedcontent/long_vex_request.json")))
+            .willReturn(
+                aResponse()
+                    .withStatus(200)
+                    .withHeader(Exchange.CONTENT_ENCODING, "identity")
+                    .withHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                    .withBodyFile("trustedcontent/long_vex_report.json")));
   }
 
   protected void verifyTCVexRequest() {
@@ -259,6 +520,7 @@ public abstract class AbstractAnalysisTest {
 
   protected void verifyNoInteractions() {
     verifyNoInteractionsWithSnyk();
+    verifyNoInteractionsWithOSS();
     verifyNoInteractionsWithTidelift();
     verifyNoInteractionsWithTCGav();
     verifyNoInteractionsWithTCVex();
@@ -266,6 +528,11 @@ public abstract class AbstractAnalysisTest {
 
   protected void verifyNoInteractionsWithSnyk() {
     server.verify(0, postRequestedFor(urlEqualTo(Constants.SNYK_DEP_GRAPH_API_PATH)));
+    server.verify(0, getRequestedFor(urlEqualTo(Constants.SNYK_TOKEN_API_PATH)));
+  }
+
+  protected void verifyNoInteractionsWithOSS() {
+    server.verify(0, postRequestedFor(urlEqualTo(Constants.OSS_INDEX_AUTH_COMPONENT_API_PATH)));
   }
 
   protected void verifyNoInteractionsWithTidelift() {

@@ -21,6 +21,7 @@
 	},
 	"dependencies": [{
 		"ref": {
+			"purl": "pkg:maven/io.quarkus/quarkus-hibernate-orm@2.13.5.Final",
 			"name": "io.quarkus:quarkus-hibernate-orm",
 			"version": "2.13.5.Final"
 		},
@@ -50,6 +51,7 @@
 		"issues": [],
 		"transitive": [{
 			"ref": {
+				"purl": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.1",
 				"name": "com.fasterxml.jackson.core:jackson-databind",
 				"version": "2.13.1"
 			},
@@ -133,6 +135,7 @@
 				"CVE-2020-36518": {
 					"issueRef": "CVE-2020-36518",
 					"mavenPackage": {
+						"purl": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.1.Final-redhat-00002",
 						"name": "com.fasterxml.jackson.core:jackson-databind",
 						"version": "2.13.1.Final-redhat-00002"
 					},
@@ -144,6 +147,7 @@
 		"recommendation": null
 	}, {
 		"ref": {
+			"purl": "pkg:maven/io.quarkus/quarkus-jdbc-postgresql@2.13.5.Final",
 			"name": "io.quarkus:quarkus-jdbc-postgresql",
 			"version": "2.13.5.Final"
 		},
@@ -173,6 +177,7 @@
 		"issues": [],
 		"transitive": [{
 			"ref": {
+				"purl": "pkg:maven/org.postgresql/postgresql@42.5.0",
 				"name": "org.postgresql:postgresql",
 				"version": "42.5.0"
 			},
@@ -226,6 +231,7 @@
 				"CVE-2022-41946": {
 					"issueRef": "CVE-2022-41946",
 					"mavenPackage": {
+						"purl": "pkg:maven/io.quarkus/quarkus-jdbc-postgresql@2.13.7.Final-redhat-00003",
 						"name": "io.quarkus:quarkus-jdbc-postgresql",
 						"version": "2.13.7.Final-redhat-00003"
 					},

@@ -31,7 +31,7 @@ import com.redhat.ecosystemappeng.crda.integration.Constants;
 import com.redhat.ecosystemappeng.crda.integration.GraphUtils;
 import com.redhat.ecosystemappeng.crda.integration.ProviderAggregationStrategy;
 import com.redhat.ecosystemappeng.crda.integration.VulnerabilityProvider;
-import com.redhat.ecosystemappeng.crda.model.PackageRef;
+import com.redhat.ecosystemappeng.crda.model.ComponentRequest;
 
 import io.micrometer.core.instrument.MeterRegistry;
 
@@ -89,7 +89,7 @@ public class CrdaBackendIntegration extends EndpointRouteBuilder {
 
     from(direct("componentAnalysis"))
         .routeId("componentAnalysis")
-        .unmarshal(new ListJacksonDataFormat(PackageRef.class))
+        .unmarshal(new ListJacksonDataFormat(ComponentRequest.class))
         .setProperty(Constants.PROVIDERS_PARAM, method(vulnerabilityProvider, "getProvidersFromQueryParam"))
         .setBody().method(GraphUtils.class, "fromPackages")
         .to(direct("findVulnerabilities"))
@@ -112,11 +112,9 @@ public class CrdaBackendIntegration extends EndpointRouteBuilder {
 
     from(direct("findVulnerabilities"))
         .routeId("findVulnerabilities")
-        .multicast(AggregationStrategies.bean(ProviderAggregationStrategy.class, "aggregate"))
-            .parallelProcessing()
-                .recipientList(method(vulnerabilityProvider, "getProviderEndpoints"))
-            .end()
-        .end();
+        .recipientList(method(vulnerabilityProvider, "getProviderEndpoints"))
+        .aggregationStrategy(AggregationStrategies.bean(ProviderAggregationStrategy.class, "aggregate"))
+            .parallelProcessing();
 
     from(direct("cleanUpResponse"))
         .routeId("cleanUpResponseHeaders")
@@ -127,7 +125,9 @@ public class CrdaBackendIntegration extends EndpointRouteBuilder {
         .routeId("validateToken")
         .choice()
             .when(header(Constants.SNYK_TOKEN_HEADER).isNotNull())
-                .to(direct("validateSnykToken"))
+                .to(direct("snykValidateToken"))
+            .when(header(Constants.OSS_INDEX_TOKEN_HEADER).isNotNull())
+                .to(direct("ossValidateCredentials"))
             .otherwise()
                 .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(Response.Status.BAD_REQUEST.getStatusCode()))
                 .setBody(constant("Missing authentication header"))

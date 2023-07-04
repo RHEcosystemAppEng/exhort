@@ -21,6 +21,7 @@
 	},
 	"dependencies": [{
 		"ref": {
+			"purl":"pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.1",
 			"name": "com.fasterxml.jackson.core:jackson-databind",
 			"version": "2.13.1"
 		},
@@ -70,9 +71,23 @@
 			"cves": ["CVE-2020-36518"],
 			"unique": false
 		}, {
-			"id": "SNYK-PRIVATE-VULNERABILITY",
-			"title": "Sign up for a free Snyk account to learn aboutn the vulnerabilities found",
+			"id": "SNYK-JAVA-COMFASTERXMLJACKSONCORE-3038424",
+			"title": "Denial of Service (DoS)",
 			"source": "snyk",
+			"cvss": {
+				"attackVector": "Network",
+				"attackComplexity": "High",
+				"privilegesRequired": "None",
+				"userInteraction": "None",
+				"scope": "Unchanged",
+				"confidentialityImpact": "None",
+				"integrityImpact": "None",
+				"availabilityImpact": "High",
+				"exploitCodeMaturity": "Proof of concept code",
+				"remediationLevel": null,
+				"reportConfidence": null,
+				"cvss": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H/E:P"
+			},
 			"cvssScore": 5.9,
 			"severity": "MEDIUM",
 			"cves": [],
@@ -105,6 +120,7 @@
 			"CVE-2020-36518": {
 				"issueRef": "CVE-2020-36518",
 				"mavenPackage": {
+					"purl":"pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.1.Final-redhat-00002",
 					"name": "com.fasterxml.jackson.core:jackson-databind",
 					"version": "2.13.1.Final-redhat-00002"
 				},
@@ -114,6 +130,7 @@
 		"recommendation": null
 	}, {
 		"ref": {
+			"purl":"pkg:maven/io.quarkus/quarkus-jdbc-postgresql@2.13.5",
 			"name": "io.quarkus:quarkus-jdbc-postgresql",
 			"version": "2.13.5"
 		},
@@ -122,6 +139,7 @@
 		"transitive": [],
 		"remediations": {},
 		"recommendation": {
+			"purl":"pkg:maven/io.quarkus/quarkus-jdbc-postgresql@2.13.5.redhat-00001",
 			"name": "io.quarkus:quarkus-jdbc-postgresql",
 			"version": "2.13.5.redhat-00001"
 		}

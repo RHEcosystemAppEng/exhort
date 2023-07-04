@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 
 import org.apache.camel.Body;
 
+import com.redhat.ecosystemappeng.crda.integration.Constants;
 import com.redhat.ecosystemappeng.crda.model.GraphRequest;
 import com.redhat.ecosystemappeng.crda.model.PackageRef;
 import com.redhat.ecosystemappeng.crda.model.Remediation;
@@ -57,8 +58,9 @@ public class TrustedContentBodyMapper {
       if (result != null) {
         String cve = request.cves().get(i);
         PackageRef ref =
-            new PackageRef(
-                result.mavenPackage().groupId() + ":" + result.mavenPackage().artifactId(),
+            toMavenPkgRef(
+                result.mavenPackage().groupId(),
+                result.mavenPackage().artifactId(),
                 result.mavenPackage().version());
         Remediation r = new Remediation(cve, ref, result.productStatus());
         remediations.put(cve, r);
@@ -67,18 +69,21 @@ public class TrustedContentBodyMapper {
     return remediations;
   }
 
-  public GraphRequest filterRecommendations(
-      GraphRequest req, Map<String, Remediation> recommendations) {
-    if (recommendations == null || recommendations.isEmpty()) {
+  public GraphRequest filterRemediations(GraphRequest req, Map<String, Remediation> remediations) {
+    if (remediations == null || remediations.isEmpty()) {
       return req;
     }
     Map<String, Remediation> merged = new HashMap<>();
     if (req.remediations() != null) {
       merged.putAll(req.remediations());
     }
-    recommendations.entrySet().stream()
+    remediations.entrySet().stream()
         .filter(Objects::nonNull)
-        .filter(r -> req.tree().getAll().contains(r.getValue().mavenPackage()))
+        .filter(
+            r -> {
+              PackageRef o = r.getValue().mavenPackage();
+              return req.tree().getAll().contains(o);
+            })
         .forEach(e -> merged.put(e.getKey(), e.getValue()));
     return new GraphRequest.Builder(req).remediations(merged).build();
   }
@@ -108,10 +113,33 @@ public class TrustedContentBodyMapper {
     for (int i = 0; i < gavRequest.size(); i++) {
       MavenPackage pkg = recommendations.get(i);
       if (pkg != null) {
-        String pkgName = String.format("%s:%s", pkg.groupId(), pkg.artifactId());
-        result.put(gavRequest.get(i), new PackageRef(pkgName, pkg.version()));
+        result.put(
+            gavRequest.get(i), toMavenPkgRef(pkg.groupId(), pkg.artifactId(), pkg.version()));
       }
     }
     return result;
+  }
+
+  public int cvesSize(@Body VexRequest req) {
+    if (req == null || req.cves() == null) {
+      return 0;
+    }
+    return req.cves().size();
+  }
+
+  public int gavsSize(@Body List<String> gavs) {
+    if (gavs == null) {
+      return 0;
+    }
+    return gavs.size();
+  }
+
+  private PackageRef toMavenPkgRef(String groupId, String artifactId, String version) {
+    return PackageRef.builder()
+        .pkgManager(Constants.MAVEN_PKG_MANAGER)
+        .namespace(groupId)
+        .name(artifactId)
+        .version(version)
+        .build();
   }
 }

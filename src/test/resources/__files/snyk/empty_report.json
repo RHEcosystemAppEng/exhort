@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "packageManager": "maven",
+  "packageManager": "__PKG_MANAGER__",
   "issuesData": {
   },
   "issues": [
