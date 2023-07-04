@@ -22,23 +22,21 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.camel.builder.AggregationStrategies;
 import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
-import org.apache.camel.http.base.HttpOperationFailedException;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import com.redhat.ecosystemappeng.crda.integration.Constants;
 import com.redhat.ecosystemappeng.crda.integration.VulnerabilityProvider;
-import com.redhat.ecosystemappeng.crda.model.ProviderStatus;
+import com.redhat.ecosystemappeng.crda.integration.backend.BackendUtils;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.HttpMethod;
 import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
 
 @ApplicationScoped
 public class SnykIntegration extends EndpointRouteBuilder {
 
-  @ConfigProperty(name = "api.snyk.timeout", defaultValue = "20s")
+  @ConfigProperty(name = "api.snyk.timeout", defaultValue = "10s")
   String timeout;
 
   @ConfigProperty(name = "api.snyk.token")
@@ -66,9 +64,9 @@ public class SnykIntegration extends EndpointRouteBuilder {
           .end()
             .to(vertxHttp("{{api.snyk.host}}"))
         .onFallback()
-          .process(this::processSnykResponseError);
+          .process(e -> BackendUtils.processResponseError(e, Constants.SNYK_PROVIDER));
 
-    from(direct("validateSnykToken"))
+    from(direct("snykValidateToken"))
         .routeId("snykValidateToken")
         .process(this::processTokenRequest)
         .circuitBreaker()
@@ -79,7 +77,7 @@ public class SnykIntegration extends EndpointRouteBuilder {
           .to(vertxHttp("{{api.snyk.host}}"))
           .setBody(constant("Token validated successfully"))
         .onFallback()
-          .process(this::processTokenFallBack);
+          .process(e -> BackendUtils.processTokenFallBack(e, Constants.SNYK_PROVIDER));
     // fmt:on
   }
 
@@ -103,8 +101,8 @@ public class SnykIntegration extends EndpointRouteBuilder {
 
   private void processTokenRequest(Exchange exchange) {
     Message message = exchange.getMessage();
-    processRequestHeaders(message);
     message.setHeader("Authorization", "token " + message.getHeader(Constants.SNYK_TOKEN_HEADER));
+    processRequestHeaders(message);
     message.setHeader(Exchange.HTTP_PATH, Constants.SNYK_TOKEN_API_PATH);
     message.setHeader(Exchange.HTTP_METHOD, HttpMethod.GET);
   }
@@ -113,64 +111,7 @@ public class SnykIntegration extends EndpointRouteBuilder {
     message.removeHeader(Exchange.HTTP_PATH);
     message.removeHeader(Exchange.HTTP_QUERY);
     message.removeHeader(Exchange.HTTP_URI);
+    message.removeHeader(Constants.SNYK_TOKEN_HEADER);
     message.removeHeader("Accept-Encoding");
-  }
-
-  private void processTokenFallBack(Exchange exchange) {
-    Exception exception = (Exception) exchange.getProperty(Exchange.EXCEPTION_CAUGHT);
-    Throwable cause = exception.getCause();
-    String body;
-    int code = Response.Status.INTERNAL_SERVER_ERROR.getStatusCode();
-
-    if (cause instanceof HttpOperationFailedException) {
-      HttpOperationFailedException httpException = (HttpOperationFailedException) cause;
-      code = httpException.getStatusCode();
-      if (code == Response.Status.UNAUTHORIZED.getStatusCode()) {
-        body = "Invalid token provided. Unauthorized";
-      } else {
-        body = "Unable to validate Snyk Token: " + httpException.getStatusText();
-      }
-    } else {
-      body = "Unable to validate Snyk Token: " + cause.getMessage();
-    }
-    exchange.getMessage().setHeader(Exchange.HTTP_RESPONSE_CODE, code);
-    exchange.getMessage().setBody(body);
-  }
-
-  private void processSnykResponseError(Exchange exchange) {
-    ProviderStatus.Builder builder =
-        ProviderStatus.builder().ok(false).provider(Constants.SNYK_PROVIDER);
-    Exception exception = (Exception) exchange.getProperty(Exchange.EXCEPTION_CAUGHT);
-    Throwable cause = exception.getCause();
-
-    if (cause != null) {
-      if (cause instanceof HttpOperationFailedException) {
-        HttpOperationFailedException httpException = (HttpOperationFailedException) cause;
-        builder.message(prettifyHttpError(httpException)).status(httpException.getStatusCode());
-      } else {
-        builder
-            .message(cause.getMessage())
-            .status(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
-      }
-    } else {
-      builder
-          .message(exception.getMessage())
-          .status(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
-    }
-    exchange.getMessage().setBody(builder.build());
-  }
-
-  private String prettifyHttpError(HttpOperationFailedException httpException) {
-    String text = httpException.getStatusText();
-    switch (httpException.getStatusCode()) {
-      case 401:
-        return text + ": Verify the provided credentials are valid.";
-      case 403:
-        return text + ": The provided credentials don't have the required permissions.";
-      case 429:
-        return text + ": The rate limit has been exceeded.";
-      default:
-        return text;
-    }
   }
 }

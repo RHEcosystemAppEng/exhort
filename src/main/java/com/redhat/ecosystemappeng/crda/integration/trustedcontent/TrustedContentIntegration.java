@@ -19,6 +19,7 @@
 package com.redhat.ecosystemappeng.crda.integration.trustedcontent;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.camel.Exchange;
@@ -60,7 +61,7 @@ public class TrustedContentIntegration extends EndpointRouteBuilder {
                   .timeoutDuration(timeout)
               .end()
                 .enrich(direct("trustedContentVex"),
-                        AggregationStrategies.bean(TrustedContentBodyMapper.class, "filterRecommendations"))
+                        AggregationStrategies.bean(TrustedContentBodyMapper.class, "filterRemediations"))
                 .enrich(direct("trustedContentGav"),
                         AggregationStrategies.bean(TrustedContentBodyMapper.class, "addRecommendations"))
               .onFallback()
@@ -74,15 +75,17 @@ public class TrustedContentIntegration extends EndpointRouteBuilder {
                   .timeoutDuration(timeout)
               .end()
               .enrich(direct("trustedContentVex"),
-                  AggregationStrategies.bean(TrustedContentBodyMapper.class, "filterRecommendations"))
+                  AggregationStrategies.bean(TrustedContentBodyMapper.class, "filterRemediations"))
             .onFallback()
                 .process(this::processFallBack);
 
         from(direct("trustedContentVex"))
             .routeId("prepareVexRequest")
             .process(this::processVexRequest)
-            .enrich(direct("vexRequest"),
-                    AggregationStrategies.bean(TrustedContentBodyMapper.class, "createRemediations"));
+            .choice().when(method(TrustedContentBodyMapper.class, "cvesSize").isGreaterThan(0))
+              .enrich(direct("vexRequest"),
+                AggregationStrategies.bean(TrustedContentBodyMapper.class, "createRemediations"))
+              .otherwise().setBody(constant(Collections.emptyMap()));
 
         from(direct("vexRequest"))
             .routeId("doVexRequest")
@@ -93,8 +96,10 @@ public class TrustedContentIntegration extends EndpointRouteBuilder {
         from(direct("trustedContentGav"))
             .routeId("prepareGavRequest")
             .bean(TrustedContentBodyMapper.class, "buildGavRequest")
-            .enrich(direct("gavRequest"),
-                    AggregationStrategies.bean(TrustedContentBodyMapper.class, "createGavRecommendations"));
+            .choice().when(method(TrustedContentBodyMapper.class, "gavsSize").isGreaterThan(0))
+              .enrich(direct("gavRequest"),
+                 AggregationStrategies.bean(TrustedContentBodyMapper.class, "createGavRecommendations"))
+              .otherwise().setBody(constant(Collections.emptyMap()));
 
         from(direct("gavRequest"))
             .routeId("gavRequest")

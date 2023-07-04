@@ -9,6 +9,8 @@ info:
 servers:
 - url: http://crda-backend-crda.apps.sssc-cl01.appeng.rhecoeng.com/api/v3
   description: Production server
+- url: http://crda-backend-dev-crda.apps.sssc-cl01.appeng.rhecoeng.com/api/v3
+  description: Staging server
 - url: http://localhost:8080/api/v3
   description: Local development
 paths:
@@ -18,6 +20,8 @@ paths:
       summary: Performs a vulnerability for the provided components
       security:
         - SnykTokenAuth: []
+        - OssIndexUserAuth: []
+          OssIndexTokenAuth: []
       parameters:
       - name: pkgManager
         in: path
@@ -35,6 +39,7 @@ paths:
         schema:
           enum:
           - snyk
+          - oss-index
           - tidelift
           type: string
         example: snyk
@@ -64,6 +69,8 @@ paths:
       summary:  Takes a client-resolved dependency graph to perform a full stack analysis from all the available Vulnerability sources
       security:
         - SnykTokenAuth: []
+        - OssIndexUserAuth: []
+          OssIndexTokenAuth: []
       parameters:
       - name: pkgManager
         in: path
@@ -81,6 +88,7 @@ paths:
         schema:
           enum:
           - snyk
+          - oss-index
           - tidelift
           type: string
         example: snyk
@@ -125,6 +133,8 @@ paths:
       summary: Validates a vulnerability provider token
       security:
         - SnykTokenAuth: []
+        - OssIndexUserAuth: []
+          OssIndexTokenAuth: []
       responses:
         '200':
           description: Successful token validation
@@ -168,6 +178,14 @@ components:
       type: apiKey
       in: header
       name: crda-snyk-token
+    OssIndexUserAuth:
+      type: apiKey
+      in: header
+      name: crda-oss-index-name
+    OssIndexTokenAuth:
+      type: apiKey
+      in: header
+      name: crda-oss-index-token
   schemas:
     AnalysisReport:
       type: object

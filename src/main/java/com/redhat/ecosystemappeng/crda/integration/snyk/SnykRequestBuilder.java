@@ -63,14 +63,14 @@ public class SnykRequestBuilder {
     depGraph.set("pkgs", pkgs);
     depGraph.set(
         "graph",
-        mapper.createObjectNode().put("rootNodeId", tree.root().getId()).set("nodes", nodes));
+        mapper.createObjectNode().put("rootNodeId", getId(tree.root())).set("nodes", nodes));
     return pkgs;
   }
 
   private ObjectNode createPkg(PackageRef source) {
     return mapper
         .createObjectNode()
-        .put("id", source.getId())
+        .put("id", getId(source))
         .set(
             "info",
             mapper.createObjectNode().put("name", source.name()).put("version", source.version()));
@@ -78,11 +78,15 @@ public class SnykRequestBuilder {
 
   private ObjectNode createNode(PackageRef source, Set<PackageRef> deps) {
     ArrayNode depsNode = mapper.createArrayNode();
-    deps.forEach(e -> depsNode.add(mapper.createObjectNode().put("nodeId", e.getId())));
+    deps.forEach(e -> depsNode.add(mapper.createObjectNode().put("nodeId", getId(e))));
     return mapper
         .createObjectNode()
-        .put("nodeId", source.getId())
-        .put("pkgId", source.getId())
+        .put("nodeId", getId(source))
+        .put("pkgId", getId(source))
         .set("deps", depsNode);
+  }
+
+  private String getId(PackageRef ref) {
+    return new StringBuilder(ref.name()).append("@").append(ref.version()).toString();
   }
 }

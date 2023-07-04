@@ -43,7 +43,7 @@ public class ReportTransformerTest {
   public void testFilterDepsWithoutIssues() {
     Map<String, List<Issue>> issues = Map.of("aa", List.of(buildIssue(1, 5f)));
     GraphRequest req =
-        new GraphRequest.Builder(Constants.MAVEN_PKG_MANAGER, List.of(Constants.SNYK_PROVIDER))
+        new GraphRequest.Builder(Constants.NPM_PKG_MANAGER, List.of(Constants.SNYK_PROVIDER))
             .tree(buildTree())
             .issues(issues)
             .build();
@@ -64,7 +64,7 @@ public class ReportTransformerTest {
             "aaa", List.of(buildIssue(2, 5f)),
             "aba", List.of(buildIssue(3, 5f)));
     GraphRequest req =
-        new GraphRequest.Builder(Constants.MAVEN_PKG_MANAGER, List.of(Constants.SNYK_PROVIDER))
+        new GraphRequest.Builder(Constants.NPM_PKG_MANAGER, List.of(Constants.SNYK_PROVIDER))
             .tree(buildTree())
             .issues(issues)
             .build();
@@ -83,9 +83,16 @@ public class ReportTransformerTest {
 
   @Test
   public void testFilterRecommendations() {
-    Map<String, PackageRef> recommendations = Map.of("aa:1", new PackageRef("aa", "1.redhat-0001"));
+    Map<String, PackageRef> recommendations =
+        Map.of(
+            "aa:1",
+            PackageRef.builder()
+                .name("aa")
+                .version("1.redhat-0001")
+                .pkgManager(Constants.NPM_PKG_MANAGER)
+                .build());
     GraphRequest req =
-        new GraphRequest.Builder(Constants.MAVEN_PKG_MANAGER, List.of(Constants.SNYK_PROVIDER))
+        new GraphRequest.Builder(Constants.NPM_PKG_MANAGER, List.of(Constants.SNYK_PROVIDER))
             .tree(buildTree())
             .recommendations(recommendations)
             .build();
@@ -102,21 +109,70 @@ public class ReportTransformerTest {
   private DependencyTree buildTree() {
     Map<PackageRef, DirectDependency> direct =
         Map.of(
-            new PackageRef("aa", "1"),
-                DirectDependency.builder()
-                    .ref(new PackageRef("aa", "1"))
-                    .transitive(Set.of(new PackageRef("aaa", "1"), new PackageRef("aab", "1")))
+            PackageRef.builder()
+                    .name("aa")
+                    .version("1")
+                    .pkgManager(Constants.NPM_PKG_MANAGER)
                     .build(),
-            new PackageRef("ab", "1"),
                 DirectDependency.builder()
-                    .ref(new PackageRef("ab", "1"))
+                    .ref(
+                        PackageRef.builder()
+                            .name("aa")
+                            .version("1")
+                            .pkgManager(Constants.NPM_PKG_MANAGER)
+                            .build())
                     .transitive(
                         Set.of(
-                            new PackageRef("aba", "1"),
-                            new PackageRef("abb", "1"),
-                            new PackageRef("abc", "1")))
+                            PackageRef.builder()
+                                .name("aaa")
+                                .version("1")
+                                .pkgManager(Constants.NPM_PKG_MANAGER)
+                                .build(),
+                            PackageRef.builder()
+                                .name("aab")
+                                .version("1")
+                                .pkgManager(Constants.NPM_PKG_MANAGER)
+                                .build()))
+                    .build(),
+            PackageRef.builder()
+                    .name("ab")
+                    .version("1")
+                    .pkgManager(Constants.NPM_PKG_MANAGER)
+                    .build(),
+                DirectDependency.builder()
+                    .ref(
+                        PackageRef.builder()
+                            .name("ab")
+                            .version("1")
+                            .pkgManager(Constants.NPM_PKG_MANAGER)
+                            .build())
+                    .transitive(
+                        Set.of(
+                            PackageRef.builder()
+                                .name("aba")
+                                .version("1")
+                                .pkgManager(Constants.NPM_PKG_MANAGER)
+                                .build(),
+                            PackageRef.builder()
+                                .name("abb")
+                                .version("1")
+                                .pkgManager(Constants.NPM_PKG_MANAGER)
+                                .build(),
+                            PackageRef.builder()
+                                .name("abc")
+                                .version("1")
+                                .pkgManager(Constants.NPM_PKG_MANAGER)
+                                .build()))
                     .build());
-    return DependencyTree.builder().root(new PackageRef("a", "1")).dependencies(direct).build();
+    return DependencyTree.builder()
+        .root(
+            PackageRef.builder()
+                .name("a")
+                .version("1")
+                .pkgManager(Constants.NPM_PKG_MANAGER)
+                .build())
+        .dependencies(direct)
+        .build();
   }
 
   private Issue buildIssue(int id, Float score) {

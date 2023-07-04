@@ -31,10 +31,14 @@
     <#return result>
 </#function>
 <#function packageLink package>
-    <#return body.packagePath + package.name()>
+    <#return body.packagePath + package.name()?replace(":", "/") + "/" + package.version()>
 </#function>
-<#function issueLink issueId>
-    <#return body.issueLinkFormatter.format(issueId) >
+<#function issueLink issue>
+    <#if issue.source()=="snyk">
+        <#return body.snykIssueLinkFormatter.format(issue.id()) >
+    <#elseif issue.source()=="oss-index">
+        <#return body.ossIndexIssueLinkFormatter.format(issue.id()) >
+    </#if>
 </#function>
 <#function vexLink cve>
     <#return body.vexPath + cve + "-Quarkus.json" >
@@ -210,7 +214,7 @@
                     </td>
                     <td>
                         <#if body.issueVisibilityHelper.showIssue(dependency.highestVulnerability())>
-                            <a href="${issueLink(dependency.highestVulnerability().id())}"
+                            <a href="${issueLink(dependency.highestVulnerability())}"
                             target="_blank">
                                 ${dependency.highestVulnerability().id()}
                             </a>
@@ -341,7 +345,7 @@
                                                         <#assign remediation = dependency.findRemediationByIssue(vulnerability)!>
                                                     <#else>
                                                         <#if body.issueVisibilityHelper.showIssue(vulnerability)>
-                                                            <a href="${issueLink(vulnerability.id())}"
+                                                            <a href="${issueLink(vulnerability)}"
                                                             target="_blank">
                                                                 ${vulnerability.id()}
                                                             </a>
@@ -456,7 +460,7 @@
                                                         </button>
                                                     <#else>
                                                         <#if body.issueVisibilityHelper.showIssue(vulnerability)>
-                                                            <a href="${issueLink(vulnerability.id())}"
+                                                            <a href="${issueLink(vulnerability)}"
                                                             target="_blank">
                                                                 ${vulnerability.id()}
                                                             </a>

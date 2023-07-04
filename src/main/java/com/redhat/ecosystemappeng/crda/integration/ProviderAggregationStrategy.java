@@ -45,10 +45,10 @@ public class ProviderAggregationStrategy {
         .entrySet()
         .forEach(
             e -> {
-              List<Issue> newIssues = oldRequest.issues().get(e.getKey());
+              List<Issue> newIssues = issues.get(e.getKey());
               if (newIssues == null) {
-                newIssues = e.getValue();
-                oldRequest.issues().put(e.getKey(), newIssues);
+                newIssues = List.copyOf(e.getValue());
+                issues.put(e.getKey(), newIssues);
               } else {
                 newIssues.addAll(e.getValue());
               }

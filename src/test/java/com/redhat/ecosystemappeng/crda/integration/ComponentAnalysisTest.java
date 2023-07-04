@@ -21,18 +21,31 @@ package com.redhat.ecosystemappeng.crda.integration;
 import static io.restassured.RestAssured.given;
 import static org.apache.camel.Exchange.CONTENT_TYPE;
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
+import com.redhat.ecosystemappeng.crda.model.AnalysisReport;
+import com.redhat.ecosystemappeng.crda.model.ComponentRequest;
 import com.redhat.ecosystemappeng.crda.model.PackageRef;
+import com.redhat.ecosystemappeng.crda.model.ProviderStatus;
 
 import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.specification.RequestSpecification;
 
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 @QuarkusTest
 public class ComponentAnalysisTest extends AbstractAnalysisTest {
@@ -73,81 +86,23 @@ public class ComponentAnalysisTest extends AbstractAnalysisTest {
   }
 
   @Test
-  public void testWithNoSnykToken() {
-    stubSnykRequest(null);
-    stubTCGavRequest();
-    stubTCVexRequest();
-
-    List<PackageRef> pkgs =
-        List.of(
-            new PackageRef("com.fasterxml.jackson.core:jackson-databind", "2.13.1"),
-            new PackageRef("io.quarkus:quarkus-jdbc-postgresql", "2.13.5"));
-    new PackageRef("com.acme:example", "1.2.3");
-
-    String body =
-        given()
-            .header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
-            .queryParam(Constants.PROVIDERS_PARAM, Constants.SNYK_PROVIDER)
-            .body(pkgs)
-            .when()
-            .post("/api/v3/component-analysis/{pkgManager}", Constants.MAVEN_PKG_MANAGER)
-            .then()
-            .assertThat()
-            .statusCode(200)
-            .extract()
-            .body()
-            .asPrettyString();
-
-    assertJson("component_no_snyk_token.json", body);
-    verifyNoInteractionsWithTidelift();
-    verifySnykRequest(null);
-    verifyTCVexRequest();
-    verifyTCGavRequest();
-  }
-
-  @Test
-  public void testWithSnykToken() {
-    String snykToken = "my-snyk-token";
-    stubSnykRequest(snykToken);
-    stubTCGavRequest();
-    stubTCVexRequest();
-
-    List<PackageRef> pkgs =
-        List.of(
-            new PackageRef("com.fasterxml.jackson.core:jackson-databind", "2.13.1"),
-            new PackageRef("io.quarkus:quarkus-jdbc-postgresql", "2.13.5"));
-    new PackageRef("com.acme:example", "1.2.3");
-
-    String body =
-        given()
-            .header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
-            .queryParam(Constants.PROVIDERS_PARAM, Constants.SNYK_PROVIDER)
-            .header(Constants.SNYK_TOKEN_HEADER, snykToken)
-            .body(pkgs)
-            .when()
-            .post("/api/v3/component-analysis/{pkgManager}", Constants.MAVEN_PKG_MANAGER)
-            .then()
-            .assertThat()
-            .statusCode(200)
-            .extract()
-            .body()
-            .asPrettyString();
-
-    assertJson("component_snyk_token.json", body);
-    verifyNoInteractionsWithTidelift();
-    verifySnykRequest(snykToken);
-    verifyTCVexRequest();
-    verifyTCGavRequest();
-  }
-
-  @Test
   @Disabled
   public void testWithTidelift() {
     stubTideliftRequest(null);
     List<PackageRef> pkgs =
         List.of(
-            new PackageRef("log4j:log4j", "1.2.17"),
-            new PackageRef("io.netty:netty-common", "4.1.86"));
+            PackageRef.builder()
+                .pkgManager(Constants.MAVEN_PKG_MANAGER)
+                .namespace("log4j")
+                .name("log4j")
+                .version("1.2.17")
+                .build(),
+            PackageRef.builder()
+                .pkgManager(Constants.MAVEN_PKG_MANAGER)
+                .namespace("io.netty")
+                .name("netty-common")
+                .version("4.1.86")
+                .build());
 
     String body =
         given()
@@ -177,8 +132,18 @@ public class ComponentAnalysisTest extends AbstractAnalysisTest {
 
     List<PackageRef> pkgs =
         List.of(
-            new PackageRef("log4j:log4j", "1.2.17"),
-            new PackageRef("io.netty:netty-common", "4.1.86"));
+            PackageRef.builder()
+                .pkgManager(Constants.MAVEN_PKG_MANAGER)
+                .namespace("log4j")
+                .name("log4j")
+                .version("1.2.17")
+                .build(),
+            PackageRef.builder()
+                .pkgManager(Constants.MAVEN_PKG_MANAGER)
+                .namespace("io.netty")
+                .name("netty-common")
+                .version("4.1.86")
+                .build());
 
     String body =
         given()
@@ -201,18 +166,26 @@ public class ComponentAnalysisTest extends AbstractAnalysisTest {
     verifyTideliftRequest(3, token);
   }
 
-  @Test
-  public void testEmptyRequest() {
-    stubSnykRequest(null);
-    stubTCVexRequest();
+  @ParameterizedTest
+  @MethodSource("componentArguments")
+  public void testBasicRequests(
+      List<String> providers, Map<String, String> authHeaders, String expectedReport) {
+    stubAllProviders();
     stubTCGavRequest();
+    stubTCVexRequest();
 
-    List<PackageRef> pkgs = Collections.emptyList();
+    List<ComponentRequest> pkgs =
+        List.of(
+            new ComponentRequest("com.fasterxml.jackson.core:jackson-databind", "2.13.1"),
+            new ComponentRequest("io.quarkus:quarkus-jdbc-postgresql", "2.13.5"));
+
+    RequestSpecification req = given().header(CONTENT_TYPE, MediaType.APPLICATION_JSON);
+    if (!providers.isEmpty()) {
+      req.queryParam(Constants.PROVIDERS_PARAM, providers);
+    }
 
     String body =
-        given()
-            .header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
-            .queryParam(Constants.PROVIDERS_PARAM, Constants.SNYK_PROVIDER)
+        req.headers(authHeaders)
             .body(pkgs)
             .when()
             .post("/api/v3/component-analysis/{pkgManager}", Constants.MAVEN_PKG_MANAGER)
@@ -223,12 +196,167 @@ public class ComponentAnalysisTest extends AbstractAnalysisTest {
             .body()
             .asPrettyString();
 
-    assertJson("empty_response.json", body);
+    assertJson(expectedReport, body);
 
-    verifySnykRequest(null);
+    verifyProviders(providers, authHeaders, false);
     verifyTCVexRequest();
     verifyTCGavRequest();
+  }
 
-    verifyNoInteractionsWithTidelift();
+  private static Stream<Arguments> componentArguments() {
+    return Stream.of(
+        Arguments.of(
+            List.of(Constants.SNYK_PROVIDER),
+            Collections.emptyMap(),
+            "reports/component_no_snyk_token.json"),
+        Arguments.of(
+            List.of(Constants.SNYK_PROVIDER),
+            Map.of(Constants.SNYK_TOKEN_HEADER, OK_TOKEN),
+            "reports/component_snyk_token.json"),
+        Arguments.of(
+            List.of(Constants.OSS_INDEX_PROVIDER),
+            Map.of(
+                Constants.OSS_INDEX_USER_HEADER,
+                OK_USER,
+                Constants.OSS_INDEX_TOKEN_HEADER,
+                OK_TOKEN),
+            "reports/component_oss_token.json"),
+        Arguments.of(
+            List.of(Constants.SNYK_PROVIDER, Constants.OSS_INDEX_PROVIDER),
+            Map.of(
+                Constants.SNYK_TOKEN_HEADER,
+                OK_TOKEN,
+                Constants.OSS_INDEX_USER_HEADER,
+                OK_USER,
+                Constants.OSS_INDEX_TOKEN_HEADER,
+                OK_TOKEN),
+            "reports/component_all_token.json"),
+        Arguments.of(
+            List.of(Constants.SNYK_PROVIDER, Constants.OSS_INDEX_PROVIDER),
+            Map.of(
+                Constants.OSS_INDEX_USER_HEADER,
+                OK_USER,
+                Constants.OSS_INDEX_TOKEN_HEADER,
+                OK_TOKEN),
+            "reports/component_all_no_snyk_token.json"),
+        Arguments.of(
+            Collections.emptyList(),
+            Map.of(
+                Constants.SNYK_TOKEN_HEADER,
+                OK_TOKEN,
+                Constants.OSS_INDEX_USER_HEADER,
+                OK_USER,
+                Constants.OSS_INDEX_TOKEN_HEADER,
+                OK_TOKEN),
+            "reports/component_all_token.json"),
+        Arguments.of(
+            Collections.emptyList(),
+            Map.of(Constants.SNYK_TOKEN_HEADER, OK_TOKEN),
+            "reports/component_snyk_token.json"));
+  }
+
+  @ParameterizedTest
+  @MethodSource("emptyRequestParams")
+  public void testEmptyRequest(
+      List<String> providers, Map<String, String> authHeaders, String pkgManager) {
+    stubAllProviders();
+    stubTCVexRequest();
+    stubTCGavRequest();
+
+    List<PackageRef> pkgs = Collections.emptyList();
+
+    AnalysisReport report =
+        given()
+            .header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
+            .headers(authHeaders)
+            .queryParam(Constants.PROVIDERS_PARAM, providers)
+            .body(pkgs)
+            .when()
+            .post("/api/v3/component-analysis/{pkgManager}", pkgManager)
+            .then()
+            .assertThat()
+            .statusCode(200)
+            .extract()
+            .body()
+            .as(AnalysisReport.class);
+
+    providers.forEach(
+        p -> {
+          Optional<ProviderStatus> status =
+              report.summary().providerStatuses().stream()
+                  .filter(s -> s.provider().equals(p))
+                  .findFirst();
+          assertEquals(Response.Status.OK.getStatusCode(), status.get().status());
+          assertTrue(status.get().ok());
+          assertEquals(Response.Status.OK.getReasonPhrase(), status.get().message());
+        });
+
+    assertEquals(0, report.summary().dependencies().scanned());
+    assertEquals(0, report.summary().dependencies().transitive());
+    assertEquals(0, report.summary().vulnerabilities().total());
+    assertEquals(0, report.summary().vulnerabilities().direct());
+    assertEquals(0, report.summary().vulnerabilities().critical());
+    assertEquals(0, report.summary().vulnerabilities().high());
+    assertEquals(0, report.summary().vulnerabilities().medium());
+    assertEquals(0, report.summary().vulnerabilities().low());
+
+    assertTrue(report.dependencies().isEmpty());
+
+    verifyProviders(providers, authHeaders, true);
+
+    verifyNoInteractionsWithTCGav();
+    verifyNoInteractionsWithTCVex();
+  }
+
+  private static Stream<Arguments> emptyRequestParams() {
+    return Stream.of(
+        Arguments.of(
+            List.of(Constants.SNYK_PROVIDER), Collections.emptyMap(), Constants.MAVEN_PKG_MANAGER),
+        Arguments.of(
+            List.of(Constants.OSS_INDEX_PROVIDER),
+            Collections.emptyMap(),
+            Constants.MAVEN_PKG_MANAGER),
+        Arguments.of(
+            List.of(Constants.SNYK_PROVIDER, Constants.OSS_INDEX_PROVIDER),
+            Map.of(Constants.SNYK_TOKEN_HEADER, OK_TOKEN),
+            Constants.MAVEN_PKG_MANAGER),
+        Arguments.of(
+            List.of(Constants.SNYK_PROVIDER, Constants.OSS_INDEX_PROVIDER),
+            Map.of(
+                Constants.OSS_INDEX_USER_HEADER,
+                OK_USER,
+                Constants.OSS_INDEX_TOKEN_HEADER,
+                OK_TOKEN),
+            Constants.MAVEN_PKG_MANAGER),
+        Arguments.of(
+            List.of(Constants.SNYK_PROVIDER, Constants.OSS_INDEX_PROVIDER),
+            Map.of(
+                Constants.SNYK_TOKEN_HEADER,
+                OK_TOKEN,
+                Constants.OSS_INDEX_USER_HEADER,
+                OK_USER,
+                Constants.OSS_INDEX_TOKEN_HEADER,
+                OK_TOKEN),
+            Constants.MAVEN_PKG_MANAGER),
+        Arguments.of(
+            List.of(Constants.SNYK_PROVIDER, Constants.OSS_INDEX_PROVIDER),
+            Collections.emptyMap(),
+            Constants.MAVEN_PKG_MANAGER),
+        Arguments.of(
+            List.of(Constants.SNYK_PROVIDER, Constants.OSS_INDEX_PROVIDER),
+            Collections.emptyMap(),
+            Constants.NPM_PKG_MANAGER),
+        Arguments.of(
+            List.of(Constants.SNYK_PROVIDER, Constants.OSS_INDEX_PROVIDER),
+            Collections.emptyMap(),
+            Constants.GRADLE_PKG_MANAGER),
+        Arguments.of(
+            List.of(Constants.SNYK_PROVIDER, Constants.OSS_INDEX_PROVIDER),
+            Collections.emptyMap(),
+            Constants.GOMOD_PKG_MANAGER),
+        Arguments.of(
+            List.of(Constants.SNYK_PROVIDER, Constants.OSS_INDEX_PROVIDER),
+            Collections.emptyMap(),
+            Constants.PIP_PKG_MANAGER));
   }
 }

@@ -41,9 +41,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.packageurl.MalformedPackageURLException;
-import com.github.packageurl.PackageURL;
 import com.redhat.ecosystemappeng.crda.config.ObjectMapperProducer;
+import com.redhat.ecosystemappeng.crda.model.ComponentRequest;
 import com.redhat.ecosystemappeng.crda.model.DependencyTree;
 import com.redhat.ecosystemappeng.crda.model.DirectDependency;
 import com.redhat.ecosystemappeng.crda.model.GraphRequest;
@@ -60,16 +59,19 @@ import jakarta.ws.rs.core.Response;
 @RegisterForReflection
 public class GraphUtils {
 
-  public static final String DEFAULT_APP_NAME = "com.redhat.ecosystemappeng:default-app";
-  public static final String DEFAULT_APP_VERSION = "0.0.1";
   public static final PackageRef DEFAULT_ROOT =
-      new PackageRef(DEFAULT_APP_NAME, DEFAULT_APP_VERSION);
+      PackageRef.builder()
+          .namespace("com.redhat.ecosystemappeng")
+          .name("default-app")
+          .version("0.0.1")
+          .pkgManager(Constants.MAVEN_PKG_MANAGER)
+          .build();
 
   private static final ObjectMapper mapper = ObjectMapperProducer.newInstance();
   private static final Logger LOGGER = LoggerFactory.getLogger(GraphUtils.class);
 
   public GraphRequest fromPackages(
-      @Body List<PackageRef> body,
+      @Body List<ComponentRequest> body,
       @ExchangeProperty(Constants.PROVIDERS_PARAM) List<String> providers,
       @Header(Constants.PKG_MANAGER_HEADER) String pkgManager) {
     DependencyTree tree =
@@ -77,6 +79,7 @@ public class GraphUtils {
             .root(DEFAULT_ROOT)
             .dependencies(
                 body.stream()
+                    .map(c -> c.toPackageRef(pkgManager))
                     .distinct()
                     .collect(
                         Collectors.toUnmodifiableMap(
@@ -100,7 +103,7 @@ public class GraphUtils {
     switch (ct.getBaseType()) {
       case Constants.TEXT_VND_GRAPHVIZ:
         // fromDot(file, builder);
-        tree = fromDot(file);
+        tree = fromDot(file, pkgManager);
         break;
       case MediaType.APPLICATION_JSON:
         // fromSbom(file, builder, pkgManager);
@@ -114,7 +117,7 @@ public class GraphUtils {
     return new GraphRequest.Builder(pkgManager, providers).tree(tree).build();
   }
 
-  private DependencyTree fromDot(InputStream file) {
+  private DependencyTree fromDot(InputStream file, String pkgManager) {
     DependencyTree.Builder treeBuilder = DependencyTree.builder();
     Map<PackageRef, DirectDependency.Builder> direct = new HashMap<>();
     try (Scanner scanner = new Scanner(file)) {
@@ -127,8 +130,8 @@ public class GraphUtils {
           PackageRef source;
           PackageRef target;
           try {
-            source = PackageRef.parse(vertices[0].trim());
-            target = PackageRef.parse(vertices[1].trim());
+            source = PackageRef.parse(vertices[0].trim(), pkgManager);
+            target = PackageRef.parse(vertices[1].trim(), pkgManager);
           } catch (IllegalArgumentException e) {
             // ignore loops caused by classifiers
             continue;
@@ -177,13 +180,12 @@ public class GraphUtils {
                 .collect(
                     Collectors.toMap(
                         Component::getBomRef,
-                        c -> fromPurl(c.getPurl(), requiresDecoding(pkgManager)))));
+                        c -> fromComponent(c, requiresDecoding(pkgManager)))));
       }
 
       Optional<Component> rootComponent = Optional.ofNullable(bom.getMetadata().getComponent());
       if (rootComponent.isPresent()) {
-        String rootPurl = rootComponent.get().getPurl();
-        treeBuilder.root(fromPurl(rootPurl, decode));
+        treeBuilder.root(fromComponent(rootComponent.get(), decode));
       } else { // rootless SBOM
         treeBuilder.root(DEFAULT_ROOT);
       }
@@ -243,22 +245,16 @@ public class GraphUtils {
     return Constants.PIP_PKG_MANAGER.equals(pkgManager);
   }
 
-  private PackageRef fromPurl(String purl, boolean decode) {
-    PackageURL packageUrl;
+  private PackageRef fromComponent(Component component, boolean decode) {
     try {
+      String purl = component.getPurl();
       if (decode) {
-        packageUrl = new PackageURL(URLDecoder.decode(purl, StandardCharsets.UTF_8.name()));
-      } else {
-        packageUrl = new PackageURL(purl);
+        purl = URLDecoder.decode(component.getPurl(), StandardCharsets.UTF_8.name());
       }
-      if (packageUrl.getNamespace() != null) {
-        return new PackageRef(
-            packageUrl.getNamespace() + ":" + packageUrl.getName(), packageUrl.getVersion());
-      }
-      return new PackageRef(packageUrl.getName(), packageUrl.getVersion());
-    } catch (MalformedPackageURLException | UnsupportedEncodingException e) {
-      LOGGER.warn("Unsupported PURL format {}", purl, e);
-      throw new IllegalArgumentException("Unsupported PURL format: " + purl, e);
+      return PackageRef.builder().purl(purl).build();
+    } catch (UnsupportedEncodingException e) {
+      LOGGER.warn("Unsupported PURL format {}", component.getPurl(), e);
+      throw new IllegalArgumentException("Unsupported PURL format: " + component.getPurl(), e);
     }
   }
 }

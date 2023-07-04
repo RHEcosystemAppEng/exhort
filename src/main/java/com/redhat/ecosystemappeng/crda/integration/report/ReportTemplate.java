@@ -48,7 +48,7 @@ public class ReportTemplate {
   String packagePath;
 
   @ConfigProperty(name = "report.snyk.issue.regex")
-  String issuePathRegex;
+  String snykIssuePathRegex;
 
   @ConfigProperty(name = "report.vex.link")
   String vexPath;
@@ -59,6 +59,9 @@ public class ReportTemplate {
   @ConfigProperty(name = "report.snyk.signup.link")
   String snykSignup;
 
+  @ConfigProperty(name = "report.ossindex.issue.regex")
+  String ossIssuePathRegex;
+
   public Map<String, Object> setVariables(
       @Body AnalysisReport report,
       @ExchangeProperty(Constants.PROVIDER_PRIVATE_DATA_PROPERTY) List<String> providerPrivateData)
@@ -68,7 +71,8 @@ public class ReportTemplate {
     params.put("report", report);
     params.put("remediationPath", remediationPath);
     params.put("packagePath", packagePath);
-    params.put("issueLinkFormatter", new IssueLinkFormatter(issuePathRegex));
+    params.put("snykIssueLinkFormatter", new IssueLinkFormatter(snykIssuePathRegex));
+    params.put("ossIndexIssueLinkFormatter", new IssueLinkFormatter(ossIssuePathRegex));
     params.put("issueVisibilityHelper", new IssueVisibilityHelper(providerPrivateData));
     params.put("vexPath", vexPath);
     params.put("sbomPath", sbomPath);

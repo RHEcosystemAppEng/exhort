@@ -13,6 +13,7 @@ See the [application.properties](./src/main/resources/application.properties) fo
 ### Third party dependencies
 
 - Snyk API
+- OSS Index
 - Tidelift API (currently disabled)
 
 ## Required parameters
@@ -27,18 +28,25 @@ See the [application.properties](./src/main/resources/application.properties) fo
 
 ## Providers
 
-Currently there are 2 available providers.
+Currently there are 2 available providers that will provide a vulnerability report for your components or full dependency graph.
 
-- Snyk will provide a vulnerability report for your components or full dependency graph
-- Tidelift (Disabled) will provide a vulnerability report aggregated from independent requests taken from each individual dependency.
+- Snyk (`snyk`)
+- OSS Index (`oss-index`)
+- Tidelift (`tidelift`) **Disabled**
 
 You can disable a given provider for the dependency graph analysis by using `api.<provider>.disabled=true` property at startup.
 
-Providers should be defined as a multi-valued list in the `providers` Query Parameter. e.g. `/component-analysis/maven?providers=snyk&providers=tidelift`
+Providers should be defined as a multi-valued list in the `providers` Query Parameter. e.g. `/component-analysis/maven?providers=snyk&providers=oss-index`
 
 ## Package Managers
 
-Only `maven` is currently supported.
+The following Package Managers are currently supported:
+
+- Maven (`maven`)
+- Gradle (`gradle`)
+- NPM (`npm`)
+- Go Modules (`gomodules`)
+- Pip (`pip`)
 
 ## Dependency Graph Analysis `/api/v3/dependency-analysis/<pkgManager>`
 
@@ -115,6 +123,12 @@ To provide the client authentication tokens use HTTP Headers in the request. The
 
 ```bash
 http :8080/api/v3/dependency-analysis/maven Content-Type:"text/vnd.graphviz" Accept:"text/html" @'target/dependencies.txt' crda-snyk-token:the-client-token
+```
+
+In case the vulnerability provider requires of Basic Authentication the headers will be `crda-provider-user` and `crda-provider-token`.
+
+```bash
+http :8080/api/v3/dependency-analysis/maven Content-Type:"text/vnd.graphviz" Accept:"text/html" @'target/dependencies.txt' crda-oss-index-user:the-client-username crda-oss-index-token:the-client-token
 ```
 
 ### HTML Report

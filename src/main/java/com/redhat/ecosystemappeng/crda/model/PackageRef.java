@@ -20,26 +20,47 @@ package com.redhat.ecosystemappeng.crda.model;
 
 import java.util.Objects;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.github.packageurl.MalformedPackageURLException;
+import com.github.packageurl.PackageURL;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @RegisterForReflection
-public record PackageRef(String name, String version) {
+public record PackageRef(@JsonSerialize(using = PackageURLSerializer.class) PackageURL purl) {
 
   public PackageRef {
-    Objects.requireNonNull(name);
-    Objects.requireNonNull(version);
+    Objects.requireNonNull(purl);
   }
 
-  @JsonIgnore
-  public String getId() {
-    return name + "@" + version;
+  @JsonSetter
+  public void name(String name) {
+    // Ignore for deserialization
+  }
+
+  @JsonSetter
+  public void version(String version) {
+    // Ignore for deserialization
+  }
+
+  @JsonGetter
+  public String name() {
+    if (purl.getNamespace() == null) {
+      return purl.getName();
+    }
+    return purl.getNamespace() + ":" + purl.getName();
+  }
+
+  @JsonGetter
+  public String version() {
+    return purl.getVersion();
   }
 
   @Override
   public int hashCode() {
-    return name.hashCode();
+    return name().hashCode();
   }
 
   @Override
@@ -50,27 +71,90 @@ public record PackageRef(String name, String version) {
     if (!(other instanceof PackageRef)) {
       return false;
     }
-    return Objects.equals(name, ((PackageRef) other).name);
+    return Objects.equals(name(), ((PackageRef) other).name());
   }
 
-  public static PackageRef parse(String gav) {
+  public static PackageRef parse(String gav, String pkgManager) {
     String[] parts = gav.split(":");
     if (parts.length < 4 || parts.length > 6) {
       throw new IllegalArgumentException("Unexpected GAV format. " + gav);
     }
-    String name = parts[0] + ":" + parts[1];
     if (parts.length < 6) {
-      return new PackageRef(name, parts[3]);
+      return builder()
+          .namespace(parts[0])
+          .name(parts[1])
+          .version(parts[3])
+          .pkgManager(pkgManager)
+          .build();
     }
-    return new PackageRef(name, parts[4]);
+    return builder()
+        .namespace(parts[0])
+        .name(parts[1])
+        .version(parts[4])
+        .pkgManager(pkgManager)
+        .build();
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  public static class Builder {
+
+    String namespace;
+    String name;
+    String version;
+    String pkgManager;
+    String purl;
+
+    public Builder purl(String purl) {
+      this.purl = purl;
+      return this;
+    }
+
+    public Builder pkgManager(String pkgManager) {
+      this.pkgManager = pkgManager;
+      return this;
+    }
+
+    public Builder version(String version) {
+      this.version = version;
+      return this;
+    }
+
+    public Builder name(String name) {
+      this.name = name;
+      return this;
+    }
+
+    public Builder namespace(String namespace) {
+      this.namespace = namespace;
+      return this;
+    }
+
+    private Builder() {}
+
+    public PackageRef build() {
+      try {
+        if (Objects.isNull(purl)) {
+          Objects.requireNonNull(pkgManager);
+          Objects.requireNonNull(name);
+          Objects.requireNonNull(version);
+          return new PackageRef(new PackageURL(pkgManager, namespace, name, version, null, null));
+        }
+        return new PackageRef(new PackageURL(purl));
+      } catch (MalformedPackageURLException e) {
+        throw new IllegalArgumentException("Unable to parse PackageURL. " + e.getMessage());
+      }
+    }
   }
 
   public String toGav() {
-    return String.format("%s:%s", name, version);
+    return String.format("%s:%s", name(), purl.getVersion());
   }
 
   @Override
   public String toString() {
-    return toGav();
+    return purl.getCoordinates();
   }
 }

@@ -1,0 +1,27 @@
+{
+  "depGraph": {
+    "schemaVersion": "1.2.0",
+    "pkgManager": {
+      "name": "__PKG_MANAGER__"
+    },
+    "pkgs": [
+      {
+        "id": "com.redhat.ecosystemappeng:default-app@0.0.1",
+        "info": {
+          "name": "com.redhat.ecosystemappeng:default-app",
+          "version": "0.0.1"
+        }
+      }
+    ],
+    "graph": {
+      "rootNodeId": "com.redhat.ecosystemappeng:default-app@0.0.1",
+      "nodes": [
+        {
+          "nodeId": "com.redhat.ecosystemappeng:default-app@0.0.1",
+          "pkgId": "com.redhat.ecosystemappeng:default-app@0.0.1",
+          "deps": []
+        }
+      ]
+    }
+  }
+}

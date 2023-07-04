@@ -21,34 +21,18 @@ package com.redhat.ecosystemappeng.crda.model;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @RegisterForReflection
-public enum Severity {
-  CRITICAL,
-  HIGH,
-  MEDIUM,
-  LOW;
+public record ComponentRequest(String name, String version) {
 
-  public static Severity fromValue(String value) {
-    if (value == null) {
-      return null;
+  public PackageRef toPackageRef(String pkgManager) {
+    String[] parts = name.split(":");
+    PackageRef.Builder builder = PackageRef.builder().version(version).pkgManager(pkgManager);
+    if (parts.length == 1) {
+      builder.name(parts[0]);
+    } else if (parts.length == 2) {
+      builder.namespace(parts[0]).name(parts[1]);
+    } else {
+      throw new IllegalArgumentException("Invalid package format for: " + name);
     }
-    return Severity.valueOf(value.toUpperCase());
-  }
-
-  public String toString() {
-    return name().toLowerCase();
-  }
-
-  // From: https://nvd.nist.gov/vuln-metrics/cvss
-  public static Severity fromScore(float score) {
-    if (score < 4) {
-      return LOW;
-    }
-    if (score < 7) {
-      return MEDIUM;
-    }
-    if (score < 9) {
-      return HIGH;
-    }
-    return CRITICAL;
+    return builder.build();
   }
 }

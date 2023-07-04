@@ -18,29 +18,27 @@
 
 package com.redhat.ecosystemappeng.crda.integration;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.apache.camel.Exchange;
-import org.junit.jupiter.api.Test;
+import java.util.Map;
+import java.util.stream.Stream;
 
-import com.github.tomakehurst.wiremock.client.WireMock;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import io.quarkus.test.junit.QuarkusTest;
 
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 @QuarkusTest
 public class TokenValidationTest extends AbstractAnalysisTest {
 
   @Test
   public void testMissingToken() {
-    stubSnykToken(null);
-
     String msg =
         given()
             .when()
@@ -54,108 +52,147 @@ public class TokenValidationTest extends AbstractAnalysisTest {
             .asString();
     assertEquals("Missing authentication header", msg);
 
-    verifyNoTokenInteractions();
+    verifyNoInteractions();
   }
 
-  @Test
-  public void testServerError() {
-    stubSnykToken(ERROR_TOKEN);
+  @ParameterizedTest
+  @MethodSource("tokenErrorArguments")
+  public void testServerError(String provider, Map<String, String> headers) {
+    stubOssToken();
+    stubSnykTokenRequests();
 
     String msg =
         given()
             .when()
-            .header(Constants.SNYK_TOKEN_HEADER, ERROR_TOKEN)
+            .headers(headers)
             .get("/api/v3/token")
             .then()
             .assertThat()
-            .statusCode(500)
+            .statusCode(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode())
             .contentType(MediaType.TEXT_PLAIN)
             .extract()
             .body()
             .asString();
-    assertEquals("Unable to validate Snyk Token: Server Error", msg);
 
-    verifyTokenApiCall(ERROR_TOKEN);
+    assertEquals("Unable to validate " + provider + " Token: Server Error", msg);
+    verifyTokenRequest(provider, headers);
   }
 
-  @Test
-  public void testUnauthorizedError() {
-    String token = "other";
-    stubSnykToken("some token");
+  private static Stream<Arguments> tokenErrorArguments() {
+    return Stream.of(
+        Arguments.of(
+            Constants.OSS_INDEX_PROVIDER,
+            Map.of(
+                Constants.OSS_INDEX_USER_HEADER,
+                OK_USER,
+                Constants.OSS_INDEX_TOKEN_HEADER,
+                ERROR_TOKEN)),
+        Arguments.of(Constants.SNYK_PROVIDER, Map.of(Constants.SNYK_TOKEN_HEADER, ERROR_TOKEN)));
+  }
+
+  @ParameterizedTest
+  @MethodSource("tokenSuccessArguments")
+  public void testSuccess(String provider, Map<String, String> headers) {
+    stubOssToken();
+    stubSnykTokenRequests();
 
     String msg =
         given()
             .when()
-            .header(Constants.SNYK_TOKEN_HEADER, token)
+            .headers(headers)
             .get("/api/v3/token")
             .then()
             .assertThat()
-            .statusCode(401)
+            .statusCode(Response.Status.OK.getStatusCode())
             .contentType(MediaType.TEXT_PLAIN)
             .extract()
             .body()
             .asString();
-    assertEquals("Invalid token provided. Unauthorized", msg);
 
-    verifyTokenApiCall(token);
-  }
-
-  @Test
-  public void testValidToken() {
-    String token = "some token";
-    stubSnykToken(token);
-
-    String msg =
-        given()
-            .when()
-            .header(Constants.SNYK_TOKEN_HEADER, token)
-            .get("/api/v3/token")
-            .then()
-            .assertThat()
-            .statusCode(200)
-            .contentType(MediaType.TEXT_PLAIN)
-            .extract()
-            .body()
-            .asString();
     assertEquals("Token validated successfully", msg);
-
-    verifyTokenApiCall(token);
+    verifyTokenRequest(provider, headers);
   }
 
-  private void stubSnykToken(String token) {
-    server.stubFor(
-        get(Constants.SNYK_TOKEN_API_PATH)
-            .withHeader("Authorization", WireMock.equalTo("token " + token))
-            .willReturn(
-                aResponse()
-                    .withStatus(200)
-                    .withHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                    .withBodyFile("snyk_report.json")));
-    server.stubFor(
-        get(Constants.SNYK_TOKEN_API_PATH)
-            .withHeader("Authorization", WireMock.not(WireMock.equalTo("token " + token)))
-            .willReturn(
-                aResponse()
-                    .withStatus(401)
-                    .withBody(
-                        "{\"code\": 401, \"error\": \"Invalid auth token"
-                            + " provided\", \"message\": \"Invalid auth"
-                            + " token provided\"}")));
-
-    server.stubFor(
-        get(Constants.SNYK_TOKEN_API_PATH)
-            .withHeader("Authorization", WireMock.equalTo("token " + ERROR_TOKEN))
-            .willReturn(aResponse().withStatus(500)));
+  private static Stream<Arguments> tokenSuccessArguments() {
+    return Stream.of(
+        Arguments.of(
+            Constants.OSS_INDEX_PROVIDER,
+            Map.of(
+                Constants.OSS_INDEX_USER_HEADER,
+                OK_USER,
+                Constants.OSS_INDEX_TOKEN_HEADER,
+                OK_TOKEN)),
+        Arguments.of(Constants.SNYK_PROVIDER, Map.of(Constants.SNYK_TOKEN_HEADER, OK_TOKEN)));
   }
 
-  private void verifyNoTokenInteractions() {
-    server.verify(0, getRequestedFor(urlEqualTo(Constants.SNYK_TOKEN_API_PATH)));
+  @ParameterizedTest
+  @MethodSource("tokenUnauthorizedArguments")
+  public void testUnauthorized(String provider, Map<String, String> headers) {
+    stubOssToken();
+    stubSnykTokenRequests();
+
+    String msg =
+        given()
+            .when()
+            .headers(headers)
+            .get("/api/v3/token")
+            .then()
+            .assertThat()
+            .statusCode(Response.Status.UNAUTHORIZED.getStatusCode())
+            .contentType(MediaType.TEXT_PLAIN)
+            .extract()
+            .body()
+            .asString();
+
+    assertEquals("Invalid token provided. Unauthorized", msg);
+    verifyTokenRequest(provider, headers);
   }
 
-  private void verifyTokenApiCall(String token) {
-    server.verify(
-        1,
-        getRequestedFor(urlEqualTo(Constants.SNYK_TOKEN_API_PATH))
-            .withHeader("Authorization", WireMock.equalTo("token " + token)));
+  private static Stream<Arguments> tokenUnauthorizedArguments() {
+    return Stream.of(
+        Arguments.of(
+            Constants.OSS_INDEX_PROVIDER,
+            Map.of(
+                Constants.OSS_INDEX_USER_HEADER,
+                OK_USER,
+                Constants.OSS_INDEX_TOKEN_HEADER,
+                INVALID_TOKEN)),
+        Arguments.of(Constants.SNYK_PROVIDER, Map.of(Constants.SNYK_TOKEN_HEADER, INVALID_TOKEN)));
+  }
+
+  @ParameterizedTest
+  @MethodSource("tokenTooManyRequestsArguments")
+  public void testTooManyRequests(String provider, Map<String, String> headers) {
+    stubOssToken();
+    stubSnykTokenRequests();
+
+    String msg =
+        given()
+            .when()
+            .headers(headers)
+            .get("/api/v3/token")
+            .then()
+            .assertThat()
+            .statusCode(Response.Status.TOO_MANY_REQUESTS.getStatusCode())
+            .contentType(MediaType.TEXT_PLAIN)
+            .extract()
+            .body()
+            .asString();
+
+    assertEquals("Unable to validate " + provider + " Token: Too Many Requests", msg);
+    verifyTokenRequest(provider, headers);
+  }
+
+  private static Stream<Arguments> tokenTooManyRequestsArguments() {
+    return Stream.of(
+        Arguments.of(
+            Constants.OSS_INDEX_PROVIDER,
+            Map.of(
+                Constants.OSS_INDEX_USER_HEADER,
+                OK_USER,
+                Constants.OSS_INDEX_TOKEN_HEADER,
+                RATE_LIMIT_TOKEN)),
+        Arguments.of(
+            Constants.SNYK_PROVIDER, Map.of(Constants.SNYK_TOKEN_HEADER, RATE_LIMIT_TOKEN)));
   }
 }

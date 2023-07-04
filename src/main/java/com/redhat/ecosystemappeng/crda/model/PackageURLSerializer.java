@@ -18,37 +18,26 @@
 
 package com.redhat.ecosystemappeng.crda.model;
 
-import io.quarkus.runtime.annotations.RegisterForReflection;
+import java.io.IOException;
 
-@RegisterForReflection
-public enum Severity {
-  CRITICAL,
-  HIGH,
-  MEDIUM,
-  LOW;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import com.github.packageurl.PackageURL;
 
-  public static Severity fromValue(String value) {
-    if (value == null) {
-      return null;
-    }
-    return Severity.valueOf(value.toUpperCase());
+public class PackageURLSerializer extends StdSerializer<PackageURL> {
+
+  public PackageURLSerializer() {
+    this(null);
   }
 
-  public String toString() {
-    return name().toLowerCase();
+  public PackageURLSerializer(Class<PackageURL> c) {
+    super(c);
   }
 
-  // From: https://nvd.nist.gov/vuln-metrics/cvss
-  public static Severity fromScore(float score) {
-    if (score < 4) {
-      return LOW;
-    }
-    if (score < 7) {
-      return MEDIUM;
-    }
-    if (score < 9) {
-      return HIGH;
-    }
-    return CRITICAL;
+  @Override
+  public void serialize(PackageURL value, JsonGenerator gen, SerializerProvider provider)
+      throws IOException {
+    gen.writeString(value.getCoordinates());
   }
 }
