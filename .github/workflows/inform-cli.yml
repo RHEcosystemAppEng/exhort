@@ -19,7 +19,7 @@ jobs:
         with:
           github-token: ${{ secrets.CRDA_CLI_REPO_PAT }}
           script: |
-            ['crda-java-api', 'crda-javascript-api'].forEach(repo => {
+            ['crda-java-api', 'crda-javascript-api'].forEach(async repo => {
               await github.rest.repos.createDispatchEvent({
                 owner: "RHEcosystemAppEng",
                 repo: repo,
