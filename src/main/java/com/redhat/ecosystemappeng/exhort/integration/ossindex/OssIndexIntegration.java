@@ -82,7 +82,7 @@ public class OssIndexIntegration extends EndpointRouteBuilder {
             .timeoutEnabled(true)
             .timeoutDuration(timeout)
           .end()
-        .setBody(constant(List.of(GraphUtils.DEFAULT_ROOT)))
+        .setBody(constant(List.of(GraphUtils.getDefaultRoot(Constants.MAVEN_PKG_MANAGER))))
         .transform().method(OssIndexRequestBuilder.class, "buildRequest")
         .process(this::processComponentRequest)  
         .to(vertxHttp("{{api.ossindex.host}}"))
