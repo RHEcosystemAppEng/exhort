@@ -27,6 +27,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.redhat.ecosystemappeng.crda.config.ObjectMapperProducer;
+import com.redhat.ecosystemappeng.crda.integration.Constants;
 import com.redhat.ecosystemappeng.crda.model.DependencyTree;
 import com.redhat.ecosystemappeng.crda.model.GraphRequest;
 import com.redhat.ecosystemappeng.crda.model.PackageRef;
@@ -41,7 +42,9 @@ public class SnykRequestBuilder {
   public String fromDiGraph(GraphRequest req) throws JsonProcessingException {
     ObjectNode depGraph = mapper.createObjectNode();
     depGraph.put("schemaVersion", "1.2.0");
-    depGraph.set("pkgManager", mapper.createObjectNode().put("name", req.pkgManager()));
+    depGraph.set(
+        "pkgManager",
+        mapper.createObjectNode().put("name", toSnykPackageManager(req.pkgManager())));
 
     depGraph.set("pkgs", addPackages(depGraph, req.tree()));
     ObjectNode root = mapper.createObjectNode().set("depGraph", depGraph);
@@ -88,5 +91,16 @@ public class SnykRequestBuilder {
 
   private String getId(PackageRef ref) {
     return new StringBuilder(ref.name()).append("@").append(ref.version()).toString();
+  }
+
+  private String toSnykPackageManager(String pkgManager) {
+    switch (pkgManager) {
+      case Constants.GOLANG_PKG_MANAGER:
+        return "gomodules";
+      case Constants.PYPI_PKG_MANAGER:
+        return "pip";
+      default:
+        return pkgManager;
+    }
   }
 }

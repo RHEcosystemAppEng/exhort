@@ -19,7 +19,7 @@
 package com.redhat.ecosystemappeng.crda.integration.tidelift;
 
 import org.apache.camel.Body;
-import org.apache.camel.Header;
+import org.apache.camel.ExchangeProperty;
 
 import com.redhat.ecosystemappeng.crda.integration.Constants;
 import com.redhat.ecosystemappeng.crda.model.PackageRef;
@@ -30,7 +30,8 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 public class TideliftRequestBuilder {
 
   public String buildPath(
-      @Header(Constants.PKG_MANAGER_HEADER) String pkgManager, @Body PackageRef pkgRef) {
+      @ExchangeProperty(Constants.PKG_MANAGER_PROPERTY) String pkgManager,
+      @Body PackageRef pkgRef) {
     return String.format(
         Constants.TIDELIFT_API_BASE_PATH + Constants.TIDELIFT_RELEASES_PATTERN,
         pkgManager,

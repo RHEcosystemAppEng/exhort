@@ -21,7 +21,7 @@ package com.redhat.ecosystemappeng.crda.integration;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 
 @QuarkusIntegrationTest
-public class ComponentAnalysisIT extends ComponentAnalysisTest {
+public class AnalysisIT extends AnalysisTest {
 
   // Run the same tests
 

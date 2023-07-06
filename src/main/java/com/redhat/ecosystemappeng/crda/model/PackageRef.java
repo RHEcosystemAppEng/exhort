@@ -20,8 +20,8 @@ package com.redhat.ecosystemappeng.crda.model;
 
 import java.util.Objects;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.github.packageurl.MalformedPackageURLException;
 import com.github.packageurl.PackageURL;
@@ -29,23 +29,18 @@ import com.github.packageurl.PackageURL;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @RegisterForReflection
-public record PackageRef(@JsonSerialize(using = PackageURLSerializer.class) PackageURL purl) {
+public record PackageRef(
+    @JsonSerialize(using = PackageURLSerializer.class) @JsonValue PackageURL purl) {
+
+  @JsonCreator
+  public static PackageRef of(String purl) {
+    return builder().purl(purl).build();
+  }
 
   public PackageRef {
     Objects.requireNonNull(purl);
   }
 
-  @JsonSetter
-  public void name(String name) {
-    // Ignore for deserialization
-  }
-
-  @JsonSetter
-  public void version(String version) {
-    // Ignore for deserialization
-  }
-
-  @JsonGetter
   public String name() {
     if (purl.getNamespace() == null) {
       return purl.getName();
@@ -53,7 +48,6 @@ public record PackageRef(@JsonSerialize(using = PackageURLSerializer.class) Pack
     return purl.getNamespace() + ":" + purl.getName();
   }
 
-  @JsonGetter
   public String version() {
     return purl.getVersion();
   }

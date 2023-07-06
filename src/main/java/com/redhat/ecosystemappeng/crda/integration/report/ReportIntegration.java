@@ -51,7 +51,7 @@ public class ReportIntegration extends EndpointRouteBuilder {
             .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.TEXT_HTML))
             .bean(ReportTransformer.class, "transform")
             .setProperty(Constants.REPORT_PROPERTY, body())
-            .setBody(method(reportTemplate))
+            .setBody(method(reportTemplate, "setVariables"))
             .to(freemarker("report.ftl"));
 
         from(direct("multipartReport"))

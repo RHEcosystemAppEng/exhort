@@ -2,23 +2,23 @@
   "depGraph": {
     "schemaVersion": "1.2.0",
     "pkgManager": {
-      "name": "__PKG_MANAGER__"
+      "name": "maven"
     },
     "pkgs": [
       {
-        "id": "com.redhat.ecosystemappeng:default-app@0.0.1",
+        "id": "org.acme.dbaas:postgresql-orm-quarkus@1.0.0-SNAPSHOT",
         "info": {
-          "name": "com.redhat.ecosystemappeng:default-app",
-          "version": "0.0.1"
+          "name": "org.acme.dbaas:postgresql-orm-quarkus",
+          "version": "1.0.0-SNAPSHOT"
         }
       }
     ],
     "graph": {
-      "rootNodeId": "com.redhat.ecosystemappeng:default-app@0.0.1",
+      "rootNodeId": "org.acme.dbaas:postgresql-orm-quarkus@1.0.0-SNAPSHOT",
       "nodes": [
         {
-          "nodeId": "com.redhat.ecosystemappeng:default-app@0.0.1",
-          "pkgId": "com.redhat.ecosystemappeng:default-app@0.0.1",
+          "nodeId": "org.acme.dbaas:postgresql-orm-quarkus@1.0.0-SNAPSHOT",
+          "pkgId": "org.acme.dbaas:postgresql-orm-quarkus@1.0.0-SNAPSHOT",
           "deps": []
         }
       ]

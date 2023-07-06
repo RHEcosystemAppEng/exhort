@@ -36,7 +36,7 @@ Currently there are 2 available providers that will provide a vulnerability repo
 
 You can disable a given provider for the dependency graph analysis by using `api.<provider>.disabled=true` property at startup.
 
-Providers should be defined as a multi-valued list in the `providers` Query Parameter. e.g. `/component-analysis/maven?providers=snyk&providers=oss-index`
+Providers should be defined as a multi-valued list in the `providers` Query Parameter. e.g. `/analysis?providers=snyk&providers=oss-index`
 
 ## Package Managers
 
@@ -48,29 +48,11 @@ The following Package Managers are currently supported:
 - Go Modules (`gomodules`)
 - Pip (`pip`)
 
-## Dependency Graph Analysis `/api/v3/dependency-analysis/<pkgManager>`
-
-### DOT Graph
-
-With Maven it is possible to generate a [DOT graph](https://graphviz.org/doc/info/lang.html) with all the resolved dependencies.
-The following command will generate a `dependencies.txt` file in the project target folder.
-
-```bash
-mvn --quiet clean -f "/path/to/project/pom.xml" && mvn --quiet -Dversion=3.5.0 dependency:tree -f "/path/to/project/pom.xml" -DoutputFile="/path/to/project/target/dependencies.txt" -DoutputType=dot
-```
-
-You can submit this file to the `/dependency-analysis/<pkgManager>` endpoint in order to get a dependency graph analysis backed from the selected provider. Make sure youre passing the
-right `Content-Type` and a valid `pkgManager`
-
-This is an example for `maven`:
-
-```bash
-$ http :8080/api/v3/dependency-analysis/maven Content-Type:"text/vnd.graphviz" @'./src/test/resources/dependencies.txt'
-```
+## Dependency Analysis `/api/v3/analysis`
 
 ### SBOM File
 
-The CycloneDX Maven plugin generates CycloneDX Software Bill of Materials (SBOM) containing the aggregate of all direct and transitive
+The expected input data format is a CycloneDX Software Bill of Materials (SBOM) containing the aggregate of all direct and transitive
 dependencies of a project. CycloneDX is a lightweight software bill of materials (SBOM) standard designed for use in application security
 contexts and supply chain component analysis.
 
@@ -84,7 +66,7 @@ The generated file will be located under `./target/bom.json`. Make sure the requ
 Then you can analyise the vulnerabilities with the following command:
 
 ```bash
-$ http :8080/api/v3/dependency-analysis/maven Content-Type:"application/json" Accept:"application/json" @'target/bom.json'
+$ http :8080/api/v3/analysis Content-Type:"application/json" Accept:"application/json" @'target/bom.json'
 ```
 
 ### Verbose Mode
@@ -93,7 +75,7 @@ When the Dependency Graph Analysis returns a JSON report it contains all vulnera
 in order to retrieve just a Summary. Use the `verbose=false` Query parameter to disable it.
 
 ```bash
-$ http :8080/api/v3/dependency-analysis/maven Content-Type:"text/vnd.graphviz" Accept:"application/json" @'target/dependencies.txt' verbose==false
+$ http :8080/api/v3/analysis Content-Type:"application/json" Accept:"application/json" @'target/sbom.json' verbose==false
 
 {
     "dependencies": [],
@@ -122,13 +104,13 @@ that specific provider will not show all the details.
 To provide the client authentication tokens use HTTP Headers in the request. The format for the tokens Headers is `crda-provider-token`. e.g. `crda-snyk-token`:
 
 ```bash
-http :8080/api/v3/dependency-analysis/maven Content-Type:"text/vnd.graphviz" Accept:"text/html" @'target/dependencies.txt' crda-snyk-token:the-client-token
+http :8080/api/v3/analysis Content-Type:"application/json" Accept:"text/html" @'target/sbom.json' crda-snyk-token:the-client-token
 ```
 
 In case the vulnerability provider requires of Basic Authentication the headers will be `crda-provider-user` and `crda-provider-token`.
 
 ```bash
-http :8080/api/v3/dependency-analysis/maven Content-Type:"text/vnd.graphviz" Accept:"text/html" @'target/dependencies.txt' crda-oss-index-user:the-client-username crda-oss-index-token:the-client-token
+http :8080/api/v3/analysis Content-Type:"application/json" Accept:"text/html" @'target/sbom.json' crda-oss-index-user:the-client-username crda-oss-index-token:the-client-token
 ```
 
 ### HTML Report
@@ -142,7 +124,7 @@ The HTML report will show limited information:
 - Private vulnerabilities (i.e. vulnerabilities reported by the provider) will not be displayed.
 
 ```bash
-$ http :8080/api/v3/dependency-analysis/maven Content-Type:"text/vnd.graphviz" Accept:"text/html" @'./src/test/resources/dependencies.txt'
+$ http :8080/api/v3/analysis Content-Type:"application/json" Accept:"text/html" @'target/sbom.json'
 
 <html>
 ...
@@ -156,7 +138,7 @@ For that, use the `Accept: multipart/mixed` request header.
 
 
 ```bash
-http :8080/api/v3/dependency-analysis/maven Content-Type:"text/vnd.graphviz" Accept:"multipart/mixed" @'./target/dependencies.txt'
+http :8080/api/v3/analysis Content-Type:"application/json" Accept:"multipart/mixed" @'target/sbom.json'
 HTTP/1.1 200 OK
     boundary="----=_Part_2_2047647971.1682593849895"
 Content-Type: multipart/mixed;
@@ -205,41 +187,6 @@ Content-Disposition: attachment; filename=report.html
 </html>
 ------=_Part_2_2047647971.1682593849895--
 
-```
-
-## Component Analysis `/api/v3/component-analysis/<pkgManager>`
-
-It is also possible to provide a list of packages in order to get a similar report. This method accepts a JSON object instead of a DOT graph.
-
-Make sure you are providing a valid `pkgManager`
-
-```bash
-$ curl 'http://localhost:8080/api/v3/component-analysis/maven' \
---header 'Content-Type: application/json' \
---data '[
-    {"name": "log4j:log4j", "version": "1.2.17"},
-    {"name": "io.netty:netty-common", "version": "4.1.86"},
-]'
-...
-{
-    "summary": {
-        "dependencies": {
-            ...
-        },
-        "vulnerabilities": {
-            ...
-        }
-    },
-    "dependencies": [
-        {
-        "ref": {
-            "name": "log4j:log4j",
-            "version": "1.2.17"
-        },
-        ...
-        }
-    ]
-}
 ```
 
 ## Token validation

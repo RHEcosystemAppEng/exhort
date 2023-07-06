@@ -35,14 +35,12 @@ public final class Constants {
 
   public static final String ACCEPT_HEADER = "Accept";
   public static final String ACCEPT_ENCODING_HEADER = "Accept-Encoding";
-  public static final String PKG_MANAGER_HEADER = "pkgManager";
   public static final String SNYK_TOKEN_HEADER = "crda-snyk-token";
   public static final String TIDELIFT_TOKEN_HEADER = "crda-tidelift-token";
   public static final String OSS_INDEX_USER_HEADER = "crda-oss-index-user";
   public static final String OSS_INDEX_TOKEN_HEADER = "crda-oss-index-token";
   public static final String VERBOSE_MODE_HEADER = "verbose";
 
-  public static final String TEXT_VND_GRAPHVIZ = "text/vnd.graphviz";
   public static final MediaType MULTIPART_MIXED_TYPE = new MediaType("multipart", "mixed");
   public static final String MULTIPART_MIXED = MULTIPART_MIXED_TYPE.toString();
 
@@ -54,10 +52,10 @@ public final class Constants {
 
   public static final String MAVEN_PKG_MANAGER = "maven";
   public static final String NPM_PKG_MANAGER = "npm";
-  public static final String GRADLE_PKG_MANAGER = "gradle";
-  public static final String PIP_PKG_MANAGER = "pip";
-  public static final String GOMOD_PKG_MANAGER = "gomodules";
+  public static final String PYPI_PKG_MANAGER = "pypi";
+  public static final String GOLANG_PKG_MANAGER = "golang";
 
+  public static final String PKG_MANAGER_PROPERTY = "pkgManager";
   public static final String REQUEST_CONTENT_PROPERTY = "requestContent";
   public static final String REPORT_PROPERTY = "report";
   public static final String PROVIDER_PRIVATE_DATA_PROPERTY = "providerPrivateData";
@@ -80,9 +78,8 @@ public final class Constants {
             {
               add(MAVEN_PKG_MANAGER);
               add(NPM_PKG_MANAGER);
-              add(GRADLE_PKG_MANAGER);
-              add(PIP_PKG_MANAGER);
-              add(GOMOD_PKG_MANAGER);
+              add(PYPI_PKG_MANAGER);
+              add(GOLANG_PKG_MANAGER);
             }
           });
 

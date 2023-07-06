@@ -100,10 +100,7 @@ public class ReportTransformerTest {
     AnalysisReport report = new ReportTransformer().transform(req);
 
     assertNotNull(report);
-    assertEquals(1, report.dependencies().size());
-
-    assertEquals("aa", report.dependencies().get(0).ref().name());
-    assertEquals("1.redhat-0001", report.dependencies().get(0).recommendation().version());
+    assertTrue(report.dependencies().isEmpty());
   }
 
   private DependencyTree buildTree() {

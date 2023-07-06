@@ -92,11 +92,7 @@ public class ReportTransformer {
         });
     List<DependencyReport> result =
         depsReport.stream()
-            .filter(
-                r ->
-                    (r.issues() != null && !r.issues().isEmpty())
-                        || !r.transitive().isEmpty()
-                        || r.recommendation() != null)
+            .filter(r -> (r.issues() != null && !r.issues().isEmpty()) || !r.transitive().isEmpty())
             .sorted(new CvssScoreComparator().reversed())
             .collect(Collectors.toList());
     DependenciesSummary deps =
