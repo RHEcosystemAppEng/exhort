@@ -101,7 +101,6 @@ public class CrdaBackendIntegration extends EndpointRouteBuilder {
 
     from(direct("cleanUpResponse"))
         .routeId("cleanUpResponseHeaders")
-        .removeHeader(Constants.PKG_MANAGER_PROPERTY)
         .removeHeader(Constants.VERBOSE_MODE_HEADER);
 
     from(direct("validateToken"))

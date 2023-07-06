@@ -97,5 +97,4 @@
 
     /*#redhat {background-color: red;}*/
     /*#snyk {background-color: lightgreen;}*/
-    /*#tidelift {background-color: lightskyblue;}*/
 </style>
