@@ -12,7 +12,7 @@ jobs:
   inform_cli_spec_change:
     runs-on: ubuntu-latest
     name: Dispatch event for CLI
-    if: github.repository == 'RHEcosystemAppEng/crda-backend'
+    if: github.repository == 'RHEcosystemAppEng/exhort'
     steps:
       - name: Dispatch
         uses: actions/github-script@v6

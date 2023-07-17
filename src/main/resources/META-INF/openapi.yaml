@@ -7,9 +7,9 @@ info:
     url: https://www.apache.org/licenses/LICENSE-2.0.html
   version: 3.0.0
 servers:
-- url: http://crda-backend-crda.apps.sssc-cl01.appeng.rhecoeng.com/api/v3
+- url: http://exhort-exhort.apps.sssc-cl01.appeng.rhecoeng.com/api/v3
   description: Production server
-- url: http://crda-backend-dev-crda.apps.sssc-cl01.appeng.rhecoeng.com/api/v3
+- url: http://exhort-dev-exhort.apps.sssc-cl01.appeng.rhecoeng.com/api/v3
   description: Staging server
 - url: http://localhost:8080/api/v3
   description: Local development
@@ -177,15 +177,15 @@ components:
     SnykTokenAuth:
       type: apiKey
       in: header
-      name: crda-snyk-token
+      name: ex-snyk-token
     OssIndexUserAuth:
       type: apiKey
       in: header
-      name: crda-oss-index-name
+      name: ex-oss-index-name
     OssIndexTokenAuth:
       type: apiKey
       in: header
-      name: crda-oss-index-token
+      name: ex-oss-index-token
   schemas:
     AnalysisReport:
       type: object
