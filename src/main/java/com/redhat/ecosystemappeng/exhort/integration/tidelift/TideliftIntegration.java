@@ -40,7 +40,7 @@ public class TideliftIntegration extends EndpointRouteBuilder {
         from(direct("tideliftReleases"))
             .routeId("tideliftReleases")
             .to(direct("preTidelift"))
-            .setHeader(Constants.PKG_MANAGER_HEADER, simple("${body.pkgManager()}"))
+            .setHeader(Constants.PKG_MANAGER_PROPERTY, simple("${body.pkgManager()}"))
             .split().body(GraphRequest.class, g -> g.tree().getAll())
             .aggregationStrategy(new GroupedBodyAggregationStrategy())
             .parallelProcessing().timeout(5000L)

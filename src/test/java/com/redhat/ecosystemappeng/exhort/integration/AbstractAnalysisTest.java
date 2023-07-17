@@ -114,14 +114,6 @@ public abstract class AbstractAnalysisTest {
     }
   }
 
-  protected File loadDependenciesFile() {
-    return new File(getClass().getClassLoader().getResource("dependencies.txt").getPath());
-  }
-
-  protected File loadEmptyDependenciesFile() {
-    return new File(getClass().getClassLoader().getResource("empty_dependencies.txt").getPath());
-  }
-
   protected File loadSBOMFile() {
     return new File(getClass().getClassLoader().getResource("sboms/maven-sbom.json").getPath());
   }
@@ -279,20 +271,6 @@ public abstract class AbstractAnalysisTest {
                     .withStatus(200)
                     .withHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON)
                     .withBodyFile("snyk/maven_report.json")));
-    // Component request
-    server.stubFor(
-        post(Constants.SNYK_DEP_GRAPH_API_PATH)
-            .withHeader(
-                "Authorization", equalTo("token " + OK_TOKEN).or(equalTo("token " + SNYK_TOKEN)))
-            .withHeader(Exchange.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON))
-            .withRequestBody(
-                equalToJson(loadFileAsString("__files/snyk/component_maven_request.json")))
-            .willReturn(
-                aResponse()
-                    .withStatus(200)
-                    .withHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                    .withBodyFile("snyk/maven_report.json")));
-
     // Internal Error
     server.stubFor(
         post(Constants.SNYK_DEP_GRAPH_API_PATH)
@@ -370,13 +348,6 @@ public abstract class AbstractAnalysisTest {
             .withHeader(Exchange.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON))
             .withRequestBody(equalToJson(loadFileAsString("__files/ossindex/empty_request.json")))
             .willReturn(aResponse().withStatus(200).withBodyFile("ossindex/empty_report.json")));
-    server.stubFor(
-        post(Constants.OSS_INDEX_AUTH_COMPONENT_API_PATH)
-            .withBasicAuth(OK_USER, OK_TOKEN)
-            .withHeader(Exchange.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON))
-            .withRequestBody(
-                equalToJson(loadFileAsString("__files/ossindex/component_maven_request.json")))
-            .willReturn(aResponse().withStatus(200).withBodyFile("ossindex/maven_report.json")));
     server.stubFor(
         post(Constants.OSS_INDEX_AUTH_COMPONENT_API_PATH)
             .withBasicAuth(OK_USER, OK_TOKEN)
@@ -462,7 +433,7 @@ public abstract class AbstractAnalysisTest {
             .withHeader("Authorization", equalTo("Bearer " + token)));
   }
 
-  protected void stubTCGavRequest() {
+  protected void stubTCRequests() {
     server.stubFor(
         post(urlMatching(Constants.TRUSTED_CONTENT_PATH + ".*"))
             .withHeader(Exchange.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON))
@@ -472,13 +443,6 @@ public abstract class AbstractAnalysisTest {
                     .withHeader(Exchange.CONTENT_ENCODING, "identity")
                     .withHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON)
                     .withBodyFile("trustedcontent/gav_report.json")));
-  }
-
-  protected void verifyTCGavRequest() {
-    server.verify(1, postRequestedFor(urlMatching(Constants.TRUSTED_CONTENT_PATH + ".*")));
-  }
-
-  protected void stubTCVexRequest() {
     server.stubFor(
         post(urlMatching(Constants.TRUSTED_CONTENT_VEX_PATH))
             .withHeader(Exchange.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON))
@@ -514,7 +478,16 @@ public abstract class AbstractAnalysisTest {
                     .withBodyFile("trustedcontent/long_vex_report.json")));
   }
 
-  protected void verifyTCVexRequest() {
+  protected void verifyTCRequests() {
+    verifyTCRemediations();
+    verifyTCRecommendations();
+  }
+
+  protected void verifyTCRecommendations() {
+    server.verify(1, postRequestedFor(urlMatching(Constants.TRUSTED_CONTENT_PATH + ".*")));
+  }
+
+  protected void verifyTCRemediations() {
     server.verify(1, postRequestedFor(urlMatching(Constants.TRUSTED_CONTENT_VEX_PATH)));
   }
 
@@ -522,8 +495,7 @@ public abstract class AbstractAnalysisTest {
     verifyNoInteractionsWithSnyk();
     verifyNoInteractionsWithOSS();
     verifyNoInteractionsWithTidelift();
-    verifyNoInteractionsWithTCGav();
-    verifyNoInteractionsWithTCVex();
+    verifyNoInteractionsWithTC();
   }
 
   protected void verifyNoInteractionsWithSnyk() {
@@ -539,11 +511,16 @@ public abstract class AbstractAnalysisTest {
     server.verify(0, getRequestedFor(urlMatching(Constants.TIDELIFT_API_BASE_PATH + ".*")));
   }
 
-  protected void verifyNoInteractionsWithTCGav() {
-    server.verify(0, postRequestedFor(urlMatching(Constants.TRUSTED_CONTENT_PATH + ".*")));
+  protected void verifyNoInteractionsWithTC() {
+    verifyNoInteractionsWithTCRecommendations();
+    verifyNoInteractionsWithTCRemediations();
   }
 
-  protected void verifyNoInteractionsWithTCVex() {
+  protected void verifyNoInteractionsWithTCRemediations() {
     server.verify(0, postRequestedFor(urlMatching(Constants.TRUSTED_CONTENT_VEX_PATH)));
+  }
+
+  protected void verifyNoInteractionsWithTCRecommendations() {
+    server.verify(0, postRequestedFor(urlMatching(Constants.TRUSTED_CONTENT_PATH + ".*")));
   }
 }

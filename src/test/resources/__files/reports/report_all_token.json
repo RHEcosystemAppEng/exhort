@@ -29,11 +29,7 @@
 	},
 	"dependencies": [
 		{
-			"ref": {
-				"purl": "pkg:maven/io.quarkus/quarkus-hibernate-orm@2.13.5.Final",
-				"name": "io.quarkus:quarkus-hibernate-orm",
-				"version": "2.13.5.Final"
-			},
+			"ref": "pkg:maven/io.quarkus/quarkus-hibernate-orm@2.13.5.Final",
 			"highestVulnerability": {
 				"id": "SNYK-JAVA-COMFASTERXMLJACKSONCORE-2421244",
 				"title": "Denial of Service (DoS)",
@@ -62,11 +58,7 @@
 			"issues": [],
 			"transitive": [
 				{
-					"ref": {
-						"purl": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.1",
-						"name": "com.fasterxml.jackson.core:jackson-databind",
-						"version": "2.13.1"
-					},
+					"ref": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.1",
 					"highestVulnerability": {
 						"id": "SNYK-JAVA-COMFASTERXMLJACKSONCORE-2421244",
 						"title": "Denial of Service (DoS)",
@@ -245,25 +237,17 @@
 					"remediations": {
 						"CVE-2020-36518": {
 							"issueRef": "CVE-2020-36518",
-							"mavenPackage": {
-								"purl": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.1.Final-redhat-00002",
-								"name": "com.fasterxml.jackson.core:jackson-databind",
-								"version": "2.13.1.Final-redhat-00002"
-							},
+							"mavenPackage": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.1.Final-redhat-00002",
 							"productStatus": "known_affected"
 						}
 					}
 				}
 			],
 			"remediations": {},
-			"recommendation": null
+			"recommendation": "pkg:maven/io.quarkus/quarkus-hibernate-orm@2.13.5.redhat-00001"
 		},
 		{
-			"ref": {
-				"purl": "pkg:maven/io.quarkus/quarkus-jdbc-postgresql@2.13.5.Final",
-				"name": "io.quarkus:quarkus-jdbc-postgresql",
-				"version": "2.13.5.Final"
-			},
+			"ref": "pkg:maven/io.quarkus/quarkus-jdbc-postgresql@2.13.5.Final",
 			"highestVulnerability": {
 				"id": "SNYK-JAVA-ORGPOSTGRESQL-3146847",
 				"title": "Information Exposure",
@@ -292,11 +276,7 @@
 			"issues": [],
 			"transitive": [
 				{
-					"ref": {
-						"purl": "pkg:maven/org.postgresql/postgresql@42.5.0",
-						"name": "org.postgresql:postgresql",
-						"version": "42.5.0"
-					},
+					"ref": "pkg:maven/org.postgresql/postgresql@42.5.0",
 					"highestVulnerability": {
 						"id": "SNYK-JAVA-ORGPOSTGRESQL-3146847",
 						"title": "Information Exposure",
@@ -352,11 +332,7 @@
 					"remediations": {
 						"CVE-2022-41946": {
 							"issueRef": "CVE-2022-41946",
-							"mavenPackage": {
-								"purl": "pkg:maven/io.quarkus/quarkus-jdbc-postgresql@2.13.7.Final-redhat-00003",
-								"name": "io.quarkus:quarkus-jdbc-postgresql",
-								"version": "2.13.7.Final-redhat-00003"
-							},
+							"mavenPackage": "pkg:maven/io.quarkus/quarkus-jdbc-postgresql@2.13.7.Final-redhat-00003",
 							"productStatus": "fixed"
 						}
 					}

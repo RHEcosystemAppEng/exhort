@@ -40,6 +40,8 @@ import jakarta.ws.rs.core.Response;
 
 public class GraphUtilsTest {
 
+  private static final PackageRef DEFAULT_MAVEN_ROOT =
+      GraphUtils.getDefaultRoot(Constants.MAVEN_PKG_MANAGER);
   private static final PackageRef EXPECTED_ROOT =
       PackageRef.builder()
           .namespace("org.acme.dbaas")
@@ -49,66 +51,12 @@ public class GraphUtilsTest {
           .build();
 
   @Test
-  public void testParseEmptyDotFile() {
-    InputStream file = getClass().getClassLoader().getResourceAsStream("empty_dependencies.txt");
-    List<String> providers = List.of(Constants.SNYK_PROVIDER);
-
-    GraphRequest request =
-        new GraphUtils()
-            .fromDepGraph(
-                file, providers, Constants.MAVEN_PKG_MANAGER, Constants.TEXT_VND_GRAPHVIZ);
-    assertEquals(Constants.MAVEN_PKG_MANAGER, request.pkgManager());
-    assertEquals(providers, request.providers());
-    assertEquals(providers, request.providers());
-    assertEquals(0, request.tree().dependencies().size());
-    assertEquals(GraphUtils.DEFAULT_ROOT, request.tree().root());
-  }
-
-  @Test
-  public void testFromDot() {
-    InputStream file = getClass().getClassLoader().getResourceAsStream("dependencies.txt");
-    List<String> providers = List.of(Constants.SNYK_PROVIDER);
-
-    GraphRequest request =
-        new GraphUtils()
-            .fromDepGraph(
-                file, providers, Constants.MAVEN_PKG_MANAGER, Constants.TEXT_VND_GRAPHVIZ);
-    assertEquals(Constants.MAVEN_PKG_MANAGER, request.pkgManager());
-    assertEquals(providers, request.providers());
-    assertEquals(EXPECTED_ROOT, request.tree().root());
-    assertEquals(2, request.tree().dependencies().size());
-    assertEquals(
-        6,
-        request
-            .tree()
-            .dependencies()
-            .get(
-                PackageRef.parse(
-                    "io.quarkus:quarkus-hibernate-orm:jar:2.13.5.Final",
-                    Constants.MAVEN_PKG_MANAGER))
-            .transitive()
-            .size());
-    assertEquals(
-        1,
-        request
-            .tree()
-            .dependencies()
-            .get(
-                PackageRef.parse(
-                    "io.quarkus:quarkus-jdbc-postgresql:jar:2.13.5.Final",
-                    Constants.MAVEN_PKG_MANAGER))
-            .transitive()
-            .size());
-  }
-
-  @Test
   public void testParseEmptySBOM() {
     InputStream file = getClass().getClassLoader().getResourceAsStream("sboms/empty-sbom.json");
     List<String> providers = List.of(Constants.SNYK_PROVIDER);
 
     GraphRequest request =
-        new GraphUtils()
-            .fromDepGraph(file, providers, Constants.MAVEN_PKG_MANAGER, MediaType.APPLICATION_JSON);
+        new GraphUtils().fromDepGraph(file, providers, MediaType.APPLICATION_JSON);
     assertEquals(Constants.MAVEN_PKG_MANAGER, request.pkgManager());
     assertEquals(providers, request.providers());
     assertEquals(providers, request.providers());
@@ -122,8 +70,7 @@ public class GraphUtilsTest {
     List<String> providers = List.of(Constants.SNYK_PROVIDER);
 
     GraphRequest request =
-        new GraphUtils()
-            .fromDepGraph(file, providers, Constants.MAVEN_PKG_MANAGER, MediaType.APPLICATION_JSON);
+        new GraphUtils().fromDepGraph(file, providers, MediaType.APPLICATION_JSON);
     assertEquals(Constants.MAVEN_PKG_MANAGER, request.pkgManager());
     assertEquals(providers, request.providers());
     assertEquals(0, request.tree().dependencies().size());
@@ -137,10 +84,7 @@ public class GraphUtilsTest {
     ClientErrorException ex =
         assertThrows(
             ClientErrorException.class,
-            () ->
-                new GraphUtils()
-                    .fromDepGraph(
-                        file, providers, Constants.MAVEN_PKG_MANAGER, MediaType.APPLICATION_JSON));
+            () -> new GraphUtils().fromDepGraph(file, providers, MediaType.APPLICATION_JSON));
     assertEquals("Unable to parse received SBOM file", ex.getMessage());
     assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), ex.getResponse().getStatus());
   }
@@ -152,10 +96,7 @@ public class GraphUtilsTest {
     ClientErrorException ex =
         assertThrows(
             ClientErrorException.class,
-            () ->
-                new GraphUtils()
-                    .fromDepGraph(
-                        file, providers, Constants.MAVEN_PKG_MANAGER, MediaType.TEXT_PLAIN));
+            () -> new GraphUtils().fromDepGraph(file, providers, MediaType.TEXT_PLAIN));
     assertEquals("Unsupported Content-Type header: " + MediaType.TEXT_PLAIN, ex.getMessage());
     assertEquals(
         Response.Status.UNSUPPORTED_MEDIA_TYPE.getStatusCode(), ex.getResponse().getStatus());
@@ -169,7 +110,7 @@ public class GraphUtilsTest {
     List<String> providers = List.of(Constants.SNYK_PROVIDER);
 
     GraphRequest request =
-        new GraphUtils().fromDepGraph(file, providers, pkgManager, MediaType.APPLICATION_JSON);
+        new GraphUtils().fromDepGraph(file, providers, MediaType.APPLICATION_JSON);
     assertEquals(pkgManager, request.pkgManager());
     assertEquals(providers, request.providers());
     assertEquals(direct, request.tree().dependencies().size());
@@ -180,9 +121,8 @@ public class GraphUtilsTest {
   static Stream<Arguments> getSbomUseCases() {
     return Stream.of(
         arguments(Constants.MAVEN_PKG_MANAGER, 2, 7, EXPECTED_ROOT),
-        arguments(Constants.GRADLE_PKG_MANAGER, 9, 15, EXPECTED_ROOT),
         arguments(
-            Constants.GOMOD_PKG_MANAGER,
+            Constants.GOLANG_PKG_MANAGER,
             12,
             35,
             PackageRef.builder()
@@ -200,6 +140,6 @@ public class GraphUtilsTest {
                 .version("0.0.0-development")
                 .pkgManager(Constants.NPM_PKG_MANAGER)
                 .build()),
-        arguments(Constants.PIP_PKG_MANAGER, 96, 0, GraphUtils.DEFAULT_ROOT));
+        arguments(Constants.PYPI_PKG_MANAGER, 96, 0, DEFAULT_MAVEN_ROOT));
   }
 }

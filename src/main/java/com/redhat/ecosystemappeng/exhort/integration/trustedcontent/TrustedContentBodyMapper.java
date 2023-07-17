@@ -88,9 +88,11 @@ public class TrustedContentBodyMapper {
     return new GraphRequest.Builder(req).remediations(merged).build();
   }
 
+  // Only look for recommendations for direct dependencies
   public List<String> buildGavRequest(@Body GraphRequest request) {
-    return request.tree().getAll().stream()
+    return request.tree().dependencies().keySet().stream()
         .map(PackageRef::toGav)
+        .sorted()
         .collect(Collectors.toUnmodifiableList());
   }
 

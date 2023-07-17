@@ -1,6 +1,0 @@
-{
-    "coordinates": [
-        "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.1",
-        "pkg:maven/io.quarkus/quarkus-jdbc-postgresql@2.13.5"
-    ]
-}

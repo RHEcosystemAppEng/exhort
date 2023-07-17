@@ -112,7 +112,7 @@
   </div>
   <p class="pf-c-alert__title">
     <span class="pf-screen-reader">${providerStatus.provider()}:</span>
-    ${providerStatus.provider()?cap_first}: ${providerStatus.message()}
+    ${providerStatus.provider()?cap_first}: ${providerStatus.message()!"Unknown error"}
   </p>
 </div>
 <br />
@@ -126,7 +126,7 @@
   </div>
   <p class="pf-c-alert__title">
     <span class="pf-screen-reader">${providerStatus.provider()}:</span>
-    ${providerStatus.provider()?cap_first}: ${providerStatus.message()}
+    ${providerStatus.provider()?cap_first}: ${providerStatus.message()!"Unknown error"}
   </p>
 </div>
 <br />

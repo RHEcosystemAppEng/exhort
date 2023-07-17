@@ -1,3 +1,0 @@
-digraph "org.acme.dbaas:postgresql-orm-quarkus:jar:1.0.0-SNAPSHOT" { 
-
-}

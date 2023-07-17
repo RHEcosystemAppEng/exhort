@@ -21,7 +21,7 @@ package com.redhat.ecosystemappeng.exhort.integration;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 
 @QuarkusIntegrationTest
-public class ComponentAnalysisIT extends ComponentAnalysisTest {
+public class AnalysisIT extends AnalysisTest {
 
   // Run the same tests
 

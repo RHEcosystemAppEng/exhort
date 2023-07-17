@@ -23,7 +23,6 @@ import static com.redhat.ecosystemappeng.exhort.integration.Constants.REQUEST_CO
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.AggregationStrategies;
 import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
-import org.apache.camel.component.jackson.ListJacksonDataFormat;
 import org.apache.camel.component.micrometer.MicrometerConstants;
 import org.apache.camel.component.micrometer.routepolicy.MicrometerRoutePolicyFactory;
 
@@ -31,7 +30,6 @@ import com.redhat.ecosystemappeng.exhort.integration.Constants;
 import com.redhat.ecosystemappeng.exhort.integration.GraphUtils;
 import com.redhat.ecosystemappeng.exhort.integration.ProviderAggregationStrategy;
 import com.redhat.ecosystemappeng.exhort.integration.VulnerabilityProvider;
-import com.redhat.ecosystemappeng.exhort.model.ComponentRequest;
 
 import io.micrometer.core.instrument.MeterRegistry;
 
@@ -76,37 +74,22 @@ public class CrdaBackendIntegration extends EndpointRouteBuilder {
         .setBody().simple("${exception.message}");
 
     rest()
-        .post("/component-analysis/{pkgManager}")
-            .routeId("restComponentAnalysis")
-            .consumes(MediaType.APPLICATION_JSON)
-            .to("direct:componentAnalysis")
-        .post("/dependency-analysis/{pkgManager}")
-            .routeId("restDependencyAnalysis")
-            .to("direct:fullDepAnalysis")
+        .post("/analysis")
+            .routeId("restAnalysis")
+            .to("direct:analysis")
         .get("/token")
             .routeId("restTokenValidation")
             .to("direct:validateToken");
 
-    from(direct("componentAnalysis"))
-        .routeId("componentAnalysis")
-        .unmarshal(new ListJacksonDataFormat(ComponentRequest.class))
-        .setProperty(Constants.PROVIDERS_PARAM, method(vulnerabilityProvider, "getProvidersFromQueryParam"))
-        .setBody().method(GraphUtils.class, "fromPackages")
-        .to(direct("findVulnerabilities"))
-        .to(direct("recommendAllTrustedContent"))
-        .to(direct("jsonReport"))
-        .to(direct("cleanUpResponse"));
-
-
-    from(direct("fullDepAnalysis"))
-        .routeId("fullDependencyAnalysis")
+    from(direct("analysis"))
+        .routeId("dependencyAnalysis")
         .setProperty(Constants.PROVIDERS_PARAM, method(vulnerabilityProvider, "getProvidersFromQueryParam"))
         .setProperty(REQUEST_CONTENT_PROPERTY, method(BackendUtils.class, "getResponseMediaType"))
         .removeHeader(Constants.ACCEPT_HEADER)
         .removeHeader(Constants.ACCEPT_ENCODING_HEADER)
         .bean(GraphUtils.class, "fromDepGraph")
         .to(direct("findVulnerabilities"))
-        .to(direct("recommendVexContent"))
+        .to(direct("recommendAllTrustedContent"))
         .to(direct("report"))
         .to(direct("cleanUpResponse"));
 
@@ -118,7 +101,7 @@ public class CrdaBackendIntegration extends EndpointRouteBuilder {
 
     from(direct("cleanUpResponse"))
         .routeId("cleanUpResponseHeaders")
-        .removeHeader(Constants.PKG_MANAGER_HEADER)
+        .removeHeader(Constants.PKG_MANAGER_PROPERTY)
         .removeHeader(Constants.VERBOSE_MODE_HEADER);
 
     from(direct("validateToken"))

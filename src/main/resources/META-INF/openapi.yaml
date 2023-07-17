@@ -14,56 +14,7 @@ servers:
 - url: http://localhost:8080/api/v3
   description: Local development
 paths:
-  /component-analysis/{pkgManager}:
-    post:
-      operationId: componentAnalysis
-      summary: Performs a vulnerability for the provided components
-      security:
-        - SnykTokenAuth: []
-        - OssIndexUserAuth: []
-          OssIndexTokenAuth: []
-      parameters:
-      - name: pkgManager
-        in: path
-        description: Package manager related to the provided packages
-        required: true
-        schema:
-          enum:
-          - maven
-          type: string
-        example: maven
-      - name: providers
-        in: query
-        description: List of vulnerability providers to get the report from
-        required: false
-        schema:
-          enum:
-          - snyk
-          - oss-index
-          - tidelift
-          type: string
-        example: snyk
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ComponentRequest'
-        required: true
-      responses:
-        '200':
-          description: Successful component analysis report
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AnalysisReport'
-        '422':
-          description: Invalid request
-          content:
-            text/plain:
-              schema:
-                type: string
-                description: Error message
-  /dependency-analysis/{pkgManager}:
+  /analysis:
     post:
       operationId: dependencyAnalysis
       summary:  Takes a client-resolved dependency graph to perform a full stack analysis from all the available Vulnerability sources
@@ -72,15 +23,6 @@ paths:
         - OssIndexUserAuth: []
           OssIndexTokenAuth: []
       parameters:
-      - name: pkgManager
-        in: path
-        description: Package manager related to the provided packages
-        required: true
-        schema:
-          enum:
-          - maven
-          type: string
-        example: maven
       - name: providers
         in: query
         description: List of vulnerability providers to get the report from
@@ -94,11 +36,8 @@ paths:
         example: snyk
       requestBody:
         required: true
-        description: Dependency graph in DOT or SBOM formats
+        description: Dependency graph in SBOM format
         content:
-          text/vnd.graphviz:
-            schema:
-              type: object
           application/json:
             schema:
               type: object
@@ -196,29 +135,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/DependencyReport'
-    ComponentRequest:
-      type: array
-      items:
-        $ref: '#/components/schemas/PackageRef'
-      example:
-        - name: io.quarkus:quarkus-jdbc-postgresql
-          version: 2.13.5.Final
-        - name: io.quarkus:quarkus-hibernate-orm
-          version: 2.13.5.Final
     PackageRef:
-      type: object
-      properties:
-        name:
-          type: string
-          description: <groupId>:<artifactId> for Java packages
-          example: org.jgroups:jgroups
-        version:
-          type: string
-          description: Package version
-          example: 5.2.0.Final
-      example:
-        name: io.quarkus:quarkus-jdbc-postgresql
-        version: 2.13.5.Final
+      type: string
+      description: PackageURL used to identify a dependency artifact
+      example: pkg:maven/io.quarkus/quarkus-hibernate-orm@2.13.5.Final
     DependencyReport:
       type: object
       properties:
@@ -247,9 +167,7 @@ components:
           allOf:
             - $ref: '#/components/schemas/Issue'
       example:
-        ref:
-          name: io.quarkus:quarkus-jdbc-postgresql
-          version: 2.13.5.Final
+        ref: pkg:maven/io.quarkus/quarkus-jdbc-postgresql@2.13.5.Final
         issues:
           - id: SNYK-JAVA-COMFASTERXMLJACKSONCORE-3038426
             title: Denial of Service (DoS)
@@ -272,9 +190,7 @@ components:
             cves:
             - CVE-2022-42003
         transitive:
-          - ref:
-              name: org.postgresql:postgresql
-              version: 42.5.0
+          - ref: pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.1.Final
             issues:
               - id: SNYK-JAVA-COMFASTERXMLJACKSONCORE-3038426
                 title: Denial of Service (DoS)
@@ -299,9 +215,7 @@ components:
         remediations:
           CVE-2022-41946:
             issueRef: CVE-2022-41946
-            mavenPackage:
-              name: com.fasterxml.jackson.core:jackson-databind
-              version: 2.13.1.Final-redhat-00002
+            mavenPackage: pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.1.Final-redhat-00002
             productStatus: known_not_affected
     Issue:
       type: object
@@ -350,7 +264,6 @@ components:
         severity: MEDIUM
         cves:
         - CVE-2022-42003
-
     TransitiveDependencyReport:
       type: object
       properties:
@@ -365,9 +278,7 @@ components:
           additionalProperties:
             $ref: '#/components/schemas/Remediation'
       example:
-        ref:
-          name: org.postgresql:postgresql
-          version: 42.5.0
+        ref: pkg:maven/org.postgresql/postgresql@42.5.0
         issues:
           - id: SNYK-JAVA-COMFASTERXMLJACKSONCORE-3038426
             title: Denial of Service (DoS)
@@ -400,9 +311,7 @@ components:
           type: string
       example:
         issueRef: CVE-2022-41946
-        mavenPackage:
-          name: io.quarkus:quarkus-jdbc-postgresql
-          version: 2.13.7.Final-redhat-00003
+        mavenPackage: pkg:maven/io.quarkus/quarkus-jdbc-postgresql@2.13.7.Final-redhat-00003
         productStatus: fixed
     Summary:
       type: object
