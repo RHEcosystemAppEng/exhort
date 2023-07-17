@@ -1,7 +1,7 @@
-# CRDA Backend
+# Exhort
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![CI](https://github.com/RHEcosystemAppEng/crda-backend/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/RHEcosystemAppEng/crda-backend/actions/workflows/ci.yaml)
+[![CI](https://github.com/RHEcosystemAppEng/exhort/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/RHEcosystemAppEng/exhort/actions/workflows/ci.yaml)
 
 ## Dependencies
 
@@ -119,16 +119,16 @@ $ http :8080/api/v3/dependency-analysis/maven Content-Type:"text/vnd.graphviz" A
 If clients don't provide the token to authenticate against the Vulnerability Provider the default one will be used instead but vulnerabilities unique to
 that specific provider will not show all the details.
 
-To provide the client authentication tokens use HTTP Headers in the request. The format for the tokens Headers is `crda-provider-token`. e.g. `crda-snyk-token`:
+To provide the client authentication tokens use HTTP Headers in the request. The format for the tokens Headers is `ex-provider-token`. e.g. `ex-snyk-token`:
 
 ```bash
-http :8080/api/v3/dependency-analysis/maven Content-Type:"text/vnd.graphviz" Accept:"text/html" @'target/dependencies.txt' crda-snyk-token:the-client-token
+http :8080/api/v3/dependency-analysis/maven Content-Type:"text/vnd.graphviz" Accept:"text/html" @'target/dependencies.txt' ex-snyk-token:the-client-token
 ```
 
-In case the vulnerability provider requires of Basic Authentication the headers will be `crda-provider-user` and `crda-provider-token`.
+In case the vulnerability provider requires of Basic Authentication the headers will be `ex-provider-user` and `ex-provider-token`.
 
 ```bash
-http :8080/api/v3/dependency-analysis/maven Content-Type:"text/vnd.graphviz" Accept:"text/html" @'target/dependencies.txt' crda-oss-index-user:the-client-username crda-oss-index-token:the-client-token
+http :8080/api/v3/dependency-analysis/maven Content-Type:"text/vnd.graphviz" Accept:"text/html" @'target/dependencies.txt' ex-oss-index-user:the-client-username ex-oss-index-token:the-client-token
 ```
 
 ### HTML Report
@@ -196,10 +196,10 @@ Content-Disposition: attachment; filename=report.html
 
 <html>
     <header>
-        <title>CRDA Stack Report</title>
+        <title>Exhort Dependency Report</title>
     </header>
     <body>
-        <h1>Stack Report</h1>
+        <h1>Dependency Report</h1>
         <p>This is an example</p>
     </body>
 </html>
@@ -248,10 +248,10 @@ Clients are allowed to validate the vulnerability provider token with a specific
 tokens and validate them when saving them.
 
 The request will be a GET to the `/token` path containing the HTTP header with the token. The header format will follow the same rules as for the
-other HTTP requests. i.e. `crda-<provider>-token`
+other HTTP requests. i.e. `ex-<provider>-token`
 
 ```bash
-http -v :8080/api/v3/token crda-snyk-token==example-token
+http -v :8080/api/v3/token ex-snyk-token==example-token
 ```
 
 The possible responses are:
@@ -265,16 +265,16 @@ The possible responses are:
 
 ## Deploy on OpenShift
 
-The required parameters can be injected as environment variables through a secret. Create the `crda-secret` Secret before deploying the application.
+The required parameters can be injected as environment variables through a secret. Create the `exhort-secret` Secret before deploying the application.
 
 ```bash
-oc create secret generic -n crda --from-literal=api-snyk-token=<snyk_api_token> --from-literal=api-tidelift-token=<tidelift_api_token> crda-secret
+oc create secret generic -n exhort --from-literal=api-snyk-token=<snyk_api_token> --from-literal=api-tidelift-token=<tidelift_api_token> exhort-secret
 ```
 
-After that you can use the [crda-backend.yaml](./deploy/crda-backend.yaml)
+After that you can use the [exhort.yaml](./deploy/exhort.yaml)
 
 ```bash
-oc apply -f deploy/crda-backend.yaml
+oc apply -f deploy/exhort.yaml
 ```
 
 ## Running the application in dev mode
@@ -316,6 +316,6 @@ Or, if you don't have GraalVM installed, you can run the native executable build
 ./mvnw package -Pnative -Dquarkus.native.container-build=true
 ```
 
-You can then execute your native executable with: `./target/crda-backend-1.0.0-SNAPSHOT-runner`
+You can then execute your native executable with: `./target/exhort-0.0.1-SNAPSHOT-runner`
 
 If you want to learn more about building native executables, please consult https://quarkus.io/guides/maven-tooling.

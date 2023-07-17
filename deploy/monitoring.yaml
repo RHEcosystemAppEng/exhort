@@ -2,9 +2,9 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   labels:
-    k8s-app: crda-monitor
-  name: crda-monitor
-  namespace: crda
+    k8s-app: exhort-monitor
+  name: exhort-monitor
+  namespace: exhort
 spec:
   endpoints:
   - interval: 30s
@@ -13,4 +13,4 @@ spec:
     path: /q/metrics
   selector:
     matchLabels:
-      app: crda-backend
+      app: exhort
