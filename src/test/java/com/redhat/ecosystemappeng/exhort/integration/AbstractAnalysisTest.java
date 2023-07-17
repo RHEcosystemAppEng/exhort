@@ -383,56 +383,6 @@ public abstract class AbstractAnalysisTest {
     }
   }
 
-  protected void stubTideliftRequest(String token) {
-    if (token == null) {
-      token = WiremockV3Extension.TIDELIFT_TOKEN;
-    }
-    server.stubFor(
-        get(Constants.TIDELIFT_API_BASE_PATH + "/maven/log4j:log4j/releases/1.2.17")
-            .withHeader("Authorization", equalTo("Bearer " + token))
-            .willReturn(
-                aResponse()
-                    .withStatus(200)
-                    .withHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                    .withBodyFile("tidelift/log4j_report.json")));
-    server.stubFor(
-        get(Constants.TIDELIFT_API_BASE_PATH + "/maven/io.netty:netty-buffer/releases/4.1.86.Final")
-            .withHeader("Authorization", equalTo("Bearer " + token))
-            .willReturn(
-                aResponse()
-                    .withStatus(200)
-                    .withHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                    .withBodyFile("tidelift/netty_buffer_report.json")));
-    server.stubFor(
-        get(Constants.TIDELIFT_API_BASE_PATH
-                + "/maven/commons-beanutils:commons-beanutils/releases/1.9.4")
-            .withHeader("Authorization", equalTo("Bearer " + token))
-            .willReturn(
-                aResponse()
-                    .withStatus(200)
-                    .withHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                    .withBodyFile("tidelift/commons_beanutils_report.json")));
-
-    server.stubFor(
-        get(Constants.TIDELIFT_API_BASE_PATH + "/maven/org.slf4j:slf4j-api/releases/1.7.36")
-            .withHeader("Authorization", equalTo("Bearer " + token))
-            .willReturn(
-                aResponse()
-                    .withStatus(200)
-                    .withHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                    .withBodyFile("tidelift/slf4j_report.json")));
-  }
-
-  protected void verifyTideliftRequest(int times, String token) {
-    if (token == null) {
-      token = WiremockV3Extension.TIDELIFT_TOKEN;
-    }
-    server.verify(
-        times,
-        getRequestedFor(urlMatching(Constants.TIDELIFT_API_BASE_PATH + ".*"))
-            .withHeader("Authorization", equalTo("Bearer " + token)));
-  }
-
   protected void stubTCRequests() {
     server.stubFor(
         post(urlMatching(Constants.TRUSTED_CONTENT_PATH + ".*"))
@@ -494,7 +444,6 @@ public abstract class AbstractAnalysisTest {
   protected void verifyNoInteractions() {
     verifyNoInteractionsWithSnyk();
     verifyNoInteractionsWithOSS();
-    verifyNoInteractionsWithTidelift();
     verifyNoInteractionsWithTC();
   }
 
@@ -505,10 +454,6 @@ public abstract class AbstractAnalysisTest {
 
   protected void verifyNoInteractionsWithOSS() {
     server.verify(0, postRequestedFor(urlEqualTo(Constants.OSS_INDEX_AUTH_COMPONENT_API_PATH)));
-  }
-
-  protected void verifyNoInteractionsWithTidelift() {
-    server.verify(0, getRequestedFor(urlMatching(Constants.TIDELIFT_API_BASE_PATH + ".*")));
   }
 
   protected void verifyNoInteractionsWithTC() {

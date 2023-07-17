@@ -36,7 +36,6 @@ public final class Constants {
   public static final String ACCEPT_HEADER = "Accept";
   public static final String ACCEPT_ENCODING_HEADER = "Accept-Encoding";
   public static final String SNYK_TOKEN_HEADER = "ex-snyk-token";
-  public static final String TIDELIFT_TOKEN_HEADER = "ex-tidelift-token";
   public static final String OSS_INDEX_USER_HEADER = "ex-oss-index-user";
   public static final String OSS_INDEX_TOKEN_HEADER = "ex-oss-index-token";
   public static final String VERBOSE_MODE_HEADER = "verbose";
@@ -45,7 +44,6 @@ public final class Constants {
   public static final String MULTIPART_MIXED = MULTIPART_MIXED_TYPE.toString();
 
   public static final String SNYK_PROVIDER = "snyk";
-  public static final String TIDELIFT_PROVIDER = "tidelift";
   public static final String OSS_INDEX_PROVIDER = "oss-index";
 
   public static final String TRUSTED_CONTENT_NAME = "trusted-content";
@@ -64,8 +62,6 @@ public final class Constants {
   public static final String SNYK_DEP_GRAPH_API_PATH = "/test/dep-graph";
   public static final String SNYK_TOKEN_API_PATH = "/user/me";
   public static final String OSS_INDEX_AUTH_COMPONENT_API_PATH = "/authorized/component-report";
-  public static final String TIDELIFT_API_BASE_PATH = "/packages";
-  public static final String TIDELIFT_RELEASES_PATTERN = "/%s/%s/releases/%s";
   public static final String TRUSTED_CONTENT_PATH = "/api/policy/v1alpha1/trusted::gav";
   public static final String TRUSTED_CONTENT_VEX_PATH = "/tc";
 
@@ -88,7 +84,6 @@ public final class Constants {
           new ArrayList<>() {
             {
               add(SNYK_PROVIDER);
-              add(TIDELIFT_PROVIDER);
               add(OSS_INDEX_PROVIDER);
             }
           });

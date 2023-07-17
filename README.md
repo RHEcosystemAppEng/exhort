@@ -14,12 +14,10 @@ See the [application.properties](./src/main/resources/application.properties) fo
 
 - Snyk API
 - OSS Index
-- Tidelift API (currently disabled)
 
 ## Required parameters
 
 - `api.snyk.token` Snyk API token for default authentication
-- `api.tidelift.token` Tidelift API token for default authentication (currently ignored)
 
 ## OpenAPI and SwaggerUI
 
@@ -32,7 +30,6 @@ Currently there are 2 available providers that will provide a vulnerability repo
 
 - Snyk (`snyk`)
 - OSS Index (`oss-index`)
-- Tidelift (`tidelift`) **Disabled**
 
 You can disable a given provider for the dependency graph analysis by using `api.<provider>.disabled=true` property at startup.
 
@@ -268,7 +265,7 @@ The possible responses are:
 The required parameters can be injected as environment variables through a secret. Create the `exhort-secret` Secret before deploying the application.
 
 ```bash
-oc create secret generic -n exhort --from-literal=api-snyk-token=<snyk_api_token> --from-literal=api-tidelift-token=<tidelift_api_token> exhort-secret
+oc create secret generic -n exhort --from-literal=api-snyk-token=<snyk_api_token> exhort-secret
 ```
 
 After that you can use the [exhort.yaml](./deploy/exhort.yaml)

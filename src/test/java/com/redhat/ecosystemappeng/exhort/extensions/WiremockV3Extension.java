@@ -29,7 +29,6 @@ import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
 public class WiremockV3Extension implements QuarkusTestResourceLifecycleManager {
 
   public static final String SNYK_TOKEN = "snyk-token-xyz";
-  public static final String TIDELIFT_TOKEN = "tidelift-token-abc";
 
   private final WireMockServer server = new WireMockServer(options().dynamicPort());
 

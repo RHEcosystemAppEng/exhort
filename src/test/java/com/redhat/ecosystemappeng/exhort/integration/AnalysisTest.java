@@ -33,7 +33,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -204,87 +203,6 @@ public class AnalysisTest extends AbstractAnalysisTest {
   }
 
   @Test
-  @Disabled
-  public void testWithTidelift() {
-    stubTideliftRequest(null);
-    List<PackageRef> pkgs =
-        List.of(
-            PackageRef.builder()
-                .pkgManager(Constants.MAVEN_PKG_MANAGER)
-                .namespace("log4j")
-                .name("log4j")
-                .version("1.2.17")
-                .build(),
-            PackageRef.builder()
-                .pkgManager(Constants.MAVEN_PKG_MANAGER)
-                .namespace("io.netty")
-                .name("netty-common")
-                .version("4.1.86")
-                .build());
-
-    String body =
-        given()
-            .header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
-            .queryParam(Constants.PROVIDERS_PARAM, Constants.TIDELIFT_PROVIDER)
-            .body(pkgs)
-            .when()
-            .post("/api/v3/analysis")
-            .then()
-            .assertThat()
-            .statusCode(200)
-            .extract()
-            .body()
-            .asPrettyString();
-
-    assertJson("tidelift_component_report.json", body);
-    verifyNoInteractionsWithTC();
-    verifyNoInteractionsWithSnyk();
-    verifyTideliftRequest(3, null);
-  }
-
-  @Test
-  @Disabled
-  public void testTideliftClientToken() {
-    String token = "client-token";
-    stubTideliftRequest(token);
-
-    List<PackageRef> pkgs =
-        List.of(
-            PackageRef.builder()
-                .pkgManager(Constants.MAVEN_PKG_MANAGER)
-                .namespace("log4j")
-                .name("log4j")
-                .version("1.2.17")
-                .build(),
-            PackageRef.builder()
-                .pkgManager(Constants.MAVEN_PKG_MANAGER)
-                .namespace("io.netty")
-                .name("netty-common")
-                .version("4.1.86")
-                .build());
-
-    String body =
-        given()
-            .header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
-            .header(Constants.TIDELIFT_TOKEN_HEADER, token)
-            .queryParam(Constants.PROVIDERS_PARAM, Constants.TIDELIFT_PROVIDER)
-            .body(pkgs)
-            .when()
-            .post("/api/v3/analysis")
-            .then()
-            .assertThat()
-            .statusCode(200)
-            .extract()
-            .body()
-            .asPrettyString();
-
-    assertJson("tidelift_component_report.json", body);
-    verifyNoInteractionsWithTC();
-    verifyNoInteractionsWithSnyk();
-    verifyTideliftRequest(3, token);
-  }
-
-  @Test
   public void testAllWithToken() {
     stubAllProviders();
     stubTCRequests();
@@ -309,7 +227,6 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .asPrettyString();
 
     assertJson("reports/report_all_token.json", body);
-    verifyNoInteractionsWithTidelift();
     verifySnykRequest(OK_TOKEN);
     verifyOssRequest(OK_USER, OK_TOKEN, false);
     verifyTCRequests();
@@ -337,35 +254,8 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .asPrettyString();
 
     assertJson("reports/report_all_no_snyk_token.json", body);
-    verifyNoInteractionsWithTidelift();
     verifySnykRequest(null);
     verifyTCRequests();
-  }
-
-  @Test
-  @Disabled
-  public void testTidelift() {
-    stubTideliftRequest(null);
-
-    String body =
-        given()
-            .header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
-            .queryParam(Constants.PROVIDERS_PARAM, Constants.TIDELIFT_PROVIDER)
-            .body(loadSBOMFile())
-            .when()
-            .post("/api/v3/analysis")
-            .then()
-            .assertThat()
-            .statusCode(200)
-            .contentType(MediaType.APPLICATION_JSON)
-            .extract()
-            .body()
-            .asPrettyString();
-
-    assertJson("reports/tidelift_report.json", body);
-    verifyNoInteractionsWithTC();
-    verifyNoInteractionsWithSnyk();
-    verifyTideliftRequest(8, null);
   }
 
   @Test
@@ -456,7 +346,6 @@ public class AnalysisTest extends AbstractAnalysisTest {
 
     verifyTCRequests();
     verifySnykRequest(OK_TOKEN);
-    verifyNoInteractionsWithTidelift();
   }
 
   @Test
@@ -485,20 +374,17 @@ public class AnalysisTest extends AbstractAnalysisTest {
 
     verifyTCRequests();
     verifySnykRequest(null);
-    verifyNoInteractionsWithTidelift();
   }
 
   @Test
   public void testNonVerboseWithToken() {
     stubAllProviders();
-    String tideliftToken = "my-tidelift-token";
     stubTCRequests();
 
     AnalysisReport report =
         given()
             .header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
             .header("Accept", MediaType.APPLICATION_JSON)
-            .header(Constants.TIDELIFT_TOKEN_HEADER, tideliftToken)
             .header(Constants.SNYK_TOKEN_HEADER, OK_TOKEN)
             .queryParam(Constants.VERBOSE_MODE_HEADER, Boolean.FALSE)
             .body(loadSBOMFile())
@@ -517,7 +403,6 @@ public class AnalysisTest extends AbstractAnalysisTest {
 
     verifySnykRequest(OK_TOKEN);
     verifyTCRequests();
-    verifyNoInteractionsWithTidelift();
   }
 
   @Test
@@ -544,7 +429,6 @@ public class AnalysisTest extends AbstractAnalysisTest {
 
     verifySnykRequest(null);
     verifyTCRequests();
-    verifyNoInteractionsWithTidelift();
   }
 
   @Test
@@ -575,7 +459,6 @@ public class AnalysisTest extends AbstractAnalysisTest {
     verifySnykRequest(OK_TOKEN);
     verifyTCRequests();
     verifyOssRequest(OK_USER, OK_TOKEN, false);
-    verifyNoInteractionsWithTidelift();
   }
 
   @Test
@@ -604,7 +487,6 @@ public class AnalysisTest extends AbstractAnalysisTest {
     verifySnykRequest(INVALID_TOKEN);
     verifyTCRecommendations();
     verifyNoInteractionsWithTCRemediations();
-    verifyNoInteractionsWithTidelift();
     verifyNoInteractionsWithOSS();
   }
 
@@ -634,7 +516,6 @@ public class AnalysisTest extends AbstractAnalysisTest {
     verifySnykRequest(UNAUTH_TOKEN);
     verifyTCRecommendations();
     verifyNoInteractionsWithTCRemediations();
-    verifyNoInteractionsWithTidelift();
     verifyNoInteractionsWithOSS();
   }
 
@@ -664,7 +545,6 @@ public class AnalysisTest extends AbstractAnalysisTest {
     verifySnykRequest(ERROR_TOKEN);
     verifyTCRecommendations();
     verifyNoInteractionsWithTCRemediations();
-    verifyNoInteractionsWithTidelift();
     verifyNoInteractionsWithOSS();
   }
 

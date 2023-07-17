@@ -31,7 +31,6 @@ paths:
           enum:
           - snyk
           - oss-index
-          - tidelift
           type: string
         example: snyk
       requestBody:
