@@ -6,7 +6,7 @@ on:
     branches:
       - main
     paths:
-      - "src/main/resources/META-INF/openapi.yaml"
+      - "api-spec/v3/openapi.yaml"
 
 jobs:
   inform_cli_spec_change:

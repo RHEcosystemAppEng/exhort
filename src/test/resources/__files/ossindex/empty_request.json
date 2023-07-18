@@ -1,3 +1,3 @@
 {
-    "coordinates" : [ "pkg:maven/com.redhat.ecosystemappeng/default-app@0.0.1" ]
+    "coordinates" : [ "pkg:maven/com.redhat.exhort/default-app@0.0.1" ]
 }

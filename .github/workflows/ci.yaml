@@ -38,7 +38,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-      - run: npx @redocly/cli lint src/main/resources/META-INF/openapi.yaml
+      - run: npx @redocly/cli lint api-spec/v3/openapi.yaml
   openapi-validation:
     runs-on: ubuntu-latest
     name: Validate OpenAPI Spec
@@ -47,4 +47,4 @@ jobs:
       - name: Validate OpenAPI definition
         uses: char0n/swagger-editor-validate@v1
         with:
-          definition-file: src/main/resources/META-INF/openapi.yaml
+          definition-file: api-spec/v3/openapi.yaml
