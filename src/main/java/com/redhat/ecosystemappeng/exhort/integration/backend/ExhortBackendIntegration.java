@@ -40,13 +40,13 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 @ApplicationScoped
-public class CrdaBackendIntegration extends EndpointRouteBuilder {
+public class ExhortBackendIntegration extends EndpointRouteBuilder {
 
   private final MeterRegistry registry;
 
   @Inject VulnerabilityProvider vulnerabilityProvider;
 
-  CrdaBackendIntegration(MeterRegistry registry) {
+  ExhortBackendIntegration(MeterRegistry registry) {
     this.registry = registry;
   }
 
@@ -60,14 +60,14 @@ public class CrdaBackendIntegration extends EndpointRouteBuilder {
         .clientRequestValidation(true);
 
     onException(IllegalArgumentException.class)
-        .routeId("onCrdaIllegalArgumentException")
+        .routeId("onExhortIllegalArgumentException")
         .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(422))
         .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.TEXT_PLAIN))
         .handled(true)
         .setBody().simple("${exception.message}");
 
     onException(ClientErrorException.class)
-        .routeId("onCrdaClientErrorException")
+        .routeId("onExhortClientErrorException")
         .setHeader(Exchange.HTTP_RESPONSE_CODE, simple("${exception.getResponse().getStatus()}"))
         .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.TEXT_PLAIN))
         .handled(true)
