@@ -42,13 +42,13 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 @ApplicationScoped
-public class CrdaBackendIntegration extends EndpointRouteBuilder {
+public class ExhortBackendIntegration extends EndpointRouteBuilder {
 
   private final MeterRegistry registry;
 
   @Inject VulnerabilityProvider vulnerabilityProvider;
 
-  CrdaBackendIntegration(MeterRegistry registry) {
+  ExhortBackendIntegration(MeterRegistry registry) {
     this.registry = registry;
   }
 
