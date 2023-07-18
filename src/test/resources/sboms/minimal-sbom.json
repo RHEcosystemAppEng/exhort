@@ -1,0 +1,125 @@
+{
+    "bomFormat" : "CycloneDX",
+    "specVersion" : "1.4",
+    "version" : 1,
+    "metadata" : {
+      "component" : {
+        "name" : "postgresql-orm-quarkus",
+        "purl" : "pkg:maven/org.acme.dbaas/postgresql-orm-quarkus@1.0.0-SNAPSHOT?type=jar",
+        "type" : "library",
+        "bom-ref" : "pkg:maven/org.acme.dbaas/postgresql-orm-quarkus@1.0.0-SNAPSHOT?type=jar"
+      }
+    },
+    "components" : [
+      {
+        "name" : "quarkus-hibernate-orm",
+        "purl" : "pkg:maven/io.quarkus/quarkus-hibernate-orm@2.13.5.Final?type=jar",
+        "type" : "library",
+        "bom-ref" : "pkg:maven/io.quarkus/quarkus-hibernate-orm@2.13.5.Final?type=jar"
+      },
+      {
+        "name" : "quarkus-core",
+        "purl" : "pkg:maven/io.quarkus/quarkus-core@2.13.5.Final?type=jar",
+        "type" : "library",
+        "bom-ref" : "pkg:maven/io.quarkus/quarkus-core@2.13.5.Final?type=jar"
+      },
+      {
+        "name" : "jakarta.enterprise.cdi-api",
+        "purl" : "pkg:maven/jakarta.enterprise/jakarta.enterprise.cdi-api@2.0.2?type=jar",
+        "type" : "library",
+        "bom-ref" : "pkg:maven/jakarta.enterprise/jakarta.enterprise.cdi-api@2.0.2?type=jar"
+      },
+      {
+        "name" : "jakarta.el-api",
+        "purl" : "pkg:maven/jakarta.el/jakarta.el-api@3.0.3?type=jar",
+        "type" : "library",
+        "bom-ref" : "pkg:maven/jakarta.el/jakarta.el-api@3.0.3?type=jar"
+      },
+      {
+        "name" : "quarkus-jdbc-postgresql",
+        "purl" : "pkg:maven/io.quarkus/quarkus-jdbc-postgresql@2.13.5.Final?type=jar",
+        "type" : "library",
+        "bom-ref" : "pkg:maven/io.quarkus/quarkus-jdbc-postgresql@2.13.5.Final?type=jar"
+      },
+      {
+        "name" : "postgresql",
+        "purl" : "pkg:maven/org.postgresql/postgresql@42.5.0?type=jar",
+        "type" : "library",
+        "bom-ref" : "pkg:maven/org.postgresql/postgresql@42.5.0?type=jar"
+      },
+      {
+        "name" : "jackson-databind",
+        "purl" : "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.1?type=jar",
+        "type" : "library",
+        "bom-ref" : "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.1?type=jar"
+      },
+      {
+        "name" : "quarkus-narayana-jta",
+        "purl" : "pkg:maven/io.quarkus/quarkus-narayana-jta@2.13.5.Final?type=jar",
+        "type" : "library",
+        "bom-ref" : "pkg:maven/io.quarkus/quarkus-narayana-jta@2.13.5.Final?type=jar"
+      },
+      {
+        "name" : "jakarta.interceptor-api",
+        "purl" : "pkg:maven/jakarta.interceptor/jakarta.interceptor-api@1.2.5?type=jar",
+        "type" : "library",
+        "bom-ref" : "pkg:maven/jakarta.interceptor/jakarta.interceptor-api@1.2.5?type=jar"
+      }
+    ],
+    "dependencies" : [
+      {
+        "ref" : "pkg:maven/org.acme.dbaas/postgresql-orm-quarkus@1.0.0-SNAPSHOT?type=jar",
+        "dependsOn" : [
+          "pkg:maven/io.quarkus/quarkus-hibernate-orm@2.13.5.Final?type=jar",
+          "pkg:maven/io.quarkus/quarkus-jdbc-postgresql@2.13.5.Final?type=jar"
+        ]
+      },
+      {
+        "ref" : "pkg:maven/io.quarkus/quarkus-hibernate-orm@2.13.5.Final?type=jar",
+        "dependsOn" : [
+          "pkg:maven/io.quarkus/quarkus-core@2.13.5.Final?type=jar",
+          "pkg:maven/io.quarkus/quarkus-narayana-jta@2.13.5.Final?type=jar"
+        ]
+      },
+      {
+        "ref" : "pkg:maven/io.quarkus/quarkus-core@2.13.5.Final?type=jar",
+        "dependsOn" : [
+          "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.1?type=jar",
+          "pkg:maven/jakarta.enterprise/jakarta.enterprise.cdi-api@2.0.2?type=jar"
+        ]
+      },
+      {
+        "ref" : "pkg:maven/io.quarkus/quarkus-narayana-jta@2.13.5.Final?type=jar",
+        "dependsOn" : [ ]
+      },
+      {
+        "ref" : "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.1?type=jar",
+        "dependsOn" : [ ]
+      },
+      {
+        "ref" : "pkg:maven/jakarta.enterprise/jakarta.enterprise.cdi-api@2.0.2?type=jar",
+        "dependsOn" : [
+          "pkg:maven/jakarta.el/jakarta.el-api@3.0.3?type=jar",
+          "pkg:maven/jakarta.interceptor/jakarta.interceptor-api@1.2.5?type=jar"
+        ]
+      },
+      {
+        "ref" : "pkg:maven/io.quarkus/quarkus-jdbc-postgresql@2.13.5.Final?type=jar",
+        "dependsOn" : [
+           "pkg:maven/org.postgresql/postgresql@42.5.0?type=jar"
+        ]
+      },
+      {
+        "ref" : "pkg:maven/jakarta.el/jakarta.el-api@3.0.3?type=jar",
+        "dependsOn" : [ ]
+      },
+      {
+        "ref" : "pkg:maven/jakarta.interceptor/jakarta.interceptor-api@1.2.5?type=jar",
+        "dependsOn" : [ ]
+      },
+      {
+        "ref" : "pkg:maven/org.postgresql/postgresql@42.5.0?type=jar",
+        "dependsOn" : [ ]
+      }
+    ]
+  }

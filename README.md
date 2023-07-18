@@ -21,7 +21,7 @@ See the [application.properties](./src/main/resources/application.properties) fo
 
 ## OpenAPI and SwaggerUI
 
-- OpenAPI Spec: There is an [openapi.yaml](./src/main/resources/META-INF/openapi.yaml) or publiehsed in the endpoint http://localhost:8080/q/openapi?format=json
+- OpenAPI Spec: There is an [openapi.yaml](./api-spec/v3/openapi.yaml) or publiehsed in the endpoint http://localhost:8080/q/openapi?format=json
 - Swagger UI: Available at http://localhost:8080/q/swagger-ui for development or when enabled with the property `quarkus.swagger-ui.always-include=true`
 
 ## Providers
