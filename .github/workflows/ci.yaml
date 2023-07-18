@@ -6,6 +6,7 @@ on:
   pull_request:
     branches:
       - main
+      - 0.1.x
   workflow_dispatch: # allow this workflow to be called by other workflows
 
 concurrency:
