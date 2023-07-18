@@ -61,7 +61,8 @@ public class ReportIntegration extends EndpointRouteBuilder {
             .setBody(exchangeProperty(Constants.REPORT_PROPERTY))
             .bean(ReportTransformer.class, "filterVerboseResult")
             .marshal().json()
-            .marshal().mimeMultipart(Constants.MULTIPART_MIXED_TYPE.getSubtype(), false, false, true);
+            .marshal().mimeMultipart(false, false, true)
+            .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.TEXT_HTML));
 
         from(direct("jsonReport"))
             .routeId("jsonReport")

@@ -27,6 +27,12 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpClient.Version;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +43,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import com.redhat.exhort.api.AnalysisReport;
 import com.redhat.exhort.api.DependencyReport;
@@ -456,6 +463,33 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .asString();
 
     assertHtml("reports/report_all_token.html", body);
+
+    verifySnykRequest(OK_TOKEN);
+    verifyTCRequests();
+    verifyOssRequest(OK_USER, OK_TOKEN, false);
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {"HTTP_1_1", "HTTP_2"})
+  public void testMultipart_HttpVersions(String version) throws IOException, InterruptedException {
+    stubAllProviders();
+    stubTCRequests();
+
+    HttpClient client = HttpClient.newHttpClient();
+    HttpRequest request =
+        HttpRequest.newBuilder(URI.create("http://localhost:8081/api/v3/analysis"))
+            .setHeader(CONTENT_TYPE, MediaType.APPLICATION_JSON)
+            .setHeader("Accept", Constants.MULTIPART_MIXED)
+            .setHeader(Constants.SNYK_TOKEN_HEADER, OK_TOKEN)
+            .setHeader(Constants.OSS_INDEX_USER_HEADER, OK_USER)
+            .setHeader(Constants.OSS_INDEX_TOKEN_HEADER, OK_TOKEN)
+            .version(Version.valueOf(version))
+            .POST(HttpRequest.BodyPublishers.ofFile(loadSBOMFile().toPath()))
+            .build();
+
+    HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+    assertEquals(Response.Status.OK.getStatusCode(), response.statusCode());
 
     verifySnykRequest(OK_TOKEN);
     verifyTCRequests();
