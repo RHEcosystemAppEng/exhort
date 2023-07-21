@@ -208,6 +208,10 @@ components:
     PackageRef:
       type: object
       properties:
+        purl:
+          type: string
+          description: PackageURL identifier
+          example: pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.1
         name:
           type: string
           description: <groupId>:<artifactId> for Java packages

@@ -224,7 +224,6 @@
                                 Sign up for a free Snyk account
                             </a>to learn about the vulnerabilities found
                         </#if>
-                        
                     </td>
                 <#else>
                     <td>--</td>
