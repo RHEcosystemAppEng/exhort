@@ -1,0 +1,151 @@
+{
+  "$schema": "http://cyclonedx.org/schema/bom-1.4.schema.json",
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.4",
+  "serialNumber": "urn:uuid:588326f3-7527-45cd-8574-853429509dfc",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2023-06-08T13:57:24+02:00",
+    "component": {
+      "bom-ref": "pkg:golang/github.com/fabric8-analytics/cli-tools@v0.2.6-0.20211007133944-2af417bfb988?type=module",
+      "type": "application",
+      "name": "github.com/fabric8-analytics/cli-tools",
+      "version": "v0.2.6-0.20211007133944-2af417bfb988",
+      "purl": "pkg:golang/github.com/fabric8-analytics/cli-tools@v0.2.6-0.20211007133944-2af417bfb988?type=module\u0026goos=linux\u0026goarch=amd64",
+      "externalReferences": [
+        {
+          "url": "https://github.com/fabric8-analytics/cli-tools",
+          "type": "vcs"
+        }
+      ]
+    }
+  },
+  "components": [
+    {
+      "bom-ref": "pkg:golang/golang.org/x/sys@v0.0.0-20210112080510-489259a85091?type=module",
+      "type": "library",
+      "name": "golang.org/x/sys",
+      "version": "v0.0.0-20210112080510-489259a85091",
+      "scope": "required",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "0ccc8e1b453e80a7eef096738365107bd31e682d57fb141694029c4678f18c2c"
+        }
+      ],
+      "purl": "pkg:golang/golang.org/x/sys@v0.0.0-20210112080510-489259a85091?type=module\u0026goos=linux\u0026goarch=amd64"
+    },
+    {
+      "bom-ref": "pkg:golang/github.com/jpillora/backoff@v1.0.0?type=module",
+      "type": "library",
+      "name": "github.com/jpillora/backoff",
+      "version": "v1.0.0",
+      "scope": "required",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "baf160e35d899a61c11f0ee2c29ac8c643cc23eb06438933396b0c7879e6d840"
+        }
+      ],
+      "purl": "pkg:golang/github.com/jpillora/backoff@v1.0.0?type=module\u0026goos=linux\u0026goarch=amd64",
+      "externalReferences": [
+        {
+          "url": "https://github.com/jpillora/backoff",
+          "type": "vcs"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:golang/github.com/mattn/go-colorable@v0.1.8?type=module",
+      "type": "library",
+      "name": "github.com/mattn/go-colorable",
+      "version": "v0.1.8",
+      "scope": "required",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "7358213ddc840daac2ef47ed9f4cbe03f11efbef73cfc9631c6d5bd77789d2cf"
+        }
+      ],
+      "purl": "pkg:golang/github.com/mattn/go-colorable@v0.1.8?type=module\u0026goos=linux\u0026goarch=amd64",
+      "externalReferences": [
+        {
+          "url": "https://github.com/mattn/go-colorable",
+          "type": "vcs"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:golang/github.com/mattn/go-isatty@v0.0.12?type=module",
+      "type": "library",
+      "name": "github.com/mattn/go-isatty",
+      "version": "v0.0.12",
+      "scope": "required",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "c2ecac461143cf2c6012631fe718ef27633d759a1601734daf92d2052eee1d76"
+        }
+      ],
+      "purl": "pkg:golang/github.com/mattn/go-isatty@v0.0.12?type=module\u0026goos=linux\u0026goarch=amd64",
+      "externalReferences": [
+        {
+          "url": "https://github.com/mattn/go-isatty",
+          "type": "vcs"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:golang/github.com/fatih/color@v1.10.0?type=module",
+      "type": "library",
+      "name": "github.com/fatih/color",
+      "version": "v1.10.0",
+      "scope": "required",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "b37eb1ce8ef925da8b69a5a88841e4efaede1e2c28d39f7cb94c727e23e40ec8"
+        }
+      ],
+      "purl": "pkg:golang/github.com/fatih/color@v1.10.0?type=module\u0026goos=linux\u0026goarch=amd64",
+      "externalReferences": [
+        {
+          "url": "https://github.com/fatih/color",
+          "type": "vcs"
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "pkg:golang/github.com/fabric8-analytics/cli-tools@v0.2.6-0.20211007133944-2af417bfb988?type=module",
+      "dependsOn": [
+        "pkg:golang/github.com/fatih/color@v1.10.0?type=module",
+        "pkg:golang/github.com/jpillora/backoff@v1.0.0?type=module"
+      ]
+    },
+    {
+      "ref": "pkg:golang/github.com/jpillora/backoff@v1.0.0?type=module"
+    },
+    {
+      "ref": "pkg:golang/github.com/fatih/color@v1.10.0?type=module",
+      "dependsOn": [
+        "pkg:golang/github.com/mattn/go-colorable@v0.1.8?type=module",
+        "pkg:golang/github.com/mattn/go-isatty@v0.0.12?type=module"
+      ]
+    },
+    {
+      "ref": "pkg:golang/github.com/mattn/go-colorable@v0.1.8?type=module",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:golang/github.com/mattn/go-isatty@v0.0.12?type=module",
+      "dependsOn": [
+        "pkg:golang/golang.org/x/sys@v0.0.0-20210112080510-489259a85091?type=module"
+      ]
+    },
+    {
+      "ref": "pkg:golang/golang.org/x/sys@v0.0.0-20210112080510-489259a85091?type=module"
+    }
+  ]
+}

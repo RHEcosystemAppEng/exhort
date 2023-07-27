@@ -39,7 +39,10 @@ paths:
         required: true
         description: Dependency graph in SBOM format
         content:
-          application/json:
+          application/vnd.cyclonedx+json:
+            schema:
+              type: object
+          application/vnd.spdx+json:
             schema:
               type: object
       responses:

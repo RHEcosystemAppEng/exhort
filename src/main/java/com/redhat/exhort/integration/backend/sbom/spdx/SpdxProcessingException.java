@@ -16,25 +16,15 @@
  * limitations under the License.
  */
 
-package com.redhat.exhort.config;
+package com.redhat.exhort.integration.backend.sbom.spdx;
 
-import org.apache.camel.http.base.HttpOperationFailedException;
-import org.jboss.resteasy.reactive.common.jaxrs.ResponseImpl;
-import org.spdx.storage.listedlicense.LicenseJsonTOC;
+public class SpdxProcessingException extends RuntimeException {
 
-import io.quarkus.runtime.annotations.RegisterForReflection;
+  public SpdxProcessingException(String msg) {
+    super(msg);
+  }
 
-import jakarta.ws.rs.ClientErrorException;
-import jakarta.ws.rs.WebApplicationException;
-import jakarta.ws.rs.core.Response;
-
-@RegisterForReflection(
-    targets = {
-      HttpOperationFailedException.class,
-      WebApplicationException.class,
-      ClientErrorException.class,
-      Response.class,
-      ResponseImpl.class,
-      LicenseJsonTOC.class
-    })
-public class CustomReflectionConfiguration {}
+  public SpdxProcessingException(String msg, Throwable e) {
+    super(msg, e);
+  }
+}

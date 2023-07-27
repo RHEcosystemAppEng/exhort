@@ -16,25 +16,29 @@
  * limitations under the License.
  */
 
-package com.redhat.exhort.config;
+package com.redhat.exhort.integration.backend.sbom;
 
-import org.apache.camel.http.base.HttpOperationFailedException;
-import org.jboss.resteasy.reactive.common.jaxrs.ResponseImpl;
-import org.spdx.storage.listedlicense.LicenseJsonTOC;
+import org.cyclonedx.CycloneDxMediaType;
 
-import io.quarkus.runtime.annotations.RegisterForReflection;
+import com.redhat.exhort.integration.Constants;
+import com.redhat.exhort.integration.backend.sbom.cyclonedx.CycloneDxParser;
+import com.redhat.exhort.integration.backend.sbom.spdx.SpdxParser;
 
 import jakarta.ws.rs.ClientErrorException;
-import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
 
-@RegisterForReflection(
-    targets = {
-      HttpOperationFailedException.class,
-      WebApplicationException.class,
-      ClientErrorException.class,
-      Response.class,
-      ResponseImpl.class,
-      LicenseJsonTOC.class
-    })
-public class CustomReflectionConfiguration {}
+public class SbomParserFactory {
+
+  public static final SbomParser newInstance(String mediaType) {
+    switch (mediaType) {
+      case CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON:
+        return new CycloneDxParser();
+      case Constants.SPDX_MEDIATYPE_JSON:
+        return new SpdxParser();
+      default:
+        throw new ClientErrorException(
+            "Unsupported Content-Type header: " + mediaType,
+            Response.Status.UNSUPPORTED_MEDIA_TYPE);
+    }
+  }
+}

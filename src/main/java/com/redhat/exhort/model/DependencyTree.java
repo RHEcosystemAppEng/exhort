@@ -31,6 +31,15 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 @RegisterForReflection
 public record DependencyTree(PackageRef root, Map<PackageRef, DirectDependency> dependencies) {
 
+  public static final PackageRef getDefaultRoot(String type) {
+    return PackageRef.builder()
+        .pkgManager(type)
+        .namespace("com.redhat.exhort")
+        .name("default-app")
+        .version("0.0.1")
+        .build();
+  }
+
   public DependencyTree {
     Objects.requireNonNull(root);
     if (dependencies != null) {

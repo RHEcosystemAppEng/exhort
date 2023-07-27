@@ -1,0 +1,40 @@
+{
+  "SPDXID" : "SPDXRef-DOCUMENT",
+  "spdxVersion" : "SPDX-2.3",
+  "creationInfo" : {
+    "comment" : "Converted from CycloneDX spec version 1.4",
+    "created" : "2023-05-16T14:37:58Z",
+    "creators" : [ "Tool: CycloneToSpdx-0.1.4" ],
+    "licenseListVersion" : "3.21"
+  },
+  "name" : "SBOM-for-org.acme.dbaas:postgresql-orm-quarkus",
+  "dataLicense" : "CC0-1.0",
+  "documentNamespace" : "https://cyclonedx/21e8d828-b07f-4fd3-bd14-0458f7188d40_1",
+  "packages" : [ {
+    "SPDXID" : "SPDXRef-pkg-foo-org.acme.dbaas-postgresql-orm-quarkus-1.0.0-SNAPSHOT-type-jar",
+    "annotations" : [ {
+      "annotationDate" : "2023-07-26T09:11:21Z",
+      "annotationType" : "OTHER",
+      "annotator" : "Tool: CycloneToSpdx",
+      "comment" : "MISSING_CDX_PROPERTY:componentType=\"LIBRARY\""
+    } ],
+    "copyrightText" : "NOASSERTION",
+    "downloadLocation" : "NOASSERTION",
+    "externalRefs" : [ {
+      "referenceCategory" : "PACKAGE-MANAGER",
+      "referenceLocator" : "pkg:foo/org.acme.dbaas/postgresql-orm-quarkus@1.0.0-SNAPSHOT?type=jar",
+      "referenceType" : "purl"
+    } ],
+    "filesAnalyzed" : false,
+    "licenseConcluded" : "NOASSERTION",
+    "licenseDeclared" : "NOASSERTION",
+    "name" : "org.acme.dbaas:postgresql-orm-quarkus",
+    "primaryPackagePurpose" : "LIBRARY",
+    "versionInfo" : "1.0.0-SNAPSHOT"
+  } ],
+  "relationships" : [ {
+    "spdxElementId" : "SPDXRef-DOCUMENT",
+    "relationshipType" : "DESCRIBES",
+    "relatedSpdxElement" : "SPDXRef-pkg-foo-org.acme.dbaas-postgresql-orm-quarkus-1.0.0-SNAPSHOT-type-jar"
+  } ]
+}

@@ -21,6 +21,7 @@ package com.redhat.exhort.integration;
 import static io.restassured.RestAssured.given;
 import static org.apache.camel.Exchange.CONTENT_TYPE;
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.hamcrest.core.StringStartsWith.startsWithIgnoringCase;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -39,6 +40,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.cyclonedx.CycloneDxMediaType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -61,11 +63,15 @@ import jakarta.ws.rs.core.Response;
 @QuarkusTest
 public class AnalysisTest extends AbstractAnalysisTest {
 
-  @Test
-  public void testWithWrongProvider() {
+  private static final String CYCLONEDX = "cyclonedx";
+  private static final String SPDX = "spdx";
+
+  @ParameterizedTest
+  @ValueSource(strings = {CYCLONEDX, SPDX})
+  public void testWithWrongProvider(String sbom) {
     List<PackageRef> req = Collections.emptyList();
     given()
-        .header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
+        .header(CONTENT_TYPE, getContentType(sbom))
         .queryParam(Constants.PROVIDERS_PARAM, "unknown")
         .body(req)
         .when()
@@ -79,27 +85,29 @@ public class AnalysisTest extends AbstractAnalysisTest {
     verifyNoInteractions();
   }
 
-  @Test
-  public void testWithInvalidPkgManagers() {
+  @ParameterizedTest
+  @ValueSource(strings = {CYCLONEDX, SPDX})
+  public void testWithInvalidPkgManagers(String sbom) {
     given()
-        .header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
-        .body(loadFileAsString("sboms/unsupported-invalid-sbom.json"))
+        .header(CONTENT_TYPE, getContentType(sbom))
+        .body(loadFileAsString(String.format("%s/unsupported-invalid-sbom.json", sbom)))
         .when()
         .post("/api/v3/analysis")
         .then()
         .assertThat()
         .statusCode(422)
         .contentType(MediaType.TEXT_PLAIN)
-        .body(equalTo("Unsupported package manager: foo"));
+        .body(equalTo("Unsupported package types received: [foo]"));
 
     verifyNoInteractions();
   }
 
-  @Test
-  public void testWithMixedPkgManagers() {
+  @ParameterizedTest
+  @ValueSource(strings = {CYCLONEDX, SPDX})
+  public void testWithMixedPkgManagers(String sbom) {
     given()
-        .header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
-        .body(loadFileAsString("sboms/unsupported-mixed-sbom.json"))
+        .header(CONTENT_TYPE, getContentType(sbom))
+        .body(loadFileAsString(String.format("%s/unsupported-mixed-sbom.json", sbom)))
         .when()
         .post("/api/v3/analysis")
         .then()
@@ -107,8 +115,8 @@ public class AnalysisTest extends AbstractAnalysisTest {
         .statusCode(422)
         .contentType(MediaType.TEXT_PLAIN)
         .body(
-            equalTo(
-                "It is not supported to submit mixed Package Manager types. Found: [pypi, npm]"));
+            startsWithIgnoringCase(
+                "It is not supported to submit mixed Package Manager types. Found: ["));
 
     verifyNoInteractions();
   }
@@ -122,10 +130,10 @@ public class AnalysisTest extends AbstractAnalysisTest {
 
     AnalysisReport report =
         given()
-            .header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
+            .header(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
             .headers(authHeaders)
             .queryParam(Constants.PROVIDERS_PARAM, providers)
-            .body(loadFileAsString("sboms/empty-sbom.json"))
+            .body(loadFileAsString(String.format("%s/empty-sbom.json", CYCLONEDX)))
             .when()
             .post("/api/v3/analysis")
             .then()
@@ -218,12 +226,12 @@ public class AnalysisTest extends AbstractAnalysisTest {
 
     String body =
         given()
-            .header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
+            .header(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
             .header("Accept", MediaType.APPLICATION_JSON)
             .header(Constants.SNYK_TOKEN_HEADER, OK_TOKEN)
             .header(Constants.OSS_INDEX_USER_HEADER, OK_USER)
             .header(Constants.OSS_INDEX_TOKEN_HEADER, OK_TOKEN)
-            .body(loadSBOMFile())
+            .body(loadSBOMFile(CYCLONEDX))
             .when()
             .post("/api/v3/analysis")
             .then()
@@ -247,10 +255,10 @@ public class AnalysisTest extends AbstractAnalysisTest {
 
     String body =
         given()
-            .header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
+            .header(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
             .header("Accept", MediaType.APPLICATION_JSON)
             .queryParam(Constants.PROVIDERS_PARAM, Constants.SNYK_PROVIDER)
-            .body(loadSBOMFile())
+            .body(loadSBOMFile(CYCLONEDX))
             .when()
             .post("/api/v3/analysis")
             .then()
@@ -273,8 +281,8 @@ public class AnalysisTest extends AbstractAnalysisTest {
 
     AnalysisReport report =
         given()
-            .header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
-            .body(loadFileAsString("sboms/empty-sbom.json"))
+            .header(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
+            .body(loadFileAsString(String.format("%s/empty-sbom.json", CYCLONEDX)))
             .header("Accept", MediaType.APPLICATION_JSON)
             .header(Constants.SNYK_TOKEN_HEADER, INVALID_TOKEN)
             .when()
@@ -304,8 +312,8 @@ public class AnalysisTest extends AbstractAnalysisTest {
 
     AnalysisReport report =
         given()
-            .header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
-            .body(loadFileAsString("sboms/empty-sbom.json"))
+            .header(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
+            .body(loadFileAsString(String.format("%s/empty-sbom.json", CYCLONEDX)))
             .header("Accept", MediaType.APPLICATION_JSON)
             .header(Constants.SNYK_TOKEN_HEADER, UNAUTH_TOKEN)
             .when()
@@ -335,8 +343,8 @@ public class AnalysisTest extends AbstractAnalysisTest {
 
     AnalysisReport report =
         given()
-            .header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
-            .body(loadSBOMFile())
+            .header(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
+            .body(loadSBOMFile(CYCLONEDX))
             .header("Accept", MediaType.APPLICATION_JSON)
             .header(Constants.SNYK_TOKEN_HEADER, OK_TOKEN)
             .when()
@@ -363,8 +371,8 @@ public class AnalysisTest extends AbstractAnalysisTest {
 
     AnalysisReport report =
         given()
-            .header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
-            .body(loadSBOMFile())
+            .header(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
+            .body(loadSBOMFile(CYCLONEDX))
             .header("Accept", MediaType.APPLICATION_JSON)
             .queryParam(Constants.VERBOSE_MODE_HEADER, Boolean.FALSE)
             .when()
@@ -391,11 +399,11 @@ public class AnalysisTest extends AbstractAnalysisTest {
 
     AnalysisReport report =
         given()
-            .header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
+            .header(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
             .header("Accept", MediaType.APPLICATION_JSON)
             .header(Constants.SNYK_TOKEN_HEADER, OK_TOKEN)
             .queryParam(Constants.VERBOSE_MODE_HEADER, Boolean.FALSE)
-            .body(loadSBOMFile())
+            .body(loadSBOMFile(CYCLONEDX))
             .when()
             .post("/api/v3/analysis")
             .then()
@@ -420,8 +428,8 @@ public class AnalysisTest extends AbstractAnalysisTest {
 
     String body =
         given()
-            .header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
-            .body(loadSBOMFile())
+            .header(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
+            .body(loadSBOMFile(CYCLONEDX))
             .header("Accept", MediaType.TEXT_HTML)
             .when()
             .post("/api/v3/analysis")
@@ -446,8 +454,8 @@ public class AnalysisTest extends AbstractAnalysisTest {
 
     String body =
         given()
-            .header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
-            .body(loadSBOMFile())
+            .header(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
+            .body(loadSBOMFile(CYCLONEDX))
             .header("Accept", MediaType.TEXT_HTML)
             .header(Constants.SNYK_TOKEN_HEADER, OK_TOKEN)
             .header(Constants.OSS_INDEX_USER_HEADER, OK_USER)
@@ -478,13 +486,13 @@ public class AnalysisTest extends AbstractAnalysisTest {
     HttpClient client = HttpClient.newHttpClient();
     HttpRequest request =
         HttpRequest.newBuilder(URI.create("http://localhost:8081/api/v3/analysis"))
-            .setHeader(CONTENT_TYPE, MediaType.APPLICATION_JSON)
+            .setHeader(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
             .setHeader("Accept", Constants.MULTIPART_MIXED)
             .setHeader(Constants.SNYK_TOKEN_HEADER, OK_TOKEN)
             .setHeader(Constants.OSS_INDEX_USER_HEADER, OK_USER)
             .setHeader(Constants.OSS_INDEX_TOKEN_HEADER, OK_TOKEN)
             .version(Version.valueOf(version))
-            .POST(HttpRequest.BodyPublishers.ofFile(loadSBOMFile().toPath()))
+            .POST(HttpRequest.BodyPublishers.ofFile(loadSBOMFile(CYCLONEDX).toPath()))
             .build();
 
     HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -503,8 +511,8 @@ public class AnalysisTest extends AbstractAnalysisTest {
 
     String body =
         given()
-            .header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
-            .body(loadSBOMFile())
+            .header(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
+            .body(loadSBOMFile(CYCLONEDX))
             .header("Accept", MediaType.TEXT_HTML)
             .header(Constants.SNYK_TOKEN_HEADER, INVALID_TOKEN)
             .when()
@@ -532,8 +540,8 @@ public class AnalysisTest extends AbstractAnalysisTest {
 
     String body =
         given()
-            .header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
-            .body(loadSBOMFile())
+            .header(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
+            .body(loadSBOMFile(CYCLONEDX))
             .header("Accept", MediaType.TEXT_HTML)
             .header(Constants.SNYK_TOKEN_HEADER, UNAUTH_TOKEN)
             .when()
@@ -561,8 +569,8 @@ public class AnalysisTest extends AbstractAnalysisTest {
 
     String body =
         given()
-            .header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
-            .body(loadSBOMFile())
+            .header(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
+            .body(loadSBOMFile(CYCLONEDX))
             .header("Accept", MediaType.TEXT_HTML)
             .header(Constants.SNYK_TOKEN_HEADER, ERROR_TOKEN)
             .when()
@@ -586,8 +594,8 @@ public class AnalysisTest extends AbstractAnalysisTest {
   @Test
   public void testUnknownMediaType() {
     given()
-        .header(CONTENT_TYPE, MediaType.APPLICATION_JSON)
-        .body(loadSBOMFile())
+        .header(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
+        .body(loadSBOMFile(CYCLONEDX))
         .header("Accept", MediaType.APPLICATION_XML)
         .when()
         .post("/api/v3/analysis")
