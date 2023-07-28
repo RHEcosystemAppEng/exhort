@@ -47,23 +47,27 @@ The following Package Managers are currently supported:
 
 ## Dependency Analysis `/api/v3/analysis`
 
-### SBOM File
+The expected input data format is a Software Bill of Materials (SBOM) containing the aggregate of all direct and transitive
+dependencies of a project.
 
-The expected input data format is a CycloneDX Software Bill of Materials (SBOM) containing the aggregate of all direct and transitive
-dependencies of a project. CycloneDX is a lightweight software bill of materials (SBOM) standard designed for use in application security
-contexts and supply chain component analysis.
+The `Content-Type` HTTP header will allow Exhort distinguish between the different supported SBOM formats.
 
-You can generate a JSON SBOM with the following command:
+- [CycloneDX](https://cyclonedx.org/specification/overview/): `application/vnd.cyclonedx+json`
+- [SPDX](https://spdx.dev/specifications/): `application/vnd.spdx+json`
+
+### Example
+
+You can generate a CycloneDx JSON SBOM with the following command:
 
 ```bash
 mvn org.cyclonedx:cyclonedx-maven-plugin:2.7.6:makeBom -DoutputFormat=json -DexcludeTestProject
 ```
 
-The generated file will be located under `./target/bom.json`. Make sure the request `Content-Type` is set to `application/json`.
+The generated file will be located under `./target/bom.json`. Make sure the request `Content-Type` is set to `application/vnd.cyclonedx+json`.
 Then you can analyise the vulnerabilities with the following command:
 
 ```bash
-$ http :8080/api/v3/analysis Content-Type:"application/json" Accept:"application/json" @'target/bom.json'
+$ http :8080/api/v3/analysis Content-Type:"application/vnd.cyclonedx+json" Accept:"application/json" @'target/bom.json'
 ```
 
 ### Verbose Mode
@@ -72,7 +76,7 @@ When the Dependency Graph Analysis returns a JSON report it contains all vulnera
 in order to retrieve just a Summary. Use the `verbose=false` Query parameter to disable it.
 
 ```bash
-$ http :8080/api/v3/analysis Content-Type:"application/json" Accept:"application/json" @'target/sbom.json' verbose==false
+$ http :8080/api/v3/analysis Content-Type:"application/vnd.cyclonedx+json" Accept:"application/json" @'target/sbom.json' verbose==false
 
 {
     "dependencies": [],
@@ -101,13 +105,13 @@ that specific provider will not show all the details.
 To provide the client authentication tokens use HTTP Headers in the request. The format for the tokens Headers is `ex-provider-token`. e.g. `ex-snyk-token`:
 
 ```bash
-http :8080/api/v3/analysis Content-Type:"application/json" Accept:"text/html" @'target/sbom.json' ex-snyk-token:the-client-token
+http :8080/api/v3/analysis Content-Type:"application/vnd.cyclonedx+json" Accept:"text/html" @'target/sbom.json' ex-snyk-token:the-client-token
 ```
 
 In case the vulnerability provider requires of Basic Authentication the headers will be `ex-provider-user` and `ex-provider-token`.
 
 ```bash
-http :8080/api/v3/analysis Content-Type:"application/json" Accept:"text/html" @'target/sbom.json' ex-oss-index-user:the-client-username ex-oss-index-token:the-client-token
+http :8080/api/v3/analysis Content-Type:"application/vnd.cyclonedx+json" Accept:"text/html" @'target/sbom.json' ex-oss-index-user:the-client-username ex-oss-index-token:the-client-token
 ```
 
 ### HTML Report
@@ -121,7 +125,7 @@ The HTML report will show limited information:
 - Private vulnerabilities (i.e. vulnerabilities reported by the provider) will not be displayed.
 
 ```bash
-$ http :8080/api/v3/analysis Content-Type:"application/json" Accept:"text/html" @'target/sbom.json'
+$ http :8080/api/v3/analysis Content-Type:"application/vnd.cyclonedx+json" Accept:"text/html" @'target/sbom.json'
 
 <html>
 ...
@@ -135,7 +139,7 @@ For that, use the `Accept: multipart/mixed` request header.
 
 
 ```bash
-http :8080/api/v3/analysis Content-Type:"application/json" Accept:"multipart/mixed" @'target/sbom.json'
+http :8080/api/v3/analysis Content-Type:"application/vnd.cyclonedx+json" Accept:"multipart/mixed" @'target/sbom.json'
 HTTP/1.1 200 OK
     boundary="----=_Part_2_2047647971.1682593849895"
 Content-Type: multipart/mixed;

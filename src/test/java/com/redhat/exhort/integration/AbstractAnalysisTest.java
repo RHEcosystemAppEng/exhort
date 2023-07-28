@@ -38,6 +38,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.apache.camel.Exchange;
+import org.cyclonedx.CycloneDxMediaType;
 import org.junit.jupiter.api.AfterEach;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -114,8 +115,24 @@ public abstract class AbstractAnalysisTest {
     }
   }
 
-  protected File loadSBOMFile() {
-    return new File(getClass().getClassLoader().getResource("sboms/maven-sbom.json").getPath());
+  protected String getContentType(String sbomType) {
+    switch (sbomType) {
+      case "cyclonedx":
+        return CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON;
+      case "spdx":
+        return Constants.SPDX_MEDIATYPE_JSON;
+      default:
+        fail("Sbom Type not implemented: " + sbomType);
+    }
+    return null;
+  }
+
+  protected File loadSBOMFile(String sbomType) {
+    return new File(
+        getClass()
+            .getClassLoader()
+            .getResource(String.format("%s/maven-sbom.json", sbomType))
+            .getPath());
   }
 
   protected String loadFileAsString(String file) {

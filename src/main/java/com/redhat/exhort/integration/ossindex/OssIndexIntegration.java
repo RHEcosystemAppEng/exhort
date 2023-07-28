@@ -29,9 +29,9 @@ import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import com.redhat.exhort.integration.Constants;
-import com.redhat.exhort.integration.GraphUtils;
 import com.redhat.exhort.integration.VulnerabilityProvider;
 import com.redhat.exhort.integration.backend.BackendUtils;
+import com.redhat.exhort.model.DependencyTree;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -82,7 +82,7 @@ public class OssIndexIntegration extends EndpointRouteBuilder {
             .timeoutEnabled(true)
             .timeoutDuration(timeout)
           .end()
-        .setBody(constant(List.of(GraphUtils.getDefaultRoot(Constants.MAVEN_PKG_MANAGER))))
+        .setBody(constant(List.of(DependencyTree.getDefaultRoot(Constants.MAVEN_PKG_MANAGER))))
         .transform().method(OssIndexRequestBuilder.class, "buildRequest")
         .process(this::processComponentRequest)  
         .to(vertxHttp("{{api.ossindex.host}}"))

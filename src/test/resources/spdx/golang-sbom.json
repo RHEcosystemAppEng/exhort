@@ -1,0 +1,203 @@
+{
+  "SPDXID" : "SPDXRef-DOCUMENT",
+  "spdxVersion" : "SPDX-2.3",
+  "creationInfo" : {
+    "comment" : "Converted from CycloneDX spec version 1.4",
+    "created" : "2023-06-08T11:57:24Z",
+    "creators" : [ "Tool: CycloneToSpdx-0.1.4" ],
+    "licenseListVersion" : "3.21"
+  },
+  "name" : "github.com/fabric8-analytics/cli-tools",
+  "dataLicense" : "CC0-1.0",
+  "annotations" : [ {
+    "annotationDate" : "2023-07-27T15:55:52Z",
+    "annotationType" : "OTHER",
+    "annotator" : "Tool: CycloneToSpdx",
+    "comment" : "MISSING_CDX_PROPERTY:extensions={}"
+  } ],
+  "documentNamespace" : "https://cyclonedx/588326f3-7527-45cd-8574-853429509dfc_1",
+  "packages" : [ {
+    "SPDXID" : "SPDXRef-pkg-golang-github.com-mattn-go-isatty-v0.0.12-type-module",
+    "annotations" : [ {
+      "annotationDate" : "2023-07-27T15:55:52Z",
+      "annotationType" : "OTHER",
+      "annotator" : "Tool: CycloneToSpdx",
+      "comment" : "MISSING_CDX_PROPERTY:componentType=\"LIBRARY\""
+    } ],
+    "checksums" : [ {
+      "algorithm" : "SHA256",
+      "checksumValue" : "c2ecac461143cf2c6012631fe718ef27633d759a1601734daf92d2052eee1d76"
+    } ],
+    "copyrightText" : "NOASSERTION",
+    "downloadLocation" : "NOASSERTION",
+    "externalRefs" : [ {
+      "referenceCategory" : "PACKAGE-MANAGER",
+      "referenceLocator" : "pkg:golang/github.com/mattn/go-isatty@v0.0.12?type=module&goos=linux&goarch=amd64",
+      "referenceType" : "purl"
+    }, {
+      "referenceCategory" : "PACKAGE-MANAGER",
+      "referenceLocator" : "https://github.com/mattn/go-isatty",
+      "referenceType" : "http://cyclonedx.org/referenctype/other-package-manager"
+    } ],
+    "filesAnalyzed" : false,
+    "licenseConcluded" : "NOASSERTION",
+    "licenseDeclared" : "NOASSERTION",
+    "name" : "github.com/mattn/go-isatty",
+    "primaryPackagePurpose" : "LIBRARY",
+    "versionInfo" : "v0.0.12"
+  }, {
+    "SPDXID" : "SPDXRef-pkg-golang-github.com-fabric8-analytics-cli-tools-v0.2.6-0.20211007133944-2af417bfb988-type-module",
+    "annotations" : [ {
+      "annotationDate" : "2023-07-27T15:55:52Z",
+      "annotationType" : "OTHER",
+      "annotator" : "Tool: CycloneToSpdx",
+      "comment" : "MISSING_CDX_PROPERTY:componentType=\"APPLICATION\""
+    } ],
+    "copyrightText" : "NOASSERTION",
+    "downloadLocation" : "NOASSERTION",
+    "externalRefs" : [ {
+      "referenceCategory" : "PACKAGE-MANAGER",
+      "referenceLocator" : "pkg:golang/github.com/fabric8-analytics/cli-tools@v0.2.6-0.20211007133944-2af417bfb988?type=module&goos=linux&goarch=amd64",
+      "referenceType" : "purl"
+    }, {
+      "referenceCategory" : "PACKAGE-MANAGER",
+      "referenceLocator" : "https://github.com/fabric8-analytics/cli-tools",
+      "referenceType" : "http://cyclonedx.org/referenctype/other-package-manager"
+    } ],
+    "filesAnalyzed" : false,
+    "licenseConcluded" : "NOASSERTION",
+    "licenseDeclared" : "NOASSERTION",
+    "name" : "github.com/fabric8-analytics/cli-tools",
+    "primaryPackagePurpose" : "APPLICATION",
+    "versionInfo" : "v0.2.6-0.20211007133944-2af417bfb988"
+  }, {
+    "SPDXID" : "SPDXRef-pkg-golang-github.com-mattn-go-colorable-v0.1.8-type-module",
+    "annotations" : [ {
+      "annotationDate" : "2023-07-27T15:55:52Z",
+      "annotationType" : "OTHER",
+      "annotator" : "Tool: CycloneToSpdx",
+      "comment" : "MISSING_CDX_PROPERTY:componentType=\"LIBRARY\""
+    } ],
+    "checksums" : [ {
+      "algorithm" : "SHA256",
+      "checksumValue" : "7358213ddc840daac2ef47ed9f4cbe03f11efbef73cfc9631c6d5bd77789d2cf"
+    } ],
+    "copyrightText" : "NOASSERTION",
+    "downloadLocation" : "NOASSERTION",
+    "externalRefs" : [ {
+      "referenceCategory" : "PACKAGE-MANAGER",
+      "referenceLocator" : "pkg:golang/github.com/mattn/go-colorable@v0.1.8?type=module&goos=linux&goarch=amd64",
+      "referenceType" : "purl"
+    }, {
+      "referenceCategory" : "PACKAGE-MANAGER",
+      "referenceLocator" : "https://github.com/mattn/go-colorable",
+      "referenceType" : "http://cyclonedx.org/referenctype/other-package-manager"
+    } ],
+    "filesAnalyzed" : false,
+    "licenseConcluded" : "NOASSERTION",
+    "licenseDeclared" : "NOASSERTION",
+    "name" : "github.com/mattn/go-colorable",
+    "primaryPackagePurpose" : "LIBRARY",
+    "versionInfo" : "v0.1.8"
+  }, {
+    "SPDXID" : "SPDXRef-pkg-golang-github.com-fatih-color-v1.10.0-type-module",
+    "annotations" : [ {
+      "annotationDate" : "2023-07-27T15:55:52Z",
+      "annotationType" : "OTHER",
+      "annotator" : "Tool: CycloneToSpdx",
+      "comment" : "MISSING_CDX_PROPERTY:componentType=\"LIBRARY\""
+    } ],
+    "checksums" : [ {
+      "algorithm" : "SHA256",
+      "checksumValue" : "b37eb1ce8ef925da8b69a5a88841e4efaede1e2c28d39f7cb94c727e23e40ec8"
+    } ],
+    "copyrightText" : "NOASSERTION",
+    "downloadLocation" : "NOASSERTION",
+    "externalRefs" : [ {
+      "referenceCategory" : "PACKAGE-MANAGER",
+      "referenceLocator" : "pkg:golang/github.com/fatih/color@v1.10.0?type=module&goos=linux&goarch=amd64",
+      "referenceType" : "purl"
+    }, {
+      "referenceCategory" : "PACKAGE-MANAGER",
+      "referenceLocator" : "https://github.com/fatih/color",
+      "referenceType" : "http://cyclonedx.org/referenctype/other-package-manager"
+    } ],
+    "filesAnalyzed" : false,
+    "licenseConcluded" : "NOASSERTION",
+    "licenseDeclared" : "NOASSERTION",
+    "name" : "github.com/fatih/color",
+    "primaryPackagePurpose" : "LIBRARY",
+    "versionInfo" : "v1.10.0"
+  }, {
+    "SPDXID" : "SPDXRef-pkg-golang-golang.org-x-sys-v0.0.0-20210112080510-489259a85091-type-module",
+    "annotations" : [ {
+      "annotationDate" : "2023-07-27T15:55:52Z",
+      "annotationType" : "OTHER",
+      "annotator" : "Tool: CycloneToSpdx",
+      "comment" : "MISSING_CDX_PROPERTY:componentType=\"LIBRARY\""
+    } ],
+    "checksums" : [ {
+      "algorithm" : "SHA256",
+      "checksumValue" : "0ccc8e1b453e80a7eef096738365107bd31e682d57fb141694029c4678f18c2c"
+    } ],
+    "copyrightText" : "NOASSERTION",
+    "downloadLocation" : "NOASSERTION",
+    "externalRefs" : [ {
+      "referenceCategory" : "PACKAGE-MANAGER",
+      "referenceLocator" : "pkg:golang/golang.org/x/sys@v0.0.0-20210112080510-489259a85091?type=module&goos=linux&goarch=amd64",
+      "referenceType" : "purl"
+    } ],
+    "filesAnalyzed" : false,
+    "licenseConcluded" : "NOASSERTION",
+    "licenseDeclared" : "NOASSERTION",
+    "name" : "golang.org/x/sys",
+    "primaryPackagePurpose" : "LIBRARY",
+    "versionInfo" : "v0.0.0-20210112080510-489259a85091"
+  }, {
+    "SPDXID" : "SPDXRef-pkg-golang-github.com-jpillora-backoff-v1.0.0-type-module",
+    "annotations" : [ {
+      "annotationDate" : "2023-07-27T15:55:52Z",
+      "annotationType" : "OTHER",
+      "annotator" : "Tool: CycloneToSpdx",
+      "comment" : "MISSING_CDX_PROPERTY:componentType=\"LIBRARY\""
+    } ],
+    "checksums" : [ {
+      "algorithm" : "SHA256",
+      "checksumValue" : "baf160e35d899a61c11f0ee2c29ac8c643cc23eb06438933396b0c7879e6d840"
+    } ],
+    "copyrightText" : "NOASSERTION",
+    "downloadLocation" : "NOASSERTION",
+    "externalRefs" : [ {
+      "referenceCategory" : "PACKAGE-MANAGER",
+      "referenceLocator" : "pkg:golang/github.com/jpillora/backoff@v1.0.0?type=module&goos=linux&goarch=amd64",
+      "referenceType" : "purl"
+    }, {
+      "referenceCategory" : "PACKAGE-MANAGER",
+      "referenceLocator" : "https://github.com/jpillora/backoff",
+      "referenceType" : "http://cyclonedx.org/referenctype/other-package-manager"
+    } ],
+    "filesAnalyzed" : false,
+    "licenseConcluded" : "NOASSERTION",
+    "licenseDeclared" : "NOASSERTION",
+    "name" : "github.com/jpillora/backoff",
+    "primaryPackagePurpose" : "LIBRARY",
+    "versionInfo" : "v1.0.0"
+  } ],
+  "relationships" : [ {
+    "spdxElementId" : "SPDXRef-DOCUMENT",
+    "relationshipType" : "DESCRIBES",
+    "relatedSpdxElement" : "SPDXRef-pkg-golang-github.com-fabric8-analytics-cli-tools-v0.2.6-0.20211007133944-2af417bfb988-type-module"
+  }, {
+    "spdxElementId" : "SPDXRef-pkg-golang-github.com-mattn-go-isatty-v0.0.12-type-module",
+    "relationshipType" : "DEPENDS_ON",
+    "relatedSpdxElement" : "SPDXRef-pkg-golang-golang.org-x-sys-v0.0.0-20210112080510-489259a85091-type-module"
+  }, {
+    "spdxElementId" : "SPDXRef-pkg-golang-github.com-fatih-color-v1.10.0-type-module",
+    "relationshipType" : "DEPENDS_ON",
+    "relatedSpdxElement" : "SPDXRef-pkg-golang-github.com-mattn-go-colorable-v0.1.8-type-module"
+  }, {
+    "spdxElementId" : "SPDXRef-pkg-golang-github.com-fatih-color-v1.10.0-type-module",
+    "relationshipType" : "DEPENDS_ON",
+    "relatedSpdxElement" : "SPDXRef-pkg-golang-github.com-mattn-go-isatty-v0.0.12-type-module"
+  } ]
+}

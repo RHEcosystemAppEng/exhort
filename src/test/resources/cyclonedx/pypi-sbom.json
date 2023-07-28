@@ -1,0 +1,30 @@
+{
+	"$schema": "http://cyclonedx.org/schema/bom-1.4.schema.json",
+	"bomFormat": "CycloneDX",
+	"specVersion": "1.4",
+	"serialNumber": "urn:uuid:5aa8f30e-89f6-4dde-a20a-a7a9c90b7a47",
+	"version": 1,
+	"metadata": {
+		"timestamp": "2023-06-08T11:59:45.552951+00:00"
+	},
+	"components": [{
+		"type": "library",
+		"bom-ref": "d574b448-4022-4dd8-9612-e6296d717e7f",
+		"name": "amqp",
+		"version": "2.6.1",
+		"purl": "pkg:pypi/amqp@2.6.1"
+	}, {
+		"type": "library",
+		"bom-ref": "82565562-7694-473b-a0ff-631faf77d488",
+		"name": "aniso8601",
+		"version": "8.1.0",
+		"purl": "pkg:pypi/aniso8601@8.1.0"
+	}],
+	"dependencies": [{
+		"ref": "d574b448-4022-4dd8-9612-e6296d717e7f",
+		"dependsOn": []
+	}, {
+		"ref": "82565562-7694-473b-a0ff-631faf77d488",
+		"dependsOn": []
+	}]
+}

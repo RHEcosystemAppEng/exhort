@@ -20,6 +20,9 @@ package com.redhat.exhort.integration.backend;
 
 import static com.redhat.exhort.integration.Constants.REQUEST_CONTENT_PROPERTY;
 
+import java.io.InputStream;
+import java.util.List;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.AggregationStrategies;
 import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
@@ -27,14 +30,19 @@ import org.apache.camel.component.micrometer.MicrometerConstants;
 import org.apache.camel.component.micrometer.routepolicy.MicrometerRoutePolicyFactory;
 
 import com.redhat.exhort.integration.Constants;
-import com.redhat.exhort.integration.GraphUtils;
 import com.redhat.exhort.integration.ProviderAggregationStrategy;
 import com.redhat.exhort.integration.VulnerabilityProvider;
+import com.redhat.exhort.integration.backend.sbom.SbomParser;
+import com.redhat.exhort.integration.backend.sbom.SbomParserFactory;
+import com.redhat.exhort.model.DependencyTree;
+import com.redhat.exhort.model.GraphRequest;
 
 import io.micrometer.core.instrument.MeterRegistry;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.mail.internet.ContentType;
+import jakarta.mail.internet.ParseException;
 import jakarta.ws.rs.ClientErrorException;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -85,9 +93,7 @@ public class ExhortIntegration extends EndpointRouteBuilder {
         .routeId("dependencyAnalysis")
         .setProperty(Constants.PROVIDERS_PARAM, method(vulnerabilityProvider, "getProvidersFromQueryParam"))
         .setProperty(REQUEST_CONTENT_PROPERTY, method(BackendUtils.class, "getResponseMediaType"))
-        .removeHeader(Constants.ACCEPT_HEADER)
-        .removeHeader(Constants.ACCEPT_ENCODING_HEADER)
-        .bean(GraphUtils.class, "fromDepGraph")
+        .process(this::processAnalysisRequest)
         .to(direct("findVulnerabilities"))
         .to(direct("recommendAllTrustedContent"))
         .to(direct("report"))
@@ -116,5 +122,25 @@ public class ExhortIntegration extends EndpointRouteBuilder {
         .end()
         .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.TEXT_PLAIN));
     //fmt:on
+  }
+
+  @SuppressWarnings("unchecked")
+  private void processAnalysisRequest(Exchange exchange) {
+    exchange.getIn().removeHeader(Constants.ACCEPT_HEADER);
+    exchange.getIn().removeHeader(Constants.ACCEPT_ENCODING_HEADER);
+
+    ContentType ct;
+    try {
+      ct = new ContentType(exchange.getIn().getHeader(Exchange.CONTENT_TYPE, String.class));
+    } catch (ParseException e) {
+      throw new ClientErrorException(Response.Status.UNSUPPORTED_MEDIA_TYPE, e);
+    }
+    SbomParser parser = SbomParserFactory.newInstance(ct.getBaseType());
+    DependencyTree tree = parser.parse(exchange.getIn().getBody(InputStream.class));
+    List<String> providers = exchange.getProperty(Constants.PROVIDERS_PARAM, List.class);
+    exchange
+        .getIn()
+        .setBody(
+            new GraphRequest.Builder(tree.root().purl().getType(), providers).tree(tree).build());
   }
 }
