@@ -52,7 +52,7 @@ public class ReportIntegration extends EndpointRouteBuilder {
             .bean(ReportTransformer.class, "transform")
             .setProperty(Constants.REPORT_PROPERTY, body())
             .setBody(method(reportTemplate, "setVariables"))
-            .to(freemarker("report.ftl"));
+            .to(freemarker("new-report.ftl"));
 
         from(direct("multipartReport"))
             .routeId("multipartReport")
