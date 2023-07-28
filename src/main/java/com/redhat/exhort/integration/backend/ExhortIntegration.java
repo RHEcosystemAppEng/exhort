@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.util.List;
 
 import org.apache.camel.Exchange;
+import org.apache.camel.Message;
 import org.apache.camel.builder.AggregationStrategies;
 import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
 import org.apache.camel.component.micrometer.MicrometerConstants;
@@ -97,17 +98,13 @@ public class ExhortIntegration extends EndpointRouteBuilder {
         .to(direct("findVulnerabilities"))
         .to(direct("recommendAllTrustedContent"))
         .to(direct("report"))
-        .to(direct("cleanUpResponse"));
+        .process(this::cleanUpHeaders);
 
     from(direct("findVulnerabilities"))
         .routeId("findVulnerabilities")
         .recipientList(method(vulnerabilityProvider, "getProviderEndpoints"))
         .aggregationStrategy(AggregationStrategies.bean(ProviderAggregationStrategy.class, "aggregate"))
             .parallelProcessing();
-
-    from(direct("cleanUpResponse"))
-        .routeId("cleanUpResponseHeaders")
-        .removeHeader(Constants.VERBOSE_MODE_HEADER);
 
     from(direct("validateToken"))
         .routeId("validateToken")
@@ -120,7 +117,8 @@ public class ExhortIntegration extends EndpointRouteBuilder {
                 .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(Response.Status.BAD_REQUEST.getStatusCode()))
                 .setBody(constant("Missing authentication header"))
         .end()
-        .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.TEXT_PLAIN));
+        .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.TEXT_PLAIN))
+        .process(this::cleanUpHeaders);
     //fmt:on
   }
 
@@ -142,5 +140,13 @@ public class ExhortIntegration extends EndpointRouteBuilder {
         .getIn()
         .setBody(
             new GraphRequest.Builder(tree.root().purl().getType(), providers).tree(tree).build());
+  }
+
+  private void cleanUpHeaders(Exchange exchange) {
+    Message msg = exchange.getIn();
+    msg.removeHeader(Constants.VERBOSE_MODE_HEADER);
+    msg.removeHeaders("ex-.*-user");
+    msg.removeHeaders("ex-.*-token");
+    msg.removeHeader("Authorization");
   }
 }
