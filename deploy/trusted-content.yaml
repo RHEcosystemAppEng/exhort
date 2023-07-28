@@ -47,16 +47,46 @@ spec:
   selector:
     app: swio
 ---
-apiVersion: route.openshift.io/v1
-kind: Route
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tc-vex-stub
+  namespace: trusted-content
+  labels:
+    app: tc-vex-stub
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tc-vex-stub
+  template:
+    metadata:
+      labels:
+        app: tc-vex-stub
+    spec:
+      containers:
+      - name: stub
+        image: quay.io/ecosystem-appeng/tc-camel:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+---
+apiVersion: v1
+kind: Service
 metadata:
   labels:
-    app: swio
-  name: swio
+    app: tc-vex-stub
+  name: tc-vex-stub
   namespace: trusted-content
 spec:
-  port:
+  ports:
+  - name: "8080"
+    port: 8080
+    protocol: TCP
     targetPort: 8080
-  to:
-    kind: Service
-    name: swio
+  selector:
+    app: tc-vex-stub
