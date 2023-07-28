@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Test</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/@patternfly/patternfly@5/patternfly-addons.css"
+      crossorigin
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/@patternfly/patternfly@5/patternfly.css"
+      crossorigin
+    />
+    <!-- <link
+      rel="stylesheet"
+      href="https://unpkg.com/@patternfly/patternfly@5/patternfly-base.css"
+      crossorigin
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/@patternfly/patternfly@5/components/Button/button.css"
+      crossorigin
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/@patternfly/patternfly@5/components/Spinner/spinner.css"
+      crossorigin
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/@patternfly/patternfly@5/components/Alert/alert.css"
+      crossorigin
+    /> -->
+  </head>
+
+  <body>
+    <div id="root" class="pf-v5-u-h-100">
+      <div
+        class="pf-v5-u-display-flex pf-v5-u-flex-direction-column pf-v5-u-align-items-center pf-v5-u-justify-content-center pf-v5-u-h-100"
+      >
+        <div>Loading...</div>
+        <svg
+          class="pf-v5-c-spinner"
+          role="progressbar"
+          viewBox="0 0 100 100"
+          aria-label="Loading..."
+        >
+          <circle
+            class="pf-v5-c-spinner__path"
+            cx="50"
+            cy="50"
+            r="45"
+            fill="none"
+          />
+        </svg>
+      </div>
+    </div>
+    <script type="text/babel">
+      "use strict";
+
+      const TableBasic = () => {
+        const repositories = [
+          {
+            name: "one",
+            branches: "two",
+            prs: "three",
+            workspaces: "four",
+            lastCommit: "five",
+          },
+          {
+            name: "one - 2",
+            branches: null,
+            prs: null,
+            workspaces: "four - 2",
+            lastCommit: "five - 2",
+          },
+          {
+            name: "one - 3",
+            branches: "two - 3",
+            prs: "three - 3",
+            workspaces: "four - 3",
+            lastCommit: "five - 3",
+          },
+        ];
+        const columnNames = {
+          name: "Repositories",
+          branches: "Branches",
+          prs: "Pull requests",
+          workspaces: "Workspaces",
+          lastCommit: "Last commit",
+        };
+        const [exampleChoice, setExampleChoice] = React.useState("default");
+        const onExampleTypeChange = (event, _isSelected) => {
+          const id = event.currentTarget.id;
+          setExampleChoice(id);
+        };
+        return (
+          <React.Fragment>
+            <PatternFlyTable.Table
+              aria-label="Simple table"
+              variant={exampleChoice !== "default" ? "compact" : undefined}
+              borders={exampleChoice !== "compactBorderless"}
+            >
+              <PatternFlyTable.Caption>
+                Simple table using composable components
+              </PatternFlyTable.Caption>
+              <PatternFlyTable.Thead>
+                <PatternFlyTable.Tr>
+                  <PatternFlyTable.Th>{columnNames.name}</PatternFlyTable.Th>
+                  <PatternFlyTable.Th>
+                    {columnNames.branches}
+                  </PatternFlyTable.Th>
+                  <PatternFlyTable.Th>{columnNames.prs}</PatternFlyTable.Th>
+                  <PatternFlyTable.Th>
+                    {columnNames.workspaces}
+                  </PatternFlyTable.Th>
+                  <PatternFlyTable.Th>
+                    {columnNames.lastCommit}
+                  </PatternFlyTable.Th>
+                </PatternFlyTable.Tr>
+              </PatternFlyTable.Thead>
+              <PatternFlyTable.Tbody>
+                {repositories.map((repo) => (
+                  <PatternFlyTable.Tr key={repo.name}>
+                    <PatternFlyTable.Td dataLabel={columnNames.name}>
+                      {repo.name}
+                    </PatternFlyTable.Td>
+                    <PatternFlyTable.Td dataLabel={columnNames.branches}>
+                      {repo.branches}
+                    </PatternFlyTable.Td>
+                    <PatternFlyTable.Td dataLabel={columnNames.prs}>
+                      {repo.prs}
+                    </PatternFlyTable.Td>
+                    <PatternFlyTable.Td dataLabel={columnNames.workspaces}>
+                      {repo.workspaces}
+                    </PatternFlyTable.Td>
+                    <PatternFlyTable.Td dataLabel={columnNames.lastCommit}>
+                      {repo.lastCommit}
+                    </PatternFlyTable.Td>
+                  </PatternFlyTable.Tr>
+                ))}
+              </PatternFlyTable.Tbody>
+            </PatternFlyTable.Table>
+          </React.Fragment>
+        );
+      };
+
+      const Report = () => {
+        const [liked, setLiked] = React.useState(false);
+
+        if (liked) {
+          return (
+            <PatternFlyReact.Alert title="Cool!" variant="info">
+              Wowza
+            </PatternFlyReact.Alert>
+          );
+        }
+
+        const onClick = () => setLiked(true);
+        return (
+          <React.Fragment>
+            <TableBasic />
+            <PatternFlyReact.Button onClick={onClick}>
+              Like
+            </PatternFlyReact.Button>
+          </React.Fragment>
+        );
+      };
+
+      const container = document.getElementById("root");
+      const root = ReactDOM.createRoot(container);
+      root.render(<Report />);
+    </script>
+    <!-- <script
+      crossorigin
+      src="https://unpkg.com/react@18/umd/react.development.js"
+    ></script>
+    <script
+      crossorigin
+      src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"
+    ></script> -->
+    <script
+      crossorigin
+      src="https://unpkg.com/react@18/umd/react.production.min.js"
+    ></script>
+    <script
+      crossorigin
+      src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"
+    ></script>
+    <!-- <script
+      src="https://unpkg.com/prop-types@15.6/prop-types.js"
+      crossorigin
+    ></script> -->
+    <script
+      crossorigin
+      src="https://unpkg.com/@patternfly/react-core@5/dist/umd/react-core.min.js"
+    ></script>
+    <script
+      crossorigin
+      src="https://unpkg.com/@patternfly/react-table@5/dist/umd/react-table.min.js"
+    ></script>
+    <script crossorigin src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <!-- <script>
+      "use strict";
+
+      const e = React.createElement;
+
+      class LikeButton extends React.Component {
+        constructor(props) {
+          super(props);
+          this.state = { liked: false };
+        }
+
+        render() {
+          if (this.state.liked) {
+            return e(PatternFlyReact.Alert, {
+              title: " Great success",
+              children: "You liked this",
+              variant: "success",
+            });
+          }
+
+          return e(
+            PatternFlyReact.Button,
+            { onClick: () => this.setState({ liked: true }) },
+            "Like"
+          );
+        }
+      }
+
+      const domContainer = document.querySelector("#root");
+      ReactDOM.render(e(LikeButton), domContainer);
+    </script> -->
+  </body>
+</html>
