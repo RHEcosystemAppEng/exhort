@@ -29,6 +29,7 @@ import org.apache.camel.builder.AggregationStrategies;
 import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
 import org.apache.camel.component.micrometer.MicrometerConstants;
 import org.apache.camel.component.micrometer.routepolicy.MicrometerRoutePolicyFactory;
+import org.apache.camel.component.rest.RestConstants;
 
 import com.redhat.exhort.integration.Constants;
 import com.redhat.exhort.integration.ProviderAggregationStrategy;
@@ -98,7 +99,9 @@ public class ExhortIntegration extends EndpointRouteBuilder {
         .to(direct("findVulnerabilities"))
         .to(direct("recommendAllTrustedContent"))
         .to(direct("report"))
-        .process(this::cleanUpHeaders);
+        .process(this::cleanUpHeaders)
+
+        .setHeader(RestConstants.CONTENT_TYPE, constant("application/octet-stream"));
 
     from(direct("findVulnerabilities"))
         .routeId("findVulnerabilities")

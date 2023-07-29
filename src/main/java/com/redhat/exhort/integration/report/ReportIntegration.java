@@ -18,10 +18,22 @@
 
 package com.redhat.exhort.integration.report;
 
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.redhat.exhort.integration.Constants;
+
+import io.quarkus.fs.util.ZipUtils;
+import io.quarkus.qute.Location;
+import io.quarkus.qute.Template;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -32,19 +44,25 @@ public class ReportIntegration extends EndpointRouteBuilder {
 
   @Inject ReportTemplate reportTemplate;
 
+  @Location("data.js")
+  Template dataJS;
+
   @Override
   public void configure() {
     // fmt:off
         from(direct("report"))
-            .routeId("report")
-            .choice()
-                .when(exchangeProperty(Constants.REQUEST_CONTENT_PROPERTY).isEqualTo(MediaType.TEXT_HTML))
-                    .to(direct("htmlReport"))
-                .when(exchangeProperty(Constants.REQUEST_CONTENT_PROPERTY).isEqualTo(Constants.MULTIPART_MIXED))
-                    .to(direct("multipartReport"))
-                .otherwise()
-                    .to(direct("jsonReport"))
-            .end();
+                .routeId("report")
+                .to(direct("htmlReport"));
+//                .choice()
+//                    .when(exchangeProperty(Constants.REQUEST_CONTENT_PROPERTY).isEqualTo(MediaType.TEXT_HTML))
+//                        .to(direct("htmlReport"))
+//                        .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.APPLICATION_OCTET_STREAM))
+//                    .when(exchangeProperty(Constants.REQUEST_CONTENT_PROPERTY).isEqualTo(Constants.MULTIPART_MIXED))
+////                        .to(direct("htmlReport"))
+//                        .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.APPLICATION_OCTET_STREAM))
+//                    .otherwise()
+//                        .to(direct("jsonReport"))
+//                .end();
 
         from(direct("htmlReport"))
             .routeId("htmlReport")
@@ -52,7 +70,46 @@ public class ReportIntegration extends EndpointRouteBuilder {
             .bean(ReportTransformer.class, "transform")
             .setProperty(Constants.REPORT_PROPERTY, body())
             .setBody(method(reportTemplate, "setVariables"))
-            .to(freemarker("report.ftl"));
+            .process(exchange -> {
+                String reportOutputDirectory = "/tmp/crda"; // Just for a demo, this should be better handled
+                Path reportOutputPath = Paths.get(reportOutputDirectory);
+
+                final String uiZipFilename = "crda-report-ui.zip";
+                Path uiZipPath = Paths.get(reportOutputDirectory, uiZipFilename);
+
+                // Prepare report
+                reportOutputPath.toFile().delete();
+                Files.createDirectories(reportOutputPath);
+
+                InputStream uiZipIS = ReportIntegration.class.getClassLoader().getResourceAsStream(uiZipFilename);
+                Files.copy(uiZipIS, uiZipPath);
+
+                // Unzip UI
+                Path uiZipFile = reportOutputPath.resolve(uiZipFilename);
+                ZipUtils.unzip(uiZipFile, reportOutputPath);
+
+                // Generate data
+                Object params = exchange.getIn().getBody();
+                ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+                String json = ow.writeValueAsString(params);
+                String data = dataJS.data("params", json).render();
+
+                // Merge UI and Data
+                Path outputDataJs = Paths.get(reportOutputDirectory, "data.js");
+                outputDataJs.toFile().delete(); // Cleans prev data
+                FileOutputStream outputStream = new FileOutputStream(outputDataJs.toFile());
+                byte[] strToBytes = data.getBytes();
+                outputStream.write(strToBytes);
+                outputStream.close();
+
+                // Zip final result
+                uiZipPath.toFile().delete();
+
+                Path reportOutputfile = reportOutputPath.resolve("report.zip");
+                ZipUtils.zip(reportOutputPath, reportOutputfile);
+
+                exchange.getIn().setBody(reportOutputfile.toFile());
+            });
 
         from(direct("multipartReport"))
             .routeId("multipartReport")

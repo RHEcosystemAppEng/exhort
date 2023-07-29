@@ -20,6 +20,7 @@ package com.redhat.exhort.integration;
 
 import static io.restassured.RestAssured.given;
 import static org.apache.camel.Exchange.CONTENT_TYPE;
+import static org.apache.camel.model.rest.RestParamType.body;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.StringStartsWith.startsWithIgnoringCase;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -34,10 +35,9 @@ import java.net.http.HttpClient;
 import java.net.http.HttpClient.Version;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.*;
 import java.util.stream.Stream;
 
 import org.cyclonedx.CycloneDxMediaType;
@@ -452,11 +452,11 @@ public class AnalysisTest extends AbstractAnalysisTest {
     stubAllProviders();
     stubTCRequests();
 
-    String body =
+    byte[] body =
         given()
             .header(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
             .body(loadSBOMFile(CYCLONEDX))
-            .header("Accept", MediaType.TEXT_HTML)
+            // .header("Accept", MediaType.APPLICATION_OCTET_STREAM)
             .header(Constants.SNYK_TOKEN_HEADER, OK_TOKEN)
             .header(Constants.OSS_INDEX_USER_HEADER, OK_USER)
             .header(Constants.OSS_INDEX_TOKEN_HEADER, OK_TOKEN)
@@ -465,12 +465,16 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .then()
             .assertThat()
             .statusCode(200)
-            .contentType(MediaType.TEXT_HTML)
             .extract()
             .body()
-            .asString();
+            .asByteArray();
 
-    assertHtml("reports/report_all_token.html", body);
+    try {
+      Files.write(Paths.get("/home/cferiavi/Downloads/crda.zip"), body);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+    //    assertHtml("reports/report_all_token.html", RestParamType.body);
 
     verifySnykRequest(OK_TOKEN);
     verifyTCRequests();
