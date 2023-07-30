@@ -1,5 +1,24 @@
 name: CICD
 
+env:
+  # 🖊️ EDIT your repository secrets to log into your OpenShift cluster and set up the context.
+  # See https://github.com/redhat-actions/oc-login#readme for how to retrieve these values.
+  # To get a permanent token, refer to https://github.com/redhat-actions/oc-login/wiki/Using-a-Service-Account-for-GitHub-Actions
+  OPENSHIFT_SERVER: ${{ secrets.OPENSHIFT_SERVER }}
+  OPENSHIFT_TOKEN: ${{ secrets.OPENSHIFT_TOKEN }}
+  # 🖊️ EDIT to set the kube context's namespace after login. Leave blank to use your user's default namespace.
+  OPENSHIFT_NAMESPACE: ""
+
+  IMAGE_NAME: exhort
+  IMAGE_TAGS: latest ${{ github.sha }}
+  DOCKERFILE_PATH: ./src/main/docker/Dockerfile.multi-stage
+
+  # 🖊️ EDIT to change the image registry settings.
+  # Registries such as GHCR, Quay.io, and Docker Hub are supported.
+  IMAGE_REGISTRY: quay.io/ishishov #quay.io/ecosystem-appeng
+  IMAGE_REGISTRY_USER: ${{ secrets.QUAY_USER }}
+  IMAGE_REGISTRY_PASSWORD: ${{ secrets.QUAY_PASSWORD }}
+
 on:
   push:
     branches:
@@ -8,8 +27,12 @@ on:
       - '*'
 
 jobs:
-  build_and_push_image:
+  build_image:
     runs-on: ubuntu-latest
+
+    outputs:
+      image: ${{ steps.build-image.outputs.image }}
+      tags: ${{ steps.build-image.outputs.tags }}
 
     steps:
       - name: Checkout Repository
@@ -19,11 +42,19 @@ jobs:
         id: build-image
         uses: redhat-actions/buildah-build@v2
         with:
-          image: exhort
-          tags: latest ${{ github.sha }}
-          containerfiles: |
-            ./src/main/docker/Dockerfile.multi-stage
+          image: ${{ env.APP_NAME }}
+          tags: ${{ env.IMAGE_TAGS }}
+          dockerfiles: |
+            ${{ env.DOCKERFILE_PATH }}
 
+  push_image:
+    needs: build_image
+    runs-on: ubuntu-latest
+
+    outputs:
+      digest: ${{ steps.push-to-quay.outputs.digest }}
+
+    steps:
       # - name: Log in to Red Hat Registry
       #   uses: redhat-actions/podman-login@v1
       #   with:
@@ -35,12 +66,12 @@ jobs:
         id: push-to-quay
         uses: redhat-actions/push-to-registry@v2
         with:
-          image: ${{ steps.build-image.outputs.image }}
-          tags: ${{ steps.build-image.outputs.tags }}
-          registry: quay.io/ishishov #quay.io/ecosystem-appeng
-          username: ${{ secrets.QUAY_USER }}
-          password: ${{ secrets.QUAY_PASSWORD }}
-
+          image: ${{ needs.build_image.outputs.image }}
+          tags: ${{ needs.build_image.outputs.tags }}
+          registry: ${{ env.IMAGE_REGISTRY }}
+          username: ${{ env.IMAGE_REGISTRY_USER }}
+          password: ${{ env.IMAGE_REGISTRY_PASSWORD }}
+      
       - name: Print image url
         run: echo "Image pushed to ${{ steps.push-to-quay.outputs.registry-paths }}"
       
@@ -48,9 +79,25 @@ jobs:
         run: echo "Image Digest ${{ steps.push-to-quay.outputs.digest }}"
 
   deploy_to_openshift:
-    needs: build_and_push_image
+    needs: push_image
     runs-on: ubuntu-latest
 
     steps:
       - name: Print Image Digest from Previous Job
-        run: echo "Image Digest from Previous Job ${{ needs.build_and_push_image.outputs.digest }}"
+        run: echo "Image Digest from Previous Job ${{ needs.push_image.outputs.digest }}"
+
+      - name: Install oc
+        uses: redhat-actions/openshift-tools-installer@v1
+        with:
+          oc: 4
+
+      - name: Log in to OpenShift
+        uses: redhat-actions/oc-login@v1
+        with:
+          openshift_server_url: ${{ env.OPENSHIFT_SERVER }}
+          openshift_token: ${{ env.OPENSHIFT_TOKEN }}
+          insecure_skip_tls_verify: true
+          namespace: ${{ env.OPENSHIFT_NAMESPACE }}
+      
+      # - name: Path Image Digest
+      #   run: oc patch deployment <deployment_name> -p '{"spec": {"template": {"spec": {"containers": [{"name": "<container_name>", "image": "new_image_tag"}]}}}}'
