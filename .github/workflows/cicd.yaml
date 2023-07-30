@@ -1,0 +1,56 @@
+name: CICD
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - '*'
+
+jobs:
+  build_and_push_image:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Build Image With buildah
+        id: build-image
+        uses: redhat-actions/buildah-build@v2
+        with:
+          image: exhort
+          tags: latest ${{ github.sha }}
+          containerfiles: |
+            ./src/main/docker/Dockerfile.multi-stage
+
+      # - name: Log in to Red Hat Registry
+      #   uses: redhat-actions/podman-login@v1
+      #   with:
+      #     registry: registry.redhat.io
+      #     username: ${{ secrets.QUAY_USER }}
+      #     password: ${{ secrets.QUAY_PASSWORD }}
+          
+      - name: Push Image To quay.io
+        id: push-to-quay
+        uses: redhat-actions/push-to-registry@v2
+        with:
+          image: ${{ steps.build-image.outputs.image }}
+          tags: ${{ steps.build-image.outputs.tags }}
+          registry: quay.io/ishishov #quay.io/ecosystem-appeng
+          username: ${{ secrets.QUAY_USER }}
+          password: ${{ secrets.QUAY_PASSWORD }}
+
+      - name: Print image url
+        run: echo "Image pushed to ${{ steps.push-to-quay.outputs.registry-paths }}"
+      
+      - name: Print Image Digest
+        run: echo "Image Digest ${{ steps.push-to-quay.outputs.digest }}"
+
+  deploy_to_openshift:
+    needs: build_and_push_image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Print Image Digest from Previous Job
+        run: echo "Image Digest from Previous Job ${{ needs.build_and_push_image.outputs.digest }}"
