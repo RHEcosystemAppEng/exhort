@@ -73,9 +73,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Print Image Digest from Previous Job
-        run: echo "Image Digest from Previous Job ${{ needs.build_and_push_image.outputs.digest }}"
-
       - name: Install oc
         uses: redhat-actions/openshift-tools-installer@v1
         with:
