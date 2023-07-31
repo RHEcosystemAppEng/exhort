@@ -1,0 +1,46 @@
+{
+  "SPDXID" : "SPDXRef-DOCUMENT",
+  "spdxVersion" : "SPDX-2.3",
+  "creationInfo" : {
+    "comment" : "Converted from CycloneDX spec version 1.4",
+    "created" : "2023-05-16T14:37:58Z",
+    "creators" : [ "Tool: OWASP Foundation:CycloneDX Maven plugin makeAggregateBom compile+provided+runtime+system-2.7.6", "Tool: CycloneToSpdx-0.1.4" ],
+    "licenseListVersion" : "3.21"
+  },
+  "name" : "org.acme.dbaas:postgresql-orm-quarkus",
+  "dataLicense" : "CC0-1.0",
+  "annotations" : [ {
+    "annotationDate" : "2023-07-26T09:11:14Z",
+    "annotationType" : "OTHER",
+    "annotator" : "Tool: CycloneToSpdx",
+    "comment" : "MISSING_CDX_PROPERTY:metadata.tools=[{\"vendor\":\"OWASP Foundation\",\"name\":\"CycloneDX Maven plugin makeAggregateBom compile+provided+runtime+system\",\"version\":\"2.7.6\",\"hashes\":[{\"algorithm\":\"MD5\",\"value\":\"639c35c7f79c5514f3abe11247999b70\"},{\"algorithm\":\"SHA-1\",\"value\":\"649239e622d8d454bb9ab6fafd6746c85cd11b7d\"},{\"algorithm\":\"SHA-256\",\"value\":\"1e3bc10146c370fe8b8f0a2edcb64329907d61dbc2f445db6ac1034cd3221ce3\"},{\"algorithm\":\"SHA-512\",\"value\":\"894a4b5762d32c88cc58ae1a35a3cc3d45a3c494accadb31b55b5832af65f60c0f8164623521a81de73e3ed6a4c994cca0f1951c8368b9d07fb41c82eaa84bbd\"},{\"algorithm\":\"SHA-384\",\"value\":\"3c385acc773a41056fb58ea27096c8ec86d46d8bd74a2eee9cf0913051981611afc68cf13a88d31af16590a489a97c0e\"},{\"algorithm\":\"SHA3-384\",\"value\":\"93695160055039f4791ecebd61c7aa6130f074f50a823de6e5aff7217c35548062829ec2b930658c2702cd47ea3118a1\"},{\"algorithm\":\"SHA3-256\",\"value\":\"4c9f5d3ab2b6ab9b4b4a8968a7ee2373b85a496bec34eefd96ed7c8260d2a45b\"},{\"algorithm\":\"SHA3-512\",\"value\":\"c2af46fe07c4be746fdc0b54e9eb3285231055c5401bcfb34c2d9392efe27fe9c16a0edd91615970bfae3f4a59846e89c3d88a6a36d4ba110a6d140a04fe184d\"}]}]"
+  } ],
+  "documentNamespace" : "https://cyclonedx/21e8d828-b07f-4fd3-bd14-0458f7188d40_1",
+  "packages" : [ {
+    "SPDXID" : "SPDXRef-pkg-maven-org.acme.dbaas-postgresql-orm-quarkus-1.0.0-SNAPSHOT-type-jar",
+    "annotations" : [ {
+      "annotationDate" : "2023-07-26T09:11:14Z",
+      "annotationType" : "OTHER",
+      "annotator" : "Tool: CycloneToSpdx",
+      "comment" : "MISSING_CDX_PROPERTY:componentType=\"LIBRARY\""
+    } ],
+    "copyrightText" : "NOASSERTION",
+    "downloadLocation" : "NOASSERTION",
+    "externalRefs" : [ {
+      "referenceCategory" : "PACKAGE-MANAGER",
+      "referenceLocator" : "pkg:maven/org.acme.dbaas/postgresql-orm-quarkus@1.0.0-SNAPSHOT?type=jar",
+      "referenceType" : "purl"
+    } ],
+    "filesAnalyzed" : false,
+    "licenseConcluded" : "NOASSERTION",
+    "licenseDeclared" : "NOASSERTION",
+    "name" : "org.acme.dbaas:postgresql-orm-quarkus",
+    "primaryPackagePurpose" : "LIBRARY",
+    "versionInfo" : "1.0.0-SNAPSHOT"
+  } ],
+  "relationships" : [ {
+    "spdxElementId" : "SPDXRef-DOCUMENT",
+    "relationshipType" : "DESCRIBES",
+    "relatedSpdxElement" : "SPDXRef-pkg-maven-org.acme.dbaas-postgresql-orm-quarkus-1.0.0-SNAPSHOT-type-jar"
+  } ]
+}
