@@ -7,9 +7,9 @@ env:
   OPENSHIFT_SERVER: ${{ secrets.OPENSHIFT_SERVER }}
   OPENSHIFT_TOKEN: ${{ secrets.OPENSHIFT_TOKEN }}
   # 🖊️ EDIT to set the kube context's namespace after login. Leave blank to use your user's default namespace.
-  OPENSHIFT_NAMESPACE: exhort
-  OPENSHIFT_DEPLOYMENT_NAME: exhort
-  OPENSHIFT_CONTAINER_NAME: exhort
+  OPENSHIFT_NAMESPACE: cicd
+  OPENSHIFT_DEPLOYMENT_NAME: nginx
+  OPENSHIFT_CONTAINER_NAME: nginx
 
   IMAGE_NAME: exhort
   IMAGE_TAGS: latest
@@ -81,15 +81,15 @@ jobs:
         with:
           oc: 4
 
-      # - name: Log in to OpenShift
-      #   uses: redhat-actions/oc-login@v1
-      #   with:
-      #     openshift_server_url: ${{ env.OPENSHIFT_SERVER }}
-      #     openshift_token: ${{ env.OPENSHIFT_TOKEN }}
-      #     insecure_skip_tls_verify: true
-      #     namespace: ${{ env.OPENSHIFT_NAMESPACE }}
+      - name: Log in to OpenShift
+        uses: redhat-actions/oc-login@v1
+        with:
+          openshift_server_url: ${{ env.OPENSHIFT_SERVER }}
+          openshift_token: ${{ env.OPENSHIFT_TOKEN }}
+          insecure_skip_tls_verify: true
+          namespace: ${{ env.OPENSHIFT_NAMESPACE }}
       
-      # - name: Patch Image
-      #   run: |
-      #     DEPLOYMENT_PATCH=$(printf '{"spec": {"template": {"spec": {"containers": [{"name": "%s", "image": "%s/%s:%s"}]}}}}' ${{ env.OPENSHIFT_CONTAINER_NAME }} ${{ env.IMAGE_REGISTRY }} ${{ env.IMAGE_NAME }} ${{ needs.build_and_push_image.outputs.digest }})
-      #     oc patch deployment ${{ env.OPENSHIFT_DEPLOYMENT_NAME }} -n ${{ env.OPENSHIFT_NAMESPACE }} -p '${DEPLOYMENT_PATCH}'
+      - name: Patch Image
+        run: |
+          DEPLOYMENT_PATCH=$(printf '{"spec": {"template": {"spec": {"containers": [{"name": "%s", "image": "%s/%s@%s"}]}}}}' ${{ env.OPENSHIFT_CONTAINER_NAME }} ${{ env.IMAGE_REGISTRY }} ${{ env.IMAGE_NAME }} ${{ needs.build_and_push_image.outputs.digest }})
+          oc patch deployment ${{ env.OPENSHIFT_DEPLOYMENT_NAME }} -p '${DEPLOYMENT_PATCH}'
