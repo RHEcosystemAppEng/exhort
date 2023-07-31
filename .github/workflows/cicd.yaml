@@ -8,18 +8,18 @@ env:
   OPENSHIFT_TOKEN: ${{ secrets.OPENSHIFT_TOKEN }}
   # 🖊️ EDIT to set the kube context's namespace after login. Leave blank to use your user's default namespace.
   OPENSHIFT_NAMESPACE: cicd
+  # 🖊️ EDIT to set the deployemnt resource data for image update.
   OPENSHIFT_DEPLOYMENT_NAME: nginx
   OPENSHIFT_CONTAINER_NAME: nginx
-
-  IMAGE_NAME: exhort
-  IMAGE_TAGS: latest
-  DOCKERFILE_PATH: ./src/main/docker/Dockerfile.native-micro
-
   # 🖊️ EDIT to change the image registry settings.
   # Registries such as GHCR, Quay.io, and Docker Hub are supported.
   IMAGE_REGISTRY: quay.io/ishishov #quay.io/ecosystem-appeng
+  IMAGE_NAME: exhort
+  IMAGE_TAGS: latest
   IMAGE_REGISTRY_USER: ${{ secrets.QUAY_USER }}
   IMAGE_REGISTRY_PASSWORD: ${{ secrets.QUAY_PASSWORD }}
+  # 🖊️ EDIT to change Dockerfile.
+  DOCKERFILE_PATH: ./src/main/docker/Dockerfile.native-micro
 
 on:
   push:
@@ -92,4 +92,4 @@ jobs:
       - name: Patch Image
         run: |
           DEPLOYMENT_PATCH=$(printf '{"spec": {"template": {"spec": {"containers": [{"name": "%s", "image": "%s/%s@%s"}]}}}}' ${{ env.OPENSHIFT_CONTAINER_NAME }} ${{ env.IMAGE_REGISTRY }} ${{ env.IMAGE_NAME }} ${{ needs.build_and_push_image.outputs.digest }})
-          oc patch deployment ${{ env.OPENSHIFT_DEPLOYMENT_NAME }} -p '${DEPLOYMENT_PATCH}'
+          oc patch deployment ${{ env.OPENSHIFT_DEPLOYMENT_NAME }} -p "${DEPLOYMENT_PATCH}"
