@@ -43,7 +43,9 @@ jobs:
       - name: Setup JDK
         uses: actions/setup-java@v3
         with:
+          distribution: 'oracle'
           java-version: '17'
+          cache: 'maven'
 
       - name: Build with Maven
         run: mvn package -Pnative
