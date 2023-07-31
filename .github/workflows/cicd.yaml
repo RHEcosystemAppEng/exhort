@@ -7,11 +7,13 @@ env:
   OPENSHIFT_SERVER: ${{ secrets.OPENSHIFT_SERVER }}
   OPENSHIFT_TOKEN: ${{ secrets.OPENSHIFT_TOKEN }}
   # 🖊️ EDIT to set the kube context's namespace after login. Leave blank to use your user's default namespace.
-  OPENSHIFT_NAMESPACE: ""
+  OPENSHIFT_NAMESPACE: exhort
+  OPENSHIFT_DEPLOYMENT_NAME: exhort
+  OPENSHIFT_CONTAINER_NAME: exhort
 
   IMAGE_NAME: exhort
   IMAGE_TAGS: latest ${{ github.sha }}
-  DOCKERFILE_PATH: ./src/main/docker/Dockerfile.multi-stage
+  DOCKERFILE_PATH: ./src/main/docker/Dockerfile.native-micro
 
   # 🖊️ EDIT to change the image registry settings.
   # Registries such as GHCR, Quay.io, and Docker Hub are supported.
@@ -37,6 +39,14 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
+
+      - name: Setup JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+
+      - name: Build with Maven
+        run: mvn package -Pnative
 
       - name: Build Image With buildah
         id: build-image
@@ -91,13 +101,15 @@ jobs:
         with:
           oc: 4
 
-      - name: Log in to OpenShift
-        uses: redhat-actions/oc-login@v1
-        with:
-          openshift_server_url: ${{ env.OPENSHIFT_SERVER }}
-          openshift_token: ${{ env.OPENSHIFT_TOKEN }}
-          insecure_skip_tls_verify: true
-          namespace: ${{ env.OPENSHIFT_NAMESPACE }}
+      # - name: Log in to OpenShift
+      #   uses: redhat-actions/oc-login@v1
+      #   with:
+      #     openshift_server_url: ${{ env.OPENSHIFT_SERVER }}
+      #     openshift_token: ${{ env.OPENSHIFT_TOKEN }}
+      #     insecure_skip_tls_verify: true
+      #     namespace: ${{ env.OPENSHIFT_NAMESPACE }}
       
-      # - name: Path Image Digest
-      #   run: oc patch deployment <deployment_name> -p '{"spec": {"template": {"spec": {"containers": [{"name": "<container_name>", "image": "new_image_tag"}]}}}}'
+      # - name: Patch Image
+      #   run: |
+      #     DEPLOYMENT_PATCH=$(printf '{"spec": {"template": {"spec": {"containers": [{"name": "%s", "image": "%s/%s:%s"}]}}}}' ${{ env.OPENSHIFT_CONTAINER_NAME }} ${{ env.IMAGE_REGISTRY }} ${{ env.IMAGE_NAME }} ${{ needs.push_image.outputs.digest }})
+      #     oc patch deployment ${{ env.OPENSHIFT_DEPLOYMENT_NAME }} -n ${{ env.OPENSHIFT_NAMESPACE }} -p '${DEPLOYMENT_PATCH}'
