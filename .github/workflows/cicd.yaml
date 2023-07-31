@@ -29,12 +29,11 @@ on:
       - '*'
 
 jobs:
-  build_image:
+  build_and_push_image:
     runs-on: ubuntu-latest
 
     outputs:
-      image: ${{ steps.build-image.outputs.image }}
-      tags: ${{ steps.build-image.outputs.tags }}
+      digest: ${{ steps.push-to-quay.outputs.digest }}
 
     steps:
       - name: Checkout Repository
@@ -47,7 +46,7 @@ jobs:
           java-version: '17'
           cache: 'maven'
 
-      - name: Build with Maven
+      - name: Build Package with Maven
         run: mvn package -Pnative
 
       - name: Build Image With buildah
@@ -59,14 +58,6 @@ jobs:
           dockerfiles: |
             ${{ env.DOCKERFILE_PATH }}
 
-  push_image:
-    needs: build_image
-    runs-on: ubuntu-latest
-
-    outputs:
-      digest: ${{ steps.push-to-quay.outputs.digest }}
-
-    steps:
       # - name: Log in to Red Hat Registry
       #   uses: redhat-actions/podman-login@v1
       #   with:
@@ -78,8 +69,8 @@ jobs:
         id: push-to-quay
         uses: redhat-actions/push-to-registry@v2
         with:
-          image: ${{ needs.build_image.outputs.image }}
-          tags: ${{ needs.build_image.outputs.tags }}
+          image: ${{ steps.build-image.outputs.image }}
+          tags: ${{ steps.build-image.outputs.tags }}
           registry: ${{ env.IMAGE_REGISTRY }}
           username: ${{ env.IMAGE_REGISTRY_USER }}
           password: ${{ env.IMAGE_REGISTRY_PASSWORD }}
@@ -91,12 +82,12 @@ jobs:
         run: echo "Image Digest ${{ steps.push-to-quay.outputs.digest }}"
 
   deploy_to_openshift:
-    needs: push_image
+    needs: build_and_push_image
     runs-on: ubuntu-latest
 
     steps:
       - name: Print Image Digest from Previous Job
-        run: echo "Image Digest from Previous Job ${{ needs.push_image.outputs.digest }}"
+        run: echo "Image Digest from Previous Job ${{ needs.build_and_push_image.outputs.digest }}"
 
       - name: Install oc
         uses: redhat-actions/openshift-tools-installer@v1
@@ -113,5 +104,5 @@ jobs:
       
       # - name: Patch Image
       #   run: |
-      #     DEPLOYMENT_PATCH=$(printf '{"spec": {"template": {"spec": {"containers": [{"name": "%s", "image": "%s/%s:%s"}]}}}}' ${{ env.OPENSHIFT_CONTAINER_NAME }} ${{ env.IMAGE_REGISTRY }} ${{ env.IMAGE_NAME }} ${{ needs.push_image.outputs.digest }})
+      #     DEPLOYMENT_PATCH=$(printf '{"spec": {"template": {"spec": {"containers": [{"name": "%s", "image": "%s/%s:%s"}]}}}}' ${{ env.OPENSHIFT_CONTAINER_NAME }} ${{ env.IMAGE_REGISTRY }} ${{ env.IMAGE_NAME }} ${{ needs.build_and_push_image.outputs.digest }})
       #     oc patch deployment ${{ env.OPENSHIFT_DEPLOYMENT_NAME }} -n ${{ env.OPENSHIFT_NAMESPACE }} -p '${DEPLOYMENT_PATCH}'
