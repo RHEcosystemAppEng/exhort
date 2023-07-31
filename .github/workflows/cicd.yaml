@@ -12,7 +12,7 @@ env:
   OPENSHIFT_CONTAINER_NAME: exhort
 
   IMAGE_NAME: exhort
-  IMAGE_TAGS: latest ${{ github.sha }}
+  IMAGE_TAGS: latest
   DOCKERFILE_PATH: ./src/main/docker/Dockerfile.native-micro
 
   # 🖊️ EDIT to change the image registry settings.
@@ -57,13 +57,6 @@ jobs:
           tags: ${{ env.IMAGE_TAGS }}
           dockerfiles: |
             ${{ env.DOCKERFILE_PATH }}
-
-      # - name: Log in to Red Hat Registry
-      #   uses: redhat-actions/podman-login@v1
-      #   with:
-      #     registry: registry.redhat.io
-      #     username: ${{ secrets.QUAY_USER }}
-      #     password: ${{ secrets.QUAY_PASSWORD }}
           
       - name: Push Image To quay.io
         id: push-to-quay
@@ -74,12 +67,6 @@ jobs:
           registry: ${{ env.IMAGE_REGISTRY }}
           username: ${{ env.IMAGE_REGISTRY_USER }}
           password: ${{ env.IMAGE_REGISTRY_PASSWORD }}
-      
-      - name: Print image url
-        run: echo "Image pushed to ${{ steps.push-to-quay.outputs.registry-paths }}"
-      
-      - name: Print Image Digest
-        run: echo "Image Digest ${{ steps.push-to-quay.outputs.digest }}"
 
   deploy_to_openshift:
     needs: build_and_push_image
