@@ -19,29 +19,29 @@
     </symbol>
 </svg>
 <#function htmlRef package>
-    <#local result=package.name()?replace(".", "" )>
-        <#local result=result?replace(":","")>
-            <#local result=result?replace("-","")>
-                <#return result>
+    <#local result = package.name()?replace(".", "")>
+    <#local result = result?replace(":","")>
+    <#local result = result?replace("-","")>
+    <#return result>
 </#function>
 <#function repoLink package>
-    <#local result=package.name()?replace(".", "/" )>
-        <#local result=result?replace(":", "/" )>
-            <#local result=body.remediationPath + result + "/" + package.version()>
-                <#return result>
+    <#local result = package.name()?replace(".", "/")>
+    <#local result = result?replace(":", "/")>
+    <#local result = body.remediationPath + result + "/" + package.version()>
+    <#return result>
 </#function>
 <#function packageLink package>
-    <#return body.packagePath + package.name()?replace(":", "/" ) + "/" + package.version()>
+    <#return body.packagePath + package.name()?replace(":", "/") + "/" + package.version()>
 </#function>
 <#function issueLink issue>
     <#if issue.getSource()=="snyk">
-        <#return body.snykIssueLinkFormatter.format(issue.getId())>
-            <#elseif issue.getSource()=="oss-index">
-                <#return body.ossIndexIssueLinkFormatter.format(issue.getId())>
+        <#return body.snykIssueLinkFormatter.format(issue.getId()) >
+    <#elseif issue.getSource()=="oss-index">
+        <#return body.ossIndexIssueLinkFormatter.format(issue.getId()) >
     </#if>
 </#function>
 <#function vexLink cve>
-    <#return body.vexPath + cve + "-Quarkus.json">
+    <#return body.vexPath + cve + "-Quarkus.json" >
 </#function>
 <!DOCTYPE html>
 <html lang="en-us">
@@ -49,12 +49,16 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <#include "patternfly.ftl">
-    <title>HELLO WORLD! Dependency Analysis</title>
+    <#--  This stylesheet from running "yarn build" in /ui dir  -->
+    <style>
+        <#include "generated/main.css">
+    </style>
+    <title>Dependency Analysis</title>
 </head>
 
 <body>
     <div id="root" class="pf-v5-u-h-100">
+        <#--  This content is only shown until the react app is loaded  -->
         <div
             class="pf-v5-u-display-flex pf-v5-u-flex-direction-column pf-v5-u-align-items-center pf-v5-u-justify-content-center pf-v5-u-h-100">
             <div>Loading...</div>
@@ -72,8 +76,10 @@
             </svg>
         </div>
     </div>
-    <#include "content.ftl">
-        <#include "scripts.ftl">
+    <#--  This content from running "yarn build" in /ui dir  -->
+    <script>
+        <#include "generated/main.js">
+    </script>
 </body>
 
 </html>
