@@ -92,3 +92,6 @@ jobs:
         run: |
           DEPLOYMENT_PATCH=$(printf '{"spec": {"template": {"spec": {"containers": [{"name": "%s", "image": "%s/%s@%s"}]}}}}' ${{ env.OPENSHIFT_CONTAINER_NAME }} ${{ env.IMAGE_REGISTRY }} ${{ env.IMAGE_NAME }} ${{ needs.build_and_push_image.outputs.digest }})
           oc patch deployment ${{ env.OPENSHIFT_DEPLOYMENT_NAME }} -p "${DEPLOYMENT_PATCH}"
+
+      - name: Validate Deployment Status
+        run: oc rollout status deployment/${{ env.OPENSHIFT_DEPLOYMENT_NAME }}
