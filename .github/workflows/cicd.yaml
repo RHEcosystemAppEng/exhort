@@ -21,7 +21,7 @@ env:
   # 🖊️ EDIT to change Dockerfile.
   DOCKERFILE_PATH: ./src/main/docker/Dockerfile.native-micro
   # 🖊️ EDIT to change Dockerfile.
-  ALLOWED_REPOSITORIES: RHEcosystemAppEng/exhort IlonaShishov/exhort
+  ALLOWED_REPOSITORIES: ('RHEcosystemAppEng/exhort','IlonaShishov/exhort')
 
 on:
   push:
