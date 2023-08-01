@@ -33,7 +33,7 @@ jobs:
   build_and_push_image:
     runs-on: ubuntu-latest
     
-    if: github.repository == ${{ env.ALLOWED_REPOSITORIES }}
+    if: github.repository == env.ALLOWED_REPOSITORIES
     
     outputs:
       digest: ${{ steps.push-to-quay.outputs.digest }}
