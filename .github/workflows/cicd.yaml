@@ -20,8 +20,8 @@ env:
   IMAGE_REGISTRY_PASSWORD: ${{ secrets.QUAY_PASSWORD }}
   # 🖊️ EDIT to change Dockerfile.
   DOCKERFILE_PATH: ./src/main/docker/Dockerfile.native-micro
-  # 🖊️ EDIT to change Dockerfile.
-  ALLOWED_REPOSITORIES: ('RHEcosystemAppEng/exhort','IlonaShishov/exhort')
+  # 🖊️ EDIT to change allowed repository for running this workflow.
+  ALLOWED_REPOSITORY: RHEcosystemAppEng/exhort
 
 on:
   push:
@@ -34,7 +34,7 @@ jobs:
   build_and_push_image:
     runs-on: ubuntu-latest
     
-    if: contains( ${{ env.ALLOWED_REPOSITORIES }}, github.repository)
+    if: github.repository == ${{ env.ALLOWED_REPOSITORY }}
     
     outputs:
       digest: ${{ steps.push-to-quay.outputs.digest }}
