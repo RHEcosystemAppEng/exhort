@@ -20,7 +20,6 @@ env:
   IMAGE_REGISTRY_PASSWORD: ${{ secrets.QUAY_PASSWORD }}
   # 🖊️ EDIT to change Dockerfile.
   DOCKERFILE_PATH: ./src/main/docker/Dockerfile.native-micro
-  REPOSITORIES: 'RHEcosystemAppEng/exhort'
 
 on:
   push:
@@ -33,7 +32,7 @@ jobs:
   build_and_push_image:
     runs-on: ubuntu-latest
     
-    if: github.repository == env.REPOSITORIES
+    if: github.repository == 'IlonaShishov/exhort'
     
     outputs:
       digest: ${{ steps.push-to-quay.outputs.digest }}
