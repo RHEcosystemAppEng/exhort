@@ -81,7 +81,7 @@ jobs:
           }
 
   build_and_push_image:
-    needs: validate_workflow_requirements
+    needs: openshift-ci-cd
     runs-on: ubuntu-latest
     
     if: github.repository == 'IlonaShishov/exhort'
