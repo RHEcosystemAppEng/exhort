@@ -53,6 +53,22 @@ export const Test = () => (
                     <Progress variant="warning" measureLocation="none" title="[=dependency.getHighestVulnerability().getCvssScore()]/10" min={0} max={10} value={parseInt('[=dependency.getHighestVulnerability().getCvssScore()]')} />
                 [/#if]
             </Td>
+            <Td>
+              [#if body.issueVisibilityHelper.showIssue(dependency.getHighestVulnerability())]
+                  <a href="[=issueLink(dependency.getHighestVulnerability())]"
+                  target="_blank">
+                      [=dependency.getHighestVulnerability().getId()]
+                  </a>
+              [#else]
+                  <a href="[=body.snykSignup]"
+                      target="_blank">
+                      Sign up for a free Snyk account
+                  </a>to learn about the vulnerabilities found
+              [/#if]
+            </Td>
+          [#else]
+            <Td>--</Td>
+            <Td>--</Td>
           [/#if]
         </Tr>
         <Tr isExpanded>
