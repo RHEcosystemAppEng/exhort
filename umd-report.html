@@ -1,0 +1,185 @@
+<svg version="1.1" style="display: none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <symbol viewBox="0 0 10.9793322 13" id="shield-icon">
+        <title>Combined Shape</title>
+        <g id="New-dependencies-view" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+            <g id="Overview" transform="translate(-1207.172757, -938.000000)" fill="#3E8635">
+                <g id="Details-of-dependency-com.github" transform="translate(427.000000, 764.000000)">
+                    <g id="Dependency-1" transform="translate(0.000000, 144.000000)">
+                        <g id="Group-9" transform="translate(780.172757, 24.000000)">
+                            <g id="Group-4" transform="translate(0.000000, 3.200001)">
+                                <g id="Icons/2.-Size-sm/Actions/check" transform="translate(0.000000, 2.799999)">
+                                    <path d="M10.5565789,0 C10.7906249,0 10.9793322,0.181542969 10.9793322,0.40625 L10.9793322,5.74082031 C10.9793322,9.75 6.24081907,13 5.49579296,13 C4.75076684,13 0,9.75 0,5.73955078 L0,0.40625 C0,0.181542969 0.188707272,0 0.422753304,0 Z M8.54277883,3.11782667 L4.7912961,6.89087353 L3.03981338,5.1293244 C2.883609,4.97220683 2.63032812,4.97220683 2.47412375,5.1293244 L1.90844938,5.69826556 C1.75224501,5.85538312 1.75224501,6.11010449 1.90844938,6.26720671 L4.50845797,8.88215991 C4.66464708,9.03927747 4.9179127,9.03927747 5.07413233,8.88217525 L9.67414282,4.25570898 C9.8303472,4.09859141 9.8303472,3.84387004 9.67414282,3.68676782 L9.10846846,3.11782667 C8.95226408,2.96072444 8.6989832,2.96072444 8.54277883,3.11782667 Z" id="Combined-Shape"></path>
+                                </g>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </symbol>
+</svg>
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link
+    rel="stylesheet"
+    href="https://unpkg.com/@patternfly/patternfly@5/patternfly-addons.css"
+    crossorigin />
+<link
+    rel="stylesheet"
+    href="https://unpkg.com/@patternfly/patternfly@5/patternfly.css"
+    crossorigin />    <title>UMD - Dependency Analysis</title>
+</head>
+
+<body>
+    <div id="root" class="pf-v5-u-h-100">
+        <div
+            class="pf-v5-u-display-flex pf-v5-u-flex-direction-column pf-v5-u-align-items-center pf-v5-u-justify-content-center pf-v5-u-h-100">
+            <div>Loading...</div>
+            <svg
+                class="pf-v5-c-spinner"
+                role="progressbar"
+                viewBox="0 0 100 100"
+                aria-label="Loading...">
+                <circle
+                    class="pf-v5-c-spinner__path"
+                    cx="50"
+                    cy="50"
+                    r="45"
+                    fill="none" />
+            </svg>
+        </div>
+    </div>
+<script type="text/babel">
+      "use strict";
+
+      const TableBasic = () => {
+        const repositories = [
+          {
+            name: "one",
+            branches: "two",
+            prs: "three",
+            workspaces: "four",
+            lastCommit: "five",
+          },
+          {
+            name: "one - 2",
+            branches: null,
+            prs: null,
+            workspaces: "four - 2",
+            lastCommit: "five - 2",
+          },
+          {
+            name: "one - 3",
+            branches: "two - 3",
+            prs: "three - 3",
+            workspaces: "four - 3",
+            lastCommit: "five - 3",
+          },
+        ];
+        const columnNames = {
+          name: "Repositories",
+          branches: "Branches",
+          prs: "Pull requests",
+          workspaces: "Workspaces",
+          lastCommit: "Last commit",
+        };
+        const [exampleChoice, setExampleChoice] = React.useState("default");
+        const onExampleTypeChange = (event, _isSelected) => {
+          const id = event.currentTarget.id;
+          setExampleChoice(id);
+        };
+        return (
+          <React.Fragment>
+            <PatternFlyTable.Table
+              aria-label="Simple table"
+              variant={exampleChoice !== "default" ? "compact" : undefined}
+              borders={exampleChoice !== "compactBorderless"}
+            >
+              <PatternFlyTable.Caption>
+                Simple table using composable components
+              </PatternFlyTable.Caption>
+              <PatternFlyTable.Thead>
+                <PatternFlyTable.Tr>
+                  <PatternFlyTable.Th>{columnNames.name}</PatternFlyTable.Th>
+                  <PatternFlyTable.Th>
+                    {columnNames.branches}
+                  </PatternFlyTable.Th>
+                  <PatternFlyTable.Th>{columnNames.prs}</PatternFlyTable.Th>
+                  <PatternFlyTable.Th>
+                    {columnNames.workspaces}
+                  </PatternFlyTable.Th>
+                  <PatternFlyTable.Th>
+                    {columnNames.lastCommit}
+                  </PatternFlyTable.Th>
+                </PatternFlyTable.Tr>
+              </PatternFlyTable.Thead>
+              <PatternFlyTable.Tbody>
+                {repositories.map((repo) => (
+                  <PatternFlyTable.Tr key={repo.name}>
+                    <PatternFlyTable.Td dataLabel={columnNames.name}>
+                      {repo.name}
+                    </PatternFlyTable.Td>
+                    <PatternFlyTable.Td dataLabel={columnNames.branches}>
+                      {repo.branches}
+                    </PatternFlyTable.Td>
+                    <PatternFlyTable.Td dataLabel={columnNames.prs}>
+                      {repo.prs}
+                    </PatternFlyTable.Td>
+                    <PatternFlyTable.Td dataLabel={columnNames.workspaces}>
+                      {repo.workspaces}
+                    </PatternFlyTable.Td>
+                    <PatternFlyTable.Td dataLabel={columnNames.lastCommit}>
+                      {repo.lastCommit}
+                    </PatternFlyTable.Td>
+                  </PatternFlyTable.Tr>
+                ))}
+              </PatternFlyTable.Tbody>
+            </PatternFlyTable.Table>
+          </React.Fragment>
+        );
+      };
+
+      const Report = () => {
+        const [liked, setLiked] = React.useState(false);
+
+        if (liked) {
+          return (
+            <PatternFlyReact.Alert title="Cool!" variant="info">
+              Total Vulnerabilities: 18
+            </PatternFlyReact.Alert>
+          );
+        }
+
+        const onClick = () => setLiked(true);
+        return (
+          <React.Fragment>
+            <TableBasic />
+            <PatternFlyReact.Button onClick={onClick}>
+              Like me!
+            </PatternFlyReact.Button>
+          </React.Fragment>
+        );
+      };
+
+      const container = document.getElementById("root");
+      const root = ReactDOM.createRoot(container);
+      root.render(<Report />);
+    </script><script
+    crossorigin
+    src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script
+    crossorigin
+    src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script
+    crossorigin
+    src="https://unpkg.com/@patternfly/react-core@5/dist/umd/react-core.min.js"></script>
+<script
+    crossorigin
+    src="https://unpkg.com/@patternfly/react-table@5/dist/umd/react-table.min.js"></script>
+<script crossorigin src="https://unpkg.com/babel-standalone@6/babel.min.js"></script></body>
+
+</html>
