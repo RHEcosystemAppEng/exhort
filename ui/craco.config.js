@@ -7,11 +7,13 @@ module.exports = {
       };
       webpackConfig.optimization = {
         ...webpackConfig.optimization,
-        runtimeChunk: false,
         splitChunks: {
-          ...webpackConfig.optimization.splitChunks,
-          chunks(chunk) {
-            return false;
+          chunks: 'all',
+          cacheGroups: {
+            vendor: {
+              test: /[\\/]node_modules[\\/]/,
+              name: 'vendor'
+            },
           },
         },
       };

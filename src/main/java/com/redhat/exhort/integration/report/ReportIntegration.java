@@ -23,6 +23,8 @@ import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
 
 import com.redhat.exhort.integration.Constants;
 
+import freemarker.template.Configuration;
+import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.MediaType;
@@ -31,6 +33,13 @@ import jakarta.ws.rs.core.MediaType;
 public class ReportIntegration extends EndpointRouteBuilder {
 
   @Inject ReportTemplate reportTemplate;
+  @Inject Configuration configuration;
+
+  @PostConstruct
+  void updateFreemarkerConfig() {
+    configuration.setTagSyntax(Configuration.SQUARE_BRACKET_TAG_SYNTAX);
+    configuration.setInterpolationSyntax(Configuration.SQUARE_BRACKET_INTERPOLATION_SYNTAX);
+  }
 
   @Override
   public void configure() {
