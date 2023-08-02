@@ -53,11 +53,8 @@ jobs:
           };
 
           const GHCR = "ghcr.io";
-          if (`${{ env.IMAGE_REGISTRY }}`.startsWith(GHCR)) {
-            core.info(`Image registry is ${GHCR} - no registry password required`);
-          }
-          else {
-            core.info("A registry password is required");
+          # If image registry is GHCR - no registry credentials required, otherwise collect credentials
+          if (!`${{ env.IMAGE_REGISTRY }}`.startsWith(GHCR)) {
             secrets["IMAGE_REGISTRY_PASSWORD"] = `${{ secrets.IMAGE_REGISTRY_PASSWORD }}`;
           }
 
