@@ -90,19 +90,16 @@ export const CompoundExpandable = () => {
     );
   };
   const renderPagination = (variant, isCompact) => (
-    // TODO: Investigate
-    // https://github.com/patternfly/patternfly-react/blob/main/packages/react-core/src/helpers/util.ts#L122
-    <div>Breaks FTL template syntax</div>
-    // <Pagination
-    //   isCompact={isCompact}
-    //   itemCount={36}
-    //   page={1}
-    //   perPage={10}
-    //   variant={variant}
-    //   titles={{
-    //     paginationAriaLabel: `${variant} pagination`,
-    //   }}
-    // />
+    <Pagination
+      isCompact={isCompact}
+      itemCount={36}
+      page={1}
+      perPage={10}
+      variant={variant}
+      titles={{
+        paginationAriaLabel: `${variant} pagination`,
+      }}
+    />
   );
   const tableToolbar = (
     <Toolbar id="compact-toolbar" usePageInsets>
