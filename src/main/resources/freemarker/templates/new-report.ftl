@@ -47,11 +47,12 @@
 <html lang="en-us">
 
 <head>
+    <#--  TODO: For some reason the resulting HTML doesn't include this in the head section, it ends up in the body  -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <#--  This stylesheet from running "yarn build" in /ui dir  -->
     <style>
-        <#include "generated/main.css">
+        <#include "generated/main.css" parse="false" />
     </style>
     <title>Dependency Analysis</title>
 </head>
@@ -78,7 +79,7 @@
     </div>
     <#--  This content from running "yarn build" in /ui dir  -->
     <script>
-        <#include "generated/main.js">
+        <#include "generated/main.js" parse="false" />
     </script>
 </body>
 
