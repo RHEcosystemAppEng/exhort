@@ -1,3 +1,5 @@
+const path = require("path");
+
 module.exports = {
   webpack: {
     configure: (webpackConfig, { env, paths }) => {
@@ -8,15 +10,23 @@ module.exports = {
       webpackConfig.optimization = {
         ...webpackConfig.optimization,
         splitChunks: {
-          chunks: 'all',
+          chunks: "all",
           cacheGroups: {
             vendor: {
               test: /[\\/]node_modules[\\/]/,
-              name: 'vendor'
+              name: "vendor",
             },
           },
         },
       };
+
+      // if (env === 'development') {
+      //   webpackConfig.module.rules.push({
+      //     test: /\.js$/,
+      //     loader: path.resolve("freemarker-loader.js"),
+      //     exclude: /node_modules/
+      //   });
+      // }
 
       webpackConfig.module.rules[1].oneOf.unshift({
         test: /\.(png|jpg|jpeg|woff|woff2|eot|ttf|svg)$/,

@@ -5,7 +5,7 @@ import { Test } from './Test';
 function App() {
   return (
     <>
-      <CompoundExpandable />
+      {/* <CompoundExpandable /> */}
       <Test />
     </>
   );
