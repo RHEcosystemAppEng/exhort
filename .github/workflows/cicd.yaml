@@ -41,9 +41,9 @@ jobs:
               OPENSHIFT_SERVER: `${{ env.OPENSHIFT_SERVER }}`,
               OPENSHIFT_TOKEN: `${{ env.OPENSHIFT_TOKEN }}`,
             };
-
+            
             # if image registry is ghcr.io - no registry credentials required, otherwise get registry credentials
-            if (!`${{ env.IMAGE_REGISTRY }}`.startsWith("ghcr.io")) {
+            if (`${{ env.IMAGE_REGISTRY }}`.startsWith("ghcr.io")) {
               secrets["REGISTRY_USER"] = `${{ env.IMAGE_REGISTRY_USER }}`;
               secrets["REGISTRY_PASSWORD"] = `${{ env.IMAGE_REGISTRY_PASSWORD }}`;
             }
@@ -67,7 +67,7 @@ jobs:
             else {
               core.info(`✅ All the required secrets are set`);
             }
-              
+
   build_and_push_image:
     needs: validate_workflow_requirements
     runs-on: ubuntu-latest
