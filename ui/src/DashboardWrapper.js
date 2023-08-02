@@ -60,13 +60,13 @@ yarn start
       <Command>
         {`<div>
         Total Vulnerabilities:
-        $&#123;body.report.getSummary().getVulnerabilities().getTotal()&#125;
+        [=body.report.getSummary().getVulnerabilities().getTotal()]
       </div>`}
       </Command>
       <Text component="h3">Result:</Text>
       <div>
         Total Vulnerabilities:
-        $&#123;body.report.getSummary().getVulnerabilities().getTotal()&#125;
+        [=body.report.getSummary().getVulnerabilities().getTotal()]
       </div>
     </TextContent>
   </PageSection>

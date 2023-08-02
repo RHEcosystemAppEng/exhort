@@ -18,41 +18,39 @@
         </g>
     </symbol>
 </svg>
-[#function htmlRef package]
-    [#local result = package.name()?replace(".", "")]
-    [#local result = result?replace(":","")]
-    [#local result = result?replace("-","")]
-    [#return result]
-[/#function]
-[#function repoLink package]
-    [#local result = package.name()?replace(".", "/")]
-    [#local result = result?replace(":", "/")]
-    [#local result = body.remediationPath + result + "/" + package.version()]
-    [#return result]
-[/#function]
-[#function packageLink package]
-    [#return body.packagePath + package.name()?replace(":", "/") + "/" + package.version()]
-[/#function]
-[#function issueLink issue]
-    [#if issue.getSource()=="snyk"]
-        [#return body.snykIssueLinkFormatter.format(issue.getId()) ]
-    [#elseif issue.getSource()=="oss-index"]
-        [#return body.ossIndexIssueLinkFormatter.format(issue.getId()) ]
-    [/#if]
-[/#function]
-[#function vexLink cve]
-    [#return body.vexPath + cve + "-Quarkus.json" ]
-[/#function]
+<#function htmlRef package>
+    <#local result=package.name()?replace(".", "" )>
+        <#local result=result?replace(":","")>
+            <#local result=result?replace("-","")>
+                <#return result>
+</#function>
+<#function repoLink package>
+    <#local result=package.name()?replace(".", "/" )>
+        <#local result=result?replace(":", "/" )>
+            <#local result=body.remediationPath + result + "/" + package.version()>
+                <#return result>
+</#function>
+<#function packageLink package>
+    <#return body.packagePath + package.name()?replace(":", "/" ) + "/" + package.version()>
+</#function>
+<#function issueLink issue>
+    <#if issue.getSource()=="snyk">
+        <#return body.snykIssueLinkFormatter.format(issue.getId())>
+            <#elseif issue.getSource()=="oss-index">
+                <#return body.ossIndexIssueLinkFormatter.format(issue.getId())>
+    </#if>
+</#function>
+<#function vexLink cve>
+    <#return body.vexPath + cve + "-Quarkus.json">
+</#function>
 <!DOCTYPE html>
 <html lang="en-us">
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <style>
-        [#include "generated/vendor.css" parse="false"]
-    </style>
-    <title>Dependency Analysis</title>
+    <#include "patternfly.ftl">
+    <title>UMD - Dependency Analysis</title>
 </head>
 
 <body>
@@ -74,12 +72,8 @@
             </svg>
         </div>
     </div>
-    <script>
-        [#include "generated/vendor.js" parse="false"]
-    </script>
-    <script>
-        [#include "generated/main.js" parse="true"]
-    </script>
+    <#include "content.ftl">
+    <#include "scripts.ftl">
 </body>
 
 </html>
