@@ -29,44 +29,56 @@ on:
       - '*'
 
 jobs:
-  validate_workflow_requirements:
-    runs-on: ubuntu-latest
+
+  openshift-ci-cd:
+    # 🖊️ Uncomment this if you are using CRDA scan step above
+    # needs: crda-scan
+    name: Build and deploy to OpenShift
+    runs-on: ubuntu-20.04
+    environment: production
+
+    outputs:
+      ROUTE: ${{ steps.deploy-and-expose.outputs.route }}
+      SELECTOR: ${{ steps.deploy-and-expose.outputs.selector }}
 
     steps:
-      - name: Check For Required Secrets
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const secrets = {
-              OPENSHIFT_SERVER: `${{ env.OPENSHIFT_SERVER }}`,
-              OPENSHIFT_TOKEN: `${{ env.OPENSHIFT_TOKEN }}`,
-            };
-            
-            # if image registry is ghcr.io - no registry credentials required, otherwise get registry credentials
-            if (`${{ env.IMAGE_REGISTRY }}`.startsWith("ghcr.io")) {
-              secrets["REGISTRY_USER"] = `${{ env.IMAGE_REGISTRY_USER }}`;
-              secrets["REGISTRY_PASSWORD"] = `${{ env.IMAGE_REGISTRY_PASSWORD }}`;
-            }
+    - name: Check for required secrets
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const secrets = {
+            OPENSHIFT_SERVER: `${{ secrets.OPENSHIFT_SERVER }}`,
+            OPENSHIFT_TOKEN: `${{ secrets.OPENSHIFT_TOKEN }}`,
+          };
 
-            const missingSecrets = Object.entries(secrets).filter(([ name, value ]) => {
-              if (value.length === 0) {
-                core.error(`Secret "${name}" is not set`);
-                return true;
-              }
-              core.info(`✔️ Secret "${name}" is set`);
-              return false;
-            });
+          const GHCR = "ghcr.io";
+          if (`${{ env.IMAGE_REGISTRY }}`.startsWith(GHCR)) {
+            core.info(`Image registry is ${GHCR} - no registry password required`);
+          }
+          else {
+            core.info("A registry password is required");
+            secrets["IMAGE_REGISTRY_PASSWORD"] = `${{ secrets.IMAGE_REGISTRY_PASSWORD }}`;
+          }
 
-            if (missingSecrets.length > 0) {
-              core.setFailed(`❌ At least one required secret is not set in the repository. \n` +
-                "You can add it using:\n" +
-                "GitHub UI: https://docs.github.com/en/actions/reference/encrypted-secrets#creating-encrypted-secrets-for-a-repository \n" +
-                "GitHub CLI: https://cli.github.com/manual/gh_secret_set \n" +
-                "Also, refer to https://github.com/redhat-actions/oc-login#getting-started-with-the-action-or-see-example");
+          const missingSecrets = Object.entries(secrets).filter(([ name, value ]) => {
+            if (value.length === 0) {
+              core.error(`Secret "${name}" is not set`);
+              return true;
             }
-            else {
-              core.info(`✅ All the required secrets are set`);
-            }
+            core.info(`✔️ Secret "${name}" is set`);
+            return false;
+          });
+
+          if (missingSecrets.length > 0) {
+            core.setFailed(`❌ At least one required secret is not set in the repository. \n` +
+              "You can add it using:\n" +
+              "GitHub UI: https://docs.github.com/en/actions/reference/encrypted-secrets#creating-encrypted-secrets-for-a-repository \n" +
+              "GitHub CLI: https://cli.github.com/manual/gh_secret_set \n" +
+              "Also, refer to https://github.com/redhat-actions/oc-login#getting-started-with-the-action-or-see-example");
+          }
+          else {
+            core.info(`✅ All the required secrets are set`);
+          }
 
   build_and_push_image:
     needs: validate_workflow_requirements
