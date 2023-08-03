@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext, useState } from "react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -15,6 +15,7 @@ import {
 } from "@patternfly/react-core";
 import DashboardHeader from "./DashboardHeader";
 import { Command } from "./Command";
+import { AppContext } from "./App";
 
 export const DashboardBreadcrumb = (
   <Breadcrumb>
@@ -27,7 +28,7 @@ export const DashboardBreadcrumb = (
   </Breadcrumb>
 );
 
-export const PageTemplateTitle = (
+export const PageTemplateTitle = (sbom) => (
   <PageSection variant="light">
     <TextContent>
       <Text component="h1">React.js + PatternFly 5</Text>
@@ -56,121 +57,109 @@ yarn start
       <Command>
         {`http :8080/api/v3/analysis Content-Type:"application/vnd.cyclonedx+json" Accept:"text/html" @'target/project-bom.json' ex-snyk-token:TOKEN ex-oss-index-user:user@redhat.com 'ex-oss-index-token:TOKEN' > report.html`}
       </Command>
-      <Text component="h2">Using FTL template syntax (example)</Text>
+      <Text component="h2">Access sbom data (example)</Text>
       <Command>
-        {`<div>
-        Total Vulnerabilities:
-        [=body.report.getSummary().getVulnerabilities().getTotal()]
-      </div>`}
+        {`const sbom = React.useContext(AppContext);
+console.log(sbom.report.summary.vulnerabilities.total)`}
       </Command>
       <Text component="h3">Result:</Text>
       <div>
-        Total Vulnerabilities:
-        [=body.report.getSummary().getVulnerabilities().getTotal()]
+        Total Vulnerabilities:{" "}
+        {sbom && sbom.report.summary.vulnerabilities.total}
       </div>
     </TextContent>
   </PageSection>
 );
 
-export default class DashboardWrapper extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      activeItem: 1,
-    };
+export const DashboardWrapper = (props) => {
+  const [activeItem, setActiveItem] = useState(1);
+  const onNavSelect = (_event, result) => {
+    setActiveItem(result.itemId);
+  };
+  const sbom = useContext(AppContext);
 
-    this.onNavSelect = (_event, result) => {
-      this.setState({
-        activeItem: result.itemId,
-      });
-    };
+  const {
+    children,
+    mainContainerId,
+    breadcrumb,
+    header,
+    sidebar,
+    sidebarNavOpen,
+    onPageResize = () => {},
+    hasNoBreadcrumb,
+    notificationDrawer,
+    isNotificationDrawerExpanded,
+    hasPageTemplateTitle,
+    ...pageProps
+  } = props;
+
+  let renderedBreadcrumb;
+  if (!hasNoBreadcrumb) {
+    renderedBreadcrumb =
+      breadcrumb !== undefined ? breadcrumb : DashboardBreadcrumb;
   }
 
-  render() {
-    const { activeItem } = this.state;
-    const {
-      children,
-      mainContainerId,
-      breadcrumb,
-      header,
-      sidebar,
-      sidebarNavOpen,
-      onPageResize = () => {},
-      hasNoBreadcrumb,
-      notificationDrawer,
-      isNotificationDrawerExpanded,
-      hasPageTemplateTitle,
-      ...pageProps
-    } = this.props;
+  const PageNav = (
+    <Nav onSelect={onNavSelect} aria-label="Nav">
+      <NavList>
+        <NavItem itemId={0} isActive={activeItem === 0} to="#system-panel">
+          System panel
+        </NavItem>
+        <NavItem itemId={1} isActive={activeItem === 1} to="#policy">
+          Policy
+        </NavItem>
+        <NavItem itemId={2} isActive={activeItem === 2} to="#auth">
+          Authentication
+        </NavItem>
+        <NavItem itemId={3} isActive={activeItem === 3} to="#network">
+          Network services
+        </NavItem>
+        <NavItem itemId={4} isActive={activeItem === 4} to="#server">
+          Server
+        </NavItem>
+      </NavList>
+    </Nav>
+  );
 
-    let renderedBreadcrumb;
-    if (!hasNoBreadcrumb) {
-      renderedBreadcrumb =
-        breadcrumb !== undefined ? breadcrumb : DashboardBreadcrumb;
-    }
+  const _sidebar = (
+    <PageSidebar isSidebarOpen={sidebarNavOpen || false}>
+      <PageSidebarBody>{PageNav}</PageSidebarBody>
+    </PageSidebar>
+  );
+  const PageSkipToContent = (
+    <SkipToContent
+      href={`#${
+        mainContainerId
+          ? mainContainerId
+          : "main-content-page-layout-default-nav"
+      }`}
+    >
+      Skip to content
+    </SkipToContent>
+  );
 
-    const PageNav = (
-      <Nav onSelect={this.onNavSelect} aria-label="Nav">
-        <NavList>
-          <NavItem itemId={0} isActive={activeItem === 0} to="#system-panel">
-            System panel
-          </NavItem>
-          <NavItem itemId={1} isActive={activeItem === 1} to="#policy">
-            Policy
-          </NavItem>
-          <NavItem itemId={2} isActive={activeItem === 2} to="#auth">
-            Authentication
-          </NavItem>
-          <NavItem itemId={3} isActive={activeItem === 3} to="#network">
-            Network services
-          </NavItem>
-          <NavItem itemId={4} isActive={activeItem === 4} to="#server">
-            Server
-          </NavItem>
-        </NavList>
-      </Nav>
-    );
-
-    const _sidebar = (
-      <PageSidebar isSidebarOpen={sidebarNavOpen || false}>
-        <PageSidebarBody>{PageNav}</PageSidebarBody>
-      </PageSidebar>
-    );
-    const PageSkipToContent = (
-      <SkipToContent
-        href={`#${
-          mainContainerId
-            ? mainContainerId
-            : "main-content-page-layout-default-nav"
-        }`}
-      >
-        Skip to content
-      </SkipToContent>
-    );
-
-    return (
-      <Page
-        header={header !== undefined ? header : <DashboardHeader />}
-        sidebar={sidebar !== undefined ? sidebar : _sidebar}
-        isManagedSidebar
-        skipToContent={PageSkipToContent}
-        breadcrumb={renderedBreadcrumb}
-        mainContainerId={
-          mainContainerId
-            ? mainContainerId
-            : "main-content-page-layout-default-nav"
-        }
-        notificationDrawer={notificationDrawer}
-        isNotificationDrawerExpanded={isNotificationDrawerExpanded}
-        {...(typeof onPageResize === "function" && {
-          onPageResize: (event, resizeObject) =>
-            onPageResize(event, resizeObject),
-        })}
-        {...pageProps}
-      >
-        {hasPageTemplateTitle && PageTemplateTitle}
-        {children}
-      </Page>
-    );
-  }
-}
+  return (
+    <Page
+      header={header !== undefined ? header : <DashboardHeader />}
+      sidebar={sidebar !== undefined ? sidebar : _sidebar}
+      isManagedSidebar
+      skipToContent={PageSkipToContent}
+      breadcrumb={renderedBreadcrumb}
+      mainContainerId={
+        mainContainerId
+          ? mainContainerId
+          : "main-content-page-layout-default-nav"
+      }
+      notificationDrawer={notificationDrawer}
+      isNotificationDrawerExpanded={isNotificationDrawerExpanded}
+      {...(typeof onPageResize === "function" && {
+        onPageResize: (event, resizeObject) =>
+          onPageResize(event, resizeObject),
+      })}
+      {...pageProps}
+    >
+      {hasPageTemplateTitle && PageTemplateTitle(sbom)}
+      {children}
+    </Page>
+  );
+};
