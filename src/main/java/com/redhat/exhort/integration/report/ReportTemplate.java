@@ -23,6 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import org.apache.camel.Body;
 import org.apache.camel.ExchangeProperty;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -78,6 +80,10 @@ public class ReportTemplate {
     params.put("sbomPath", sbomPath);
     params.put("snykSignup", snykSignup);
     params.put("dependencyHelper", new DependencyReportHelper());
+
+    ObjectWriter objectWriter = new ObjectMapper().writer().withDefaultPrettyPrinter();
+    String reportJson = objectWriter.writeValueAsString(params);
+    params.put("reportJson", reportJson);
 
     return params;
   }
