@@ -1,11 +1,11 @@
-import React, { createContext } from "react";
-import { PageSection, TextContent, Text } from "@patternfly/react-core";
-import { Dashboard } from "./Dashboard";
-import { Command } from "./Command";
-import { MOCK_SBOM } from "./mocks/sbom.mock";
-import { Sbom } from "@app/api/sbom";
+import React, { createContext } from 'react';
+import { PageSection, TextContent, Text } from '@patternfly/react-core';
+import { Dashboard } from './Dashboard';
+import { Command } from './Command';
+import { MOCK_SBOM } from './mocks/sbom.mock';
+import { Sbom } from '@app/api/sbom';
 
-const sbom = (window as any)["sbomb"] || MOCK_SBOM;
+const sbom = (window as any)['sbomb'] || MOCK_SBOM;
 
 export const AppContext = createContext<Sbom>(sbom);
 
@@ -17,9 +17,8 @@ function App() {
           <TextContent>
             <Text component="h1">React.js + PatternFly 5</Text>
             <Text component="p">
-              This is a demo to showcase that we can build out a regular CRA
-              application with PatternFly 5, and consume it server-side in the
-              freemarker template.
+              This is a demo to showcase that we can build out a regular CRA application with
+              PatternFly 5, and consume it server-side in the freemarker template.
             </Text>
             <Text component="h2">Start mvn server</Text>
             <Command>
@@ -35,9 +34,7 @@ yarn install
 yarn start
 `}
             </Command>
-            <Text component="h2">
-              Build UI and copy resources to freemarker dir
-            </Text>
+            <Text component="h2">Build UI and copy resources to freemarker dir</Text>
             <Command>yarn build</Command>
             <Text component="h2">Get a HTML report</Text>
             <Command>
@@ -49,10 +46,7 @@ yarn start
 console.log(sbom.report.summary.vulnerabilities.total)`}
             </Command>
             <Text component="h3">Result:</Text>
-            <div>
-              Total Vulnerabilities:{" "}
-              {sbom && sbom.report.summary.vulnerabilities.total}
-            </div>
+            <div>Total Vulnerabilities: {sbom && sbom.report.summary.vulnerabilities.total}</div>
           </TextContent>
         </PageSection>
       </Dashboard>
