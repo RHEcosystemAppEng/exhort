@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   ActionsColumn,
   Table,
@@ -8,7 +8,7 @@ import {
   Tbody,
   Td,
   ExpandableRowContent,
-} from "@patternfly/react-table";
+} from '@patternfly/react-table';
 import {
   Button,
   Card,
@@ -25,11 +25,11 @@ import {
   PageSection,
   Select,
   SelectOption,
-} from "@patternfly/react-core";
-import CodeBranchIcon from "@patternfly/react-icons/dist/esm/icons/code-branch-icon";
-import CodeIcon from "@patternfly/react-icons/dist/esm/icons/code-icon";
-import CubeIcon from "@patternfly/react-icons/dist/esm/icons/cube-icon";
-import FilterIcon from "@patternfly/react-icons/dist/esm/icons/filter-icon";
+} from '@patternfly/react-core';
+import CodeBranchIcon from '@patternfly/react-icons/dist/esm/icons/code-branch-icon';
+import CodeIcon from '@patternfly/react-icons/dist/esm/icons/code-icon';
+import CubeIcon from '@patternfly/react-icons/dist/esm/icons/cube-icon';
+import FilterIcon from '@patternfly/react-icons/dist/esm/icons/filter-icon';
 
 export const CompoundExpandable = () => {
   // In real usage, this data would come from some external source like an API via props.
@@ -38,17 +38,17 @@ export const CompoundExpandable = () => {
   const NestedItemsTable = () => {
     // In real usage, this data would come from some external source like an API via props.
     const items = [
-      { description: "Item 1", date: "May 9, 2018", status: "Active" },
-      { description: "Item 2", date: "May 9, 2018", status: "Warning" },
-      { description: "Item 3", date: "May 9, 2018", status: "Active" },
-      { description: "Item 4", date: "May 9, 2018", status: "Active" },
-      { description: "Item 5", date: "May 9, 2018", status: "Active" },
+      { description: 'Item 1', date: 'May 9, 2018', status: 'Active' },
+      { description: 'Item 2', date: 'May 9, 2018', status: 'Warning' },
+      { description: 'Item 3', date: 'May 9, 2018', status: 'Active' },
+      { description: 'Item 4', date: 'May 9, 2018', status: 'Active' },
+      { description: 'Item 5', date: 'May 9, 2018', status: 'Active' },
     ];
 
     const columnNames = {
-      description: "Description",
-      date: "Date",
-      status: "Status",
+      description: 'Description',
+      date: 'Date',
+      status: 'Status',
     };
 
     return (
@@ -77,10 +77,7 @@ export const CompoundExpandable = () => {
     );
   };
 
-  const renderPagination = (
-    variant: "top" | "bottom" | PaginationVariant,
-    isCompact: boolean
-  ) => (
+  const renderPagination = (variant: 'top' | 'bottom' | PaginationVariant, isCompact: boolean) => (
     <Pagination
       isCompact={isCompact}
       itemCount={36}
@@ -134,21 +131,19 @@ export const CompoundExpandable = () => {
             <Button variant="primary">Action</Button>
           </ToolbarItem>
         </ToolbarGroup>
-        <ToolbarItem variant="pagination">
-          {renderPagination("top", true)}
-        </ToolbarItem>
+        <ToolbarItem variant="pagination">{renderPagination('top', true)}</ToolbarItem>
       </ToolbarContent>
     </Toolbar>
   );
 
   const defaultActions = () => [
     {
-      title: "Settings",
+      title: 'Settings',
       // eslint-disable-next-line no-console
       onClick: () => console.log(`clicked on Settings`),
     },
     {
-      title: "Help",
+      title: 'Help',
       // eslint-disable-next-line no-console
       onClick: () => console.log(`clicked on Help`),
     },
@@ -156,34 +151,34 @@ export const CompoundExpandable = () => {
 
   const repositories = [
     {
-      name: "siemur/test-space",
+      name: 'siemur/test-space',
       branches: 10,
       prs: 4,
       workspaces: 4,
-      lastCommit: "20 minutes",
+      lastCommit: '20 minutes',
     },
     {
-      name: "siemur/test-space-2",
+      name: 'siemur/test-space-2',
       branches: 3,
       prs: 4,
       workspaces: 4,
-      lastCommit: "20 minutes",
+      lastCommit: '20 minutes',
     },
   ];
 
   const columnNames: any = {
-    name: "Repositories",
-    branches: "Branches",
-    prs: "Pull requests",
-    workspaces: "Workspaces",
-    lastCommit: "Last commit",
+    name: 'Repositories',
+    branches: 'Branches',
+    prs: 'Pull requests',
+    workspaces: 'Workspaces',
+    lastCommit: 'Last commit',
   };
 
   // In this example, expanded cells are tracked by the repo and property names from each row. This could be any pair of unique identifiers.
   // This is to prevent state from being based on row and column order index in case we later add sorting and rearranging columns.
   // Note that this behavior is very similar to selection state.
   const [expandedCells, setExpandedCells] = React.useState<any>({
-    "siemur/test-space": "branches", // Default to the first cell of the first row being expanded
+    'siemur/test-space': 'branches', // Default to the first cell of the first row being expanded
   });
   const setCellExpanded = (repo: any, columnKey: any, isExpanding = true) => {
     const newExpandedCells = { ...expandedCells };
@@ -198,18 +193,17 @@ export const CompoundExpandable = () => {
     repo: any,
     columnKey: any,
     rowIndex: number,
-    columnIndex: number
+    columnIndex: number,
   ) => ({
     isExpanded: expandedCells[repo.name] === columnKey,
-    onToggle: () =>
-      setCellExpanded(repo, columnKey, expandedCells[repo.name] !== columnKey),
-    expandId: "compound-expandable-demo",
+    onToggle: () => setCellExpanded(repo, columnKey, expandedCells[repo.name] !== columnKey),
+    expandId: 'compound-expandable-demo',
     rowIndex,
     columnIndex,
   });
 
   return (
-    <PageSection padding={{ default: "noPadding", xl: "padding" }}>
+    <PageSection padding={{ default: 'noPadding', xl: 'padding' }}>
       <Card>
         {tableToolbar}
         <Table aria-label="Compound expandable table">
@@ -234,14 +228,13 @@ export const CompoundExpandable = () => {
                   </Td>
                   <Td
                     dataLabel={columnNames.branches}
-                    compoundExpand={compoundExpandParams(
-                      repo,
-                      "branches",
-                      rowIndex,
-                      1
-                    )}
+                    compoundExpand={compoundExpandParams(repo, 'branches', rowIndex, 1)}
                   >
-                    <Flex spaceItems={{ default: "spaceItemsSm" }}>
+                    <Flex
+                      spaceItems={{
+                        default: 'spaceItemsSm',
+                      }}
+                    >
                       <FlexItem>
                         <CodeBranchIcon key="icon" />
                       </FlexItem>
@@ -250,30 +243,28 @@ export const CompoundExpandable = () => {
                   </Td>
                   <Td
                     dataLabel={columnNames.prs}
-                    compoundExpand={compoundExpandParams(
-                      repo,
-                      "prs",
-                      rowIndex,
-                      2
-                    )}
+                    compoundExpand={compoundExpandParams(repo, 'prs', rowIndex, 2)}
                   >
-                    <Flex spaceItems={{ default: "spaceItemsSm" }}>
+                    <Flex
+                      spaceItems={{
+                        default: 'spaceItemsSm',
+                      }}
+                    >
                       <FlexItem>
                         <CodeIcon key="icon" />
                       </FlexItem>
                       <FlexItem>{repo.prs}</FlexItem>
-                    </Flex>{" "}
+                    </Flex>{' '}
                   </Td>
                   <Td
                     dataLabel={columnNames.workspaces}
-                    compoundExpand={compoundExpandParams(
-                      repo,
-                      "workspaces",
-                      rowIndex,
-                      3
-                    )}
+                    compoundExpand={compoundExpandParams(repo, 'workspaces', rowIndex, 3)}
                   >
-                    <Flex spaceItems={{ default: "spaceItemsSm" }}>
+                    <Flex
+                      spaceItems={{
+                        default: 'spaceItemsSm',
+                      }}
+                    >
                       <FlexItem>
                         <CubeIcon key="icon" />
                       </FlexItem>
@@ -290,19 +281,13 @@ export const CompoundExpandable = () => {
                 </Tr>
                 {isRowExpanded ? (
                   <Tr isExpanded={isRowExpanded}>
-                    <Td
-                      dataLabel={columnNames[expandedCellKey]}
-                      noPadding
-                      colSpan={7}
-                    >
-                      {expandedCellKey === "branches" &&
-                      repo.name === "siemur/test-space" ? (
+                    <Td dataLabel={columnNames[expandedCellKey]} noPadding colSpan={7}>
+                      {expandedCellKey === 'branches' && repo.name === 'siemur/test-space' ? (
                         <NestedItemsTable />
                       ) : (
                         <ExpandableRowContent>
                           <div className="pf-v5-u-m-md">
-                            Expanded content for {repo.name}: {expandedCellKey}{" "}
-                            goes here!
+                            Expanded content for {repo.name}: {expandedCellKey} goes here!
                           </div>
                         </ExpandableRowContent>
                       )}
@@ -313,7 +298,7 @@ export const CompoundExpandable = () => {
             );
           })}
         </Table>
-        {renderPagination("bottom", false)}
+        {renderPagination('bottom', false)}
       </Card>
     </PageSection>
   );
