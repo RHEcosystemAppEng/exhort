@@ -89,7 +89,7 @@ jobs:
           cache: 'maven'
 
       - name: Build Package with Maven
-        run: mvn package -Pnative
+        run: mvn verify -Pnative
 
       - name: Build Image With buildah
         id: build-image
