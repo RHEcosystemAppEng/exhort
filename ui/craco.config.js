@@ -1,8 +1,6 @@
-const path = require("path");
-
 module.exports = {
   webpack: {
-    configure: (webpackConfig, { env, paths }) => {
+    configure: (webpackConfig) => {
       webpackConfig.output = {
         ...webpackConfig.output,
         filename: "static/js/[name].js",
