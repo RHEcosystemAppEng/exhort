@@ -16,8 +16,8 @@ env:
   IMAGE_REGISTRY: quay.io/ecosystem-appeng
   IMAGE_NAME: exhort
   IMAGE_TAGS: latest
-  IMAGE_REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
-  IMAGE_REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+  IMAGE_REGISTRY_USER: ${{ secrets.IMAGE_REGISTRY_USER }}
+  IMAGE_REGISTRY_PASSWORD: ${{ secrets.IMAGE_REGISTRY_PASSWORD }}
   # 🖊️ EDIT to change Dockerfile.
   DOCKERFILE_PATH: ./src/main/docker/Dockerfile.native-micro
 
@@ -29,10 +29,50 @@ on:
       - '*'
 
 jobs:
-  build_and_push_image:
+  validate_workflow_requirements:
     runs-on: ubuntu-latest
 
     if: github.repository == 'RHEcosystemAppEng/exhort'
+
+    steps:
+      - name: Check For Required Secrets
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const secrets = {
+              OPENSHIFT_SERVER: `${{ env.OPENSHIFT_SERVER }}`,
+              OPENSHIFT_TOKEN: `${{ env.OPENSHIFT_TOKEN }}`,
+            };
+            
+            // if image registry is ghcr.io - no registry credentials required, otherwise get registry credentials
+            if (!`${{ env.IMAGE_REGISTRY }}`.startsWith("ghcr.io")) {
+              secrets["IMAGE_REGISTRY_USER"] = `${{ env.IMAGE_REGISTRY_USER }}`;
+              secrets["IMAGE_REGISTRY_PASSWORD"] = `${{ env.IMAGE_REGISTRY_PASSWORD }}`;
+            }
+
+            const missingSecrets = Object.entries(secrets).filter(([ name, value ]) => {
+              if (value.length === 0) {
+                core.error(`Secret "${name}" is not set`);
+                return true;
+              }
+              core.info(`✔️ Secret "${name}" is set`);
+              return false;
+            });
+
+            if (missingSecrets.length > 0) {
+              core.setFailed(`❌ At least one required secret is not set in the repository. \n` +
+                "You can add it using:\n" +
+                "GitHub UI: https://docs.github.com/en/actions/reference/encrypted-secrets#creating-encrypted-secrets-for-a-repository \n" +
+                "GitHub CLI: https://cli.github.com/manual/gh_secret_set \n" +
+                "Also, refer to https://github.com/redhat-actions/oc-login#getting-started-with-the-action-or-see-example");
+            }
+            else {
+              core.info(`✅ All the required secrets are set`);
+            }
+  
+  build_and_push_image:
+    needs: validate_workflow_requirements
+    runs-on: ubuntu-latest
     
     outputs:
       digest: ${{ steps.push-to-registry.outputs.digest }}
@@ -49,7 +89,7 @@ jobs:
           cache: 'maven'
 
       - name: Build Package with Maven
-        run: mvn package -Pnative
+        run: mvn verify -Pnative
 
       - name: Build Image With buildah
         id: build-image
@@ -92,3 +132,6 @@ jobs:
         run: |
           DEPLOYMENT_PATCH=$(printf '{"spec": {"template": {"spec": {"containers": [{"name": "%s", "image": "%s/%s@%s"}]}}}}' ${{ env.OPENSHIFT_CONTAINER_NAME }} ${{ env.IMAGE_REGISTRY }} ${{ env.IMAGE_NAME }} ${{ needs.build_and_push_image.outputs.digest }})
           oc patch deployment ${{ env.OPENSHIFT_DEPLOYMENT_NAME }} -p "${DEPLOYMENT_PATCH}"
+          
+      - name: Monitor Deployment Status
+        run: oc rollout status deployment/${{ env.OPENSHIFT_DEPLOYMENT_NAME }}
