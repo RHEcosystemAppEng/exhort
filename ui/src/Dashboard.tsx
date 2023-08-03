@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   Avatar,
   Brand,
@@ -30,16 +30,16 @@ import {
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
-} from "@patternfly/react-core";
-import BarsIcon from "@patternfly/react-icons/dist/esm/icons/bars-icon";
-import BellIcon from "@patternfly/react-icons/dist/esm/icons/bell-icon";
-import CogIcon from "@patternfly/react-icons/dist/esm/icons/cog-icon";
-import HelpIcon from "@patternfly/react-icons/dist/esm/icons/help-icon";
-import QuestionCircleIcon from "@patternfly/react-icons/dist/esm/icons/question-circle-icon";
-import EllipsisVIcon from "@patternfly/react-icons/dist/esm/icons/ellipsis-v-icon";
-import imgAvatar from "@patternfly/react-core/src/components/Avatar/examples/avatarImg.svg";
-import pfLogo from "@patternfly/react-core/src/demos/assets/pf-logo.svg";
-import { CompoundExpandable } from "./Table";
+} from '@patternfly/react-core';
+import BarsIcon from '@patternfly/react-icons/dist/esm/icons/bars-icon';
+import BellIcon from '@patternfly/react-icons/dist/esm/icons/bell-icon';
+import CogIcon from '@patternfly/react-icons/dist/esm/icons/cog-icon';
+import HelpIcon from '@patternfly/react-icons/dist/esm/icons/help-icon';
+import QuestionCircleIcon from '@patternfly/react-icons/dist/esm/icons/question-circle-icon';
+import EllipsisVIcon from '@patternfly/react-icons/dist/esm/icons/ellipsis-v-icon';
+import imgAvatar from '@patternfly/react-core/src/components/Avatar/examples/avatarImg.svg';
+import pfLogo from '@patternfly/react-core/src/demos/assets/pf-logo.svg';
+import { CompoundExpandable } from './Table';
 interface NavOnSelectProps {
   groupId: number | string;
   itemId: number | string;
@@ -49,16 +49,14 @@ interface NavOnSelectProps {
 export const Dashboard = ({ children }: React.PropsWithChildren<{}>) => {
   const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
   const [isKebabDropdownOpen, setIsKebabDropdownOpen] = React.useState(false);
-  const [isFullKebabDropdownOpen, setIsFullKebabDropdownOpen] =
-    React.useState(false);
+  const [isFullKebabDropdownOpen, setIsFullKebabDropdownOpen] = React.useState(false);
   const [activeItem, setActiveItem] = React.useState(1);
 
   const onNavSelect = (
     _event: React.FormEvent<HTMLInputElement>,
-    selectedItem: NavOnSelectProps
+    selectedItem: NavOnSelectProps,
   ) => {
-    typeof selectedItem.itemId === "number" &&
-      setActiveItem(selectedItem.itemId);
+    typeof selectedItem.itemId === 'number' && setActiveItem(selectedItem.itemId);
   };
 
   const onDropdownToggle = () => {
@@ -119,26 +117,18 @@ export const Dashboard = ({ children }: React.PropsWithChildren<{}>) => {
       <ToolbarContent>
         <ToolbarGroup
           variant="icon-button-group"
-          align={{ default: "alignRight" }}
-          spacer={{ default: "spacerNone", md: "spacerMd" }}
+          align={{ default: 'alignRight' }}
+          spacer={{ default: 'spacerNone', md: 'spacerMd' }}
         >
           <ToolbarItem>
-            <Button
-              aria-label="Notifications"
-              variant={ButtonVariant.plain}
-              icon={<BellIcon />}
-            />
+            <Button aria-label="Notifications" variant={ButtonVariant.plain} icon={<BellIcon />} />
           </ToolbarItem>
           <ToolbarGroup
             variant="icon-button-group"
-            visibility={{ default: "hidden", lg: "visible" }}
+            visibility={{ default: 'hidden', lg: 'visible' }}
           >
             <ToolbarItem>
-              <Button
-                aria-label="Settings"
-                variant={ButtonVariant.plain}
-                icon={<CogIcon />}
-              />
+              <Button aria-label="Settings" variant={ButtonVariant.plain} icon={<CogIcon />} />
             </ToolbarItem>
             <ToolbarItem>
               <Button
@@ -149,13 +139,17 @@ export const Dashboard = ({ children }: React.PropsWithChildren<{}>) => {
             </ToolbarItem>
           </ToolbarGroup>
           <ToolbarItem
-            visibility={{ default: "hidden", md: "visible", lg: "hidden" }}
+            visibility={{
+              default: 'hidden',
+              md: 'visible',
+              lg: 'hidden',
+            }}
           >
             <Dropdown
               isOpen={isKebabDropdownOpen}
               onSelect={onKebabDropdownSelect}
               onOpenChange={(isOpen: boolean) => setIsKebabDropdownOpen(isOpen)}
-              popperProps={{ position: "right" }}
+              popperProps={{ position: 'right' }}
               toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
                 <MenuToggle
                   ref={toggleRef}
@@ -171,14 +165,12 @@ export const Dashboard = ({ children }: React.PropsWithChildren<{}>) => {
               <DropdownList>{kebabDropdownItems}</DropdownList>
             </Dropdown>
           </ToolbarItem>
-          <ToolbarItem visibility={{ md: "hidden" }}>
+          <ToolbarItem visibility={{ md: 'hidden' }}>
             <Dropdown
               isOpen={isFullKebabDropdownOpen}
               onSelect={onFullKebabDropdownSelect}
-              onOpenChange={(isOpen: boolean) =>
-                setIsFullKebabDropdownOpen(isOpen)
-              }
-              popperProps={{ position: "right" }}
+              onOpenChange={(isOpen: boolean) => setIsFullKebabDropdownOpen(isOpen)}
+              popperProps={{ position: 'right' }}
               toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
                 <MenuToggle
                   ref={toggleRef}
@@ -199,12 +191,12 @@ export const Dashboard = ({ children }: React.PropsWithChildren<{}>) => {
             </Dropdown>
           </ToolbarItem>
         </ToolbarGroup>
-        <ToolbarItem visibility={{ default: "hidden", md: "visible" }}>
+        <ToolbarItem visibility={{ default: 'hidden', md: 'visible' }}>
           <Dropdown
             isOpen={isDropdownOpen}
             onSelect={onDropdownSelect}
             onOpenChange={(isOpen: boolean) => setIsDropdownOpen(isOpen)}
-            popperProps={{ position: "right" }}
+            popperProps={{ position: 'right' }}
             toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
               <MenuToggle
                 ref={toggleRef}
@@ -233,7 +225,7 @@ export const Dashboard = ({ children }: React.PropsWithChildren<{}>) => {
       </MastheadToggle>
       <MastheadMain>
         <MastheadBrand>
-          <Brand src={pfLogo} alt="PatternFly" heights={{ default: "36px" }} />
+          <Brand src={pfLogo} alt="PatternFly" heights={{ default: '36px' }} />
         </MastheadBrand>
       </MastheadMain>
       <MastheadContent>{headerToolbar}</MastheadContent>
@@ -268,7 +260,7 @@ export const Dashboard = ({ children }: React.PropsWithChildren<{}>) => {
     </PageSidebar>
   );
 
-  const mainContainerId = "main-content";
+  const mainContainerId = 'main-content';
 
   const pageSkipToContent = (
     <SkipToContent href={`#${mainContainerId}`}>Skip to content</SkipToContent>
@@ -285,7 +277,7 @@ export const Dashboard = ({ children }: React.PropsWithChildren<{}>) => {
       isBreadcrumbWidthLimited
       isBreadcrumbGrouped
       groupProps={{
-        stickyOnBreakpoint: { default: "top" },
+        stickyOnBreakpoint: { default: 'top' },
       }}
     >
       {children}

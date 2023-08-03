@@ -31,7 +31,7 @@ export interface Sbom {
           provider: string;
           status: number;
           message: string;
-        }
+        },
       ];
     };
     dependencies: Dependency[];
@@ -106,7 +106,7 @@ export interface Dependency {
         cves: string[];
         unique: boolean;
       };
-    }
+    },
   ];
   recommendation?: string;
   remediations: {};
