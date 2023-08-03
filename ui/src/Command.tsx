@@ -1,7 +1,7 @@
-import React from "react";
+import React, { PropsWithChildren } from "react";
 import { ClipboardCopy } from "@patternfly/react-core";
-export const Command = ({ children }) => (
+export const Command = (props: PropsWithChildren<any>) => (
   <ClipboardCopy hoverTip="Copy" clickTip="Copied" isCode variant="expansion">
-    {children}
+    {props.children}
   </ClipboardCopy>
 );
