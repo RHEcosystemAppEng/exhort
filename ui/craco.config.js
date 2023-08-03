@@ -20,14 +20,7 @@ module.exports = {
         },
       };
 
-      // if (env === 'development') {
-      //   webpackConfig.module.rules.push({
-      //     test: /\.js$/,
-      //     loader: path.resolve("freemarker-loader.js"),
-      //     exclude: /node_modules/
-      //   });
-      // }
-
+      // inline all assets into the JS bundle
       webpackConfig.module.rules[1].oneOf.unshift({
         test: /\.(png|jpg|jpeg|woff|woff2|eot|ttf|svg)$/,
         type: "asset/inline",
