@@ -55,6 +55,9 @@
     <style>
         [#include "generated/vendor.css" parse="false"]
     </style>
+    <style>
+        [#include "generated/main.css" parse="false"]
+    </style>
     <title>Dependency Analysis</title>
 </head>
 
