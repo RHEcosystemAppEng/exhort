@@ -36,13 +36,13 @@ public interface CvssScoreComparable {
         return 0;
       }
       if (d1.getHighestVulnerability() != null && d2.getHighestVulnerability() == null) {
-        return 1;
-      }
-      if (d1.getHighestVulnerability() == null && d2.getHighestVulnerability() != null) {
         return -1;
       }
+      if (d1.getHighestVulnerability() == null && d2.getHighestVulnerability() != null) {
+        return 1;
+      }
       return Float.compare(
-          d1.getHighestVulnerability().getCvssScore(), d2.getHighestVulnerability().getCvssScore());
+          d2.getHighestVulnerability().getCvssScore(), d1.getHighestVulnerability().getCvssScore());
     }
   }
 
@@ -54,13 +54,13 @@ public interface CvssScoreComparable {
         return 0;
       }
       if (d1.getHighestVulnerability() != null && d2.getHighestVulnerability() == null) {
-        return 1;
-      }
-      if (d1.getHighestVulnerability() == null && d2.getHighestVulnerability() != null) {
         return -1;
       }
+      if (d1.getHighestVulnerability() == null && d2.getHighestVulnerability() != null) {
+        return 1;
+      }
       return Float.compare(
-          d1.getHighestVulnerability().getCvssScore(), d2.getHighestVulnerability().getCvssScore());
+          d2.getHighestVulnerability().getCvssScore(), d1.getHighestVulnerability().getCvssScore());
     }
   }
 }

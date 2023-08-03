@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.redhat.exhort.integration.ossindex;
+package com.redhat.exhort.integration.providers.ossindex;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.apache.camel.Body;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,8 +38,8 @@ import com.redhat.exhort.api.Issue;
 import com.redhat.exhort.api.PackageRef;
 import com.redhat.exhort.api.SeverityUtils;
 import com.redhat.exhort.config.ObjectMapperProducer;
-import com.redhat.exhort.integration.Constants;
 import com.redhat.exhort.model.CvssParser;
+import com.redhat.exhort.model.GraphRequest;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -58,6 +59,10 @@ public class OssIndexRequestBuilder {
 
     ObjectNode root = mapper.createObjectNode().set("coordinates", coordinates);
     return mapper.writeValueAsString(root);
+  }
+
+  public boolean hasDependencies(@Body GraphRequest req) {
+    return req != null && req.tree() != null && !req.tree().getAll().isEmpty();
   }
 
   public Map<String, List<Issue>> responseToIssues(byte[] response) throws IOException {
@@ -94,7 +99,6 @@ public class OssIndexRequestBuilder {
         .cves(List.of(data.get("cve").asText()))
         .cvss(CvssParser.fromVectorString(data.get("cvssVector").asText()))
         .cvssScore(score)
-        .severity(SeverityUtils.fromScore(score))
-        .source(Constants.OSS_INDEX_PROVIDER);
+        .severity(SeverityUtils.fromScore(score));
   }
 }
