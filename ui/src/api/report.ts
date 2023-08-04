@@ -1,4 +1,4 @@
-export interface Sbom {
+export interface Report {
   packagePath: string;
   remediationPath: string;
   issueVisibilityHelper: {
