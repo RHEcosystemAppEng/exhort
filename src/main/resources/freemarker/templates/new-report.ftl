@@ -84,7 +84,7 @@
         [#include "generated/vendor.js" parse="false"]
     </script>
     <script>
-        [#include "generated/main.js" parse="true"]
+        [#include "generated/main.js" parse="false"]
     </script>
 </body>
 
