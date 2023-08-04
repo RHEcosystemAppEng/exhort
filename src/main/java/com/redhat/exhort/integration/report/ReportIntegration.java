@@ -58,7 +58,6 @@ public class ReportIntegration extends EndpointRouteBuilder {
         from(direct("htmlReport"))
             .routeId("htmlReport")
             .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.TEXT_HTML))
-            .bean(ReportTransformer.class, "transform")
             .setProperty(Constants.REPORT_PROPERTY, body())
             .setBody(method(reportTemplate, "setVariables"))
             .to(freemarker("new-report.ftl"));
@@ -75,7 +74,6 @@ public class ReportIntegration extends EndpointRouteBuilder {
 
         from(direct("jsonReport"))
             .routeId("jsonReport")
-            .bean(ReportTransformer.class, "transform")
             .bean(ReportTransformer.class, "filterVerboseResult")
             .marshal().json();
         //fmt:on

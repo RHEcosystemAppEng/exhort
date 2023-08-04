@@ -120,7 +120,8 @@ public class SpdxParser extends SbomParser {
                       .map(wrapper::getPackageById)
                       .map(wrapper::toPackageRef)
                       .collect(Collectors.toSet());
-              DirectDependency dep = new DirectDependency(ref, transitive);
+              DirectDependency dep =
+                  DirectDependency.builder().ref(ref).transitive(transitive).build();
               deps.put(ref, dep);
             });
     return deps;

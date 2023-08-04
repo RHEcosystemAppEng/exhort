@@ -79,19 +79,29 @@ in order to retrieve just a Summary. Use the `verbose=false` Query parameter to 
 $ http :8080/api/v3/analysis Content-Type:"application/vnd.cyclonedx+json" Accept:"application/json" @'target/sbom.json' verbose==false
 
 {
-    "dependencies": [],
-    "summary": {
-        "dependencies": {
-            "scanned": 11,
-            "transitive": 217
-        },
-        "vulnerabilities": {
-            "critical": 1,
-            "direct": 6,
-            "high": 4,
-            "low": 5,
-            "medium": 10,
-            "total": 20
+    "snyk": {
+        "status": {
+            "name": "snyk",
+            "code": 200,
+            "message": "OK",
+            "ok": true
+        }
+        "dependencies": [
+            ...
+        ],
+        "summary": {
+            "dependencies": {
+                "scanned": 11,
+                "transitive": 217
+            },
+            "vulnerabilities": {
+                "critical": 1,
+                "direct": 6,
+                "high": 4,
+                "low": 5,
+                "medium": 10,
+                "total": 20
+            }
         }
     }
 }
@@ -154,23 +164,28 @@ Content-Type: application/json
 Content-Transfer-Encoding: binary
 
 {
-    "summary": {
-        "dependencies": {
-            ...
-        },
-        "vulnerabilities": {
+    "snyk": {
+        "status": {
             ...
         }
-    },
-    "dependencies": [
-        {
-        "ref": {
-            "name": "log4j:log4j",
-            "version": "1.2.17"
+        "summary": {
+            "dependencies": {
+            ...
+            },
+            "vulnerabilities": {
+            ...
+            }
         },
-        ...
-        }
-    ]
+        "dependencies": [
+            {
+            "ref": {
+                "name": "log4j:log4j",
+                "version": "1.2.17"
+            },
+            ...
+            }
+        ]
+    }
 }
 ------=_Part_2_2047647971.1682593849895
 Content-Type: text/html

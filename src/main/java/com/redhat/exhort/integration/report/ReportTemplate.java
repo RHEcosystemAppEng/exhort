@@ -98,11 +98,11 @@ public class ReportTemplate {
 
   @RegisterForReflection
   public static record IssueVisibilityHelper(List<String> providerData) {
-    public boolean showIssue(Issue issue) {
+    public boolean showIssue(String provider, Issue issue) {
       if (!issue.getUnique() || providerData == null) {
         return true;
       }
-      return !providerData.contains(issue.getSource());
+      return !providerData.contains(provider);
     }
   }
 }

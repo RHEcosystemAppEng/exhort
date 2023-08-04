@@ -334,9 +334,10 @@
               <generateModelTests>false</generateModelTests>
               <generateModelDocumentation>false</generateModelDocumentation>
               <generateApiTests>false</generateApiTests>
+              <generateAliasAsModel>true</generateAliasAsModel>
               <addCompileSourceRoot>false</addCompileSourceRoot>
               <addTestCompileSourceRoot>false</addTestCompileSourceRoot>
-              <inlineSchemaNameMappings>analysis_200_response=AnalysisResponse</inlineSchemaNameMappings>
+              <inlineSchemaNameMappings>analysis_200_response=MultipartResponse,analysis_report_value=ProviderReport</inlineSchemaNameMappings>
               <schemaMappings>PackageRef=com.redhat.exhort.api.PackageRef</schemaMappings>
             </configuration>
           </execution>

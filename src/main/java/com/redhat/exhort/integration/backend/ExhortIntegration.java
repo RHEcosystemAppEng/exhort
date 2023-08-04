@@ -18,6 +18,8 @@
 
 package com.redhat.exhort.integration.backend;
 
+import static com.redhat.exhort.integration.Constants.DEPENDENCY_TREE_PROPERTY;
+import static com.redhat.exhort.integration.Constants.PROVIDERS_PARAM;
 import static com.redhat.exhort.integration.Constants.REQUEST_CONTENT_PROPERTY;
 
 import java.io.InputStream;
@@ -31,10 +33,10 @@ import org.apache.camel.component.micrometer.MicrometerConstants;
 import org.apache.camel.component.micrometer.routepolicy.MicrometerRoutePolicyFactory;
 
 import com.redhat.exhort.integration.Constants;
-import com.redhat.exhort.integration.ProviderAggregationStrategy;
-import com.redhat.exhort.integration.VulnerabilityProvider;
 import com.redhat.exhort.integration.backend.sbom.SbomParser;
 import com.redhat.exhort.integration.backend.sbom.SbomParserFactory;
+import com.redhat.exhort.integration.providers.ProviderAggregationStrategy;
+import com.redhat.exhort.integration.providers.VulnerabilityProvider;
 import com.redhat.exhort.model.DependencyTree;
 import com.redhat.exhort.model.GraphRequest;
 
@@ -88,22 +90,27 @@ public class ExhortIntegration extends EndpointRouteBuilder {
             .to("direct:analysis")
         .get("/token")
             .routeId("restTokenValidation")
-            .to("direct:validateToken");
+            .to("direct:validateToken")
+        .get("/test").to("direct:testFreemarker");
 
     from(direct("analysis"))
-        .routeId("dependencyAnalysis")
-        .setProperty(Constants.PROVIDERS_PARAM, method(vulnerabilityProvider, "getProvidersFromQueryParam"))
+      .routeId("analysis")
+        .setProperty(PROVIDERS_PARAM, method(vulnerabilityProvider, "getProvidersFromQueryParam"))
         .setProperty(REQUEST_CONTENT_PROPERTY, method(BackendUtils.class, "getResponseMediaType"))
+        .setProperty(Constants.VERBOSE_MODE_HEADER, header(Constants.VERBOSE_MODE_HEADER))
         .process(this::processAnalysisRequest)
+        .setProperty(DEPENDENCY_TREE_PROPERTY, simple("${body.tree}"))
         .to(direct("findVulnerabilities"))
-        .to(direct("recommendAllTrustedContent"))
+        .to(direct("findRemediations"))
+        .to(direct("recommendTrustedContent"))
+        .transform().method(BackendUtils.class, "removeEmptyDependencies")
         .to(direct("report"))
         .process(this::cleanUpHeaders);
 
     from(direct("findVulnerabilities"))
         .routeId("findVulnerabilities")
         .recipientList(method(vulnerabilityProvider, "getProviderEndpoints"))
-        .aggregationStrategy(AggregationStrategies.bean(ProviderAggregationStrategy.class, "aggregate"))
+        .aggregationStrategy(AggregationStrategies.beanAllowNull(ProviderAggregationStrategy.class, "aggregate"))
             .parallelProcessing();
 
     from(direct("validateToken"))
@@ -135,7 +142,7 @@ public class ExhortIntegration extends EndpointRouteBuilder {
     }
     SbomParser parser = SbomParserFactory.newInstance(ct.getBaseType());
     DependencyTree tree = parser.parse(exchange.getIn().getBody(InputStream.class));
-    List<String> providers = exchange.getProperty(Constants.PROVIDERS_PARAM, List.class);
+    List<String> providers = exchange.getProperty(PROVIDERS_PARAM, List.class);
     exchange
         .getIn()
         .setBody(

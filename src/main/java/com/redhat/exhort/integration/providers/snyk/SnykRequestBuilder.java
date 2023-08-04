@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.redhat.exhort.integration.snyk;
+package com.redhat.exhort.integration.providers.snyk;
 
 import java.util.Collections;
 import java.util.Set;

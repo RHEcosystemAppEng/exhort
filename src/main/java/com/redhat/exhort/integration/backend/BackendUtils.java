@@ -18,14 +18,24 @@
 
 package com.redhat.exhort.integration.backend;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
+import org.apache.camel.Body;
 import org.apache.camel.Exchange;
 import org.apache.camel.Header;
 import org.apache.camel.http.base.HttpOperationFailedException;
 import org.jboss.resteasy.reactive.common.util.MediaTypeHelper;
 
+import com.redhat.exhort.api.AnalysisReport;
+import com.redhat.exhort.api.AnalysisReportValue;
+import com.redhat.exhort.api.DependenciesSummary;
+import com.redhat.exhort.api.DependencyReport;
 import com.redhat.exhort.api.ProviderStatus;
+import com.redhat.exhort.api.Summary;
+import com.redhat.exhort.api.VulnerabilitiesSummary;
 import com.redhat.exhort.integration.Constants;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
@@ -56,26 +66,26 @@ public class BackendUtils {
   }
 
   public static void processResponseError(Exchange exchange, String provider) {
-    ProviderStatus status = new ProviderStatus().ok(false).provider(provider);
+    ProviderStatus status = new ProviderStatus().ok(false).name(provider);
     Exception exception = (Exception) exchange.getProperty(Exchange.EXCEPTION_CAUGHT);
     Throwable cause = exception.getCause();
 
     if (cause != null) {
       if (cause instanceof HttpOperationFailedException) {
         HttpOperationFailedException httpException = (HttpOperationFailedException) cause;
-        status.message(prettifyHttpError(httpException)).status(httpException.getStatusCode());
+        status.message(prettifyHttpError(httpException)).code(httpException.getStatusCode());
 
       } else {
         status
             .message(cause.getMessage())
-            .status(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
+            .code(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
       }
     } else {
       status
           .message(exception.getMessage())
-          .status(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
+          .code(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
     }
-    exchange.getMessage().setBody(status);
+    exchange.getMessage().setBody(newEmptyReportValue(status));
   }
 
   public static void processTokenFallBack(Exchange exchange, String provider) {
@@ -99,6 +109,31 @@ public class BackendUtils {
     exchange.getMessage().setBody(body);
   }
 
+  public static AnalysisReport removeEmptyDependencies(@Body AnalysisReport reports) {
+    AnalysisReport result = new AnalysisReport();
+    reports
+        .entrySet()
+        .forEach(
+            entry -> {
+              ProviderStatus status = entry.getValue().getStatus();
+              if (entry.getValue().getDependencies() == null) {
+                entry.getValue().dependencies(Collections.emptyList());
+              }
+              List<DependencyReport> filteredDeps =
+                  entry.getValue().getDependencies().stream()
+                      .map(BackendUtils::removeEmptyTransitive)
+                      .filter(Predicate.not(BackendUtils::filterDependency))
+                      .collect(Collectors.toList());
+              result.put(
+                  entry.getKey(),
+                  new AnalysisReportValue()
+                      .status(status)
+                      .summary(entry.getValue().getSummary())
+                      .dependencies(filteredDeps));
+            });
+    return result;
+  }
+
   private static String prettifyHttpError(HttpOperationFailedException httpException) {
     String text = httpException.getStatusText();
     switch (httpException.getStatusCode()) {
@@ -111,5 +146,40 @@ public class BackendUtils {
       default:
         return text;
     }
+  }
+
+  private static boolean filterDependency(DependencyReport report) {
+    if (report.getRecommendation() != null) {
+      return false;
+    }
+    if (report.getHighestVulnerability() == null) {
+      return true;
+    }
+    boolean hasIssues = report.getIssues() != null && !report.getIssues().isEmpty();
+    boolean hasTransitiveIssues =
+        report.getTransitive() != null && !report.getTransitive().isEmpty();
+
+    return !hasIssues && !hasTransitiveIssues;
+  }
+
+  private static DependencyReport removeEmptyTransitive(DependencyReport report) {
+    if (report.getTransitive() == null) {
+      return report;
+    }
+    report.setTransitive(
+        report.getTransitive().stream()
+            .filter(t -> t.getIssues() != null && !t.getIssues().isEmpty())
+            .collect(Collectors.toList()));
+    return report;
+  }
+
+  private static AnalysisReportValue newEmptyReportValue(ProviderStatus status) {
+    return new AnalysisReportValue()
+        .status(status)
+        .dependencies(Collections.emptyList())
+        .summary(
+            new Summary()
+                .dependencies(new DependenciesSummary())
+                .vulnerabilities(new VulnerabilitiesSummary()));
   }
 }

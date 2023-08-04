@@ -18,20 +18,27 @@
 
 package com.redhat.exhort.integration.trustedcontent;
 
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.camel.Body;
+import org.apache.camel.ExchangeProperty;
 
+import com.redhat.exhort.api.AnalysisReport;
+import com.redhat.exhort.api.AnalysisReportValue;
+import com.redhat.exhort.api.DependencyReport;
 import com.redhat.exhort.api.Issue;
 import com.redhat.exhort.api.PackageRef;
 import com.redhat.exhort.api.Remediation;
+import com.redhat.exhort.api.TransitiveDependencyReport;
 import com.redhat.exhort.integration.Constants;
-import com.redhat.exhort.model.GraphRequest;
+import com.redhat.exhort.model.DependencyTree;
 import com.redhat.exhort.model.trustedcontent.MavenPackage;
 import com.redhat.exhort.model.trustedcontent.VexRequest;
 import com.redhat.exhort.model.trustedcontent.VexResult;
@@ -41,14 +48,30 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 @RegisterForReflection
 public class TrustedContentBodyMapper {
 
-  public static VexRequest buildVexRequest(@Body GraphRequest graph) {
-    return new VexRequest(
-        graph.issues().values().stream()
-            .flatMap(Collection::stream)
-            .map(Issue::getCves)
-            .filter(Objects::nonNull)
-            .flatMap(List::stream)
-            .collect(Collectors.toUnmodifiableList()));
+  public static VexRequest buildVexRequest(@Body AnalysisReport reports) {
+    Set<String> cves = new HashSet<>();
+    reports.values().stream()
+        .map(AnalysisReportValue::getDependencies)
+        .flatMap(List::stream)
+        .forEach(
+            d -> {
+              if (d.getIssues() != null) {
+                d.getIssues().stream().forEach(i -> cves.addAll(i.getCves()));
+              }
+              if (d.getTransitive() != null) {
+                cves.addAll(
+                    d.getTransitive().stream()
+                        .map(TransitiveDependencyReport::getIssues)
+                        .flatMap(List::stream)
+                        .filter(Objects::nonNull)
+                        .map(Issue::getCves)
+                        .filter(Objects::nonNull)
+                        .flatMap(List::stream)
+                        .collect(Collectors.toSet()));
+              }
+            });
+
+    return new VexRequest(List.copyOf(cves));
   }
 
   public Map<String, Remediation> createRemediations(VexRequest request, List<VexResult> response) {
@@ -70,44 +93,108 @@ public class TrustedContentBodyMapper {
     return remediations;
   }
 
-  public GraphRequest filterRemediations(GraphRequest req, Map<String, Remediation> remediations) {
+  public AnalysisReport filterRemediations(
+      AnalysisReport req, Map<String, Remediation> remediations) {
     if (remediations == null || remediations.isEmpty()) {
       return req;
     }
-    Map<String, Remediation> merged = new HashMap<>();
-    if (req.remediations() != null) {
-      merged.putAll(req.remediations());
-    }
-    remediations.entrySet().stream()
-        .filter(Objects::nonNull)
-        .filter(
-            r -> {
-              PackageRef o = r.getValue().getMavenPackage();
-              return req.tree().getAll().contains(o);
-            })
-        .forEach(e -> merged.put(e.getKey(), e.getValue()));
-    return new GraphRequest.Builder(req).remediations(merged).build();
+    req.values()
+        .forEach(
+            report ->
+                report.getDependencies().stream()
+                    .forEach(
+                        d -> {
+                          Map<String, Remediation> depRemediations = new HashMap<>();
+                          if (d.getIssues() != null) {
+                            d.getIssues()
+                                .forEach(
+                                    i -> {
+                                      List<String> cves = i.getCves();
+                                      if (cves != null) {
+                                        cves.forEach(
+                                            cve -> {
+                                              Remediation r = remediations.get(cve);
+                                              if (r != null
+                                                  && r.getMavenPackage()
+                                                      .name()
+                                                      .equals(d.getRef().name())) {
+                                                depRemediations.put(cve, r);
+                                              }
+                                            });
+                                      }
+                                    });
+                            if (d.getTransitive() != null) {
+                              d.getTransitive()
+                                  .forEach(
+                                      transitive -> {
+                                        Map<String, Remediation> transRemediations =
+                                            new HashMap<>();
+                                        if (transitive.getIssues() != null) {
+                                          transitive
+                                              .getIssues()
+                                              .forEach(
+                                                  i -> {
+                                                    List<String> cves = i.getCves();
+                                                    if (cves != null) {
+                                                      cves.forEach(
+                                                          cve -> {
+                                                            Remediation r = remediations.get(cve);
+                                                            if (r != null)
+                                                              if (r.getMavenPackage()
+                                                                  .name()
+                                                                  .equals(
+                                                                      transitive.getRef().name())) {
+                                                                transRemediations.put(cve, r);
+                                                              } else if (r.getMavenPackage()
+                                                                  .name()
+                                                                  .equals(d.getRef().name())) {
+                                                                depRemediations.put(cve, r);
+                                                              }
+                                                          });
+                                                    }
+                                                  });
+                                        }
+                                        transitive.setRemediations(transRemediations);
+                                      });
+                            }
+                          }
+                          d.setRemediations(depRemediations);
+                        }));
+    return req;
   }
 
   // Only look for recommendations for direct dependencies
-  public List<String> buildGavRequest(@Body GraphRequest request) {
-    return request.tree().dependencies().keySet().stream()
+  public List<String> buildGavRequest(
+      @ExchangeProperty(Constants.DEPENDENCY_TREE_PROPERTY) DependencyTree tree) {
+    return tree.dependencies().keySet().stream()
         .map(PackageRef::toGav)
         .sorted()
         .collect(Collectors.toUnmodifiableList());
   }
 
-  public GraphRequest addRecommendations(
-      GraphRequest req, Map<String, PackageRef> recommendations) {
+  public AnalysisReport addRecommendations(
+      AnalysisReport reports, Map<String, PackageRef> recommendations) {
     if (recommendations == null || recommendations.isEmpty()) {
-      return req;
+      return reports;
     }
 
-    Map<String, PackageRef> merged = new HashMap<>(recommendations);
-    if (req.recommendations() != null) {
-      merged.putAll(req.recommendations());
-    }
-    return new GraphRequest.Builder(req).recommendations(merged).build();
+    reports
+        .values()
+        .forEach(
+            report ->
+                recommendations
+                    .entrySet()
+                    .forEach(
+                        r -> {
+                          Optional<DependencyReport> dep =
+                              report.getDependencies().stream()
+                                  .filter(d -> d.getRef().toGav().equals(r.getKey()))
+                                  .findFirst();
+                          if (dep.isPresent()) {
+                            dep.get().setRecommendation(r.getValue());
+                          }
+                        }));
+    return reports;
   }
 
   public Map<String, PackageRef> createGavRecommendations(

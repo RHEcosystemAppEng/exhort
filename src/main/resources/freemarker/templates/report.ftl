@@ -34,10 +34,10 @@
 <#function packageLink package>
     <#return body.packagePath + package.name()?replace(":", "/") + "/" + package.version()>
 </#function>
-<#function issueLink issue>
-    <#if issue.getSource()=="snyk">
+<#function issueLink providerName, issue>
+    <#if providerName=="snyk">
         <#return body.snykIssueLinkFormatter.format(issue.getId()) >
-    <#elseif issue.getSource()=="oss-index">
+    <#elseif providerName=="oss-index">
         <#return body.ossIndexIssueLinkFormatter.format(issue.getId()) >
     </#if>
 </#function>
@@ -56,6 +56,9 @@
     <title>Dependency Analysis</title>
 </head>
 <body class="p-2 container-fluid">
+
+<#assign provider = body.report.snyk>
+<#assign providerName = provider.getStatus().getName()>
 
 <div class="card">
     <div class="card-header">
@@ -87,7 +90,7 @@
                             </g>
                         </g>
                     </svg>
-                    Total Vulnerabilities: ${body.report.getSummary().getVulnerabilities().getTotal()}
+                    Total Vulnerabilities: ${provider.getSummary().getVulnerabilities().getTotal()!0}
                 </p>
                 <p class="ml-5">
                     <svg width="18px" height="18px" viewBox="0 0 48 54" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -98,15 +101,14 @@
                             </g>
                         </g>
                     </svg>
-                    Vulnerable Dependencies: ${body.report.getSummary().getVulnerabilities().getDirect()}
+                    Vulnerable Dependencies: ${provider.getSummary().getVulnerabilities().getDirect()!0}
                 </p>
             </div>
         </div>
     </div>
 </div>
 
-<#list body.report.getSummary().getProviderStatuses() as providerStatus>
-<#if (providerStatus.getStatus() >= 500)>
+<#if (provider.getStatus().getCode() >= 500)>
 <div
   class="pf-c-alert pf-m-danger pf-m-inline"
   aria-label="Inline danger alert"
@@ -115,12 +117,12 @@
     <i class="fas fa-fw fa-exclamation-circle" aria-hidden="true"></i>
   </div>
   <p class="pf-c-alert__title">
-    <span class="pf-screen-reader">${providerStatus.getProvider()}:</span>
-    ${providerStatus.getProvider()?cap_first}: ${providerStatus.getMessage()!"Unknown error"}
+    <span class="pf-screen-reader">${providerName}:</span>
+    ${providerName?cap_first}: ${provider.getStatus().getMessage()!"Unknown error"}
   </p>
 </div>
 <br />
-<#elseif (providerStatus.getStatus() >= 400)>
+<#elseif (provider.getStatus().getCode() >= 400)>
 <div
   class="pf-c-alert pf-m-warning pf-m-inline"
   aria-label="Inline warning alert"
@@ -129,14 +131,13 @@
     <i class="fas fa-fw fa-exclamation-triangle" aria-hidden="true"></i>
   </div>
   <p class="pf-c-alert__title">
-    <span class="pf-screen-reader">${providerStatus.getProvider()}:</span>
-    ${providerStatus.getProvider()?cap_first}: ${providerStatus.getMessage()!"Unknown error"}
+    <span class="pf-screen-reader">${providerName}:</span>
+    ${providerName?cap_first}: ${provider.getStatus().getMessage()!"Unknown error"}
   </p>
 </div>
 <br />
 </#if>
-</#list>
-<#if body.report.getDependencies()?size == 0>
+<#if provider.getDependencies()?size == 0>
 <div class="pf-c-empty-state">
   <div class="pf-c-empty-state__content">
     <i class="fas fa-cubes pf-c-empty-state__icon" aria-hidden="true"></i>
@@ -172,7 +173,7 @@
         </thead>
         <tbody>
         <#assign numOfPkg = 0>
-        <#list body.report.getDependencies() as dependency>
+        <#list provider.getDependencies() as dependency>
             <tr data-toggle="collapse" data-target="#${htmlRef(dependency.getRef())}" class="accordion-toggle" aria-expanded="false">
                 <td role="cell">
                     <div class="pf-c-table__toggle-icon">
@@ -188,7 +189,11 @@
                         ${dependency.getRef().name()}
                     </a>
                 </td>
+                <#if dependency.getIssues()??>
                 <td>${dependency.getIssues()?size}</td>
+                <#else>
+                <td>0</td>
+                </#if>
                 <td>${body.dependencyHelper.transitiveIssuesCount(dependency)}</td>
                 <#if dependency.getHighestVulnerability()?? >
                     <#assign barNum = dependency.getHighestVulnerability().getCvssScore() *10>
@@ -217,8 +222,8 @@
                         </div>
                     </td>
                     <td>
-                        <#if body.issueVisibilityHelper.showIssue(dependency.getHighestVulnerability())>
-                            <a href="${issueLink(dependency.getHighestVulnerability())}"
+                        <#if body.issueVisibilityHelper.showIssue(providerName, dependency.getHighestVulnerability())>
+                            <a href="${issueLink(providerName, dependency.getHighestVulnerability())}"
                             target="_blank">
                                 ${dependency.getHighestVulnerability().getId()}
                             </a>
@@ -277,7 +282,7 @@
                                         <#list dependency.getIssues() as vulnerability>
                                             <tr>
                                                 <#assign severity = vulnerability.getSeverity()>
-                                                <#if body.issueVisibilityHelper.showIssue(vulnerability)>
+                                                <#if body.issueVisibilityHelper.showIssue(providerName, vulnerability)>
                                                     <td>
                                                         <#if severity == "critical" || severity == "high">
                                                         <span class="pf-c-label pf-m-red">
@@ -291,7 +296,7 @@
                                                         </span>
                                                     </span>
                                                     </td>
-                                                    <#if body.issueVisibilityHelper.showIssue(vulnerability)>
+                                                    <#if body.issueVisibilityHelper.showIssue(providerName, vulnerability)>
                                                         <td>${vulnerability.getCvss().getExploitCodeMaturity()!"No known exploit"}</td>
                                                     <#else>
                                                         <td><a href="${body.snykSignup}"
@@ -347,8 +352,8 @@
                                                             ${remediation.version()}
                                                         </button>
                                                     <#else>
-                                                        <#if body.issueVisibilityHelper.showIssue(vulnerability)>
-                                                            <a href="${issueLink(vulnerability)}"
+                                                        <#if body.issueVisibilityHelper.showIssue(providerName, vulnerability)>
+                                                            <a href="${issueLink(providerName, vulnerability)}"
                                                             target="_blank">
                                                                 ${vulnerability.getId()}
                                                             </a>
@@ -400,7 +405,7 @@
                                                     </a>
                                                 </td>
                                             </#if>
-                                            <#if body.issueVisibilityHelper.showIssue(vulnerability)>
+                                            <#if body.issueVisibilityHelper.showIssue(providerName, vulnerability)>
                                                 <td style="padding-left: 0.5rem">
                                                     <#if severity == "critical" || severity == "high">
                                                     <span class="pf-c-label pf-m-red">
@@ -462,8 +467,8 @@
                                                             ${remediation.version()}
                                                         </button>
                                                     <#else>
-                                                        <#if body.issueVisibilityHelper.showIssue(vulnerability)>
-                                                            <a href="${issueLink(vulnerability)}"
+                                                        <#if body.issueVisibilityHelper.showIssue(providerName, vulnerability)>
+                                                            <a href="${issueLink(providerName, vulnerability)}"
                                                             target="_blank">
                                                                 ${vulnerability.getId()}
                                                             </a>

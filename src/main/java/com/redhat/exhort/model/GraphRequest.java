@@ -18,7 +18,6 @@
 
 package com.redhat.exhort.model;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -27,10 +26,7 @@ import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import com.redhat.exhort.api.Issue;
 import com.redhat.exhort.api.PackageRef;
-import com.redhat.exhort.api.ProviderStatus;
-import com.redhat.exhort.api.Remediation;
 import com.redhat.exhort.integration.Constants;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
@@ -40,10 +36,7 @@ public record GraphRequest(
     String pkgManager,
     List<String> providers,
     DependencyTree tree,
-    Map<String, List<Issue>> issues,
-    Map<String, Remediation> remediations,
-    Map<String, PackageRef> recommendations,
-    List<ProviderStatus> providerStatuses) {
+    Map<String, PackageRef> recommendations) {
 
   public GraphRequest {
     Objects.requireNonNull(pkgManager);
@@ -61,25 +54,10 @@ public record GraphRequest(
       throw new IllegalArgumentException("Unsupported providers: " + invalidProviders);
     }
 
-    if (issues != null) {
-      issues = Collections.unmodifiableMap(issues);
-    } else {
-      issues = Collections.emptyMap();
-    }
-    if (remediations != null) {
-      remediations = Collections.unmodifiableMap(remediations);
-    } else {
-      remediations = Collections.emptyMap();
-    }
     if (recommendations != null) {
       recommendations = Collections.unmodifiableMap(recommendations);
     } else {
       recommendations = Collections.emptyMap();
-    }
-    if (providerStatuses != null) {
-      providerStatuses = Collections.unmodifiableList(providerStatuses);
-    } else {
-      providerStatuses = Collections.emptyList();
     }
   }
 
@@ -88,10 +66,7 @@ public record GraphRequest(
     String pkgManager;
     List<String> providers;
     DependencyTree tree;
-    Map<String, List<Issue>> issues;
-    Map<String, Remediation> remediations;
     Map<String, PackageRef> recommendations;
-    List<ProviderStatus> providerStatuses;
 
     public Builder(String pkgManager, List<String> providers) {
       this.pkgManager = pkgManager;
@@ -103,20 +78,8 @@ public record GraphRequest(
       this.providers = copy.providers;
       this.tree = copy.tree;
 
-      if (copy.issues != null) {
-        this.issues = new HashMap<>(copy.issues);
-      }
-
-      if (copy.remediations != null) {
-        this.remediations = new HashMap<>(copy.remediations);
-      }
-
       if (copy.recommendations != null) {
         this.recommendations = new HashMap<>(copy.recommendations);
-      }
-
-      if (copy.providerStatuses != null) {
-        this.providerStatuses = new ArrayList<>(copy.providerStatuses);
       }
     }
 
@@ -125,30 +88,13 @@ public record GraphRequest(
       return this;
     }
 
-    public Builder issues(Map<String, List<Issue>> issues) {
-      this.issues = issues;
-      return this;
-    }
-    ;
-
-    public Builder remediations(Map<String, Remediation> remediations) {
-      this.remediations = remediations;
-      return this;
-    }
-
     public Builder recommendations(Map<String, PackageRef> recommendations) {
       this.recommendations = recommendations;
       return this;
     }
 
-    public Builder providerStatuses(List<ProviderStatus> providerStatuses) {
-      this.providerStatuses = providerStatuses;
-      return this;
-    }
-
     public GraphRequest build() {
-      return new GraphRequest(
-          pkgManager, providers, tree, issues, remediations, recommendations, providerStatuses);
+      return new GraphRequest(pkgManager, providers, tree, recommendations);
     }
   }
 }

@@ -46,7 +46,7 @@ paths:
             schema:
               type: object
       responses:
-        '200':
+        200:
           description: Full dependency analysis from all the available providers
           content:
             application/json:
@@ -54,15 +54,15 @@ paths:
                 $ref: '#/components/schemas/AnalysisReport'
             text/html:
               schema:
-                type: object
+                type: string
             multipart/mixed:
               schema:
                 type: object
                 properties:
                   json_report:
-                    $ref: '#/components/schemas/AnalysisReport'
-                  html_report:
                     type: object
+                  html_report:
+                    type: string
         '422':
           description: Invalid request
           content:
@@ -132,13 +132,17 @@ components:
   schemas:
     AnalysisReport:
       type: object
-      properties:
-        summary:
-          $ref: '#/components/schemas/Summary'
-        dependencies:
-          type: array
-          items:
-            $ref: '#/components/schemas/DependencyReport'
+      additionalProperties:
+        type: object
+        properties:
+          status:
+            $ref: '#/components/schemas/ProviderStatus'
+          summary:
+            $ref: '#/components/schemas/Summary'
+          dependencies:
+            type: array
+            items:
+              $ref: '#/components/schemas/DependencyReport'
     PackageRef:
       type: object
       description: PackageURL used to identify a dependency artifact
@@ -173,7 +177,6 @@ components:
         issues:
           - id: SNYK-JAVA-COMFASTERXMLJACKSONCORE-3038426
             title: Denial of Service (DoS)
-            source: snyk
             cvss:
               attackVector: Network
               attackComplexity: High
@@ -196,7 +199,6 @@ components:
             issues:
               - id: SNYK-JAVA-COMFASTERXMLJACKSONCORE-3038426
                 title: Denial of Service (DoS)
-                source: snyk
                 cvss:
                   attackVector: Network
                   attackComplexity: High
@@ -233,8 +235,6 @@ components:
           type: string
         title:
           type: string
-        source:
-          type: string
         cvss:
           $ref: '#/components/schemas/CvssVector'
         cvssScore:
@@ -252,7 +252,6 @@ components:
       example:
         id: SNYK-JAVA-COMFASTERXMLJACKSONCORE-3038426
         title: Denial of Service (DoS)
-        source: snyk
         cvss:
           attackVector: Network
           attackComplexity: High
@@ -291,7 +290,6 @@ components:
         issues:
           - id: SNYK-JAVA-COMFASTERXMLJACKSONCORE-3038426
             title: Denial of Service (DoS)
-            source: snyk
             cvss:
               attackVector: Network
               attackComplexity: High
@@ -329,10 +327,6 @@ components:
           $ref: '#/components/schemas/DependenciesSummary'
         vulnerabilities:
           $ref: '#/components/schemas/VulnerabilitiesSummary'
-        providerStatuses:
-          type: array
-          items:
-              $ref: '#/components/schemas/ProviderStatus'
     DependenciesSummary:
       type: object
       properties:
@@ -360,9 +354,9 @@ components:
       properties:
         ok:
           type: boolean
-        provider:
+        name:
           type: string
-        status:
+        code:
           type: integer
         message:
           type: string
