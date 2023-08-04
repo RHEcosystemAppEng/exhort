@@ -27,7 +27,8 @@ import com.redhat.exhort.api.PackageRef;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @RegisterForReflection
-public record DirectDependency(PackageRef ref, Set<PackageRef> transitive) {
+public record DirectDependency(
+    PackageRef ref, Set<PackageRef> transitive, PackageRef recommendation) {
 
   public DirectDependency {
     Objects.requireNonNull(ref);
@@ -46,6 +47,7 @@ public record DirectDependency(PackageRef ref, Set<PackageRef> transitive) {
 
     public PackageRef ref;
     public Set<PackageRef> transitive;
+    public PackageRef recommendation;
 
     public Builder ref(PackageRef ref) {
       this.ref = ref;
@@ -57,8 +59,13 @@ public record DirectDependency(PackageRef ref, Set<PackageRef> transitive) {
       return this;
     }
 
+    public Builder recommendation(PackageRef recommendation) {
+      this.recommendation = recommendation;
+      return this;
+    }
+
     public DirectDependency build() {
-      return new DirectDependency(ref, transitive);
+      return new DirectDependency(ref, transitive, recommendation);
     }
   }
 }

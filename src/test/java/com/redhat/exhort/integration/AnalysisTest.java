@@ -37,7 +37,6 @@ import java.net.http.HttpResponse;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.cyclonedx.CycloneDxMediaType;
@@ -48,6 +47,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import com.redhat.exhort.api.AnalysisReport;
+import com.redhat.exhort.api.AnalysisReportValue;
 import com.redhat.exhort.api.DependencyReport;
 import com.redhat.exhort.api.PackageRef;
 import com.redhat.exhort.api.ProviderStatus;
@@ -145,25 +145,21 @@ public class AnalysisTest extends AbstractAnalysisTest {
 
     providers.forEach(
         p -> {
-          Optional<ProviderStatus> status =
-              report.getSummary().getProviderStatuses().stream()
-                  .filter(s -> s.getProvider().equals(p))
-                  .findFirst();
-          assertEquals(Response.Status.OK.getStatusCode(), status.get().getStatus());
-          assertTrue(status.get().getOk());
-          assertEquals(Response.Status.OK.getReasonPhrase(), status.get().getMessage());
+          AnalysisReportValue reportValue = report.get(p);
+          assertEquals(Response.Status.OK.getStatusCode(), reportValue.getStatus().getCode());
+          assertTrue(reportValue.getStatus().getOk());
+          assertEquals(Response.Status.OK.getReasonPhrase(), reportValue.getStatus().getMessage());
+          assertEquals(0, reportValue.getSummary().getDependencies().getScanned());
+          assertEquals(0, reportValue.getSummary().getDependencies().getTransitive());
+          assertEquals(0, reportValue.getSummary().getVulnerabilities().getTotal());
+          assertEquals(0, reportValue.getSummary().getVulnerabilities().getDirect());
+          assertEquals(0, reportValue.getSummary().getVulnerabilities().getCritical());
+          assertEquals(0, reportValue.getSummary().getVulnerabilities().getHigh());
+          assertEquals(0, reportValue.getSummary().getVulnerabilities().getMedium());
+          assertEquals(0, reportValue.getSummary().getVulnerabilities().getLow());
+
+          assertTrue(reportValue.getDependencies().isEmpty());
         });
-
-    assertEquals(0, report.getSummary().getDependencies().getScanned());
-    assertEquals(0, report.getSummary().getDependencies().getTransitive());
-    assertEquals(0, report.getSummary().getVulnerabilities().getTotal());
-    assertEquals(0, report.getSummary().getVulnerabilities().getDirect());
-    assertEquals(0, report.getSummary().getVulnerabilities().getCritical());
-    assertEquals(0, report.getSummary().getVulnerabilities().getHigh());
-    assertEquals(0, report.getSummary().getVulnerabilities().getMedium());
-    assertEquals(0, report.getSummary().getVulnerabilities().getLow());
-
-    assertTrue(report.getDependencies().isEmpty());
 
     verifyProviders(providers, authHeaders, true);
 
@@ -295,11 +291,11 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .body()
             .as(AnalysisReport.class);
 
-    assertEquals(1, report.getSummary().getProviderStatuses().size());
-    ProviderStatus status = report.getSummary().getProviderStatuses().get(0);
+    assertEquals(1, report.size());
+    ProviderStatus status = report.get(Constants.SNYK_PROVIDER).getStatus();
     assertFalse(status.getOk());
-    assertEquals(Constants.SNYK_PROVIDER, status.getProvider());
-    assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), status.getStatus());
+    assertEquals(Constants.SNYK_PROVIDER, status.getName());
+    assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), status.getCode());
 
     verifySnykRequest(INVALID_TOKEN);
     verifyNoInteractionsWithTC();
@@ -326,11 +322,11 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .body()
             .as(AnalysisReport.class);
 
-    assertEquals(1, report.getSummary().getProviderStatuses().size());
-    ProviderStatus status = report.getSummary().getProviderStatuses().get(0);
+    assertEquals(1, report.size());
+    ProviderStatus status = report.get(Constants.SNYK_PROVIDER).getStatus();
     assertFalse(status.getOk());
-    assertEquals(Constants.SNYK_PROVIDER, status.getProvider());
-    assertEquals(Response.Status.FORBIDDEN.getStatusCode(), status.getStatus());
+    assertEquals(Constants.SNYK_PROVIDER, status.getName());
+    assertEquals(Response.Status.FORBIDDEN.getStatusCode(), status.getCode());
 
     verifySnykRequest(UNAUTH_TOKEN);
     verifyNoInteractionsWithTC();
@@ -357,8 +353,8 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .body()
             .as(AnalysisReport.class);
 
-    assertSummary(report.getSummary());
-    assertDependenciesReport(report.getDependencies());
+    assertSummary(report.get(Constants.SNYK_PROVIDER).getSummary());
+    assertDependenciesReport(report.get(Constants.SNYK_PROVIDER).getDependencies());
 
     verifyTCRequests();
     verifySnykRequest(OK_TOKEN);
@@ -385,8 +381,8 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .body()
             .as(AnalysisReport.class);
 
-    assertSummary(report.getSummary());
-    assertTrue(report.getDependencies().isEmpty());
+    assertSummary(report.get(Constants.SNYK_PROVIDER).getSummary());
+    assertTrue(report.get(Constants.SNYK_PROVIDER).getDependencies().isEmpty());
 
     verifyTCRequests();
     verifySnykRequest(null);
@@ -414,8 +410,8 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .body()
             .as(AnalysisReport.class);
 
-    assertSummary(report.getSummary());
-    assertTrue(report.getDependencies().isEmpty());
+    assertSummary(report.get(Constants.SNYK_PROVIDER).getSummary());
+    assertTrue(report.get(Constants.SNYK_PROVIDER).getDependencies().isEmpty());
 
     verifySnykRequest(OK_TOKEN);
     verifyTCRequests();
@@ -612,7 +608,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
     assertEquals(7, summary.getDependencies().getTransitive());
 
     assertEquals(4, summary.getVulnerabilities().getTotal());
-    assertEquals(2, summary.getVulnerabilities().getDirect());
+    assertEquals(0, summary.getVulnerabilities().getDirect());
     assertEquals(0, summary.getVulnerabilities().getCritical());
     assertEquals(1, summary.getVulnerabilities().getHigh());
     assertEquals(3, summary.getVulnerabilities().getMedium());
@@ -662,9 +658,9 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .name(jackson.purl().getName())
             .version("2.13.1.Final-redhat-00002")
             .build(),
-        tReport.getRemediations().get("CVE-2020-36518").getMavenPackage());
+        tReport.getRemediations().get("CVE-2022-42003").getMavenPackage());
 
-    assertNull(tReport.getRemediations().get("CVE-2022-42003"));
+    assertNull(tReport.getRemediations().get("CVE-2020-36518"));
   }
 
   private DependencyReport getReport(String pkgName, List<DependencyReport> dependencies) {

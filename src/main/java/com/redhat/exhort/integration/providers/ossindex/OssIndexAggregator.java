@@ -16,28 +16,23 @@
  * limitations under the License.
  */
 
-package com.redhat.exhort.integration.ossindex;
+package com.redhat.exhort.integration.providers.ossindex;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.redhat.exhort.api.Issue;
 import com.redhat.exhort.api.PackageRef;
-import com.redhat.exhort.api.ProviderStatus;
 import com.redhat.exhort.integration.Constants;
+import com.redhat.exhort.integration.providers.ProviderAggregator;
 import com.redhat.exhort.model.GraphRequest;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
-import jakarta.ws.rs.core.Response;
-
 @RegisterForReflection
-public class OssIndexAggregationStrategy {
+public class OssIndexAggregator extends ProviderAggregator {
 
   private static final int BULK_SIZE = 128;
 
@@ -71,27 +66,8 @@ public class OssIndexAggregationStrategy {
     return newExchange;
   }
 
-  @SuppressWarnings("unchecked")
-  public GraphRequest aggregate(GraphRequest graphReq, Object newExchange)
-      throws JsonMappingException, JsonProcessingException {
-    GraphRequest.Builder builder = new GraphRequest.Builder(graphReq);
-    if (newExchange instanceof ProviderStatus) {
-      return builder.providerStatuses(List.of((ProviderStatus) newExchange)).build();
-    }
-
-    Map<String, List<Issue>> issues;
-    if (newExchange instanceof List) {
-      issues = Collections.emptyMap();
-    } else {
-      issues = (Map<String, List<Issue>>) newExchange;
-    }
-
-    ProviderStatus status =
-        new ProviderStatus()
-            .ok(true)
-            .provider(Constants.OSS_INDEX_PROVIDER)
-            .status(Response.Status.OK.getStatusCode())
-            .message(Response.Status.OK.name());
-    return builder.issues(issues).providerStatuses(List.of(status)).build();
+  @Override
+  protected final String getProviderName() {
+    return Constants.OSS_INDEX_PROVIDER;
   }
 }

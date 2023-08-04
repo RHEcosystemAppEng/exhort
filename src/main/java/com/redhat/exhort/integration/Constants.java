@@ -57,6 +57,7 @@ public final class Constants {
   public static final String PKG_MANAGER_PROPERTY = "pkgManager";
   public static final String REQUEST_CONTENT_PROPERTY = "requestContent";
   public static final String REPORT_PROPERTY = "report";
+  public static final String DEPENDENCY_TREE_PROPERTY = "dependencyTree";
   public static final String PROVIDER_PRIVATE_DATA_PROPERTY = "providerPrivateData";
   public static final String RESPONSE_STATUS_PROPERTY = "responseStatus";
 

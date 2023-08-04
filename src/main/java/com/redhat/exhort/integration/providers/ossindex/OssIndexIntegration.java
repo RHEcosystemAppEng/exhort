@@ -16,9 +16,10 @@
  * limitations under the License.
  */
 
-package com.redhat.exhort.integration.ossindex;
+package com.redhat.exhort.integration.providers.ossindex;
 
 import java.util.Base64;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -29,8 +30,8 @@ import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import com.redhat.exhort.integration.Constants;
-import com.redhat.exhort.integration.VulnerabilityProvider;
 import com.redhat.exhort.integration.backend.BackendUtils;
+import com.redhat.exhort.integration.providers.VulnerabilityProvider;
 import com.redhat.exhort.model.DependencyTree;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -52,28 +53,35 @@ public class OssIndexIntegration extends EndpointRouteBuilder {
     // fmt:off
     from(direct("ossIndexScan"))
         .routeId("ossIndexScan")
-        .enrich(direct("ossIndexRequest"), AggregationStrategies.bean(OssIndexAggregationStrategy.class, "aggregate"));
-
-    from(direct("ossIndexRequest"))
-        .routeId("ossIndexRequest")
         .circuitBreaker()
           .faultToleranceConfiguration()
             .timeoutEnabled(true)
             .timeoutDuration(timeout)
           .end()
-          .to(direct("ossSplitReq"))
+          .to(direct("ossIndexRequest"))
         .onFallback()
           .process(e -> BackendUtils.processResponseError(e, Constants.OSS_INDEX_PROVIDER));
 
+  from(direct("ossIndexRequest"))
+        .routeId("ossIndexRequest")
+        .choice()
+          .when(method(OssIndexRequestBuilder.class, "hasDependencies"))
+            .to(direct("ossSplitReq"))
+          .otherwise()
+            .to("log:foo?showBody=true")
+            .setBody(constant(Collections.emptyMap()))
+        .end()
+        .transform().method(OssIndexAggregator.class, "buildReport");
+
     from(direct("ossSplitReq"))
         .routeId("ossSplitReq")
-        .transform(method(OssIndexAggregationStrategy.class, "split"))
-        .split(body(), AggregationStrategies.bean(OssIndexAggregationStrategy.class, "aggregateSplit"))
+        .transform().method(OssIndexAggregator.class, "split")
+        .split(body(), AggregationStrategies.bean(OssIndexAggregator.class, "aggregateSplit"))
           .parallelProcessing()
           .transform().method(OssIndexRequestBuilder.class, "buildRequest")
           .process(this::processComponentRequest)
           .to(vertxHttp("{{api.ossindex.host}}"))
-          .transform(method(OssIndexRequestBuilder.class, "responseToIssues"));
+          .transform().method(OssIndexRequestBuilder.class, "responseToIssues");
     
     from(direct("ossValidateCredentials"))
       .routeId("ossValidateCredentials")
