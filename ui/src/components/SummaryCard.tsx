@@ -21,11 +21,9 @@ import ErrorCircleIcon from '@patternfly/react-icons/dist/esm/icons/error-circle
 import FileAltIcon from '@patternfly/react-icons/dist/esm/icons/file-alt-icon';
 import OkIcon from '@patternfly/react-icons/dist/esm/icons/ok-icon';
 import ShielVirusIcon from '@patternfly/react-icons/dist/esm/icons/shield-virus-icon';
-import { useAppContext } from '../App';
+import { Provider } from '@app/api/report';
 
-export const SummaryCard: React.FC = () => {
-  const sbom = useAppContext();
-  const firstProvider = Object.values(sbom.report)[0];
+export const SummaryCard = ({ provider }: { provider: Provider }) => {
   return (
     <Card isFlat isFullHeight>
       <CardHeader>
@@ -42,11 +40,9 @@ export const SummaryCard: React.FC = () => {
             <DescriptionListTerm icon={<CubeIcon />}>Dependency details</DescriptionListTerm>
             <DescriptionListDescription>
               <List isPlain>
+                <ListItem>Analyzed dependencies: {provider.summary.dependencies.scanned}</ListItem>
                 <ListItem>
-                  Analyzed dependencies: {firstProvider.summary.dependencies.scanned}
-                </ListItem>
-                <ListItem>
-                  Transitive dependencies: {firstProvider.summary.dependencies.transitive}
+                  Transitive dependencies: {provider.summary.dependencies.transitive}
                 </ListItem>
               </List>
             </DescriptionListDescription>
@@ -55,12 +51,8 @@ export const SummaryCard: React.FC = () => {
             <DescriptionListTerm icon={<ShielVirusIcon />}>Security issues</DescriptionListTerm>
             <DescriptionListDescription>
               <List isPlain>
-                <ListItem>
-                  Total vulnerabilities: {firstProvider.summary.vulnerabilities.total}
-                </ListItem>
-                <ListItem>
-                  Direct dependencies: {firstProvider.summary.vulnerabilities.direct}
-                </ListItem>
+                <ListItem>Total vulnerabilities: {provider.summary.vulnerabilities.total}</ListItem>
+                <ListItem>Direct dependencies: {provider.summary.vulnerabilities.direct}</ListItem>
               </List>
             </DescriptionListDescription>
           </DescriptionListGroup>
@@ -78,8 +70,8 @@ export const SummaryCard: React.FC = () => {
             <DescriptionListDescription>
               <List>
                 <ListItem>
-                  {firstProvider.status.name}{' '}
-                  {firstProvider.status.ok ? (
+                  {provider.status.name}{' '}
+                  {provider.status.ok ? (
                     <OkIcon color={okColor.value} />
                   ) : (
                     <ErrorCircleIcon color={dangerColor.value} />

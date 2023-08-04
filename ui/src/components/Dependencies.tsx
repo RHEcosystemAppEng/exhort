@@ -30,28 +30,20 @@ import FilterIcon from '@patternfly/react-icons/dist/esm/icons/filter-icon';
 
 import { useSelectionState } from '../hooks/useSelectionState';
 
-import { useAppContext } from '../App';
-import { Dependency } from '../api/sbom';
+import { Dependency, Provider } from '../api/report';
 import { useTable } from '../hooks/useTable';
 import { useTableControls } from '../hooks/useTableControls';
 import { ConditionalTableBody } from './TableControls/ConditionalTableBody';
 import { SimplePagination } from './TableControls/SimplePagination';
 
-interface DependenciesProps {}
-
-export const Dependencies: React.FC<DependenciesProps> = () => {
-  const sbom = useAppContext();
-  const firstProvider = Object.entries(sbom.report)[0];
-  const firstProviderName = firstProvider[0];
-  const firstProviderValue = firstProvider[1];
-
+export const Dependencies = ({ name, provider }: { name: string; provider: Provider }) => {
   // Filters
   const [filterText, setFilterText] = useState('');
 
   // Rows
   const { isItemSelected: isRowExpanded, toggleItemSelected: toggleRowExpanded } =
     useSelectionState<Dependency>({
-      items: firstProviderValue.dependencies,
+      items: provider.dependencies,
       isEqual: (a, b) => a.ref === b.ref,
     });
 
@@ -63,7 +55,7 @@ export const Dependencies: React.FC<DependenciesProps> = () => {
   } = useTableControls();
 
   const { pageItems, filteredItems } = useTable({
-    items: firstProviderValue.dependencies,
+    items: provider.dependencies,
     currentPage: currentPage,
     currentSortBy: currentSortBy,
     compareToByColumn: (a: Dependency, b: Dependency, columnIndex?: number) => {
@@ -186,7 +178,7 @@ export const Dependencies: React.FC<DependenciesProps> = () => {
                                   <DescriptionListGroup>
                                     <DescriptionListTerm>Source</DescriptionListTerm>
                                     <DescriptionListDescription>
-                                      {firstProviderName}
+                                      {name}
                                     </DescriptionListDescription>
                                   </DescriptionListGroup>
                                   <DescriptionListGroup>

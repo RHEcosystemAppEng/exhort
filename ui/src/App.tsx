@@ -1,45 +1,17 @@
 import { createContext, useContext } from 'react';
-import {
-  PageSection,
-  TextContent,
-  Text,
-  PageSectionVariants,
-  Grid,
-  GridItem,
-} from '@patternfly/react-core';
-import { MOCK_SBOM } from './mocks/sbom.mock';
-import { Sbom } from '@app/api/sbom';
-import { SummaryCard } from './components/SummaryCard';
-import { ChartCard } from './components/ChartCard';
-import { Dependencies } from './components/Dependencies';
+import { MOCK_REPORT } from './mocks/report.mock';
+import { Report } from '@app/api/report';
+import { TabbedLayout } from './TabbedLayout';
 
-const sbom = (window as any)['sbomb'] || MOCK_SBOM;
+const report = (window as any)['report'] || MOCK_REPORT;
 
-export const AppContext = createContext<Sbom>(sbom);
-export const useAppContext = (): Sbom => useContext(AppContext);
+export const AppContext = createContext<Report>(report);
+export const useAppContext = (): Report => useContext(AppContext);
 
 function App() {
   return (
-    <AppContext.Provider value={sbom}>
-      <PageSection variant={PageSectionVariants.light}>
-        <TextContent>
-          <Text component="h1">{sbom.packagePath}</Text>
-          <Text component="p">{sbom.sbomPath}</Text>
-        </TextContent>
-      </PageSection>
-      <PageSection variant={PageSectionVariants.light}>
-        <Grid hasGutter>
-          <GridItem md={6}>
-            <SummaryCard />
-          </GridItem>
-          <GridItem md={6}>
-            <ChartCard />
-          </GridItem>
-        </Grid>
-      </PageSection>
-      <PageSection variant={PageSectionVariants.default}>
-        <Dependencies />
-      </PageSection>
+    <AppContext.Provider value={report}>
+      <TabbedLayout />
     </AppContext.Provider>
   );
 }

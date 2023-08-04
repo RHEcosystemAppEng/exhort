@@ -1,8 +1,6 @@
-import { Sbom } from '@app/api/sbom';
+import { Report } from '@app/api/report';
 
-export let MOCK_SBOM: Sbom;
-
-// const sbomb1: Sbom = {
+export let MOCK_REPORT: Report;
 //   packagePath: 'https://central.sonatype.com/artifact/',
 //   remediationPath: 'https://maven.repository.redhat.com/ga/',
 //   issueVisibilityHelper: {
@@ -349,7 +347,7 @@ export let MOCK_SBOM: Sbom;
 //   dependencyHelper: {},
 // };
 
-const sbomb2: Sbom = {
+const report1: Report = {
   packagePath: 'https://central.sonatype.com/artifact/',
   remediationPath: 'https://maven.repository.redhat.com/ga/',
   issueVisibilityHelper: {
@@ -1372,4 +1370,4 @@ const sbomb2: Sbom = {
   dependencyHelper: {},
 };
 
-MOCK_SBOM = sbomb2;
+MOCK_REPORT = report1;
