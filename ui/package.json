@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@patternfly/react-charts": "^5.0.0",
     "@patternfly/react-core": "^5.0.0",
     "@patternfly/react-table": "^5.0.0",
     "@testing-library/jest-dom": "^5.14.1",
