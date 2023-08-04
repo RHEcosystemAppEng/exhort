@@ -19,7 +19,7 @@ module.exports = {
       };
 
       // inline all assets into the JS bundle
-      webpackConfig.module.rules[1].oneOf.unshift({
+      webpackConfig.module.rules[0].oneOf.unshift({
         test: /\.(png|jpg|jpeg|woff|woff2|eot|ttf|svg)$/,
         type: "asset/inline",
       });
