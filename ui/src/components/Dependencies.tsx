@@ -41,6 +41,9 @@ interface DependenciesProps {}
 
 export const Dependencies: React.FC<DependenciesProps> = () => {
   const sbom = useAppContext();
+  const firstProvider = Object.entries(sbom.report)[0];
+  const firstProviderName = firstProvider[0];
+  const firstProviderValue = firstProvider[1];
 
   // Filters
   const [filterText, setFilterText] = useState('');
@@ -48,7 +51,7 @@ export const Dependencies: React.FC<DependenciesProps> = () => {
   // Rows
   const { isItemSelected: isRowExpanded, toggleItemSelected: toggleRowExpanded } =
     useSelectionState<Dependency>({
-      items: sbom.report.dependencies,
+      items: firstProviderValue.dependencies,
       isEqual: (a, b) => a.ref === b.ref,
     });
 
@@ -60,7 +63,7 @@ export const Dependencies: React.FC<DependenciesProps> = () => {
   } = useTableControls();
 
   const { pageItems, filteredItems } = useTable({
-    items: sbom.report.dependencies,
+    items: firstProviderValue.dependencies,
     currentPage: currentPage,
     currentSortBy: currentSortBy,
     compareToByColumn: (a: Dependency, b: Dependency, columnIndex?: number) => {
@@ -177,20 +180,20 @@ export const Dependencies: React.FC<DependenciesProps> = () => {
                                   <DescriptionListGroup>
                                     <DescriptionListTerm>Title</DescriptionListTerm>
                                     <DescriptionListDescription>
-                                      {item.highestVulnerability.title}
+                                      {item.highestVulnerability?.title}
                                     </DescriptionListDescription>
                                   </DescriptionListGroup>
                                   <DescriptionListGroup>
                                     <DescriptionListTerm>Source</DescriptionListTerm>
                                     <DescriptionListDescription>
-                                      {item.highestVulnerability.source}
+                                      {firstProviderName}
                                     </DescriptionListDescription>
                                   </DescriptionListGroup>
                                   <DescriptionListGroup>
                                     <DescriptionListTerm>CVEs</DescriptionListTerm>
                                     <DescriptionListDescription>
                                       <List>
-                                        {item.highestVulnerability.cves.map((elem, index) => (
+                                        {item.highestVulnerability?.cves.map((elem, index) => (
                                           <ListItem key={index}>{elem}</ListItem>
                                         ))}
                                       </List>
@@ -199,8 +202,8 @@ export const Dependencies: React.FC<DependenciesProps> = () => {
                                   <DescriptionListGroup>
                                     <DescriptionListTerm>Severity</DescriptionListTerm>
                                     <DescriptionListDescription>
-                                      {item.highestVulnerability.severity}{' '}
-                                      <Label>{item.highestVulnerability.cvssScore}</Label>
+                                      {item.highestVulnerability?.severity}{' '}
+                                      <Label>{item.highestVulnerability?.cvssScore}</Label>
                                     </DescriptionListDescription>
                                   </DescriptionListGroup>
                                 </DescriptionList>

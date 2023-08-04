@@ -25,6 +25,7 @@ import { useAppContext } from '../App';
 
 export const SummaryCard: React.FC = () => {
   const sbom = useAppContext();
+  const firstProvider = Object.values(sbom.report)[0];
   return (
     <Card isFlat isFullHeight>
       <CardHeader>
@@ -42,10 +43,10 @@ export const SummaryCard: React.FC = () => {
             <DescriptionListDescription>
               <List isPlain>
                 <ListItem>
-                  Analyzed dependencies: {sbom.report.summary.dependencies.scanned}
+                  Analyzed dependencies: {firstProvider.summary.dependencies.scanned}
                 </ListItem>
                 <ListItem>
-                  Transitive dependencies: {sbom.report.summary.dependencies.transitive}
+                  Transitive dependencies: {firstProvider.summary.dependencies.transitive}
                 </ListItem>
               </List>
             </DescriptionListDescription>
@@ -55,10 +56,10 @@ export const SummaryCard: React.FC = () => {
             <DescriptionListDescription>
               <List isPlain>
                 <ListItem>
-                  Total vulnerabilities: {sbom.report.summary.vulnerabilities.total}
+                  Total vulnerabilities: {firstProvider.summary.vulnerabilities.total}
                 </ListItem>
                 <ListItem>
-                  Direct dependencies: {sbom.report.summary.vulnerabilities.direct}
+                  Direct dependencies: {firstProvider.summary.vulnerabilities.direct}
                 </ListItem>
               </List>
             </DescriptionListDescription>
@@ -76,16 +77,14 @@ export const SummaryCard: React.FC = () => {
             <DescriptionListTerm icon={<FileAltIcon />}>Provider status</DescriptionListTerm>
             <DescriptionListDescription>
               <List>
-                {sbom.report.summary.providerStatuses.map((elem, index) => (
-                  <ListItem key={index}>
-                    {elem.provider}{' '}
-                    {elem.ok ? (
-                      <OkIcon color={okColor.value} />
-                    ) : (
-                      <ErrorCircleIcon color={dangerColor.value} />
-                    )}
-                  </ListItem>
-                ))}
+                <ListItem>
+                  {firstProvider.status.name}{' '}
+                  {firstProvider.status.ok ? (
+                    <OkIcon color={okColor.value} />
+                  ) : (
+                    <ErrorCircleIcon color={dangerColor.value} />
+                  )}
+                </ListItem>
               </List>
             </DescriptionListDescription>
           </DescriptionListGroup>
