@@ -13,6 +13,10 @@ import {
   Label,
   List,
   ListItem,
+  Progress,
+  ProgressMeasureLocation,
+  ProgressSize,
+  ProgressVariant,
   SearchInput,
   Toolbar,
   ToolbarContent,
@@ -81,7 +85,7 @@ export const Dependencies: React.FC<DependenciesProps> = () => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Dependencies</CardTitle>
+        <CardTitle>Commonly Known Vulnerabilities</CardTitle>
       </CardHeader>
       <Divider />
       <CardBody>
@@ -124,9 +128,13 @@ export const Dependencies: React.FC<DependenciesProps> = () => {
                     onSort: onChangeSortBy,
                   }}
                 >
-                  Ref
+                  Dependency
                 </Th>
-                <Th>Recomendation</Th>
+                <Th>Direct</Th>
+                <Th>Transitive</Th>
+                <Th>Highest CVSS</Th>
+                <Th>Highest Severity</Th>
+                <Th>Red Hat remediation available</Th>
               </Tr>
             </Thead>
             <ConditionalTableBody isNoData={filteredItems.length === 0} numRenderedColumns={8}>
@@ -142,7 +150,18 @@ export const Dependencies: React.FC<DependenciesProps> = () => {
                         }}
                       />
                       <Td>{item.ref}</Td>
-                      <Td>{item.recommendation}</Td>
+                      <Td>{item.issues.length}</Td>
+                      <Td>NaN</Td>
+                      <Td>
+                        <Progress
+                          value={80}
+                          size={ProgressSize.sm}
+                          variant={ProgressVariant.warning}
+                          measureLocation={ProgressMeasureLocation.none}
+                        />
+                      </Td>
+                      <Td>NaN</Td>
+                      <Td>NaN</Td>
                     </Tr>
                     {isRowExpanded(item) ? (
                       <Tr isExpanded>
