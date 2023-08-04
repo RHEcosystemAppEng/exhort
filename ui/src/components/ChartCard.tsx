@@ -5,10 +5,11 @@ import { useAppContext } from '../App';
 
 export const ChartCard: React.FC = () => {
   const sbom = useAppContext();
+  const firstProvider = Object.values(sbom.report)[0];
   return (
     <Card isFlat isFullHeight>
       <CardHeader>
-        <CardTitle>{`${sbom.report.summary.vulnerabilities.total} vulnerabilities in ${sbom.report.dependencies.length} dependencies`}</CardTitle>
+        <CardTitle>{`${firstProvider.summary.vulnerabilities.total} vulnerabilities in ${firstProvider.dependencies.length} dependencies`}</CardTitle>
       </CardHeader>
       <Divider />
       <CardBody>
@@ -17,20 +18,20 @@ export const ChartCard: React.FC = () => {
             <ChartDonut
               constrainToVisibleArea
               data={[
-                { x: 'High', y: sbom.report.summary.vulnerabilities.high },
+                { x: 'High', y: firstProvider.summary.vulnerabilities.high },
                 {
                   x: 'Medium',
-                  y: sbom.report.summary.vulnerabilities.medium,
+                  y: firstProvider.summary.vulnerabilities.medium,
                 },
-                { x: 'Low', y: sbom.report.summary.vulnerabilities.low },
+                { x: 'Low', y: firstProvider.summary.vulnerabilities.low },
               ]}
               labels={({ datum }) => `${datum.x}: ${datum.y}%`}
               legendData={[
-                { name: `High: ${sbom.report.summary.vulnerabilities.high}` },
+                { name: `High: ${firstProvider.summary.vulnerabilities.high}` },
                 {
-                  name: `Medium: ${sbom.report.summary.vulnerabilities.medium}`,
+                  name: `Medium: ${firstProvider.summary.vulnerabilities.medium}`,
                 },
-                { name: `Low: ${sbom.report.summary.vulnerabilities.low}` },
+                { name: `Low: ${firstProvider.summary.vulnerabilities.low}` },
               ]}
               legendOrientation="vertical"
               legendPosition="right"
@@ -41,7 +42,7 @@ export const ChartCard: React.FC = () => {
                 top: 20,
               }}
               subTitle="Vulnerabilities"
-              title={`${sbom.report.summary.vulnerabilities.total}`}
+              title={`${firstProvider.summary.vulnerabilities.total}`}
               width={350}
               themeColor={ChartThemeColor.orange}
             />
