@@ -37,6 +37,9 @@ public class ReportIntegration extends EndpointRouteBuilder {
 
   @PostConstruct
   void updateFreemarkerConfig() {
+    // TODO: Enable when using reportV2.ftl
+    // This allows the use of freemarker syntax such as [#if] [#/if] and
+    // [=provider.getSummary().getVulnerabilities().getTotal()] in the ui source code, if needed
     configuration.setTagSyntax(Configuration.SQUARE_BRACKET_TAG_SYNTAX);
     configuration.setInterpolationSyntax(Configuration.SQUARE_BRACKET_INTERPOLATION_SYNTAX);
   }
@@ -60,7 +63,8 @@ public class ReportIntegration extends EndpointRouteBuilder {
             .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.TEXT_HTML))
             .setProperty(Constants.REPORT_PROPERTY, body())
             .setBody(method(reportTemplate, "setVariables"))
-            .to(freemarker("new-report.ftl"));
+            // TODO: Change to reportV2.ftl to use the patternfly-react enabled report
+            .to(freemarker("reportV2.ftl"));
 
         from(direct("multipartReport"))
             .routeId("multipartReport")

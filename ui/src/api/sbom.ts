@@ -2,39 +2,11 @@ export interface Sbom {
   packagePath: string;
   remediationPath: string;
   issueVisibilityHelper: {
-    providerData?: string;
+    providerData?: string | null;
   };
   vexPath: string;
   report: {
-    summary: {
-      dependencies: {
-        scanned: number;
-        transitive: number;
-      };
-      vulnerabilities: {
-        direct: number;
-        total: number;
-        critical: number;
-        high: number;
-        medium: number;
-        low: number;
-      };
-      providerStatuses: [
-        {
-          ok: boolean;
-          provider: string;
-          status: number;
-          message: string;
-        },
-        {
-          ok: boolean;
-          provider: string;
-          status: number;
-          message: string;
-        },
-      ];
-    };
-    dependencies: Dependency[];
+    [providerName: string]: Provider;
   };
   ossIndexIssueLinkFormatter: {
     issuePathRegex: string;
@@ -47,90 +19,71 @@ export interface Sbom {
   dependencyHelper: {};
 }
 
+export interface Provider {
+  status: {
+    ok: boolean;
+    name: string;
+    code: number;
+    message: string;
+  };
+  summary: {
+    dependencies: {
+      scanned: number | null;
+      transitive: number | null;
+    };
+    vulnerabilities: {
+      direct: number | null;
+      total: number | null;
+      critical: number | null;
+      high: number | null;
+      medium: number | null;
+      low: number | null;
+    };
+  };
+  dependencies: Dependency[];
+}
+
 export interface Dependency {
   ref: string;
-  issues: string[];
-  transitive: [
-    {
-      ref: string;
-      issues: {
-        id: string;
-        title: string;
-        source: string;
-        cvss: {
-          attackVector: string;
-          attackComplexity: string;
-          privilegesRequired: string;
-          userInteraction: string;
-          scope: string;
-          confidentialityImpact: string;
-          integrityImpact: string;
-          availabilityImpact: string;
-          exploitCodeMaturity?: string;
-          remediationLevel?: string;
-          reportConfidence?: string;
-          cvss: string;
-        };
-        cvssScore: number;
-        severity: string;
-        cves: string[];
-        unique: boolean;
-      }[];
-      remediations: {
-        [key: string]: {
-          issueRef: string;
-          mavenPackage: string;
-          productStatus: string;
-        };
+  issues: Vulnerability[];
+  transitive: {
+    ref: string;
+    issues: Vulnerability[];
+    remediations: {
+      [key: string]: {
+        issueRef: string;
+        mavenPackage: string;
+        productStatus: string;
       };
-      highestVulnerability: {
-        id: string;
-        title: string;
-        source: string;
-        cvss: {
-          attackVector: string;
-          attackComplexity: string;
-          privilegesRequired: string;
-          userInteraction: string;
-          scope: string;
-          confidentialityImpact: string;
-          integrityImpact: string;
-          availabilityImpact: string;
-          exploitCodeMaturity?: string;
-          remediationLevel?: string;
-          reportConfidence?: string;
-          cvss: string;
-        };
-        cvssScore: number;
-        severity: string;
-        cves: string[];
-        unique: boolean;
-      };
-    },
-  ];
-  recommendation?: string;
-  remediations: {};
-  highestVulnerability: {
-    id: string;
-    title: string;
-    source: string;
-    cvss: {
-      attackVector: string;
-      attackComplexity: string;
-      privilegesRequired: string;
-      userInteraction: string;
-      scope: string;
-      confidentialityImpact: string;
-      integrityImpact: string;
-      availabilityImpact: string;
-      exploitCodeMaturity?: string;
-      remediationLevel?: string;
-      reportConfidence?: string;
-      cvss: string;
     };
-    cvssScore: number;
-    severity: string;
-    cves: string[];
-    unique: boolean;
-  };
+    highestVulnerability: Vulnerability;
+  }[];
+  recommendation: string | null;
+  remediations: {};
+  highestVulnerability: Vulnerability | null;
+}
+
+export interface Vulnerability {
+  id: string;
+  title: string;
+  cvss: Cvss;
+  cvssScore: number;
+  severity: string;
+  cves: string[];
+  unique: boolean;
+}
+
+export interface Cvss {
+  attackVector: string;
+  attackComplexity: string;
+  privilegesRequired: string;
+  userInteraction: string;
+  scope: string;
+  confidentialityImpact: string;
+  integrityImpact: string;
+  availabilityImpact: string;
+  exploitCodeMaturity: string | null;
+  remediationLevel: string | null;
+  reportConfidence?: string | null;
+  cvss: string;
 }
