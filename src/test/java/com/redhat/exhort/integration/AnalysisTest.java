@@ -18,6 +18,7 @@
 
 package com.redhat.exhort.integration;
 
+import static io.restassured.RestAssured.basePath;
 import static io.restassured.RestAssured.given;
 import static org.apache.camel.Exchange.CONTENT_TYPE;
 import static org.hamcrest.core.IsEqual.equalTo;
@@ -34,6 +35,8 @@ import java.net.http.HttpClient;
 import java.net.http.HttpClient.Version;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -470,6 +473,11 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .body()
             .asString();
 
+    try {
+      Files.writeString(Paths.get("/home/cferiavi/Downloads/aa.html"), body);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
     assertHtml("reports/report_all_token.html", body);
 
     verifySnykRequest(OK_TOKEN);

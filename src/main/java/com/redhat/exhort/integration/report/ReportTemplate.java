@@ -81,7 +81,7 @@ public class ReportTemplate {
     params.put("snykSignup", snykSignup);
     params.put("dependencyHelper", new DependencyReportHelper());
 
-    ObjectWriter objectWriter = new ObjectMapper().writer().withDefaultPrettyPrinter();
+    ObjectWriter objectWriter = new ObjectMapper().writer();
     String reportJson = objectWriter.writeValueAsString(params);
     params.put("reportJson", reportJson);
 
