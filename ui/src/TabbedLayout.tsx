@@ -16,8 +16,8 @@ import { Dependencies } from './components/Dependencies';
 import { useAppContext } from './App';
 
 export const TabbedLayout = () => {
-  const sbom = useAppContext();
-  const providers = Object.keys(sbom.report);
+  const data = useAppContext();
+  const providers = Object.keys(data.report);
 
   const [activeTabKey, setActiveTabKey] = React.useState<string | number>(providers[0]);
   // Toggle currently active tab
@@ -29,7 +29,7 @@ export const TabbedLayout = () => {
   };
 
   const tabs = providers.map((name) => {
-    const provider = sbom.report[name];
+    const provider = data.report[name];
     return (
       <Tab
         eventKey={name}
@@ -38,8 +38,8 @@ export const TabbedLayout = () => {
       >
         <PageSection variant={PageSectionVariants.light}>
           <TextContent>
-            <Text component="h1">{sbom.packagePath}</Text>
-            <Text component="p">{sbom.sbomPath}</Text>
+            <Text component="h1">{data.packagePath}</Text>
+            <Text component="p">{data.sbomPath}</Text>
           </TextContent>
         </PageSection>
         <PageSection variant={PageSectionVariants.light}>
