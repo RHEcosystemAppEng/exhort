@@ -27,7 +27,7 @@ export const SummaryCard = ({ provider }: { provider: Provider }) => {
   return (
     <Card isFlat isFullHeight>
       <CardHeader>
-        <CardTitle>Summary of the stack</CardTitle>
+        <CardTitle>Summary of the report </CardTitle>
       </CardHeader>
       <Divider />
       <CardBody>
