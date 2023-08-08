@@ -93,7 +93,8 @@ export const Dependencies = ({ name, provider }: { name: string; provider: Provi
             <ToolbarContent>
               <ToolbarToggleGroup toggleIcon={<FilterIcon />} breakpoint="xl">
                 <ToolbarItem variant="search-filter">
-                  <SearchInput
+                  <SearchInput style={{width: '250px'}}
+                      placeholder="Filter by Dependency name"
                     value={filterText}
                     onChange={(_, value) => setFilterText(value)}
                     onClear={() => setFilterText('')}
