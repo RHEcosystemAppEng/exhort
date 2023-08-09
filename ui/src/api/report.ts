@@ -43,23 +43,31 @@ export interface Provider {
   dependencies: Dependency[];
 }
 
-export interface Dependency {
+export interface TransitiveDependency {
   ref: string;
   issues: Vulnerability[];
-  transitive: {
-    ref: string;
-    issues: Vulnerability[];
-    remediations: {
-      [key: string]: {
-        issueRef: string;
-        mavenPackage: string;
-        productStatus: string;
-      };
+  remediations: {
+    [key: string]: {
+      issueRef: string;
+      mavenPackage: string;
+      productStatus: string;
     };
-    highestVulnerability: Vulnerability;
-  }[];
+  };
+  highestVulnerability: Vulnerability;
+}
+
+export interface Dependency {
+  ref: string;
+  issues: Vulnerability[] | null;
+  transitive: TransitiveDependency[];
   recommendation: string | null;
-  remediations: {};
+  remediations: {
+    [key: string]: {
+      issueRef: string;
+      mavenPackage: string;
+      productStatus: string;
+    };
+  };
   highestVulnerability: Vulnerability | null;
 }
 
@@ -68,8 +76,8 @@ export interface Vulnerability {
   title: string;
   cvss: Cvss;
   cvssScore: number;
-  severity: string;
-  cves: string[];
+  severity: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';
+  cves: string[] | null;
   unique: boolean;
 }
 

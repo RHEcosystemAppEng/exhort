@@ -1,23 +1,14 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import {
   Card,
   CardBody,
   CardHeader,
   CardTitle,
-  DescriptionList,
-  DescriptionListDescription,
-  DescriptionListGroup,
-  DescriptionListTerm,
   Divider,
-  Label,
-  List,
-  ListItem,
-  Progress,
-  ProgressMeasureLocation,
-  ProgressSize,
-  ProgressVariant,
   SearchInput,
+  Stack,
+  StackItem,
   Toolbar,
   ToolbarContent,
   ToolbarItem,
@@ -28,22 +19,35 @@ import { ExpandableRowContent, Table, Tbody, Td, Th, Thead, Tr } from '@patternf
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import FilterIcon from '@patternfly/react-icons/dist/esm/icons/filter-icon';
 
+import { useAppContext } from '../App';
+import { Dependency } from '../api/report';
 import { useSelectionState } from '../hooks/useSelectionState';
-
-import { Dependency, Provider } from '../api/report';
 import { useTable } from '../hooks/useTable';
 import { useTableControls } from '../hooks/useTableControls';
+
 import { ConditionalTableBody } from './TableControls/ConditionalTableBody';
 import { SimplePagination } from './TableControls/SimplePagination';
+import { DependencyLink } from './DependencyLink';
+import { VulnerabilityScore } from './VulnerabilityScore';
+import { VulnerabilityLink } from './VulnerabilityLink';
+import { RemediationsCount } from './RemediationsCount';
+import { TransitiveDependenciesTable } from './TransitiveDependenciesTable';
+import { VulnerabilitiesTable } from './VulnerabilitiesTable';
 
-export const Dependencies = ({ name, provider }: { name: string; provider: Provider }) => {
+export const DependenciesTable = () => {
+  const appContext = useAppContext();
+
+  const providerName = 'snyk';
+  const synkReport = appContext.report[providerName];
+  const tableData = synkReport.dependencies;
+
   // Filters
   const [filterText, setFilterText] = useState('');
 
   // Rows
   const { isItemSelected: isRowExpanded, toggleItemSelected: toggleRowExpanded } =
     useSelectionState<Dependency>({
-      items: provider.dependencies,
+      items: tableData,
       isEqual: (a, b) => a.ref === b.ref,
     });
 
@@ -55,7 +59,7 @@ export const Dependencies = ({ name, provider }: { name: string; provider: Provi
   } = useTableControls();
 
   const { pageItems, filteredItems } = useTable({
-    items: provider.dependencies,
+    items: tableData,
     currentPage: currentPage,
     currentSortBy: currentSortBy,
     compareToByColumn: (a: Dependency, b: Dependency, columnIndex?: number) => {
@@ -93,8 +97,9 @@ export const Dependencies = ({ name, provider }: { name: string; provider: Provi
             <ToolbarContent>
               <ToolbarToggleGroup toggleIcon={<FilterIcon />} breakpoint="xl">
                 <ToolbarItem variant="search-filter">
-                  <SearchInput style={{width: '250px'}}
-                      placeholder="Filter by Dependency name"
+                  <SearchInput
+                    style={{ width: '250px' }}
+                    placeholder="Filter by Dependency name"
                     value={filterText}
                     onChange={(_, value) => setFilterText(value)}
                     onClear={() => setFilterText('')}
@@ -106,6 +111,7 @@ export const Dependencies = ({ name, provider }: { name: string; provider: Provi
                 align={{ default: 'alignRight' }}
               >
                 <SimplePagination
+                  isTop={true}
                   count={filteredItems.length}
                   params={currentPage}
                   onChange={onPageChange}
@@ -145,63 +151,57 @@ export const Dependencies = ({ name, provider }: { name: string; provider: Provi
                           onToggle: () => toggleRowExpanded(item),
                         }}
                       />
-                      <Td>{item.ref}</Td>
-                      <Td>{item.issues.length}</Td>
-                      <Td>NaN</Td>
                       <Td>
-                        <Progress
-                          value={80}
-                          size={ProgressSize.sm}
-                          variant={ProgressVariant.warning}
-                          measureLocation={ProgressMeasureLocation.none}
-                        />
+                        <DependencyLink name={item.ref} />
                       </Td>
-                      <Td>NaN</Td>
-                      <Td>NaN</Td>
+                      <Td>{item.issues?.length || 0}</Td>
+                      <Td>
+                        {item.transitive
+                          .map((e) => e.issues.length)
+                          .reduce((prev, current) => prev + current, 0)}
+                      </Td>
+                      <Td>
+                        {item.highestVulnerability && (
+                          <VulnerabilityScore vunerability={item.highestVulnerability} />
+                        )}
+                      </Td>
+                      <Td>
+                        {item.highestVulnerability && (
+                          <VulnerabilityLink
+                            providerName={providerName}
+                            vunerability={item.highestVulnerability}
+                          />
+                        )}
+                      </Td>
+                      <Td>
+                        <RemediationsCount dependency={item} />
+                      </Td>
                     </Tr>
                     {isRowExpanded(item) ? (
                       <Tr isExpanded>
                         <Td />
-                        <Td className={spacing.pyLg}>
+                        <Td className={spacing.pyLg} colSpan={6}>
                           <ExpandableRowContent>
-                            <Card>
-                              <CardHeader>
-                                <CardTitle>Highest vulnerability</CardTitle>
-                              </CardHeader>
-                              <CardBody>
-                                <DescriptionList columnModifier={{ lg: '3Col' }}>
-                                  <DescriptionListGroup>
-                                    <DescriptionListTerm>Title</DescriptionListTerm>
-                                    <DescriptionListDescription>
-                                      {item.highestVulnerability?.title}
-                                    </DescriptionListDescription>
-                                  </DescriptionListGroup>
-                                  <DescriptionListGroup>
-                                    <DescriptionListTerm>Source</DescriptionListTerm>
-                                    <DescriptionListDescription>
-                                      {name}
-                                    </DescriptionListDescription>
-                                  </DescriptionListGroup>
-                                  <DescriptionListGroup>
-                                    <DescriptionListTerm>CVEs</DescriptionListTerm>
-                                    <DescriptionListDescription>
-                                      <List>
-                                        {item.highestVulnerability?.cves.map((elem, index) => (
-                                          <ListItem key={index}>{elem}</ListItem>
-                                        ))}
-                                      </List>
-                                    </DescriptionListDescription>
-                                  </DescriptionListGroup>
-                                  <DescriptionListGroup>
-                                    <DescriptionListTerm>Severity</DescriptionListTerm>
-                                    <DescriptionListDescription>
-                                      {item.highestVulnerability?.severity}{' '}
-                                      <Label>{item.highestVulnerability?.cvssScore}</Label>
-                                    </DescriptionListDescription>
-                                  </DescriptionListGroup>
-                                </DescriptionList>
-                              </CardBody>
-                            </Card>
+                            <Stack hasGutter>
+                              {item.issues && item.issues.length > 0 && (
+                                <StackItem>
+                                  <VulnerabilitiesTable
+                                    providerName={providerName}
+                                    dependency={item}
+                                    vulnerabilities={item.issues}
+                                  />
+                                </StackItem>
+                              )}
+                              {item.transitive && item.transitive.length > 0 && (
+                                <StackItem>
+                                  <TransitiveDependenciesTable
+                                    providerName={providerName}
+                                    dependency={item}
+                                    transitiveDependencies={item.transitive}
+                                  />
+                                </StackItem>
+                              )}
+                            </Stack>
                           </ExpandableRowContent>
                         </Td>
                       </Tr>
@@ -212,10 +212,10 @@ export const Dependencies = ({ name, provider }: { name: string; provider: Provi
             </ConditionalTableBody>
           </Table>
           <SimplePagination
+            isTop={false}
             count={filteredItems.length}
             params={currentPage}
             onChange={onPageChange}
-            isTop={true}
           />
         </div>
       </CardBody>
