@@ -23,6 +23,8 @@ import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
 
 import com.redhat.exhort.integration.Constants;
 
+import freemarker.template.Configuration;
+import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.MediaType;
@@ -31,6 +33,16 @@ import jakarta.ws.rs.core.MediaType;
 public class ReportIntegration extends EndpointRouteBuilder {
 
   @Inject ReportTemplate reportTemplate;
+  @Inject Configuration configuration;
+
+  @PostConstruct
+  void updateFreemarkerConfig() {
+    // TODO: Enable when using reportV2.ftl
+    // This allows the use of freemarker syntax such as [#if] [#/if] and
+    // [=provider.getSummary().getVulnerabilities().getTotal()] in the ui source code, if needed
+    // configuration.setTagSyntax(Configuration.SQUARE_BRACKET_TAG_SYNTAX);
+    // configuration.setInterpolationSyntax(Configuration.SQUARE_BRACKET_INTERPOLATION_SYNTAX);
+  }
 
   @Override
   public void configure() {
@@ -51,6 +63,7 @@ public class ReportIntegration extends EndpointRouteBuilder {
             .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.TEXT_HTML))
             .setProperty(Constants.REPORT_PROPERTY, body())
             .setBody(method(reportTemplate, "setVariables"))
+            // TODO: Change to reportV2.ftl to use the patternfly-react enabled report
             .to(freemarker("report.ftl"));
 
         from(direct("multipartReport"))
