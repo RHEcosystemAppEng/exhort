@@ -15,7 +15,6 @@ env:
   # Registries such as GHCR, Quay.io, and Docker Hub are supported.
   IMAGE_REGISTRY: quay.io/ecosystem-appeng
   IMAGE_NAME: exhort
-  IMAGE_TAGS: latest
   IMAGE_REGISTRY_USER: ${{ secrets.IMAGE_REGISTRY_USER }}
   IMAGE_REGISTRY_PASSWORD: ${{ secrets.IMAGE_REGISTRY_PASSWORD }}
   # 🖊️ EDIT to change Dockerfile.
@@ -25,6 +24,7 @@ on:
   push:
     branches:
       - main
+      - single-source
     tags:
       - '*'
 
@@ -81,6 +81,11 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
+      - name: Extract branch name
+        shell: bash
+        run: echo "branch=${GITHUB_REF##*/}" >> $GITHUB_OUTPUT
+        id: extract_branch
+          
       - name: Setup JDK
         uses: actions/setup-java@v3
         with:
@@ -96,7 +101,7 @@ jobs:
         uses: redhat-actions/buildah-build@v2
         with:
           image: ${{ env.IMAGE_NAME }}
-          tags: ${{ env.IMAGE_TAGS }}
+          tags: ${{ steps.extract_branch.outputs.branch }}
           dockerfiles: |
             ${{ env.DOCKERFILE_PATH }}
           
