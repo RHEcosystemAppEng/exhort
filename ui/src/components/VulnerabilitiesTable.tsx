@@ -32,8 +32,8 @@ export const VulnerabilitiesTable: React.FC<VulnerabilitiesTableProps> = ({
           <Tr>
             <Th>Severity</Th>
             <Th>Exploit Maturity</Th>
-            <Th>Description</Th>
-            <Th>CVSS</Th>
+            <Th width={25}>Description</Th>
+            <Th width={15}>CVSS</Th>
             <Th>CVE</Th>
             <Th>Remediation</Th>
           </Tr>
@@ -51,7 +51,7 @@ export const VulnerabilitiesTable: React.FC<VulnerabilitiesTableProps> = ({
                   <Td>
                     <VulnerabilitySeverityLabel vulnerability={vuln} />
                   </Td>
-                  <Td>{vuln.cvss.exploitCodeMaturity || 'No known exploit'}</Td>
+                  <Td>{vuln.cvss?.exploitCodeMaturity || 'No known exploit'}</Td>
                   <Td>{vuln.title}</Td>
                   <Td>
                     <VulnerabilityScore vunerability={vuln} />

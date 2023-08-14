@@ -1,3 +1,6 @@
+export const SYNK_SIGNUP_URL =
+  'https://app.snyk.io/login?utm_campaign=Code-Ready-Analytics-2020&utm_source=code_ready&code_ready=FF1B53D9-57BE-4613-96D7-1D06066C38C9';
+
 const MAVEN_PREFIX = 'pkg:maven';
 const MAVEN_URL = 'https://central.sonatype.com/artifact/';
 
@@ -40,4 +43,8 @@ export const issueLink = (provider: 'snyk' | 'oss-index', issueId: string) => {
     case 'oss-index':
       return `http://ossindex.sonatype.org/vulnerability/${issueId}`;
   }
+};
+
+export const uppercaseFirstLetter = (val: string) => {
+  return val.toLowerCase().replace(/./, (c) => c.toUpperCase());
 };
