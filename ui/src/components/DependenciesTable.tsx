@@ -6,9 +6,14 @@ import {
   CardHeader,
   CardTitle,
   Divider,
+  EmptyState,
+  EmptyStateBody,
+  EmptyStateIcon,
+  EmptyStateVariant,
   SearchInput,
   Stack,
   StackItem,
+  Title,
   Toolbar,
   ToolbarContent,
   ToolbarItem,
@@ -18,6 +23,7 @@ import {
 import { ExpandableRowContent, Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import FilterIcon from '@patternfly/react-icons/dist/esm/icons/filter-icon';
+import CubesIcon from '@patternfly/react-icons/dist/esm/icons/cubes-icon';
 
 import { useAppContext } from '../App';
 import { Dependency } from '../api/report';
@@ -124,6 +130,7 @@ export const DependenciesTable = () => {
               <Tr>
                 <Th></Th>
                 <Th
+                  width={25}
                   sort={{
                     columnIndex: 1,
                     sortBy: { ...currentSortBy },
@@ -134,12 +141,26 @@ export const DependenciesTable = () => {
                 </Th>
                 <Th>Direct</Th>
                 <Th>Transitive</Th>
-                <Th>Highest CVSS</Th>
-                <Th>Highest Severity</Th>
-                <Th>Red Hat remediation available</Th>
+                <Th width={20}>Highest CVSS</Th>
+                <Th width={25}>Highest Severity</Th>
+                <Th width={15}>Red Hat remediation available</Th>
               </Tr>
             </Thead>
-            <ConditionalTableBody isNoData={filteredItems.length === 0} numRenderedColumns={8}>
+            <ConditionalTableBody
+              isNoData={filteredItems.length === 0}
+              numRenderedColumns={8}
+              noDataEmptyState={
+                <EmptyState variant={EmptyStateVariant.sm}>
+                  <EmptyStateIcon icon={CubesIcon} />
+                  <Title headingLevel="h2" size="lg">
+                    No vulnerabilities found
+                  </Title>
+                  <EmptyStateBody>
+                    The vulnerability scan did not find any vulnerabilities in your project.
+                  </EmptyStateBody>
+                </EmptyState>
+              }
+            >
               {pageItems?.map((item, rowIndex) => {
                 return (
                   <Tbody key={rowIndex} isExpanded={isRowExpanded(item)}>

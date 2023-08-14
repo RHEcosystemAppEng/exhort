@@ -36,40 +36,47 @@ export const SummaryCard = () => {
           <DescriptionListGroup>
             <DescriptionListDescription>
               <List isPlain>
-                <ListItem>Below is a list of dependencies affected with CVE, as well as vulnerability only found using Snyk's vulnerability database.</ListItem>
+                <ListItem>
+                  Below is a list of dependencies affected with CVE, as well as vulnerability only
+                  found using Snyk's vulnerability database.
+                </ListItem>
               </List>
             </DescriptionListDescription>
           </DescriptionListGroup>
           <DescriptionListGroup>
-            <DescriptionListTerm>Dependencies with security issues in your stack.</DescriptionListTerm>
+            <DescriptionListTerm>
+              Dependencies with security issues in your stack.
+            </DescriptionListTerm>
             <DescriptionListDescription>
               <List isPlain>
-                <ListItem>Dependencies with high common vulnerabilities and exposures (CVE) score.</ListItem>
+                <ListItem>
+                  Dependencies with high common vulnerabilities and exposures (CVE) score.
+                </ListItem>
                 <ListItem>
                   <TextContent>
                     <Text component="p">
                       <Icon isInline status="info">
                         <ShieldAltIcon />
-                      </Icon>{" "}
-                      Total vulnerabilities: {synkReport.summary.vulnerabilities.total}                    
-                    </Text>      
-                  </TextContent>                 
+                      </Icon>{' '}
+                      Total vulnerabilities: {synkReport.summary.vulnerabilities.total}
+                    </Text>
+                  </TextContent>
                 </ListItem>
                 <ListItem>
                   <TextContent>
                     <Text component="p">
                       <Icon isInline status="warning">
                         <ShieldAltIcon />
-                      </Icon>{" "}
-                      Vulnerable dependencies: {synkReport.summary.vulnerabilities.direct}                    
-                    </Text>      
-                  </TextContent>                 
-                </ListItem>                
+                      </Icon>{' '}
+                      Vulnerable dependencies: {synkReport.summary.vulnerabilities.direct}
+                    </Text>
+                  </TextContent>
+                </ListItem>
               </List>
             </DescriptionListDescription>
           </DescriptionListGroup>
         </DescriptionList>
-      </CardBody>      
+      </CardBody>
     </Card>
   );
 };

@@ -2,7 +2,7 @@ export interface Report {
   packagePath: string;
   remediationPath: string;
   issueVisibilityHelper: {
-    providerData?: string | null;
+    providerData?: string[] | null;
   };
   vexPath: string;
   report: {
@@ -74,7 +74,7 @@ export interface Dependency {
 export interface Vulnerability {
   id: string;
   title: string;
-  cvss: Cvss;
+  cvss: Cvss | null;
   cvssScore: number;
   severity: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';
   cves: string[] | null;
