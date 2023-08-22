@@ -39,10 +39,6 @@ export const VulnerabilitiesTable: React.FC<VulnerabilitiesTableProps> = ({
         </Thead>
         <ConditionalTableBody isNoData={vulnerabilities.length === 0} numRenderedColumns={6}>
           {vulnerabilities?.map((vuln, rowIndex) => {
-            // const mavenPackagesRemediation = vuln.cves
-            //   ?.map((cve) => dependency.remediations[cve])
-            //   .filter((e) => e)
-            //   .map((e) => e.mavenPackage);
 
             return (
               <Tbody key={rowIndex}>
@@ -57,13 +53,7 @@ export const VulnerabilitiesTable: React.FC<VulnerabilitiesTableProps> = ({
                   </Td>
                   <Td>{vuln.cves}</Td>
                   <Td>
-                    {/*{mavenPackagesRemediation && mavenPackagesRemediation.length > 0 ? (*/}
-                    {/*  mavenPackagesRemediation.map((e, index) => (*/}
-                    {/*    <RemediationLink key={index} cves={vuln.cves || []} packageName={e} />*/}
-                    {/*  ))*/}
-                    {/*) : (*/}
                       <VulnerabilityLink providerName={providerName} vunerability={vuln} />
-                    {/*)}*/}
                   </Td>
                 </Tr>
               </Tbody>

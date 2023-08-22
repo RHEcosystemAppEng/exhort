@@ -252,6 +252,11 @@ If you want to build an _über-jar_, execute the following command:
 
 The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
 
+To disable frontend production bundle files creation and copying into the freemarker/generated directory execute the following command:
+```shell script
+./mvnw package -P dev
+```
+
 ## Creating a native executable
 
 You can create a native executable using:
@@ -267,3 +272,24 @@ Or, if you don't have GraalVM installed, you can run the native executable build
 You can then execute your native executable with: `./target/exhort-0.0.1-SNAPSHOT-runner`
 
 If you want to learn more about building native executables, please consult https://quarkus.io/guides/maven-tooling.
+
+## Running the Frontend react application
+
+You can run the frontend as a stand-alone application in dev mode by switching to the UI folder and executing the following command:
+```shell script
+yarn start
+```
+Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+
+Once ready to build for production, from the UI folder execute:
+```shell script
+yarn build
+```
+This will create 4 bundle files and copy it into the freemarker/generated directory.:
+
+- main.js - This is all the code under the ui/src directory
+- vendor.js - these are the dependencies we pull in from node_modules, like react, and @patternfly
+- main.css  - styles under the ui/src directory
+- vendor.css  - styles coming from node_modules, like all the PatternFly styles
+
+These files are included in the freemarker template file (report.ftl) via [#include] statements.

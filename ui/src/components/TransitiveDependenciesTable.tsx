@@ -59,14 +59,6 @@ export const TransitiveDependenciesTable: React.FC<TransitiveDependenciesTablePr
                 <Tbody>
                   {transitiveDependencies?.map((item, rowIndex) => {
                     return item.issues.map((vuln, subRowIndex) => {
-                      // const mavenPackagesRemediation = vuln.cves
-                      //   ?.map((cve) => {
-                      //     return dependency.transitive
-                      //       .map((e) => e.remediations[cve])
-                      //       .filter((e) => e);
-                      //   })
-                      //   .flatMap((e) => e)
-                      //   .map((e) => e.mavenPackage);
 
                       return (
                         <Tr key={`${rowIndex}-${subRowIndex}`}>
