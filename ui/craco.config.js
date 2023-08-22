@@ -1,6 +1,18 @@
 module.exports = {
   webpack: {
     configure: (webpackConfig) => {
+      // Modify the Webpack configuration here
+      if (webpackConfig.plugins) {
+        // Find the CSS Loader plugin in the plugins array
+        const cssLoaderPlugin = webpackConfig.plugins.find(
+            (plugin) => plugin.constructor.name === 'MiniCssExtractPlugin'
+        );
+
+        if (cssLoaderPlugin) {
+          // Disable warnings from MiniCssExtractPlugin
+          cssLoaderPlugin.options.ignoreOrder = true;
+        }
+      }
       webpackConfig.output = {
         ...webpackConfig.output,
         filename: "static/js/[name].js",
@@ -38,14 +50,4 @@ module.exports = {
       options: {},
     },
   ],
-  style: {
-    css: {
-      loaderOptions: {
-        ignoreWarnings: {
-          // Suppress the Autoprefixer warning about mixed support for the `start` value
-          ignore: ['autoprefixer: start value has mixed support, consider using flex-start instead'],
-        },
-      },
-    },
-  },
 };
