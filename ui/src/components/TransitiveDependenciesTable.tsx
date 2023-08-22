@@ -1,22 +1,15 @@
-import React, { useReducer } from 'react';
-import { Table, TableVariant, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
+import React, {useReducer} from 'react';
+import {Table, TableVariant, Tbody, Td, Th, Thead, Tr} from '@patternfly/react-table';
 
-import { Dependency, TransitiveDependency } from '../api/report';
-import { SYNK_SIGNUP_URL } from '../utils/utils';
+import {Dependency, TransitiveDependency} from '../api/report';
+import {SYNK_SIGNUP_URL} from '../utils/utils';
 
-import { ConditionalTableBody } from './TableControls/ConditionalTableBody';
-import { DependencyLink } from './DependencyLink';
-import { VulnerabilityScore } from './VulnerabilityScore';
-import { VulnerabilityLink } from './VulnerabilityLink';
-import { VulnerabilitySeverityLabel } from './VulnerabilitySeverityLabel';
-import { RemediationLink } from './RemediationLink';
-import {
-  Card,
-  CardBody,
-  CardExpandableContent,
-  CardHeader,
-  CardTitle,
-} from '@patternfly/react-core';
+import {ConditionalTableBody} from './TableControls/ConditionalTableBody';
+import {DependencyLink} from './DependencyLink';
+import {VulnerabilityScore} from './VulnerabilityScore';
+import {VulnerabilityLink} from './VulnerabilityLink';
+import {VulnerabilitySeverityLabel} from './VulnerabilitySeverityLabel';
+import {Card, CardBody, CardExpandableContent, CardHeader, CardTitle,} from '@patternfly/react-core';
 
 interface TransitiveDependenciesTableProps {
   providerName: 'snyk' | 'oss-index';
@@ -66,14 +59,14 @@ export const TransitiveDependenciesTable: React.FC<TransitiveDependenciesTablePr
                 <Tbody>
                   {transitiveDependencies?.map((item, rowIndex) => {
                     return item.issues.map((vuln, subRowIndex) => {
-                      const mavenPackagesRemediation = vuln.cves
-                        ?.map((cve) => {
-                          return dependency.transitive
-                            .map((e) => e.remediations[cve])
-                            .filter((e) => e);
-                        })
-                        .flatMap((e) => e)
-                        .map((e) => e.mavenPackage);
+                      // const mavenPackagesRemediation = vuln.cves
+                      //   ?.map((cve) => {
+                      //     return dependency.transitive
+                      //       .map((e) => e.remediations[cve])
+                      //       .filter((e) => e);
+                      //   })
+                      //   .flatMap((e) => e)
+                      //   .map((e) => e.mavenPackage);
 
                       return (
                         <Tr key={`${rowIndex}-${subRowIndex}`}>

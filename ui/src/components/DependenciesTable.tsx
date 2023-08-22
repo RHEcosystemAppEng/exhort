@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import {useState} from 'react';
 
 import {
   Card,
@@ -20,25 +20,24 @@ import {
   ToolbarItemVariant,
   ToolbarToggleGroup,
 } from '@patternfly/react-core';
-import { ExpandableRowContent, Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
+import {ExpandableRowContent, Table, Tbody, Td, Th, Thead, Tr} from '@patternfly/react-table';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import FilterIcon from '@patternfly/react-icons/dist/esm/icons/filter-icon';
 import CubesIcon from '@patternfly/react-icons/dist/esm/icons/cubes-icon';
 
-import { useAppContext } from '../App';
-import { Dependency } from '../api/report';
-import { useSelectionState } from '../hooks/useSelectionState';
-import { useTable } from '../hooks/useTable';
-import { useTableControls } from '../hooks/useTableControls';
+import {useAppContext} from '../App';
+import {Dependency} from '../api/report';
+import {useSelectionState} from '../hooks/useSelectionState';
+import {useTable} from '../hooks/useTable';
+import {useTableControls} from '../hooks/useTableControls';
 
-import { ConditionalTableBody } from './TableControls/ConditionalTableBody';
-import { SimplePagination } from './TableControls/SimplePagination';
-import { DependencyLink } from './DependencyLink';
-import { VulnerabilityScore } from './VulnerabilityScore';
-import { VulnerabilityLink } from './VulnerabilityLink';
-import { RemediationsCount } from './RemediationsCount';
-import { TransitiveDependenciesTable } from './TransitiveDependenciesTable';
-import { VulnerabilitiesTable } from './VulnerabilitiesTable';
+import {ConditionalTableBody} from './TableControls/ConditionalTableBody';
+import {SimplePagination} from './TableControls/SimplePagination';
+import {DependencyLink} from './DependencyLink';
+import {VulnerabilityScore} from './VulnerabilityScore';
+import {VulnerabilityLink} from './VulnerabilityLink';
+import {TransitiveDependenciesTable} from './TransitiveDependenciesTable';
+import {VulnerabilitiesTable} from './VulnerabilitiesTable';
 
 export const DependenciesTable = () => {
   const appContext = useAppContext();

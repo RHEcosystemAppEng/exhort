@@ -38,4 +38,14 @@ module.exports = {
       options: {},
     },
   ],
+  style: {
+    css: {
+      loaderOptions: {
+        ignoreWarnings: {
+          // Suppress the Autoprefixer warning about mixed support for the `start` value
+          ignore: ['autoprefixer: start value has mixed support, consider using flex-start instead'],
+        },
+      },
+    },
+  },
 };
