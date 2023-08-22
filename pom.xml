@@ -167,6 +167,22 @@
         <artifactId>exec-maven-plugin</artifactId>
         <version>${exec-maven-plugin.version}</version>
         <executions>
+          <!-- Install dev dependencies -->
+          <execution>
+            <id>install-dev-dependencies</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>yarn</executable>
+              <workingDirectory>${project.basedir}/ui</workingDirectory>
+              <arguments>
+                <argument>install</argument>
+              </arguments>
+            </configuration>
+          </execution>
+          <!-- Execute craco build -->
           <execution>
             <id>run-frontend-build</id>
             <phase>prepare-package</phase>
@@ -177,6 +193,7 @@
               <executable>yarn</executable>
               <workingDirectory>${project.basedir}/ui</workingDirectory>
               <arguments>
+                <argument>run</argument>
                 <argument>build</argument>
               </arguments>
             </configuration>
@@ -385,6 +402,24 @@
         <skipITs>false</skipITs>
         <quarkus.package.type>native</quarkus.package.type>
       </properties>
+    </profile>
+    <profile>
+      <id>dev</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>${exec-maven-plugin.version}</version>
+            <executions>
+              <execution>
+                <id>run-frontend-build</id>
+                <phase>none</phase>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
   </profiles>
 </project>
