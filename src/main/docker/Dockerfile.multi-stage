@@ -1,10 +1,5 @@
 ## Stage 1 : build with maven builder image with native capabilities
-<<<<<<< HEAD
 FROM quay.io/quarkus/ubi-quarkus-mandrel-builder-image:jdk-17 AS build
-=======
-FROM quay.io/quarkus/ubi-quarkus-mandrel-builder-image:22.3-java17 AS build
-
->>>>>>> 6347f77 (feat: add tekton ci pipeline)
 COPY --chown=quarkus:quarkus mvnw /code/mvnw
 COPY --chown=quarkus:quarkus .mvn /code/.mvn
 COPY --chown=quarkus:quarkus pom.xml /code/

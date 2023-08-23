@@ -8,11 +8,11 @@ metadata:
     build.appstudio.redhat.com/target_branch: '{{target_branch}}'
     pipelinesascode.tekton.dev/max-keep-runs: "3"
     pipelinesascode.tekton.dev/on-event: '[pull_request]'
-    pipelinesascode.tekton.dev/on-target-branch: '[single-source]'
+    pipelinesascode.tekton.dev/on-target-branch: '[main]'
   creationTimestamp: null
   labels:
-    appstudio.openshift.io/application: exhort-alpha
-    appstudio.openshift.io/component: exhort
+    appstudio.openshift.io/application: exhort-dev
+    appstudio.openshift.io/component: exhort-main
     pipelines.appstudio.openshift.io/type: build
   name: exhort-ci-pipeline
   namespace: trusted-content-tenant
@@ -25,7 +25,7 @@ spec:
   - name: image-expires-after
     value: 5d
   - name: output-image
-    value: quay.io/redhat-user-workloads/trusted-content-tenant/exhort-alpha/exhort:on-pr-{{revision}}
+    value: quay.io/redhat-user-workloads/trusted-content-tenant/exhort-dev/exhort:on-pr-{{revision}}
   - name: path-context
     value: .
   - name: revision
