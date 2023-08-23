@@ -99,6 +99,7 @@ public class SnykIntegration extends EndpointRouteBuilder {
     message.setHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON);
     message.setHeader(Exchange.HTTP_PATH, Constants.SNYK_DEP_GRAPH_API_PATH);
     message.setHeader(Exchange.HTTP_METHOD, HttpMethod.POST);
+    message.removeHeader(Constants.PROVIDERS_PARAM);
   }
 
   private void processTokenRequest(Exchange exchange) {

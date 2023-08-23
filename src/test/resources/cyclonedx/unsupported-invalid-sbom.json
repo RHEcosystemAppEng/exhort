@@ -10,7 +10,6 @@
         "name" : "postgresql-orm-quarkus",
         "version" : "1.0.0-SNAPSHOT",
         "licenses" : [ ],
-        "purl" : "pkg:foo/org.acme.dbaas/postgresql-orm-quarkus@1.0.0-SNAPSHOT?type=jar",
         "type" : "library",
         "bom-ref" : "pkg:foo/org.acme.dbaas/postgresql-orm-quarkus@1.0.0-SNAPSHOT?type=jar"
       }
@@ -20,10 +19,32 @@
         "publisher" : "JBoss by Red Hat",
         "group" : "io.quarkus",
         "name" : "quarkus-hibernate-orm",
-        "version" : "2.13.5.Final"
+        "version" : "2.13.5.Final",
+        "purl" : "pkg:foo/org.acme.dbaas/postgresql-orm-quarkus@1.0.0-SNAPSHOT?type=jar",
+        "bom-ref" : "pkg:foo/org.acme.dbaas/postgresql-orm-quarkus@1.0.0-SNAPSHOT?type=jar"
+      },
+      {
+        "publisher" : "JBoss by Red Hat",
+        "group" : "io.quarkus",
+        "name" : "quarkus-core",
+        "version" : "2.13.5.Final",
+        "purl" : "pkg:foo/io.quarkus/quarkus-core@2.13.5.Final?type=jar",
+        "type" : "library",
+        "bom-ref" : "pkg:foo/io.quarkus/quarkus-core@2.13.5.Final?type=jar"
       }
     ],
     "dependencies" : [
+      {
+        "ref" : "pkg:foo/org.acme.dbaas/postgresql-orm-quarkus@1.0.0-SNAPSHOT?type=jar",
+        "dependsOn" : [
+          "pkg:foo/io.quarkus/quarkus-core@2.13.5.Final?type=jar"
+        ]
+      },
+      {
+        "ref" : "pkg:foo/io.quarkus/quarkus-core@2.13.5.Final?type=jar",
+        "dependsOn" : [
 
+        ]
+      }
     ]
   }

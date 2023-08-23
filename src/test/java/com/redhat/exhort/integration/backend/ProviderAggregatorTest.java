@@ -51,21 +51,14 @@ public class ProviderAggregatorTest {
   public void testBuildReport_empty() {
     AnalysisReportValue report =
         new SimpleProviderAggregator()
-            .buildReport(
-                Collections.emptyMap(),
-                DependencyTree.builder()
-                    .root(DependencyTree.getDefaultRoot(Constants.MAVEN_PKG_MANAGER))
-                    .build());
+            .buildReport(Collections.emptyMap(), DependencyTree.builder().build());
     assertEmptyReport(report);
 
     report =
         new SimpleProviderAggregator()
             .buildReport(
                 Collections.emptyMap(),
-                DependencyTree.builder()
-                    .root(DependencyTree.getDefaultRoot(Constants.MAVEN_PKG_MANAGER))
-                    .dependencies(Collections.emptyMap())
-                    .build());
+                DependencyTree.builder().dependencies(Collections.emptyMap()).build());
     assertEmptyReport(report);
   }
 
@@ -180,11 +173,7 @@ public class ProviderAggregatorTest {
               deps.put(ref, DirectDependency.builder().ref(ref).transitive(transitive).build());
             });
 
-    DependencyTree tree =
-        DependencyTree.builder()
-            .root(DependencyTree.getDefaultRoot(Constants.MAVEN_PKG_MANAGER))
-            .dependencies(deps)
-            .build();
+    DependencyTree tree = DependencyTree.builder().dependencies(deps).build();
     return tree;
   }
 

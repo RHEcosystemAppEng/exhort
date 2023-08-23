@@ -94,7 +94,6 @@ public class SbomParserTest {
 
     DependencyTree tree = parser.buildTree(file);
     assertEquals(0, tree.dependencies().size());
-    assertEquals(EXPECTED_ROOT, tree.root());
   }
 
   @ParameterizedTest
@@ -106,7 +105,6 @@ public class SbomParserTest {
 
     DependencyTree tree = parser.buildTree(file);
     assertEquals(0, tree.dependencies().size());
-    assertEquals(EXPECTED_ROOT, tree.root());
   }
 
   @ParameterizedTest
@@ -130,7 +128,6 @@ public class SbomParserTest {
     DependencyTree tree = parser.buildTree(file);
     assertEquals(2, tree.dependencies().size());
     assertEquals(7, tree.transitiveCount());
-    assertEquals(EXPECTED_ROOT, tree.root());
   }
 
   @ParameterizedTest
@@ -143,7 +140,6 @@ public class SbomParserTest {
     DependencyTree tree = parser.buildTree(file);
     assertEquals(direct, tree.dependencies().size());
     assertEquals(transitive, tree.transitiveCount());
-    assertEquals(root, tree.root());
   }
 
   static Stream<String> getMediaTypes() {

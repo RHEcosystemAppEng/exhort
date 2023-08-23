@@ -19,6 +19,7 @@
 package com.redhat.exhort.integration.providers.snyk;
 
 import java.util.Collections;
+import java.util.Optional;
 import java.util.Set;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -40,22 +41,23 @@ public class SnykRequestBuilder {
   private ObjectMapper mapper = ObjectMapperProducer.newInstance();
 
   public String fromDiGraph(GraphRequest req) throws JsonProcessingException {
+    PackageRef defaultRoot = DependencyTree.getDefaultRoot(getPkgManager(req.tree()));
     ObjectNode depGraph = mapper.createObjectNode();
     depGraph.put("schemaVersion", "1.2.0");
     depGraph.set(
         "pkgManager",
-        mapper.createObjectNode().put("name", toSnykPackageManager(req.pkgManager())));
+        mapper.createObjectNode().put("name", toSnykPackageManager(defaultRoot.purl().getType())));
 
-    depGraph.set("pkgs", addPackages(depGraph, req.tree()));
+    depGraph.set("pkgs", addPackages(depGraph, req.tree(), defaultRoot));
     ObjectNode root = mapper.createObjectNode().set("depGraph", depGraph);
     return mapper.writeValueAsString(root);
   }
 
-  private JsonNode addPackages(ObjectNode depGraph, DependencyTree tree) {
+  private JsonNode addPackages(ObjectNode depGraph, DependencyTree tree, PackageRef root) {
     Set<com.redhat.exhort.api.PackageRef> allDeps = tree.getAll();
-    ObjectNode rootNode = createNode(tree.root(), allDeps);
+    ObjectNode rootNode = createNode(root, allDeps);
     ArrayNode nodes = mapper.createArrayNode().add(rootNode);
-    ArrayNode pkgs = mapper.createArrayNode().add(createPkg(tree.root()));
+    ArrayNode pkgs = mapper.createArrayNode().add(createPkg(root));
 
     allDeps.stream()
         .forEach(
@@ -65,8 +67,7 @@ public class SnykRequestBuilder {
             });
     depGraph.set("pkgs", pkgs);
     depGraph.set(
-        "graph",
-        mapper.createObjectNode().put("rootNodeId", getId(tree.root())).set("nodes", nodes));
+        "graph", mapper.createObjectNode().put("rootNodeId", getId(root)).set("nodes", nodes));
     return pkgs;
   }
 
@@ -91,6 +92,14 @@ public class SnykRequestBuilder {
 
   private String getId(PackageRef ref) {
     return new StringBuilder(ref.name()).append("@").append(ref.version()).toString();
+  }
+
+  private String getPkgManager(DependencyTree tree) {
+    Optional<PackageRef> first = tree.dependencies().keySet().stream().findFirst();
+    if (first.isEmpty()) {
+      return Constants.MAVEN_PKG_MANAGER;
+    }
+    return first.get().purl().getType();
   }
 
   private String toSnykPackageManager(String pkgManager) {
