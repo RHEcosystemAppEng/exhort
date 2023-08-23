@@ -143,10 +143,7 @@ public class ExhortIntegration extends EndpointRouteBuilder {
     SbomParser parser = SbomParserFactory.newInstance(ct.getBaseType());
     DependencyTree tree = parser.parse(exchange.getIn().getBody(InputStream.class));
     List<String> providers = exchange.getProperty(PROVIDERS_PARAM, List.class);
-    exchange
-        .getIn()
-        .setBody(
-            new GraphRequest.Builder(tree.root().purl().getType(), providers).tree(tree).build());
+    exchange.getIn().setBody(new GraphRequest.Builder(providers).tree(tree).build());
   }
 
   private void cleanUpHeaders(Exchange exchange) {

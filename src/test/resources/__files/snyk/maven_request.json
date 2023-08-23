@@ -6,10 +6,10 @@
     },
     "pkgs": [
       {
-        "id": "org.acme.dbaas:postgresql-orm-quarkus@1.0.0-SNAPSHOT",
+        "id": "com.redhat.exhort:default-app@0.0.1",
         "info": {
-          "name": "org.acme.dbaas:postgresql-orm-quarkus",
-          "version": "1.0.0-SNAPSHOT"
+          "name": "com.redhat.exhort:default-app",
+          "version": "0.0.1"
         }
       },
       {
@@ -77,11 +77,11 @@
       }
     ],
     "graph": {
-      "rootNodeId": "org.acme.dbaas:postgresql-orm-quarkus@1.0.0-SNAPSHOT",
+      "rootNodeId": "com.redhat.exhort:default-app@0.0.1",
       "nodes": [
         {
-          "nodeId": "org.acme.dbaas:postgresql-orm-quarkus@1.0.0-SNAPSHOT",
-          "pkgId": "org.acme.dbaas:postgresql-orm-quarkus@1.0.0-SNAPSHOT",
+          "nodeId": "com.redhat.exhort:default-app@0.0.1",
+          "pkgId": "com.redhat.exhort:default-app@0.0.1",
           "deps": [
             {
               "nodeId": "io.quarkus:quarkus-hibernate-orm@2.13.5.Final"

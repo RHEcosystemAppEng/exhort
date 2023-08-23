@@ -29,7 +29,7 @@ import com.redhat.exhort.api.PackageRef;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @RegisterForReflection
-public record DependencyTree(PackageRef root, Map<PackageRef, DirectDependency> dependencies) {
+public record DependencyTree(Map<PackageRef, DirectDependency> dependencies) {
 
   public static final PackageRef getDefaultRoot(String type) {
     return PackageRef.builder()
@@ -41,7 +41,6 @@ public record DependencyTree(PackageRef root, Map<PackageRef, DirectDependency> 
   }
 
   public DependencyTree {
-    Objects.requireNonNull(root);
     if (dependencies != null) {
       dependencies = Collections.unmodifiableMap(dependencies);
     } else {
@@ -55,6 +54,7 @@ public record DependencyTree(PackageRef root, Map<PackageRef, DirectDependency> 
 
   public int transitiveCount() {
     return dependencies.values().stream()
+        .filter(Objects::nonNull)
         .map(d -> d.transitive().size())
         .reduce(Integer::sum)
         .orElse(0);
@@ -76,13 +76,7 @@ public record DependencyTree(PackageRef root, Map<PackageRef, DirectDependency> 
 
   public static class Builder {
 
-    public PackageRef root;
     public Map<PackageRef, DirectDependency> dependencies;
-
-    public Builder root(PackageRef root) {
-      this.root = root;
-      return this;
-    }
 
     public Builder dependencies(Map<PackageRef, DirectDependency> dependencies) {
       this.dependencies = dependencies;
@@ -90,7 +84,7 @@ public record DependencyTree(PackageRef root, Map<PackageRef, DirectDependency> 
     }
 
     public DependencyTree build() {
-      return new DependencyTree(root, dependencies);
+      return new DependencyTree(dependencies);
     }
   }
 }

@@ -33,19 +33,12 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @RegisterForReflection
 public record GraphRequest(
-    String pkgManager,
-    List<String> providers,
-    DependencyTree tree,
-    Map<String, PackageRef> recommendations) {
+    List<String> providers, DependencyTree tree, Map<String, PackageRef> recommendations) {
 
   public GraphRequest {
-    Objects.requireNonNull(pkgManager);
     Objects.requireNonNull(providers);
     Objects.requireNonNull(tree);
 
-    if (!Constants.PKG_MANAGERS.contains(pkgManager)) {
-      throw new IllegalArgumentException("Unsupported package manager: " + pkgManager);
-    }
     List<String> invalidProviders =
         providers.stream()
             .filter(Predicate.not(Constants.PROVIDERS::contains))
@@ -63,18 +56,15 @@ public record GraphRequest(
 
   public static class Builder {
 
-    String pkgManager;
     List<String> providers;
     DependencyTree tree;
     Map<String, PackageRef> recommendations;
 
-    public Builder(String pkgManager, List<String> providers) {
-      this.pkgManager = pkgManager;
+    public Builder(List<String> providers) {
       this.providers = providers;
     }
 
     public Builder(GraphRequest copy) {
-      this.pkgManager = copy.pkgManager;
       this.providers = copy.providers;
       this.tree = copy.tree;
 
@@ -94,7 +84,7 @@ public record GraphRequest(
     }
 
     public GraphRequest build() {
-      return new GraphRequest(pkgManager, providers, tree, recommendations);
+      return new GraphRequest(providers, tree, recommendations);
     }
   }
 }
