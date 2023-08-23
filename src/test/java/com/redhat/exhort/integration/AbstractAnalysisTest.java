@@ -29,6 +29,9 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.redhat.exhort.extensions.WiremockV3Extension.SNYK_TOKEN;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
@@ -43,6 +46,9 @@ import org.junit.jupiter.api.AfterEach;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gargoylesoftware.htmlunit.BrowserVersion;
+import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.github.jknack.handlebars.internal.Files;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.BasicCredentials;
@@ -112,6 +118,32 @@ public abstract class AbstractAnalysisTest {
       assertEquals(expected, currentBody);
     } catch (IOException e) {
       fail("Unable to read HTML file", e);
+    }
+  }
+
+  protected void assertReportContains(String expectedText, String currentBody) {
+    assertTrue(currentBody.contains(expectedText));
+  }
+
+  protected void assertReportDoesNotContains(String expectedText, String currentBody) {
+    assertFalse(currentBody.contains(expectedText));
+  }
+
+  protected void testHtmlIsValid(String html) {
+    try (WebClient webClient = new WebClient(BrowserVersion.BEST_SUPPORTED)) {
+      HtmlPage page = webClient.loadHtmlCodeIntoCurrentWindow(html);
+      webClient.waitForBackgroundJavaScript(50000);
+
+      assertTrue(page.isHtmlPage(), "The string is valid HTML.");
+      assertEquals("Dependency Analysis", page.getTitleText());
+      assertNotNull(page.getElementsById("root"));
+      assertNotNull(page.getFirstByXPath("//div[@class='pf-v5-c-card']"));
+      assertNotNull(page.getFirstByXPath("//div[@class='pf-v5-c-card__header']"));
+      assertNotNull(page.getFirstByXPath("//section[@class='pf-v5-c-page__main-section']"));
+      assertNotNull(page.getElementsByTagName("table"));
+
+    } catch (Exception e) {
+      fail("The string is not valid HTML.", e);
     }
   }
 

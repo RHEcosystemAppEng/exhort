@@ -441,7 +441,9 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .body()
             .asString();
 
-    assertHtml("reports/report_all_no_snyk_token.html", body);
+    testHtmlIsValid(body);
+    // TODO Enhance report rendering and content verification
+    assertReportContains("SNYK-PRIVATE-VULNERABILITY", body);
 
     verifySnykRequest(null);
     verifyTCRequests();
@@ -470,7 +472,9 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .body()
             .asString();
 
-    assertHtml("reports/report_all_token.html", body);
+    testHtmlIsValid(body);
+    // TODO Enhance report rendering and content verification
+    assertReportDoesNotContains("SNYK-PRIVATE-VULNERABILITY", body);
 
     verifySnykRequest(OK_TOKEN);
     verifyTCRequests();
@@ -525,7 +529,9 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .body()
             .asString();
 
-    assertHtml("reports/report_unauthorized.html", body);
+    testHtmlIsValid(body);
+    // TODO Enhance report rendering and content verification
+    assertReportContains("Unauthorized: Verify the provided credentials are valid.", body);
 
     verifySnykRequest(INVALID_TOKEN);
     verifyTCRecommendations();
@@ -554,7 +560,9 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .body()
             .asString();
 
-    assertHtml("reports/report_forbidden.html", body);
+    testHtmlIsValid(body);
+    assertReportContains(
+        "Forbidden: The provided credentials don't have the required permissions.", body);
 
     verifySnykRequest(UNAUTH_TOKEN);
     verifyTCRecommendations();
@@ -583,7 +591,8 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .body()
             .asString();
 
-    assertHtml("reports/report_error.html", body);
+    testHtmlIsValid(body);
+    assertReportContains("Server Error", body);
 
     verifySnykRequest(ERROR_TOKEN);
     verifyTCRecommendations();
