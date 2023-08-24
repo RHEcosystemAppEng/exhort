@@ -5,6 +5,7 @@ COPY --chown=quarkus:quarkus mvnw /code/mvnw
 COPY --chown=quarkus:quarkus .mvn /code/.mvn
 COPY --chown=quarkus:quarkus pom.xml /code/
 COPY --chown=quarkus:quarkus api-spec /code/api-spec
+COPY --chown=quarkus:quarkus ui /code/ui
 
 USER quarkus
 WORKDIR /code
