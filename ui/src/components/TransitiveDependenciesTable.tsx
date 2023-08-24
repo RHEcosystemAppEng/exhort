@@ -88,13 +88,11 @@ export const TransitiveDependenciesTable: React.FC<TransitiveDependenciesTablePr
                           )}
 
                           <Td>
-                            {item.highestVulnerability && (
-                              <VulnerabilityScore vunerability={item.highestVulnerability} />
-                            )}
+                              <VulnerabilityScore vulnerability={vuln} />
                           </Td>
                           <Td>{vuln.cves}</Td>
                           <Td>
-                              <VulnerabilityLink providerName={providerName} vunerability={vuln} />
+                              <VulnerabilityLink providerName={providerName} vulnerability={vuln} />
                           </Td>
                         </Tr>
                       );

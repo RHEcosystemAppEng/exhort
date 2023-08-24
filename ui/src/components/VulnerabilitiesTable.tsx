@@ -49,11 +49,11 @@ export const VulnerabilitiesTable: React.FC<VulnerabilitiesTableProps> = ({
                   <Td>{vuln.cvss?.exploitCodeMaturity || 'No known exploit'}</Td>
                   <Td>{vuln.title}</Td>
                   <Td>
-                    <VulnerabilityScore vunerability={vuln} />
+                    <VulnerabilityScore vulnerability={vuln} />
                   </Td>
                   <Td>{vuln.cves}</Td>
                   <Td>
-                      <VulnerabilityLink providerName={providerName} vunerability={vuln} />
+                      <VulnerabilityLink providerName={providerName} vulnerability={vuln} />
                   </Td>
                 </Tr>
               </Tbody>
