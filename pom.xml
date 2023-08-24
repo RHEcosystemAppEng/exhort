@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.redhat.ecosystemappeng</groupId>
   <artifactId>exhort</artifactId>
@@ -33,7 +35,9 @@
     <spotless-maven-plugin.version>2.37.0</spotless-maven-plugin.version>
     <google-java-format.version>1.17.0</google-java-format.version>
     <htmlunit.version>2.70.0</htmlunit.version>
-    <exec-maven-plugin.version>3.1.0</exec-maven-plugin.version>
+    <frontend-maven-plugin.version>1.13.4</frontend-maven-plugin.version>
+    <node.version>v20.5.1</node.version>
+    <yarn.version>v1.22.19</yarn.version>
   </properties>
 
   <dependencyManagement>
@@ -161,45 +165,47 @@
   </dependencies>
   <build>
     <plugins>
-      <!-- Maven Exec Plugin to run frontend build -->
+
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>exec-maven-plugin</artifactId>
-        <version>${exec-maven-plugin.version}</version>
+        <groupId>com.github.eirslett</groupId>
+        <artifactId>frontend-maven-plugin</artifactId>
+        <version>${frontend-maven-plugin.version}</version>
         <executions>
-          <!-- Install dev dependencies -->
           <execution>
-            <id>install-dev-dependencies</id>
+            <id>install node and yarn</id>
+            <goals>
+              <goal>install-node-and-yarn</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>yarn install</id>
             <phase>prepare-package</phase>
             <goals>
-              <goal>exec</goal>
+              <goal>yarn</goal>
             </goals>
             <configuration>
-              <executable>yarn</executable>
-              <workingDirectory>${project.basedir}/ui</workingDirectory>
-              <arguments>
-                <argument>install</argument>
-              </arguments>
+              <arguments>install</arguments>
             </configuration>
           </execution>
-          <!-- Execute craco build -->
           <execution>
-            <id>run-frontend-build</id>
+            <id>yarn build</id>
             <phase>prepare-package</phase>
             <goals>
-              <goal>exec</goal>
+              <goal>yarn</goal>
             </goals>
             <configuration>
-              <executable>yarn</executable>
-              <workingDirectory>${project.basedir}/ui</workingDirectory>
-              <arguments>
-                <argument>run</argument>
-                <argument>build</argument>
-              </arguments>
+              <arguments>run build</arguments>
             </configuration>
           </execution>
         </executions>
+        <configuration>
+          <nodeVersion>${node.version}</nodeVersion>
+          <yarnVersion>${yarn.version}</yarnVersion>
+          <workingDirectory>${project.basedir}/ui</workingDirectory>
+          <installDirectory>target</installDirectory>
+        </configuration>
       </plugin>
+    
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
@@ -408,12 +414,20 @@
       <build>
         <plugins>
           <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>exec-maven-plugin</artifactId>
-            <version>${exec-maven-plugin.version}</version>
+            <groupId>com.github.eirslett</groupId>
+            <artifactId>frontend-maven-plugin</artifactId>
+            <version>${frontend-maven-plugin.version}</version>
             <executions>
               <execution>
-                <id>run-frontend-build</id>
+                <id>install node and yarn</id>
+                <phase>none</phase>
+              </execution>
+              <execution>
+                <id>yarn install</id>
+                <phase>none</phase>
+              </execution>
+              <execution>
+                <id>yarn build</id>
                 <phase>none</phase>
               </execution>
             </executions>
