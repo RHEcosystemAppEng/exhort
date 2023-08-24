@@ -45,6 +45,7 @@ import com.redhat.exhort.api.TransitiveDependencyReport;
 import com.redhat.exhort.api.VulnerabilitiesSummary;
 import com.redhat.exhort.integration.Constants;
 import com.redhat.exhort.model.CvssScoreComparable.DependencyScoreComparator;
+import com.redhat.exhort.model.CvssScoreComparable.TransitiveScoreComparator;
 import com.redhat.exhort.model.DirectDependency;
 import com.redhat.exhort.model.GraphRequest;
 
@@ -89,7 +90,10 @@ public class ReportTransformer {
                       issues.stream()
                           .sorted(Comparator.comparing(Issue::getCvssScore).reversed())
                           .collect(Collectors.toList()))
-                  .transitive(transitiveReport)
+                  .transitive(
+                      transitiveReport.stream()
+                          .sorted(new TransitiveScoreComparator().reversed())
+                          .toList())
                   .remediations(getRemediations(issues, request.remediations()))
                   .recommendation(request.recommendations().get(d.ref().toGav())));
         });
@@ -100,7 +104,7 @@ public class ReportTransformer {
                     (r.getIssues() != null && !r.getIssues().isEmpty())
                         || !r.getTransitive().isEmpty())
             .sorted(new DependencyScoreComparator().reversed())
-            .collect(Collectors.toList());
+            .toList();
     DependenciesSummary deps =
         new DependenciesSummary()
             .scanned(request.tree().directCount())
