@@ -27,7 +27,7 @@ on:
       - single-source
     tags:
       - '*'
-    workflow_dispatch:
+  workflow_dispatch:
 
 jobs:
   validate_workflow_requirements:
@@ -93,6 +93,10 @@ jobs:
           esac
           echo "tag=${tag}" >> $GITHUB_OUTPUT
         id: extract_branch
+      
+      - run: |
+          DEPLOYMENT_PATCH=$(printf '{"spec": {"template": {"spec": {"containers": [{"name": "%s", "image": "%s/%s@%s"}]}}}}' ${{ env.OPENSHIFT_CONTAINER_NAME }} ${{ env.IMAGE_REGISTRY }} ${{ env.IMAGE_NAME }} ${{ needs.build_and_push_image.outputs.digest }})
+          echo oc patch deployment ${{ env.OPENSHIFT_DEPLOYMENT_NAME }}-${{ steps.extract_branch.outputs.tag }} -p "${DEPLOYMENT_PATCH}"
           
       - name: Setup JDK
         uses: actions/setup-java@v3
