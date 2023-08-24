@@ -77,7 +77,7 @@ jobs:
     
     outputs:
       digest: ${{ steps.push-to-registry.outputs.digest }}
-
+      tag: ${{ steps.extract_branch.outputs.tag }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
@@ -89,15 +89,11 @@ jobs:
           case ${branch} in
           'main') tag='latest' ;;
           'single-source') tag='alpha' ;;
-          *) tag=${branch};;
+          *) tag=${branch} ;;
           esac
           echo "tag=${tag}" >> $GITHUB_OUTPUT
         id: extract_branch
-      
-      - run: |
-          DEPLOYMENT_PATCH=$(printf '{"spec": {"template": {"spec": {"containers": [{"name": "%s", "image": "%s/%s@%s"}]}}}}' ${{ env.OPENSHIFT_CONTAINER_NAME }} ${{ env.IMAGE_REGISTRY }} ${{ env.IMAGE_NAME }} ${{ needs.build_and_push_image.outputs.digest }})
-          echo oc patch deployment ${{ env.OPENSHIFT_DEPLOYMENT_NAME }}-${{ steps.extract_branch.outputs.tag }} -p "${DEPLOYMENT_PATCH}"
-          
+
       - name: Setup JDK
         uses: actions/setup-java@v3
         with:
@@ -130,7 +126,6 @@ jobs:
   deploy_to_openshift:
     needs: build_and_push_image
     runs-on: ubuntu-latest
-
     steps:
       - name: Install oc
         uses: redhat-actions/openshift-tools-installer@v1
@@ -144,11 +139,11 @@ jobs:
           openshift_token: ${{ env.OPENSHIFT_TOKEN }}
           insecure_skip_tls_verify: true
           namespace: ${{ env.OPENSHIFT_NAMESPACE }}
-      
+
       - name: Patch Image
         run: |
           DEPLOYMENT_PATCH=$(printf '{"spec": {"template": {"spec": {"containers": [{"name": "%s", "image": "%s/%s@%s"}]}}}}' ${{ env.OPENSHIFT_CONTAINER_NAME }} ${{ env.IMAGE_REGISTRY }} ${{ env.IMAGE_NAME }} ${{ needs.build_and_push_image.outputs.digest }})
-          oc patch deployment ${{ env.OPENSHIFT_DEPLOYMENT_NAME }}-${{ steps.extract_branch.outputs.tag }} -p "${DEPLOYMENT_PATCH}"
+          oc patch deployment ${{ env.OPENSHIFT_DEPLOYMENT_NAME }}-${{ needs.build_and_push_image.outputs.tag }} -p "${DEPLOYMENT_PATCH}"
           
       - name: Monitor Deployment Status
-        run: oc rollout status deployment/${{ env.OPENSHIFT_DEPLOYMENT_NAME }}-${{ steps.extract_branch.outputs.tag }}
+        run: oc rollout status deployment/${{ env.OPENSHIFT_DEPLOYMENT_NAME }}-${{ needs.build_and_push_image.outputs.tag }}
