@@ -9,13 +9,12 @@ env:
   # 🖊️ EDIT to set the kube context's namespace after login. Leave blank to use your user's default namespace.
   OPENSHIFT_NAMESPACE: exhort
   # 🖊️ EDIT to set the deployemnt resource data for image update.
-  OPENSHIFT_DEPLOYMENT_NAME: exhort-dev
+  OPENSHIFT_DEPLOYMENT_NAME: exhort
   OPENSHIFT_CONTAINER_NAME: exhort
   # 🖊️ EDIT to change the image registry settings.
   # Registries such as GHCR, Quay.io, and Docker Hub are supported.
   IMAGE_REGISTRY: quay.io/ecosystem-appeng
   IMAGE_NAME: exhort
-  IMAGE_TAGS: latest
   IMAGE_REGISTRY_USER: ${{ secrets.IMAGE_REGISTRY_USER }}
   IMAGE_REGISTRY_PASSWORD: ${{ secrets.IMAGE_REGISTRY_PASSWORD }}
   # 🖊️ EDIT to change Dockerfile.
@@ -25,8 +24,10 @@ on:
   push:
     branches:
       - main
+      - single-source
     tags:
       - '*'
+    workflow_dispatch:
 
 jobs:
   validate_workflow_requirements:
@@ -81,6 +82,18 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
+      - name: Extract tag name
+        shell: bash
+        run: |
+          branch=${GITHUB_REF_NAME}
+          case ${branch} in
+          'main') tag='latest' ;;
+          'single-source') tag='alpha' ;;
+          *) tag=${branch};;
+          esac
+          echo "tag=${tag}" >> $GITHUB_OUTPUT
+        id: extract_branch
+          
       - name: Setup JDK
         uses: actions/setup-java@v3
         with:
@@ -96,7 +109,7 @@ jobs:
         uses: redhat-actions/buildah-build@v2
         with:
           image: ${{ env.IMAGE_NAME }}
-          tags: ${{ env.IMAGE_TAGS }}
+          tags: ${{ steps.extract_branch.outputs.tag }}
           dockerfiles: |
             ${{ env.DOCKERFILE_PATH }}
           
@@ -131,7 +144,7 @@ jobs:
       - name: Patch Image
         run: |
           DEPLOYMENT_PATCH=$(printf '{"spec": {"template": {"spec": {"containers": [{"name": "%s", "image": "%s/%s@%s"}]}}}}' ${{ env.OPENSHIFT_CONTAINER_NAME }} ${{ env.IMAGE_REGISTRY }} ${{ env.IMAGE_NAME }} ${{ needs.build_and_push_image.outputs.digest }})
-          oc patch deployment ${{ env.OPENSHIFT_DEPLOYMENT_NAME }} -p "${DEPLOYMENT_PATCH}"
+          oc patch deployment ${{ env.OPENSHIFT_DEPLOYMENT_NAME }}-${{ steps.extract_branch.outputs.tag }} -p "${DEPLOYMENT_PATCH}"
           
       - name: Monitor Deployment Status
-        run: oc rollout status deployment/${{ env.OPENSHIFT_DEPLOYMENT_NAME }}
+        run: oc rollout status deployment/${{ env.OPENSHIFT_DEPLOYMENT_NAME }}-${{ steps.extract_branch.outputs.tag }}
