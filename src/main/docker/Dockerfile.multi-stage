@@ -11,7 +11,7 @@ USER quarkus
 WORKDIR /code
 RUN ./mvnw -B dependency:go-offline
 COPY --chown=quarkus:quarkus src /code/src
-RUN ./mvnw package -Pnative -Dmaven.test.skip=true -Dquarkus.native.native-image-xmx=4g
+RUN ./mvnw package -Pnative -Dmaven.test.skip=true -Dquarkus.native.native-image-xmx=8g
 
 ## Stage 2 : create the docker final image
 FROM quay.io/quarkus/quarkus-micro-image:2.0
