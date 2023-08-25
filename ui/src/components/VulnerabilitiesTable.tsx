@@ -9,17 +9,19 @@ import { VulnerabilitySeverityLabel } from './VulnerabilitySeverityLabel';
 import { VulnerabilityLink } from './VulnerabilityLink';
 import { RemediationLink } from './RemediationLink';
 
-interface VulnerabilitiesTableProps {
-  providerName: 'snyk' | 'oss-index';
-  dependency: Dependency;
-  vulnerabilities: Vulnerability[];
-}
+// interface VulnerabilitiesTableProps {
+//   providerName: 'snyk' | 'oss-index';
+//   dependency: Dependency;
+//   vulnerabilities: Vulnerability[];
+// }
 
-export const VulnerabilitiesTable: React.FC<VulnerabilitiesTableProps> = ({
-  providerName,
-  dependency,
-  vulnerabilities,
-}) => {
+export const VulnerabilitiesTable = ({ providerName, dependency, vulnerabilities }: { providerName: string; dependency: Dependency; vulnerabilities: Vulnerability[] }) => {
+
+// export const VulnerabilitiesTable: React.FC<VulnerabilitiesTableProps> = ({
+//   providerName,
+//   dependency,
+//   vulnerabilities,
+// }) => {
   return (
     <div
       style={{

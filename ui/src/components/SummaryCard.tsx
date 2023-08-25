@@ -15,11 +15,10 @@ import {
   TextContent,
 } from '@patternfly/react-core';
 import ShieldAltIcon from '@patternfly/react-icons/dist/esm/icons/shield-alt-icon';
-import { useAppContext } from '../App';
+import { Provider } from '../api/report';
 
-export const SummaryCard = () => {
-  const appContext = useAppContext();
-  const synkReport = appContext.report['snyk'];
+
+export const SummaryCard = ({ provider }: { provider: Provider }) => {
 
   return (
     <Card isFlat isFullHeight>
@@ -58,7 +57,7 @@ export const SummaryCard = () => {
                       <Icon isInline status="info">
                         <ShieldAltIcon />
                       </Icon>{' '}
-                      Total vulnerabilities: {synkReport.summary.vulnerabilities.total}
+                      Total vulnerabilities: {provider.summary.vulnerabilities.total}
                     </Text>
                   </TextContent>
                 </ListItem>
@@ -68,7 +67,7 @@ export const SummaryCard = () => {
                       <Icon isInline status="warning">
                         <ShieldAltIcon />
                       </Icon>{' '}
-                      Vulnerable dependencies: {synkReport.summary.vulnerabilities.direct}
+                      Vulnerable dependencies: {provider.summary.vulnerabilities.direct}
                     </Text>
                   </TextContent>
                 </ListItem>

@@ -1,7 +1,9 @@
 import React from 'react';
 import { Bullseye, Card, CardBody, CardHeader, CardTitle, Divider } from '@patternfly/react-core';
 import { ChartDonut, ChartThemeColor } from '@patternfly/react-charts';
-import { Provider } from '@app/api/report';
+import {Provider} from '../api/report';
+
+
 
 export const ChartCard = ({ provider }: { provider: Provider }) => {
   return (

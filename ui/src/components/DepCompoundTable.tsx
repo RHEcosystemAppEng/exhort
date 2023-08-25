@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 import {
   Card,
@@ -20,7 +20,7 @@ import {
   ToolbarItemVariant,
   ToolbarToggleGroup,
 } from '@patternfly/react-core';
-import { ExpandableRowContent, Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
+import {ExpandableRowContent, Table, Tbody, Td, TdProps, Th, Thead, Tr} from '@patternfly/react-table';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import FilterIcon from '@patternfly/react-icons/dist/esm/icons/filter-icon';
 import CubesIcon from '@patternfly/react-icons/dist/esm/icons/cubes-icon';
@@ -39,14 +39,10 @@ import { VulnerabilityLink } from './VulnerabilityLink';
 import { RemediationsCount } from './RemediationsCount';
 import { TransitiveDependenciesTable } from './TransitiveDependenciesTable';
 import { VulnerabilitiesTable } from './VulnerabilitiesTable';
+import { extractDependencyVersion } from '../utils/utils';
 
-export const DependenciesTable = ({ name, provider }: { name: string; provider: Provider }) => {
+export const DepCompoundTable = ({ name, provider }: { name: string; provider: Provider }) => {
   const appContext = useAppContext();
-
-  // const providerName = 'snyk';
-  // const synkReport = appContext.report[providerName];
-  // const tableData = synkReport.dependencies;
-
   // Filters
   const [filterText, setFilterText] = useState('');
 
@@ -87,12 +83,53 @@ export const DependenciesTable = ({ name, provider }: { name: string; provider: 
     },
   });
 
+  interface Repository {
+    name: string;
+    version: number;
+    direct: number;
+    transitive: number;
+    rhRemediation: string;
+  }
+
+    const columnNames = {
+      name: 'Dependency Name',
+      version: 'Current Version',
+      direct: 'Direct Vulnerabilities',
+      transitive: 'Transitive Vulnerabilities',
+      rhRemediation: 'Red Hat Remediation available'
+    };
+    type ColumnKey = keyof typeof columnNames;
+
+    // In this example, expanded cells are tracked by the repo and property names from each row. This could be any pair of unique identifiers.
+    // This is to prevent state from being based on row and column order index in case we later add sorting and rearranging columns.
+    // Note that this behavior is very similar to selection state.
+    const [expandedCells, setExpandedCells] = React.useState<Record<string, ColumnKey>>({
+      'siemur/test-space': 'name' // Default to the first cell of the first row being expanded
+    });
+    const setCellExpanded = (repo: Dependency, columnKey: ColumnKey, isExpanding = true) => {
+      const newExpandedCells = { ...expandedCells };
+      if (isExpanding) {
+        newExpandedCells[repo.ref] = columnKey;
+      } else {
+        delete newExpandedCells[repo.ref];
+      }
+      setExpandedCells(newExpandedCells);
+    };
+    const compoundExpandParams = (
+        repo: Dependency,
+        columnKey: ColumnKey,
+        rowIndex: number,
+        columnIndex: number
+    ): TdProps['compoundExpand'] => ({
+      isExpanded: expandedCells[repo.ref] === columnKey,
+      onToggle: () => setCellExpanded(repo, columnKey, expandedCells[repo.ref] !== columnKey),
+      expandId: 'compound-expandable-example',
+      rowIndex,
+      columnIndex
+    });
+
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Commonly Known Vulnerabilities</CardTitle>
-      </CardHeader>
-      <Divider />
       <CardBody>
         <div
           style={{
@@ -125,6 +162,84 @@ export const DependenciesTable = ({ name, provider }: { name: string; provider: 
               </ToolbarItem>
             </ToolbarContent>
           </Toolbar>
+          <Table aria-label="Compound expandable table">
+            <Thead>
+              <Tr>
+                <Th>{columnNames.name}</Th>
+                <Th>{columnNames.version}</Th>
+                <Th>{columnNames.direct}</Th>
+                <Th>{columnNames.transitive}</Th>
+                <Th>{columnNames.rhRemediation}</Th>
+                <Th />
+              </Tr>
+            </Thead>
+            {pageItems?.map((item, rowIndex) => {
+            // {repositories.map((repo: Repository, rowIndex: number) => {
+              const expandedCellKey = expandedCells[item.ref];
+              const isRowExpanded = !!expandedCellKey;
+              return (
+                  <Tbody key={item.ref} isExpanded={isRowExpanded}>
+                    <Tr>
+                      <Td width={35} dataLabel={columnNames.name} component="th">
+                        <DependencyLink name={item.ref} />
+                      </Td>
+                      <Td
+                          width={15}
+                          dataLabel={columnNames.version}
+                      >
+                        {extractDependencyVersion(item.ref)}
+                      </Td>
+                      <Td
+                          width={15}
+                          dataLabel={columnNames.direct}
+                          compoundExpand={compoundExpandParams(item, 'direct', rowIndex, 2)}
+                      >
+                        {item.issues?.length || 0}
+                      </Td>
+                      <Td
+                          width={15}
+                          dataLabel={columnNames.transitive}
+                          compoundExpand={compoundExpandParams(item, 'transitive', rowIndex, 2)}
+                      >
+                        {item.transitive
+                            .map((e) => e.issues.length)
+                            .reduce((prev, current) => prev + current, 0)}
+                      </Td>
+                      <Td width={15}
+                          dataLabel={columnNames.rhRemediation}
+                          compoundExpand={compoundExpandParams(item, 'rhRemediation', rowIndex, 4)}
+                      >
+                        <RemediationsCount dependency={item} />
+                      </Td>
+                    </Tr>
+                    {isRowExpanded ? (
+                        <Tr isExpanded={isRowExpanded}>
+                          <Td dataLabel={columnNames[expandedCellKey]} noPadding colSpan={6}>
+                            <ExpandableRowContent>
+                              <div className="pf-v5-u-m-md">
+                                Lorem ipsum sit dolor. Lorem ipsum sit dolor. Lorem ipsum sit dolor. Lorem ipsum sit dolor. Lorem
+                                ipsum sit dolor. Lorem ipsum sit dolor. Lorem ipsum sit dolor. Lorem ipsum sit dolor. Lorem ipsum
+                                sit dolor. Lorem ipsum sit dolor. Lorem ipsum sit dolor. Lorem ipsum sit dolor. Lorem ipsum sit
+                                dolor. Lorem ipsum sit dolor. Lorem ipsum sit dolor. Lorem ipsum sit dolor. Lorem ipsum sit dolor.
+                                Lorem ipsum sit dolor. Lorem ipsum sit dolor. Lorem ipsum sit dolor. Lorem ipsum sit dolor. Lorem
+                                ipsum sit dolor. Lorem ipsum sit dolor. Lorem ipsum sit dolor. Lorem ipsum sit dolor. Lorem ipsum
+                                sit dolor. Lorem ipsum sit dolor. Lorem ipsum sit dolor. Lorem ipsum sit dolor. Lorem ipsum sit
+                                dolor. Lorem ipsum sit dolor. Lorem ipsum sit dolor. Lorem ipsum sit dolor.
+                              </div>
+                            </ExpandableRowContent>
+                          </Td>
+                        </Tr>
+                    ) : null}
+                  </Tbody>
+              );
+            })}
+          </Table>
+
+
+
+
+
+
           <Table isExpandable>
             <Thead>
               <Tr>

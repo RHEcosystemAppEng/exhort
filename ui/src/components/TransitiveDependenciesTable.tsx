@@ -1,7 +1,7 @@
 import React, { useReducer } from 'react';
 import { Table, TableVariant, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 
-import { Dependency, TransitiveDependency } from '../api/report';
+import {Dependency, TransitiveDependency, Vulnerability} from '../api/report';
 import { SYNK_SIGNUP_URL } from '../utils/utils';
 
 import { ConditionalTableBody } from './TableControls/ConditionalTableBody';
@@ -18,17 +18,19 @@ import {
   CardTitle,
 } from '@patternfly/react-core';
 
-interface TransitiveDependenciesTableProps {
-  providerName: 'snyk' | 'oss-index';
-  dependency: Dependency;
-  transitiveDependencies: TransitiveDependency[];
-}
+// interface TransitiveDependenciesTableProps {
+//   providerName: 'snyk' | 'oss-index';
+//   dependency: Dependency;
+//   transitiveDependencies: TransitiveDependency[];
+// }
 
-export const TransitiveDependenciesTable: React.FC<TransitiveDependenciesTableProps> = ({
-  providerName,
-  dependency,
-  transitiveDependencies,
-}) => {
+export const TransitiveDependenciesTable = ({ providerName, dependency, transitiveDependencies }: { providerName: string; dependency: Dependency; transitiveDependencies: TransitiveDependency[] }) => {
+
+// export const TransitiveDependenciesTable: React.FC<TransitiveDependenciesTableProps> = ({
+//   providerName,
+//   dependency,
+//   transitiveDependencies,
+// }) => {
   const [isCardExpanded, toggleCard] = useReducer((val) => !val, false);
   return (
     <Card isExpanded={isCardExpanded} isCompact isFlat>

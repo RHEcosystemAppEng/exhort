@@ -36,7 +36,7 @@ export const extractDependencyVersion = (name: string) => {
   }
 };
 
-export const issueLink = (provider: 'snyk' | 'oss-index', issueId: string) => {
+export const issueLink = (provider: string, issueId: string) => {
   switch (provider) {
     case 'snyk':
       return `https://security.snyk.io/vuln/${issueId}?utm_medium=Partner&utm_source=RedHat&utm_campaign=Code-Ready-Analytics-2020&utm_content=vuln/${issueId}`;
