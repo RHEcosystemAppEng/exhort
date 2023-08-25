@@ -116,13 +116,13 @@ export const DepCompoundTable = ({ name, provider }: { name: string; provider: P
       setExpandedCells(newExpandedCells);
     };
     const compoundExpandParams = (
-        repo: Dependency,
+        dependency: Dependency,
         columnKey: ColumnKey,
         rowIndex: number,
         columnIndex: number
     ): TdProps['compoundExpand'] => ({
-      isExpanded: expandedCells[repo.ref] === columnKey,
-      onToggle: () => setCellExpanded(repo, columnKey, expandedCells[repo.ref] !== columnKey),
+      isExpanded: expandedCells[dependency.ref] === columnKey,
+      onToggle: () => setCellExpanded(dependency, columnKey, expandedCells[dependency.ref] !== columnKey),
       expandId: 'compound-expandable-example',
       rowIndex,
       columnIndex
@@ -174,7 +174,6 @@ export const DepCompoundTable = ({ name, provider }: { name: string; provider: P
               </Tr>
             </Thead>
             {pageItems?.map((item, rowIndex) => {
-            // {repositories.map((repo: Repository, rowIndex: number) => {
               const expandedCellKey = expandedCells[item.ref];
               const isRowExpanded = !!expandedCellKey;
               return (
@@ -244,8 +243,8 @@ export const DepCompoundTable = ({ name, provider }: { name: string; provider: P
           </Table>
 
 
-
-
+          <Divider style={{margin: 55}}/>
+          <p>Old Table</p>
 
 
           <Table isExpandable>

@@ -44,7 +44,7 @@ export const ChartCard = ({ provider }: { provider: Provider }) => {
               subTitle="Vulnerabilities"
               title={`${provider.summary.vulnerabilities.total}`}
               width={350}
-              themeColor={ChartThemeColor.orange}
+              themeColor={ChartThemeColor.blue}
             />
           </div>
         </Bullseye>
