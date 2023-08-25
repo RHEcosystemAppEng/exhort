@@ -29,7 +29,20 @@ export const TabbedLayout = () => {
     setActiveTabKey(tabIndex);
   };
 
-  const tabs = providers.map((name) => {
+ // const tabs = providers.map((name) => {
+  const tabs = [
+    // Overview tab
+    <Tab
+        eventKey="overview"
+        title={<TabTitleText>Overview</TabTitleText>}
+        aria-label="Overview"
+    >
+      {/* Content for Overview tab */}
+      <p>Red Hat Info</p>
+
+    </Tab>,
+    // Dynamically generated tabs
+    ...providers.map((name) => {
     const provider = appContext.report[name];
     return (
         <Tab
@@ -52,7 +65,8 @@ export const TabbedLayout = () => {
           </PageSection>
         </Tab>
     );
-  });
+    })
+  ];
 
   return (
       <div>

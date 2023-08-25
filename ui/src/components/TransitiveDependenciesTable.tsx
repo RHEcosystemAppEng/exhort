@@ -31,24 +31,29 @@ export const TransitiveDependenciesTable = ({ providerName, dependency, transiti
 //   dependency,
 //   transitiveDependencies,
 // }) => {
-  const [isCardExpanded, toggleCard] = useReducer((val) => !val, false);
+//   const [isCardExpanded, toggleCard] = useReducer((val) => !val, false);
   return (
-    <Card isExpanded={isCardExpanded} isCompact isFlat>
-      <CardHeader
-        onExpand={toggleCard}
-        toggleButtonProps={{
-          'aria-expanded': isCardExpanded,
-        }}
+    // <Card isExpanded={isCardExpanded} isCompact isFlat>
+    //   <CardHeader
+    //     onExpand={toggleCard}
+    //     toggleButtonProps={{
+    //       'aria-expanded': isCardExpanded,
+    //     }}
+    //   >
+    //     <CardTitle>Transitive dependencies with vulnerabilities</CardTitle>
+    //   </CardHeader>
+    //   <CardExpandableContent>
+    //     <CardBody>
+    //       <div
+    //         style={{
+    //           backgroundColor: 'var(--pf-v5-global--BackgroundColor--100)',
+    //         }}
+    //       >
+      <div
+          style={{
+            backgroundColor: 'var(--pf-v5-global--BackgroundColor--100)',
+          }}
       >
-        <CardTitle>Transitive dependencies with vulnerabilities</CardTitle>
-      </CardHeader>
-      <CardExpandableContent>
-        <CardBody>
-          <div
-            style={{
-              backgroundColor: 'var(--pf-v5-global--BackgroundColor--100)',
-            }}
-          >
             <Table variant={TableVariant.compact}>
               <Thead>
                 <Tr>
@@ -131,8 +136,8 @@ export const TransitiveDependenciesTable = ({ providerName, dependency, transiti
               </ConditionalTableBody>
             </Table>
           </div>
-        </CardBody>
-      </CardExpandableContent>
-    </Card>
+    //     </CardBody>
+    //   </CardExpandableContent>
+    // </Card>
   );
 };

@@ -217,19 +217,27 @@ export const DepCompoundTable = ({ name, provider }: { name: string; provider: P
                           <Td dataLabel={columnNames[expandedCellKey]} noPadding colSpan={6}>
                             <ExpandableRowContent>
                               <div className="pf-v5-u-m-md">
-                                Lorem ipsum sit dolor. Lorem ipsum sit dolor. Lorem ipsum sit dolor. Lorem ipsum sit dolor. Lorem
-                                ipsum sit dolor. Lorem ipsum sit dolor. Lorem ipsum sit dolor. Lorem ipsum sit dolor. Lorem ipsum
-                                sit dolor. Lorem ipsum sit dolor. Lorem ipsum sit dolor. Lorem ipsum sit dolor. Lorem ipsum sit
-                                dolor. Lorem ipsum sit dolor. Lorem ipsum sit dolor. Lorem ipsum sit dolor. Lorem ipsum sit dolor.
-                                Lorem ipsum sit dolor. Lorem ipsum sit dolor. Lorem ipsum sit dolor. Lorem ipsum sit dolor. Lorem
-                                ipsum sit dolor. Lorem ipsum sit dolor. Lorem ipsum sit dolor. Lorem ipsum sit dolor. Lorem ipsum
-                                sit dolor. Lorem ipsum sit dolor. Lorem ipsum sit dolor. Lorem ipsum sit dolor. Lorem ipsum sit
-                                dolor. Lorem ipsum sit dolor. Lorem ipsum sit dolor. Lorem ipsum sit dolor.
+                                {(expandedCellKey === 'direct' && item.issues && item.issues.length > 0 )? (
+                                    // Content for direct column
+                                    <VulnerabilitiesTable
+                                        providerName={provider.status.name}
+                                        dependency={item}
+                                        vulnerabilities={item.issues}
+                                    />
+                                ) : (expandedCellKey === 'transitive' && item.transitive && item.transitive.length > 0 )? (
+                                    // Content for transitive column
+                                    <TransitiveDependenciesTable
+                                        providerName={provider.status.name}
+                                        dependency={item}
+                                        transitiveDependencies={item.transitive}
+                                    />
+                                ) : null}
                               </div>
                             </ExpandableRowContent>
                           </Td>
                         </Tr>
-                    ) : null}
+                    ) : (null)
+                    }
                   </Tbody>
               );
             })}
