@@ -106,7 +106,7 @@ parameters:
   - name: IMAGE
     displayName: Container image name
     description: Container image name
-    value: quay.io/redhat-user-workloads/trusted-content-tenant/exhort-alpha
+    value: quay.io/ecosystem-appeng/exhort
     required: true
   - name: IMAGE_TAG
     displayName: Container image tag
