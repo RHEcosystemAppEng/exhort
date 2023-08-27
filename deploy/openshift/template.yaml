@@ -1,0 +1,149 @@
+kind: Template
+apiVersion: template.openshift.io/v1
+metadata:
+  name: exhort
+labels:
+  template: exhort
+objects:
+  - kind: Service
+    apiVersion: v1
+    metadata:
+      name: '${SERVICE_NAME}'
+      labels:
+        app-name: '${APP_NAME}'
+    spec:
+      ports:
+        - name: http
+          protocol: TCP
+          appProtocol: http
+          port: '${{SERVICE_PORT}}'
+          targetPort: http
+      selector:
+        app: '${APP_NAME}'
+  - kind: Deployment
+    apiVersion: apps/v1
+    metadata:
+      name: '${APP_NAME}'
+    spec:
+      replicas: '${{REPLICAS}}'
+      selector:
+        matchLabels:
+          app: '${APP_NAME}'
+      template:
+        metadata:
+          labels:
+            app: '${APP_NAME}'
+        spec:
+          affinity:
+            podAntiAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+                - podAffinityTerm:
+                    labelSelector:
+                      matchExpressions:
+                      - key: app
+                        operator: In
+                        values:
+                        - '${APP_NAME}'
+                    topologyKey: kubernetes.io/hostname
+                  weight: 90
+                - podAffinityTerm:
+                    labelSelector:
+                      matchExpressions:
+                      - key: app
+                        operator: In
+                        values:
+                        - '${APP_NAME}'
+                    topologyKey: topology.kubernetes.io/zone
+                  weight: 100
+          containers:
+            - name: app
+              image: '${IMAGE}:${IMAGE_TAG}'
+              livenessProbe:
+                httpGet:
+                  path: /q/health/live
+                  port: '${{SERVICE_PORT}}'
+                initialDelaySeconds: 15
+                periodSeconds: 20
+              readinessProbe:
+                httpGet:
+                  path: /q/health/ready
+                  port: '${{SERVICE_PORT}}'
+                initialDelaySeconds: 5
+                periodSeconds: 10
+              ports:
+                - name: http
+                  containerPort: '${{SERVICE_PORT}}'
+                  protocol: TCP
+              env:
+                - name: API_SNYK_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: exhort-secret
+                      key: api-snyk-token
+              securityContext:
+                runAsNonRoot: true
+              resources:
+                limits:
+                  cpu: ${CPU_LIMIT}
+                  memory: ${MEMORY_LIMIT}
+                requests:
+                  cpu: ${CPU_REQUEST}
+                  memory: ${MEMORY_REQUEST}
+              imagePullPolicy: Always
+          restartPolicy: Always
+
+parameters:
+  - name: APP_NAME
+    displayName: Application name
+    description: Application name
+    value: exhort
+    required: true
+  - name: REPLICAS
+    displayName: Replicas
+    description: Number of desired pods
+    value: '1'
+    required: true
+  - name: IMAGE
+    displayName: Container image name
+    description: Container image name
+    value: quay.io/ecosystem-appeng/exhort
+    required: true
+  - name: IMAGE_TAG
+    displayName: Container image tag
+    description: Container image tag
+    value: latest
+    required: true
+  - name: SERVICE_NAME
+    displayName: Service name
+    description: Service name
+    value: exhort
+    required: true
+  - name: SERVICE_PORT
+    displayName: Service port
+    description: Service port
+    value: '8080'
+    required: true
+  - name: CPU_REQUEST
+    description: The minimum amount of CPU required by a container
+    displayName: Memory Limit
+    required: true
+    value: 100m
+  - name: CPU_LIMIT
+    description: The maximum amount of CPU the container can use.
+    displayName: Memory Limit
+    required: true
+    value: 500m
+  - name: MEMORY_REQUEST
+    description: The minimum amount of memory required by a container
+    displayName: Memory Limit
+    required: true
+    value: 10Mi
+  - name: MEMORY_LIMIT
+    description: The maximum amount of memory the container can use.
+    displayName: Memory Limit
+    required: true
+    value: 150Mi
+  - name: ENV_NAME
+    value: stage
+    displayName: Environment (default -- stage)
+    description: 'Application environment'
