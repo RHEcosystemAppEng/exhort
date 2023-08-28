@@ -45,6 +45,10 @@ The following Package Managers are currently supported:
 - Go Modules (`gomodules`)
 - Pip (`pip`)
 
+## RHDA Token Authentication
+
+API Clients must send a `rhda-token` HTTP Header for authentication. The lack of such header will result in a `401: Forbidden` Client Error
+
 ## Dependency Analysis `/api/v3/analysis`
 
 The expected input data format is a Software Bill of Materials (SBOM) containing the aggregate of all direct and transitive
@@ -205,8 +209,8 @@ http -v :8080/api/v3/token ex-snyk-token==example-token
 The possible responses are:
 
 - 200 - Token validated successfully
-- 400 - Missing authentication header
-- 401 - Invalid auth token provided
+- 400 - Missing provider authentication headers
+- 401 - Invalid auth token provided or Missing required authentication header (rhda-token)
 - 403 - The token is not authorized
 - 429 - Rate limit exceeded
 - 500 - Server error

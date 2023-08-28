@@ -21,6 +21,7 @@ paths:
       operationId: analysis
       summary:  Takes a client-resolved dependency graph to perform a full stack analysis from all the available Vulnerability sources
       security:
+        - RhdaTokenAuth: []
         - SnykTokenAuth: []
         - OssIndexUserAuth: []
           OssIndexTokenAuth: []
@@ -75,6 +76,7 @@ paths:
       operationId: validateToken
       summary: Validates a vulnerability provider token
       security:
+        - RhdaTokenAuth: []
         - SnykTokenAuth: []
         - OssIndexUserAuth: []
           OssIndexTokenAuth: []
@@ -117,6 +119,10 @@ paths:
 
 components:
   securitySchemes:
+    RhdaTokenAuth:
+      type: apiKey
+      in: header
+      name: rhda-token
     SnykTokenAuth:
       type: apiKey
       in: header

@@ -65,6 +65,24 @@ public class AnalysisTest extends AbstractAnalysisTest {
 
   private static final String CYCLONEDX = "cyclonedx";
   private static final String SPDX = "spdx";
+  private static final String DEFAULT_RHDA_TOKEN = "example-rhda-token";
+
+  @Test
+  public void testMissingRhdaToken() {
+    List<PackageRef> req = Collections.emptyList();
+    given()
+        .header(CONTENT_TYPE, getContentType(CYCLONEDX))
+        .body(req)
+        .when()
+        .post("/api/v3/analysis")
+        .then()
+        .assertThat()
+        .statusCode(401)
+        .contentType(MediaType.TEXT_PLAIN)
+        .body(equalTo("Missing required authentication header: rhda-token"));
+
+    verifyNoInteractions();
+  }
 
   @ParameterizedTest
   @ValueSource(strings = {CYCLONEDX, SPDX})
@@ -72,6 +90,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
     List<PackageRef> req = Collections.emptyList();
     given()
         .header(CONTENT_TYPE, getContentType(sbom))
+        .header(Constants.RHDA_TOKEN_HEADER, DEFAULT_RHDA_TOKEN)
         .queryParam(Constants.PROVIDERS_PARAM, "unknown")
         .body(req)
         .when()
@@ -90,6 +109,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
   public void testWithInvalidPkgManagers(String sbom) {
     given()
         .header(CONTENT_TYPE, getContentType(sbom))
+        .header(Constants.RHDA_TOKEN_HEADER, DEFAULT_RHDA_TOKEN)
         .body(loadFileAsString(String.format("%s/unsupported-invalid-sbom.json", sbom)))
         .when()
         .post("/api/v3/analysis")
@@ -107,6 +127,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
   public void testWithMixedPkgManagers(String sbom) {
     given()
         .header(CONTENT_TYPE, getContentType(sbom))
+        .header(Constants.RHDA_TOKEN_HEADER, DEFAULT_RHDA_TOKEN)
         .body(loadFileAsString(String.format("%s/unsupported-mixed-sbom.json", sbom)))
         .when()
         .post("/api/v3/analysis")
@@ -131,6 +152,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
     AnalysisReport report =
         given()
             .header(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
+            .header(Constants.RHDA_TOKEN_HEADER, DEFAULT_RHDA_TOKEN)
             .headers(authHeaders)
             .queryParam(Constants.PROVIDERS_PARAM, providers)
             .body(loadFileAsString(String.format("%s/empty-sbom.json", CYCLONEDX)))
@@ -226,6 +248,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
 
     String body =
         given()
+            .header(Constants.RHDA_TOKEN_HEADER, DEFAULT_RHDA_TOKEN)
             .header(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
             .header("Accept", MediaType.APPLICATION_JSON)
             .header(Constants.SNYK_TOKEN_HEADER, OK_TOKEN)
@@ -255,6 +278,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
 
     String body =
         given()
+            .header(Constants.RHDA_TOKEN_HEADER, DEFAULT_RHDA_TOKEN)
             .header(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
             .header("Accept", MediaType.APPLICATION_JSON)
             .queryParam(Constants.PROVIDERS_PARAM, Constants.SNYK_PROVIDER)
@@ -281,6 +305,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
 
     AnalysisReport report =
         given()
+            .header(Constants.RHDA_TOKEN_HEADER, DEFAULT_RHDA_TOKEN)
             .header(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
             .body(loadFileAsString(String.format("%s/empty-sbom.json", CYCLONEDX)))
             .header("Accept", MediaType.APPLICATION_JSON)
@@ -312,6 +337,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
 
     AnalysisReport report =
         given()
+            .header(Constants.RHDA_TOKEN_HEADER, DEFAULT_RHDA_TOKEN)
             .header(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
             .body(loadFileAsString(String.format("%s/empty-sbom.json", CYCLONEDX)))
             .header("Accept", MediaType.APPLICATION_JSON)
@@ -343,6 +369,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
 
     AnalysisReport report =
         given()
+            .header(Constants.RHDA_TOKEN_HEADER, DEFAULT_RHDA_TOKEN)
             .header(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
             .body(loadSBOMFile(CYCLONEDX))
             .header("Accept", MediaType.APPLICATION_JSON)
@@ -371,6 +398,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
 
     AnalysisReport report =
         given()
+            .header(Constants.RHDA_TOKEN_HEADER, DEFAULT_RHDA_TOKEN)
             .header(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
             .body(loadSBOMFile(CYCLONEDX))
             .header("Accept", MediaType.APPLICATION_JSON)
@@ -399,6 +427,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
 
     AnalysisReport report =
         given()
+            .header(Constants.RHDA_TOKEN_HEADER, DEFAULT_RHDA_TOKEN)
             .header(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
             .header("Accept", MediaType.APPLICATION_JSON)
             .header(Constants.SNYK_TOKEN_HEADER, OK_TOKEN)
@@ -428,6 +457,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
 
     String body =
         given()
+            .header(Constants.RHDA_TOKEN_HEADER, DEFAULT_RHDA_TOKEN)
             .header(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
             .body(loadSBOMFile(CYCLONEDX))
             .header("Accept", MediaType.TEXT_HTML)
@@ -456,6 +486,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
 
     String body =
         given()
+            .header(Constants.RHDA_TOKEN_HEADER, DEFAULT_RHDA_TOKEN)
             .header(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
             .body(loadSBOMFile(CYCLONEDX))
             .header("Accept", MediaType.TEXT_HTML)
@@ -490,6 +521,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
     HttpClient client = HttpClient.newHttpClient();
     HttpRequest request =
         HttpRequest.newBuilder(URI.create("http://localhost:8081/api/v3/analysis"))
+            .setHeader(Constants.RHDA_TOKEN_HEADER, DEFAULT_RHDA_TOKEN)
             .setHeader(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
             .setHeader("Accept", Constants.MULTIPART_MIXED)
             .setHeader(Constants.SNYK_TOKEN_HEADER, OK_TOKEN)
@@ -515,6 +547,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
 
     String body =
         given()
+            .header(Constants.RHDA_TOKEN_HEADER, DEFAULT_RHDA_TOKEN)
             .header(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
             .body(loadSBOMFile(CYCLONEDX))
             .header("Accept", MediaType.TEXT_HTML)
@@ -546,6 +579,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
 
     String body =
         given()
+            .header(Constants.RHDA_TOKEN_HEADER, DEFAULT_RHDA_TOKEN)
             .header(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
             .body(loadSBOMFile(CYCLONEDX))
             .header("Accept", MediaType.TEXT_HTML)
@@ -577,6 +611,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
 
     String body =
         given()
+            .header(Constants.RHDA_TOKEN_HEADER, DEFAULT_RHDA_TOKEN)
             .header(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
             .body(loadSBOMFile(CYCLONEDX))
             .header("Accept", MediaType.TEXT_HTML)
@@ -603,6 +638,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
   @Test
   public void testUnknownMediaType() {
     given()
+        .header(Constants.RHDA_TOKEN_HEADER, DEFAULT_RHDA_TOKEN)
         .header(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
         .body(loadSBOMFile(CYCLONEDX))
         .header("Accept", MediaType.APPLICATION_XML)

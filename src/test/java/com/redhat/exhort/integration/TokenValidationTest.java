@@ -37,11 +37,14 @@ import jakarta.ws.rs.core.Response;
 @QuarkusTest
 public class TokenValidationTest extends AbstractAnalysisTest {
 
+  private static final Object DEFAULT_RHDA_TOKEN = "example-rhda-token";
+
   @Test
   public void testMissingToken() {
     String msg =
         given()
             .when()
+            .header(Constants.RHDA_TOKEN_HEADER, DEFAULT_RHDA_TOKEN)
             .get("/api/v3/token")
             .then()
             .assertThat()
@@ -50,7 +53,26 @@ public class TokenValidationTest extends AbstractAnalysisTest {
             .extract()
             .body()
             .asString();
-    assertEquals("Missing authentication header", msg);
+    assertEquals("Missing provider authentication headers", msg);
+
+    verifyNoInteractions();
+  }
+
+  @Test
+  public void testMissingAuthToken() {
+    String msg =
+        given()
+            .when()
+            .header(Constants.SNYK_TOKEN_HEADER, "foo")
+            .get("/api/v3/token")
+            .then()
+            .assertThat()
+            .statusCode(401)
+            .contentType(MediaType.TEXT_PLAIN)
+            .extract()
+            .body()
+            .asString();
+    assertEquals("Missing required authentication header: rhda-token", msg);
 
     verifyNoInteractions();
   }
@@ -64,6 +86,7 @@ public class TokenValidationTest extends AbstractAnalysisTest {
     String msg =
         given()
             .when()
+            .header(Constants.RHDA_TOKEN_HEADER, DEFAULT_RHDA_TOKEN)
             .headers(headers)
             .get("/api/v3/token")
             .then()
@@ -99,6 +122,7 @@ public class TokenValidationTest extends AbstractAnalysisTest {
     String msg =
         given()
             .when()
+            .header(Constants.RHDA_TOKEN_HEADER, DEFAULT_RHDA_TOKEN)
             .headers(headers)
             .get("/api/v3/token")
             .then()
@@ -134,6 +158,7 @@ public class TokenValidationTest extends AbstractAnalysisTest {
     String msg =
         given()
             .when()
+            .header(Constants.RHDA_TOKEN_HEADER, DEFAULT_RHDA_TOKEN)
             .headers(headers)
             .get("/api/v3/token")
             .then()
@@ -169,6 +194,7 @@ public class TokenValidationTest extends AbstractAnalysisTest {
     String msg =
         given()
             .when()
+            .header(Constants.RHDA_TOKEN_HEADER, DEFAULT_RHDA_TOKEN)
             .headers(headers)
             .get("/api/v3/token")
             .then()

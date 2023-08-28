@@ -29,6 +29,7 @@ import org.apache.camel.builder.AggregationStrategies;
 import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
 import org.apache.camel.component.micrometer.MicrometerConstants;
 import org.apache.camel.component.micrometer.routepolicy.MicrometerRoutePolicyFactory;
+import org.jboss.resteasy.reactive.RestResponse.Status;
 
 import com.redhat.exhort.integration.Constants;
 import com.redhat.exhort.integration.ProviderAggregationStrategy;
@@ -92,6 +93,7 @@ public class ExhortIntegration extends EndpointRouteBuilder {
 
     from(direct("analysis"))
         .routeId("dependencyAnalysis")
+        .to(direct("validateRhdaToken"))
         .setProperty(Constants.PROVIDERS_PARAM, method(vulnerabilityProvider, "getProvidersFromQueryParam"))
         .setProperty(REQUEST_CONTENT_PROPERTY, method(BackendUtils.class, "getResponseMediaType"))
         .process(this::processAnalysisRequest)
@@ -108,6 +110,7 @@ public class ExhortIntegration extends EndpointRouteBuilder {
 
     from(direct("validateToken"))
         .routeId("validateToken")
+        .to(direct("validateRhdaToken"))
         .choice()
             .when(header(Constants.SNYK_TOKEN_HEADER).isNotNull())
                 .to(direct("snykValidateToken"))
@@ -115,10 +118,16 @@ public class ExhortIntegration extends EndpointRouteBuilder {
                 .to(direct("ossValidateCredentials"))
             .otherwise()
                 .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(Response.Status.BAD_REQUEST.getStatusCode()))
-                .setBody(constant("Missing authentication header"))
+                .setBody(constant("Missing provider authentication headers"))
         .end()
         .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.TEXT_PLAIN))
         .process(this::cleanUpHeaders);
+
+    from(direct("validateRhdaToken"))
+      .routeId("validateRhdaToken")
+      .choice()
+        .when(header(Constants.RHDA_TOKEN_HEADER).isNull())
+        .throwException(new ClientErrorException("Missing required authentication header: " + Constants.RHDA_TOKEN_HEADER, Status.UNAUTHORIZED.getStatusCode()));
     //fmt:on
   }
 
