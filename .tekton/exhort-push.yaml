@@ -18,7 +18,7 @@ metadata:
 spec:
   params:
   - name: dockerfile
-    value: src/main/docker/Dockerfile.multi-stage
+    value: https://raw.githubusercontent.com/devfile-samples/devfile-sample-code-with-quarkus/main/src/main/docker/Dockerfile.jvm.staged
   - name: git-url
     value: '{{repo_url}}'
   - name: output-image
@@ -219,9 +219,9 @@ spec:
       taskRef:
         params:
         - name: name
-          value: buildah-8gb
+          value: buildah
         - name: bundle
-          value: quay.io/redhat-appstudio-tekton-catalog/task-buildah-8gb:0.1
+          value: quay.io/redhat-appstudio-tekton-catalog/task-buildah:0.1@sha256:ebbf3859d0fe10e655dd9df47a1133157d0f2d11ea2faa7d060df0f9268e2a4e
         - name: kind
           value: task
         resolver: bundles
