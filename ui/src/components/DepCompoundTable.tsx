@@ -198,7 +198,7 @@ export const DepCompoundTable = ({ name, provider }: { name: string; provider: P
                       <Td
                           width={15}
                           dataLabel={columnNames.transitive}
-                          compoundExpand={compoundExpandParams(item, 'transitive', rowIndex, 2)}
+                          compoundExpand={compoundExpandParams(item, 'transitive', rowIndex, 3)}
                       >
                         {item.transitive
                             .map((e) => e.issues.length)
@@ -206,7 +206,6 @@ export const DepCompoundTable = ({ name, provider }: { name: string; provider: P
                       </Td>
                       <Td width={15}
                           dataLabel={columnNames.rhRemediation}
-                          compoundExpand={compoundExpandParams(item, 'rhRemediation', rowIndex, 4)}
                       >
                         <RemediationsCount dependency={item} />
                       </Td>
