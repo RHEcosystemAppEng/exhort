@@ -157,5 +157,6 @@ public class ExhortIntegration extends EndpointRouteBuilder {
     msg.removeHeaders("ex-.*-user");
     msg.removeHeaders("ex-.*-token");
     msg.removeHeader("Authorization");
+    msg.removeHeader(Constants.RHDA_TOKEN_HEADER);
   }
 }
