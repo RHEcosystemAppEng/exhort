@@ -170,6 +170,7 @@ public class ReportTransformer {
 
     List<TransitiveDependencyReport> result = new ArrayList<>();
     start.transitive().stream()
+        .filter(Objects::nonNull)
         .forEach(
             d -> {
               List<Issue> issues = request.issues().get(d.name());
