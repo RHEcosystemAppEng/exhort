@@ -52,7 +52,7 @@ public class SnykRequestBuilder {
   }
 
   private JsonNode addPackages(ObjectNode depGraph, DependencyTree tree) {
-    Set<com.redhat.exhort.api.PackageRef> allDeps = tree.getAll();
+    Set<PackageRef> allDeps = tree.getAll();
     ObjectNode rootNode = createNode(tree.root(), allDeps);
     ArrayNode nodes = mapper.createArrayNode().add(rootNode);
     ArrayNode pkgs = mapper.createArrayNode().add(createPkg(tree.root()));

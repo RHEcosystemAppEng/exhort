@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.redhat.exhort.api.PackageRef;
 
@@ -66,8 +67,15 @@ public record DependencyTree(PackageRef root, Map<PackageRef, DirectDependency> 
 
   public Set<PackageRef> getAll() {
     Set<PackageRef> result = new HashSet<>(dependencies.keySet());
-    dependencies.values().forEach(d -> result.addAll(d.transitive()));
-    return result;
+    dependencies
+        .values()
+        .forEach(
+            d -> {
+              if (d.transitive() != null && !d.transitive().isEmpty()) {
+                result.addAll(d.transitive());
+              }
+            });
+    return result.stream().filter(Objects::nonNull).collect(Collectors.toSet());
   }
 
   public static Builder builder() {
