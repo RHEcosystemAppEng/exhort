@@ -79,6 +79,8 @@ objects:
                   containerPort: '${{SERVICE_PORT}}'
                   protocol: TCP
               env:
+                - name: API_TRUSTEDCONTENT_DISABLED
+                  value: "true"
                 - name: API_SNYK_TOKEN
                   valueFrom:
                     secretKeyRef:
