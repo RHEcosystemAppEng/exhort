@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.github.packageurl.MalformedPackageURLException;
 import com.github.packageurl.PackageURL;
 import com.redhat.exhort.api.serialization.PackageURLSerializer;
+import com.redhat.exhort.integration.Constants;
 
 public class PackageRef {
 
@@ -51,10 +52,15 @@ public class PackageRef {
   }
 
   public String name() {
-    if (purl.getNamespace() == null) {
-      return purl.getName();
+    switch (purl.getType()) {
+      case Constants.GOLANG_PKG_MANAGER:
+        return new StringBuffer(purl.getNamespace()).append("/").append(purl.getName()).toString();
+      default:
+        if (purl.getNamespace() == null) {
+          return purl.getName();
+        }
+        return new StringBuilder(purl.getNamespace()).append(":").append(purl.getName()).toString();
     }
-    return purl.getNamespace() + ":" + purl.getName();
   }
 
   public String version() {
