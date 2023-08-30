@@ -48,24 +48,29 @@ public class TrustedContentIntegration extends EndpointRouteBuilder {
   @ConfigProperty(name = "api.trustedContent.timeout", defaultValue = "10s")
   String timeout;
 
+  @ConfigProperty(name = "api.trustedContent.disabled", defaultValue = "false")
+  Boolean disabled;
+
   @Override
   public void configure() {
     // fmt:off
     from(direct("recommendAllTrustedContent"))
         .routeId("recommendAllTrustedContent")
-        .multicast(AggregationStrategies.bean(ProviderAggregationStrategy.class, "aggregate"))
-        .parallelProcessing()
-        .circuitBreaker()
-        .faultToleranceConfiguration()
-        .timeoutEnabled(true)
-        .timeoutDuration(timeout)
-        .end()
-        .enrich(direct("trustedContentVex"),
-            AggregationStrategies.bean(TrustedContentBodyMapper.class, "filterRemediations"))
-        .enrich(direct("trustedContentGav"),
-            AggregationStrategies.bean(TrustedContentBodyMapper.class, "addRecommendations"))
-        .onFallback()
-        .process(this::processFallBack);
+        .choice().when(constant(disabled).isEqualTo(Boolean.FALSE))
+          .multicast(AggregationStrategies.bean(ProviderAggregationStrategy.class, "aggregate"))
+          .parallelProcessing()
+          .circuitBreaker()
+          .faultToleranceConfiguration()
+          .timeoutEnabled(true)
+          .timeoutDuration(timeout)
+          .end()
+          .enrich(direct("trustedContentVex"),
+              AggregationStrategies.bean(TrustedContentBodyMapper.class, "filterRemediations"))
+          .enrich(direct("trustedContentGav"),
+              AggregationStrategies.bean(TrustedContentBodyMapper.class, "addRecommendations"))
+          .onFallback()
+          .process(this::processFallBack)
+        .end();
 
     from(direct("recommendVexContent"))
         .routeId("addRecommendedVexContent")
