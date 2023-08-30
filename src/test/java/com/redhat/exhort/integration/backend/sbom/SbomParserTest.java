@@ -165,7 +165,7 @@ public class SbomParserTest {
                           .namespace("github.com/fabric8-analytics")
                           .name("cli-tools")
                           .version("v0.2.6-0.20211007133944-2af417bfb988")
-                          .pkgManager(Constants.NPM_PKG_MANAGER)
+                          .pkgManager(Constants.GOLANG_PKG_MANAGER)
                           .build()));
               consumer.accept(
                   arguments(
