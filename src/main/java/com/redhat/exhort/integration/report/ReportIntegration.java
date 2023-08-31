@@ -48,6 +48,8 @@ public class ReportIntegration extends EndpointRouteBuilder {
     // fmt:off
         from(direct("report"))
             .routeId("report")
+            .bean(ReportTransformer.class, "transform")
+            .setProperty(Constants.REPORT_PROPERTY, body())
             .choice()
                 .when(exchangeProperty(Constants.REQUEST_CONTENT_PROPERTY).isEqualTo(MediaType.TEXT_HTML))
                     .to(direct("htmlReport"))
@@ -60,8 +62,6 @@ public class ReportIntegration extends EndpointRouteBuilder {
         from(direct("htmlReport"))
             .routeId("htmlReport")
             .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.TEXT_HTML))
-            .bean(ReportTransformer.class, "transform")
-            .setProperty(Constants.REPORT_PROPERTY, body())
             .setBody(method(reportTemplate, "setVariables"))
             .to(freemarker("report.ftl"));
 
@@ -69,15 +69,13 @@ public class ReportIntegration extends EndpointRouteBuilder {
             .routeId("multipartReport")
             .to(direct("htmlReport"))
             .bean(ReportTransformer.class, "attachHtmlReport")
-            .setBody(exchangeProperty(Constants.REPORT_PROPERTY))
-            .bean(ReportTransformer.class, "filterVerboseResult")
-            .marshal().json()
+            .to(direct("jsonReport"))
             .marshal().mimeMultipart(false, false, true)
             .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.TEXT_HTML));
 
         from(direct("jsonReport"))
             .routeId("jsonReport")
-            .bean(ReportTransformer.class, "transform")
+            .setBody(exchangeProperty(Constants.REPORT_PROPERTY))
             .bean(ReportTransformer.class, "filterVerboseResult")
             .marshal().json();
         //fmt:on

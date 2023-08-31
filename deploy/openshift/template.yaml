@@ -86,6 +86,11 @@ objects:
                     secretKeyRef:
                       name: exhort-secret
                       key: api-snyk-token
+                - name: TELEMETRY_WRITE_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: exhort-secret
+                      key: telemetry-write-key
               securityContext:
                 runAsNonRoot: true
               resources:

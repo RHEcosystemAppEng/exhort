@@ -65,6 +65,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
 
   private static final String CYCLONEDX = "cyclonedx";
   private static final String SPDX = "spdx";
+  private static final String DEFAULT_RHDA_TOKEN = "example-rhda-token";
 
   @ParameterizedTest
   @ValueSource(strings = {CYCLONEDX, SPDX})
@@ -490,6 +491,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
     HttpClient client = HttpClient.newHttpClient();
     HttpRequest request =
         HttpRequest.newBuilder(URI.create("http://localhost:8081/api/v3/analysis"))
+            .setHeader(Constants.RHDA_TOKEN_HEADER, DEFAULT_RHDA_TOKEN)
             .setHeader(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
             .setHeader("Accept", Constants.MULTIPART_MIXED)
             .setHeader(Constants.SNYK_TOKEN_HEADER, OK_TOKEN)

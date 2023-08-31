@@ -205,11 +205,24 @@ http -v :8080/api/v3/token ex-snyk-token==example-token
 The possible responses are:
 
 - 200 - Token validated successfully
-- 400 - Missing authentication header
-- 401 - Invalid auth token provided
+- 400 - Missing provider authentication headers
+- 401 - Invalid auth token provided or Missing required authentication header (rhda-token)
 - 403 - The token is not authorized
 - 429 - Rate limit exceeded
 - 500 - Server error
+
+## Telemetry
+
+API Clients are expected to send a `rhda-token` HTTP Header that will be used to correlate
+different events related to the same user.
+If the header is not provided an anonymous event with a generated UUID will be sent instead.
+
+Telemetry connects to [Segment](https://segment.com/) for sending events.
+The connection can be configured with the following properties.
+
+- `telemetry.disabled`: To completely disable telemetry
+- `telemetry.write-key`: Authentication key to connect to Segment
+- `quarkus.rest-client.segment-api.url`: Segment API endpoint
 
 ## Deploy on OpenShift
 
