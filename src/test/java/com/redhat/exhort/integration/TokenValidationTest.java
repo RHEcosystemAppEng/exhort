@@ -50,7 +50,7 @@ public class TokenValidationTest extends AbstractAnalysisTest {
             .extract()
             .body()
             .asString();
-    assertEquals("Missing authentication header", msg);
+    assertEquals("Missing provider authentication headers", msg);
 
     verifyNoInteractions();
   }

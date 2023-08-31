@@ -32,9 +32,11 @@ public final class Constants {
   private Constants() {}
 
   public static final String PROVIDERS_PARAM = "providers";
+  public static final String SBOM_TYPE_PARAM = "sbomType";
 
   public static final String ACCEPT_HEADER = "Accept";
   public static final String ACCEPT_ENCODING_HEADER = "Accept-Encoding";
+  public static final String RHDA_TOKEN_HEADER = "rhda-token";
   public static final String SNYK_TOKEN_HEADER = "ex-snyk-token";
   public static final String OSS_INDEX_USER_HEADER = "ex-oss-index-user";
   public static final String OSS_INDEX_TOKEN_HEADER = "ex-oss-index-token";
@@ -46,6 +48,7 @@ public final class Constants {
 
   public static final String SNYK_PROVIDER = "snyk";
   public static final String OSS_INDEX_PROVIDER = "oss-index";
+  public static final String UNKNOWN_PROVIDER = "unknown";
 
   public static final String TRUSTED_CONTENT_NAME = "trusted-content";
 
