@@ -23,10 +23,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -39,6 +41,7 @@ import com.redhat.exhort.api.AnalysisReport;
 import com.redhat.exhort.api.DependenciesSummary;
 import com.redhat.exhort.api.DependencyReport;
 import com.redhat.exhort.api.Issue;
+import com.redhat.exhort.api.PackageRef;
 import com.redhat.exhort.api.Remediation;
 import com.redhat.exhort.api.Summary;
 import com.redhat.exhort.api.TransitiveDependencyReport;
@@ -61,15 +64,21 @@ public class ReportTransformer {
     List<DependencyReport> depsReport = new ArrayList<>();
     Collection<DirectDependency> direct = request.tree().dependencies().values();
     VulnerabilityCounter counter = new VulnerabilityCounter();
+    Set<PackageRef> uniqueDeps = new HashSet<>();
+
     direct.forEach(
         d -> {
+          if (uniqueDeps.contains(d.ref())) {
+            return;
+          }
+          uniqueDeps.add(d.ref());
           List<Issue> issues = request.issues().get(d.ref().name());
           if (issues == null) {
             issues = Collections.emptyList();
           }
           List<TransitiveDependencyReport> transitiveReport =
               getTransitiveDependenciesReport(d, request);
-          updateVulnerabilitySummary(issues, transitiveReport, counter);
+          updateVulnerabilitySummary(issues, transitiveReport, counter, uniqueDeps);
           Optional<Issue> highestVulnerability = issues.stream().findFirst();
           Optional<Issue> highestTransitive =
               transitiveReport.stream()
@@ -121,11 +130,16 @@ public class ReportTransformer {
   private void updateVulnerabilitySummary(
       List<Issue> issues,
       List<TransitiveDependencyReport> transitiveReport,
-      VulnerabilityCounter counter) {
+      VulnerabilityCounter counter,
+      Set<PackageRef> uniqueDeps) {
+
     issues.forEach(i -> incrementCounter(i, counter));
     transitiveReport.forEach(
         tr -> {
-          tr.getIssues().forEach(i -> incrementCounter(i, counter));
+          if (!uniqueDeps.contains(tr.getRef())) {
+            uniqueDeps.add(tr.getRef());
+            tr.getIssues().forEach(i -> incrementCounter(i, counter));
+          }
         });
   }
 
