@@ -82,6 +82,35 @@ public class ReportTransformerTest {
   }
 
   @Test
+  public void testIgnoreDuplicates() {
+    Map<String, List<Issue>> issues =
+        Map.of(
+            "aa", List.of(buildIssue(1, 5f)),
+            "aaa", List.of(buildIssue(2, 5f)));
+    GraphRequest req =
+        new GraphRequest.Builder(Constants.NPM_PKG_MANAGER, List.of(Constants.SNYK_PROVIDER))
+            .tree(buildTreeWithDuplicates())
+            .issues(issues)
+            .build();
+
+    AnalysisReport report = new ReportTransformer().transform(req);
+
+    assertNotNull(report);
+    assertEquals(2, report.getDependencies().size());
+
+    assertTrue(report.getDependencies().stream().anyMatch(d -> d.getRef().name().equals("aa")));
+    assertTrue(report.getDependencies().stream().anyMatch(d -> d.getRef().name().equals("aa")));
+
+    assertEquals(1, report.getDependencies().get(0).getTransitive().size());
+    assertEquals(1, report.getDependencies().get(1).getTransitive().size());
+
+    assertEquals(2, report.getSummary().getDependencies().getScanned());
+    assertEquals(4, report.getSummary().getDependencies().getTransitive());
+
+    assertEquals(2, report.getSummary().getVulnerabilities().getTotal());
+  }
+
+  @Test
   public void testFilterRecommendations() {
     Map<String, PackageRef> recommendations =
         Map.of(
@@ -157,6 +186,70 @@ public class ReportTransformerTest {
                             .build(),
                         PackageRef.builder()
                             .name("abc")
+                            .version("1")
+                            .pkgManager(Constants.NPM_PKG_MANAGER)
+                            .build()))
+                .build());
+    return DependencyTree.builder()
+        .root(
+            PackageRef.builder()
+                .name("a")
+                .version("1")
+                .pkgManager(Constants.NPM_PKG_MANAGER)
+                .build())
+        .dependencies(direct)
+        .build();
+  }
+
+  private DependencyTree buildTreeWithDuplicates() {
+    Map<PackageRef, DirectDependency> direct =
+        Map.of(
+            PackageRef.builder()
+                .name("aa")
+                .version("1")
+                .pkgManager(Constants.NPM_PKG_MANAGER)
+                .build(),
+            DirectDependency.builder()
+                .ref(
+                    PackageRef.builder()
+                        .name("aa")
+                        .version("1")
+                        .pkgManager(Constants.NPM_PKG_MANAGER)
+                        .build())
+                .transitive(
+                    Set.of(
+                        PackageRef.builder()
+                            .name("aaa")
+                            .version("1")
+                            .pkgManager(Constants.NPM_PKG_MANAGER)
+                            .build(),
+                        PackageRef.builder()
+                            .name("aab")
+                            .version("1")
+                            .pkgManager(Constants.NPM_PKG_MANAGER)
+                            .build()))
+                .build(),
+            PackageRef.builder()
+                .name("ab")
+                .version("1")
+                .pkgManager(Constants.NPM_PKG_MANAGER)
+                .build(),
+            DirectDependency.builder()
+                .ref(
+                    PackageRef.builder()
+                        .name("ab")
+                        .version("1")
+                        .pkgManager(Constants.NPM_PKG_MANAGER)
+                        .build())
+                .transitive(
+                    Set.of(
+                        PackageRef.builder()
+                            .name("aaa")
+                            .version("1")
+                            .pkgManager(Constants.NPM_PKG_MANAGER)
+                            .build(),
+                        PackageRef.builder()
+                            .name("abb")
                             .version("1")
                             .pkgManager(Constants.NPM_PKG_MANAGER)
                             .build()))
