@@ -22,6 +22,11 @@ objects:
           appProtocol: http
           port: '${{SERVICE_PORT}}'
           targetPort: http
+        - name: management
+          protocol: TCP
+          appProtocol: http
+          port: '${{MANAGEMENT_PORT}}'
+          targetPort: management
       selector:
         app: '${APP_NAME}'
   - kind: Deployment
@@ -65,18 +70,21 @@ objects:
               livenessProbe:
                 httpGet:
                   path: /q/health/live
-                  port: '${{SERVICE_PORT}}'
+                  port: '${{MANAGEMENT_PORT}}'
                 initialDelaySeconds: 15
                 periodSeconds: 20
               readinessProbe:
                 httpGet:
                   path: /q/health/ready
-                  port: '${{SERVICE_PORT}}'
+                  port: '${{MANAGEMENT_PORT}}'
                 initialDelaySeconds: 5
                 periodSeconds: 10
               ports:
                 - name: http
                   containerPort: '${{SERVICE_PORT}}'
+                  protocol: TCP
+                - name: management
+                  containerPort: '${{MANAGEMENT_PORT}}'
                   protocol: TCP
               env:
                 - name: API_TRUSTEDCONTENT_DISABLED
@@ -91,6 +99,10 @@ objects:
                     secretKeyRef:
                       name: exhort-secret
                       key: telemetry-write-key
+                - name: QUARKUS_HTTP_PORT
+                  value: '8080'
+                - name: QUARKUS_MANAGEMENT_PORT
+                  value: '9000'
               securityContext:
                 runAsNonRoot: true
               resources:
@@ -139,6 +151,11 @@ parameters:
     displayName: Service port
     description: Service port
     value: '8080'
+    required: true
+  - name: MANAGEMENT_PORT
+    displayName: Management port
+    description: Management port for exposing health and metrics
+    value: '9000'
     required: true
   - name: CPU_REQUEST
     description: The minimum amount of CPU required by a container
