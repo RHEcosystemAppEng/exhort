@@ -1,9 +1,7 @@
 export interface Report {
   packagePath: string;
   remediationPath: string;
-  issueVisibilityHelper: {
-    providerData?: string[] | null;
-  };
+  providerPrivateData?: string[] | null;
   vexPath: string;
   report: {
     summary: {

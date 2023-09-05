@@ -3,7 +3,7 @@ import { Report } from '@app/api/report';
 export const withTokenReport: Report = {
   packagePath: 'https://central.sonatype.com/artifact/',
   remediationPath: 'https://maven.repository.redhat.com/ga/',
-  issueVisibilityHelper: { providerData: null },
+  providerPrivateData: null,
   vexPath: 'https://tc-storage-mvp.s3.amazonaws.com/vexes/',
   report: {
       summary: {

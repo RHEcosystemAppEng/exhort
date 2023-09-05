@@ -10,6 +10,7 @@ import {VulnerabilityScore} from './VulnerabilityScore';
 import {VulnerabilityLink} from './VulnerabilityLink';
 import {VulnerabilitySeverityLabel} from './VulnerabilitySeverityLabel';
 import {Card, CardBody, CardExpandableContent, CardHeader, CardTitle,} from '@patternfly/react-core';
+import { usePrivateIssueHelper } from '../hooks/usePrivateDataHelper';
 
 interface TransitiveDependenciesTableProps {
   providerName: 'snyk' | 'oss-index';
@@ -22,6 +23,7 @@ export const TransitiveDependenciesTable: React.FC<TransitiveDependenciesTablePr
   dependency,
   transitiveDependencies,
 }) => {
+  const privateIssueHelper = usePrivateIssueHelper();
   const [isCardExpanded, toggleCard] = useReducer((val) => !val, false);
   return (
     <Card isExpanded={isCardExpanded} isCompact isFlat>
@@ -59,7 +61,6 @@ export const TransitiveDependenciesTable: React.FC<TransitiveDependenciesTablePr
                 <Tbody>
                   {transitiveDependencies?.map((item, rowIndex) => {
                     return item.issues.map((vuln, subRowIndex) => {
-
                       return (
                         <Tr key={`${rowIndex}-${subRowIndex}`}>
                           {subRowIndex === 0 && (
@@ -68,22 +69,22 @@ export const TransitiveDependenciesTable: React.FC<TransitiveDependenciesTablePr
                             </Td>
                           )}
 
-                          {!vuln.unique ? (
+                          {privateIssueHelper.hideIssue(providerName, vuln.unique) ? (
+                            <>
+                              <Td colSpan={3}>
+                                <a href={SYNK_SIGNUP_URL} target="_blank" rel="noreferrer">
+                                  Sign up for a Snyk account
+                                </a>{' '}
+                                to learn about the vulnerabilities found
+                              </Td>
+                            </>
+                          ) : (
                             <>
                               <Td noPadding>
                                 <VulnerabilitySeverityLabel vulnerability={vuln} />
                               </Td>
                               <Td>{vuln.cvss?.exploitCodeMaturity || 'No known exploit'}</Td>
                               <Td>{vuln.title}</Td>
-                            </>
-                          ) : (
-                            <>
-                              <Td colSpan={3}>
-                                <a href={SYNK_SIGNUP_URL} target="_blank" rel="noreferrer">
-                                  Sign up for a free Snyk account
-                                </a>{' '}
-                                to learn about the vulnerabilities found
-                              </Td>
                             </>
                           )}
 
