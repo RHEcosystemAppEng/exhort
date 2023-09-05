@@ -56,7 +56,7 @@
                         },
                         {
                             "id": "SNYK-PRIVATE-VULNERABILITY",
-                            "title": "Sign up for a free Snyk account to learn aboutn the vulnerabilities found",
+                            "title": "Sign up for a Snyk account to learn aboutn the vulnerabilities found",
                             "source": "snyk",
                             "cvss": null,
                             "cvssScore": 5.9,

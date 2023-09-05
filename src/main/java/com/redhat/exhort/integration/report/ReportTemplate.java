@@ -32,7 +32,6 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.redhat.exhort.api.AnalysisReport;
-import com.redhat.exhort.api.Issue;
 import com.redhat.exhort.integration.Constants;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
@@ -75,7 +74,7 @@ public class ReportTemplate {
     params.put("packagePath", packagePath);
     params.put("snykIssueLinkFormatter", new IssueLinkFormatter(snykIssuePathRegex));
     params.put("ossIndexIssueLinkFormatter", new IssueLinkFormatter(ossIssuePathRegex));
-    params.put("issueVisibilityHelper", new IssueVisibilityHelper(providerPrivateData));
+    params.put("providerPrivateData", providerPrivateData);
     params.put("vexPath", vexPath);
     params.put("sbomPath", sbomPath);
     params.put("snykSignup", snykSignup);
@@ -93,16 +92,6 @@ public class ReportTemplate {
 
     public String format(String id) {
       return String.format(issuePathRegex, id, id);
-    }
-  }
-
-  @RegisterForReflection
-  public static record IssueVisibilityHelper(List<String> providerData) {
-    public boolean showIssue(Issue issue) {
-      if (!issue.getUnique() || providerData == null) {
-        return true;
-      }
-      return !providerData.contains(issue.getSource());
     }
   }
 }

@@ -48,7 +48,7 @@ public class SnykAggregationStrategy {
 
   private static final String SNYK_PRIVATE_VULNERABILITY_ID = "SNYK-PRIVATE-VULNERABILITY";
   private static final String SNYK_PRIVATE_VULNERABILITY_TITLE =
-      "Sign up for a free Snyk account to learn aboutn the vulnerabilities found";
+      "Sign up for a Snyk account to learn aboutn the vulnerabilities found";
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SnykAggregationStrategy.class);
   private final ObjectMapper mapper = ObjectMapperProducer.newInstance();

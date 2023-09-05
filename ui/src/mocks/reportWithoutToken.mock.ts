@@ -3,7 +3,7 @@ import { Report } from '@app/api/report';
 export const withoutTokenReport: Report = {
   packagePath: 'https://central.sonatype.com/artifact/',
   remediationPath: 'https://maven.repository.redhat.com/ga/',
-  issueVisibilityHelper: { providerData: ['snyk'] },
+  providerPrivateData: ['snyk'],
   vexPath: 'https://tc-storage-mvp.s3.amazonaws.com/vexes/',
   report: {
       summary: {
@@ -50,7 +50,7 @@ export const withoutTokenReport: Report = {
                 {
                   id: 'SNYK-PRIVATE-VULNERABILITY',
                   title:
-                    'Sign up for a free Snyk account to learn aboutn the vulnerabilities found',
+                    'Sign up for a Snyk account to learn aboutn the vulnerabilities found',
                   source: 'snyk',
                   cvss: null,
                   cvssScore: 5.9,
