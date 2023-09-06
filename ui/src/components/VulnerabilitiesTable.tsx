@@ -51,7 +51,7 @@ export const VulnerabilitiesTable: React.FC<VulnerabilitiesTableProps> = ({
                   <Td>
                     <VulnerabilityScore vulnerability={vuln} />
                   </Td>
-                  <Td>{vuln.cves}</Td>
+                  <Td>{vuln.cves ? vuln.cves.map(i => <p>{i}</p>) : ''}</Td>
                   <Td>
                       <VulnerabilityLink providerName={providerName} vulnerability={vuln} />
                   </Td>
