@@ -79,7 +79,8 @@ public class ReportTransformer {
           List<TransitiveDependencyReport> transitiveReport =
               getTransitiveDependenciesReport(d, request);
           updateVulnerabilitySummary(issues, transitiveReport, counter, uniqueDeps);
-          Optional<Issue> highestVulnerability = issues.stream().findFirst();
+          Optional<Issue> highestVulnerability =
+              issues.stream().max(Comparator.comparing(Issue::getCvssScore));
           Optional<Issue> highestTransitive =
               transitiveReport.stream()
                   .map(TransitiveDependencyReport::getHighestVulnerability)
