@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -29,6 +30,7 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 import com.redhat.exhort.api.AnalysisReport;
+import com.redhat.exhort.api.DependencyReport;
 import com.redhat.exhort.api.Issue;
 import com.redhat.exhort.api.PackageRef;
 import com.redhat.exhort.api.Severity;
@@ -130,6 +132,30 @@ public class ReportTransformerTest {
 
     assertNotNull(report);
     assertTrue(report.getDependencies().isEmpty());
+  }
+
+  @Test
+  public void testHighestVulnerability() {
+    Map<String, List<Issue>> issues = new HashMap<>();
+    issues.put("aa", List.of(buildIssue(1, 4.5f), buildIssue(2, 8.7f)));
+    issues.put("aaa", List.of(buildIssue(3, 8.6f)));
+    issues.put("abc", List.of(buildIssue(4, 9f), buildIssue(5, 8.9f)));
+    GraphRequest req =
+        new GraphRequest.Builder(Constants.NPM_PKG_MANAGER, List.of(Constants.SNYK_PROVIDER))
+            .tree(buildTree())
+            .issues(issues)
+            .build();
+    AnalysisReport report = new ReportTransformer().transform(req);
+    Issue highestVulnerability = report.getDependencies().get(0).getHighestVulnerability();
+    assertNotNull(highestVulnerability);
+    List<DependencyReport> sortedDeps =
+        report.getDependencies().stream()
+            .sorted(
+                (a, b) ->
+                    a.getRef().purl().canonicalize().compareTo(b.getRef().purl().canonicalize()))
+            .toList();
+    assertEquals(8.7f, sortedDeps.get(0).getHighestVulnerability().getCvssScore());
+    assertEquals(9f, sortedDeps.get(1).getHighestVulnerability().getCvssScore());
   }
 
   private DependencyTree buildTree() {
