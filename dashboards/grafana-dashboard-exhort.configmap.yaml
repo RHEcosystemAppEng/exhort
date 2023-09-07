@@ -1,44 +1,7 @@
 apiVersion: v1
 data:
-  exhort-dashboard.json: |-
+  exhort-dashboard.json: |
     {
-      "__inputs": [
-        {
-          "name": "DS_APP-SRE-STAGE-01-PROMETHEUS",
-          "label": "app-sre-stage-01-prometheus",
-          "description": "",
-          "type": "datasource",
-          "pluginId": "prometheus",
-          "pluginName": "Prometheus"
-        }
-      ],
-      "__elements": {},
-      "__requires": [
-        {
-          "type": "grafana",
-          "id": "grafana",
-          "name": "Grafana",
-          "version": "9.3.8"
-        },
-        {
-          "type": "datasource",
-          "id": "prometheus",
-          "name": "Prometheus",
-          "version": "1.0.0"
-        },
-        {
-          "type": "panel",
-          "id": "stat",
-          "name": "Stat",
-          "version": ""
-        },
-        {
-          "type": "panel",
-          "id": "timeseries",
-          "name": "Time series",
-          "version": ""
-        }
-      ],
       "annotations": {
         "list": [
           {
@@ -65,79 +28,13 @@ data:
       "editable": true,
       "fiscalYearStartMonth": 0,
       "graphTooltip": 0,
-      "id": null,
       "links": [],
       "liveNow": false,
       "panels": [
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_APP-SRE-STAGE-01-PROMETHEUS}"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 3,
-            "w": 20,
-            "x": 0,
-            "y": 0
-          },
-          "id": 34,
-          "options": {
-            "colorMode": "value",
-            "graphMode": "area",
-            "justifyMode": "auto",
-            "orientation": "auto",
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "textMode": "auto"
-          },
-          "pluginVersion": "9.3.8",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_APP-SRE-STAGE-01-PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "sum(rate(http_server_requests_seconds_count{status!~\"[4-5].*\", namespace=\"exhort-stage\", job=\"exhort\"}[2m])) / \n(sum(rate(http_server_requests_seconds_count{namespace=\"exhort-stage\", job=\"exhort\"}[2m])) - \n(sum(rate(http_server_requests_seconds_count{status=~\"404|499\", namespace=\"exhort-stage\", job=\"exhort\"}[2m])) or vector(0)))",
-              "legendFormat": "__auto",
-              "range": true,
-              "refId": "A"
-            }
-          ],
-          "title": "% Success (by interval)",
-          "type": "stat"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_APP-SRE-STAGE-01-PROMETHEUS}"
+            "uid": "${datasource}"
           },
           "description": "",
           "fieldConfig": {
@@ -196,9 +93,9 @@ data:
           },
           "gridPos": {
             "h": 7,
-            "w": 5,
+            "w": 8,
             "x": 0,
-            "y": 3
+            "y": 0
           },
           "id": 29,
           "interval": "2m",
@@ -220,10 +117,10 @@ data:
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_APP-SRE-STAGE-01-PROMETHEUS}"
+                "uid": "${datasource}"
               },
               "editorMode": "code",
-              "expr": "sum(rate(http_server_requests_seconds_count{namespace=\"exhort-stage\", job=\"exhort\"}[2m]))",
+              "expr": "sum(rate(http_server_requests_seconds_count{namespace=~\"$namespace\", job=\"exhort\"}[2m]))",
               "hide": false,
               "interval": "",
               "legendFormat": "RPS",
@@ -237,7 +134,7 @@ data:
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_APP-SRE-STAGE-01-PROMETHEUS}"
+            "uid": "${datasource}"
           },
           "description": "",
           "fieldConfig": {
@@ -296,9 +193,9 @@ data:
           },
           "gridPos": {
             "h": 7,
-            "w": 5,
-            "x": 5,
-            "y": 3
+            "w": 8,
+            "x": 8,
+            "y": 0
           },
           "id": 31,
           "interval": "2m",
@@ -320,10 +217,10 @@ data:
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_APP-SRE-STAGE-01-PROMETHEUS}"
+                "uid": "${datasource}"
               },
               "editorMode": "code",
-              "expr": "sum(rate(http_server_requests_seconds_count{namespace=\"exhort-stage\", job=\"exhort\"}[2m])) by (uri)",
+              "expr": "sum(rate(http_server_requests_seconds_count{namespace=~\"$namespace\", job=\"exhort\"}[2m])) by (uri)",
               "hide": false,
               "legendFormat": "__auto",
               "range": true,
@@ -336,7 +233,105 @@ data:
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_APP-SRE-STAGE-01-PROMETHEUS}"
+            "uid": "${datasource}"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 20,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "smooth",
+                "lineStyle": {
+                  "fill": "solid"
+                },
+                "lineWidth": 2,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": true,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "links": [],
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "reqps"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 8,
+            "x": 16,
+            "y": 0
+          },
+          "id": 42,
+          "interval": "2m",
+          "links": [],
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "9.3.8",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "sum(rate(http_server_requests_seconds_count{namespace=~\"$namespace\", job=\"exhort\"}[2m])) by (pod)",
+              "hide": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "RPS (by pod)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
           },
           "description": "",
           "fieldConfig": {
@@ -396,10 +391,10 @@ data:
             "overrides": []
           },
           "gridPos": {
-            "h": 7,
-            "w": 5,
-            "x": 10,
-            "y": 3
+            "h": 9,
+            "w": 8,
+            "x": 0,
+            "y": 7
           },
           "id": 30,
           "links": [],
@@ -420,22 +415,23 @@ data:
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_APP-SRE-STAGE-01-PROMETHEUS}"
+                "uid": "${datasource}"
               },
               "editorMode": "code",
-              "expr": "sum(rate(http_server_requests_seconds_count{namespace=~\"exhort-stage\", job=\"exhort\", status!~\"5..\"}[7d]))\n/\nsum(rate(http_server_requests_seconds_count{namespace=~\"exhort-stage\", job=\"exhort\"}[7d]))",
-              "legendFormat": "__auto",
+              "expr": "sum(rate(http_server_requests_seconds_count{namespace=~\"$namespace\", job=\"exhort\", status!~\"5..\"}[7d]))\n/\nsum(rate(http_server_requests_seconds_count{namespace=~\"$namespace\", job=\"exhort\"}[7d]))",
+              "interval": "",
+              "legendFormat": "Availability",
               "range": true,
               "refId": "A"
             }
           ],
-          "title": "Availability",
+          "title": "Availability (7d)",
           "type": "timeseries"
         },
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_APP-SRE-STAGE-01-PROMETHEUS}"
+            "uid": "${datasource}"
           },
           "description": "",
           "fieldConfig": {
@@ -493,10 +489,10 @@ data:
             "overrides": []
           },
           "gridPos": {
-            "h": 7,
-            "w": 5,
-            "x": 15,
-            "y": 3
+            "h": 9,
+            "w": 8,
+            "x": 8,
+            "y": 7
           },
           "id": 32,
           "links": [],
@@ -517,26 +513,553 @@ data:
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_APP-SRE-STAGE-01-PROMETHEUS}"
+                "uid": "${datasource}"
               },
               "editorMode": "code",
-              "expr": "sum(rate(http_server_requests_seconds_count{namespace=~\"exhort-stage\", job=\"exhort\", status!~\"5..\"}[7d]))\n/\nsum(rate(http_server_requests_seconds_count{namespace=~\"exhort-stage\", job=\"exhort\"}[7d]))",
-              "legendFormat": "__auto",
+              "expr": "sum(rate(http_server_requests_seconds_count{namespace=~\"$namespace\", job=\"exhort\", status!~\"5..\"}[7d]))\n/\nsum(rate(http_server_requests_seconds_count{namespace=~\"$namespace\", job=\"exhort\"}[7d]))",
+              "interval": "",
+              "legendFormat": "Latency",
               "range": true,
               "refId": "A"
             }
           ],
           "title": "Latency (NOT READY)",
           "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 20,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "smooth",
+                "lineWidth": 2,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": true,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "links": [],
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 8,
+            "x": 16,
+            "y": 7
+          },
+          "id": 43,
+          "links": [],
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "9.3.8",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "sum(rate(http_server_requests_seconds_count{namespace=\"exhort-stage\"}[2m])) by (status)",
+              "interval": "",
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "HTTP Response Codes",
+          "type": "timeseries"
+        },
+        {
+          "collapsed": true,
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 16
+          },
+          "id": 36,
+          "panels": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "description": "",
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "drawStyle": "line",
+                    "fillOpacity": 20,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "lineInterpolation": "linear",
+                    "lineStyle": {
+                      "fill": "solid"
+                    },
+                    "lineWidth": 2,
+                    "pointSize": 3,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "auto",
+                    "spanNulls": true,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  },
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": null
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "ms"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 0,
+                "y": 21
+              },
+              "id": 38,
+              "options": {
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "mode": "multi",
+                  "sort": "none"
+                }
+              },
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "${datasource}"
+                  },
+                  "editorMode": "code",
+                  "expr": "sum(irate(container_cpu_usage_seconds_total{namespace=\"${namespace}\", container=\"app\"}[5m])) by (pod)",
+                  "legendFormat": "__auto",
+                  "range": true,
+                  "refId": "A"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "${datasource}"
+                  },
+                  "editorMode": "code",
+                  "expr": "sum(kube_pod_resource_limit{namespace=\"${namespace}\",resource=\"cpu\"}) by (pod)",
+                  "hide": true,
+                  "interval": "",
+                  "legendFormat": "Limit",
+                  "range": true,
+                  "refId": "B"
+                }
+              ],
+              "title": "CPU Usage",
+              "type": "timeseries"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "description": "",
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "drawStyle": "line",
+                    "fillOpacity": 20,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "lineInterpolation": "linear",
+                    "lineStyle": {
+                      "fill": "solid"
+                    },
+                    "lineWidth": 2,
+                    "pointSize": 1,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "never",
+                    "spanNulls": true,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "dashed"
+                    }
+                  },
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": null
+                      },
+                      {
+                        "color": "dark-red",
+                        "value": 146800640
+                      }
+                    ]
+                  },
+                  "unit": "bytes"
+                },
+                "overrides": [
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "Limit"
+                    },
+                    "properties": [
+                      {
+                        "id": "custom.fillOpacity",
+                        "value": 0
+                      }
+                    ]
+                  }
+                ]
+              },
+              "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 12,
+                "y": 21
+              },
+              "id": 39,
+              "options": {
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "mode": "multi",
+                  "sort": "none"
+                }
+              },
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "${datasource}"
+                  },
+                  "editorMode": "code",
+                  "expr": "sum(container_memory_working_set_bytes{namespace=\"${namespace}\", container=\"app\"}) by (pod)",
+                  "interval": "",
+                  "legendFormat": "{{pod}}",
+                  "range": true,
+                  "refId": "A"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "${datasource}"
+                  },
+                  "editorMode": "code",
+                  "exemplar": false,
+                  "expr": "topk(1, kube_pod_container_resource_limits{namespace=\"${namespace}\", container=\"app\",resource=\"memory\"})",
+                  "hide": false,
+                  "instant": false,
+                  "interval": "",
+                  "legendFormat": "Limit",
+                  "range": true,
+                  "refId": "B"
+                }
+              ],
+              "title": "Memory Usage",
+              "type": "timeseries"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "description": "",
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "drawStyle": "line",
+                    "fillOpacity": 20,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "lineInterpolation": "linear",
+                    "lineStyle": {
+                      "fill": "solid"
+                    },
+                    "lineWidth": 2,
+                    "pointSize": 3,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "never",
+                    "spanNulls": true,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  },
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": null
+                      }
+                    ]
+                  },
+                  "unit": "binBps"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 0,
+                "y": 29
+              },
+              "id": 40,
+              "options": {
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "mode": "multi",
+                  "sort": "none"
+                }
+              },
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "${datasource}"
+                  },
+                  "editorMode": "code",
+                  "expr": "sum(irate(container_network_receive_bytes_total{namespace=\"${namespace}\"}[5m])) by (pod)",
+                  "legendFormat": "__auto",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Receive Bandwidth",
+              "type": "timeseries"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "description": "",
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "drawStyle": "line",
+                    "fillOpacity": 20,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "lineInterpolation": "linear",
+                    "lineStyle": {
+                      "fill": "solid"
+                    },
+                    "lineWidth": 2,
+                    "pointSize": 3,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "never",
+                    "spanNulls": true,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  },
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": null
+                      }
+                    ]
+                  },
+                  "unit": "binBps"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 12,
+                "y": 29
+              },
+              "id": 41,
+              "options": {
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "mode": "multi",
+                  "sort": "none"
+                }
+              },
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "${datasource}"
+                  },
+                  "editorMode": "code",
+                  "expr": "sum(irate(container_network_transmit_bytes_total{namespace=\"${namespace}\"}[5m])) by (pod)",
+                  "legendFormat": "__auto",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Transmit Bandwidth",
+              "type": "timeseries"
+            }
+          ],
+          "title": "Resources",
+          "type": "row"
         }
       ],
-      "refresh": false,
+      "refresh": "",
       "schemaVersion": 37,
       "style": "dark",
-      "tags": [
-        "exhort",
-        "trusted-content"
-      ],
+      "tags": ["exhort", "trusted-content"],
       "templating": {
         "list": [
           {
@@ -556,11 +1079,39 @@ data:
             "regex": "app-sre-stage-01-prometheus|app-sre-prod-01-prometheus",
             "skipUrlSync": false,
             "type": "datasource"
+          },
+          {
+            "current": {
+              "selected": true,
+              "text": "exhort-stage",
+              "value": "exhort-stage"
+            },
+            "hide": 0,
+            "includeAll": false,
+            "label": "Namespace",
+            "multi": false,
+            "name": "namespace",
+            "options": [
+              {
+                "selected": true,
+                "text": "exhort-stage",
+                "value": "exhort-stage"
+              },
+              {
+                "selected": false,
+                "text": "exhort-production",
+                "value": "exhort-production"
+              }
+            ],
+            "query": "exhort-stage,exhort-production",
+            "queryValue": "",
+            "skipUrlSync": false,
+            "type": "custom"
           }
         ]
       },
       "time": {
-        "from": "now-30m",
+        "from": "now-1h",
         "to": "now"
       },
       "timepicker": {
@@ -576,17 +1127,7 @@ data:
           "2h",
           "1d"
         ],
-        "time_options": [
-          "5m",
-          "15m",
-          "1h",
-          "6h",
-          "12h",
-          "24h",
-          "2d",
-          "7d",
-          "30d"
-        ]
+        "time_options": ["5m", "15m", "1h", "6h", "12h", "24h", "2d", "7d", "30d"]
       },
       "timezone": "",
       "title": "Exhort",
