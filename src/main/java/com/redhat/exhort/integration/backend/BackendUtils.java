@@ -24,6 +24,8 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Header;
 import org.apache.camel.http.base.HttpOperationFailedException;
 import org.jboss.resteasy.reactive.common.util.MediaTypeHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.redhat.exhort.api.ProviderStatus;
 import com.redhat.exhort.integration.Constants;
@@ -37,6 +39,8 @@ import jakarta.ws.rs.core.Response.Status;
 
 @RegisterForReflection
 public class BackendUtils {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(BackendUtils.class);
 
   public String getResponseMediaType(@Header(Constants.ACCEPT_HEADER) String acceptHeader) {
     if (acceptHeader == null || acceptHeader.isBlank()) {
@@ -61,10 +65,10 @@ public class BackendUtils {
     Throwable cause = exception.getCause();
 
     if (cause != null) {
+      LOGGER.warn("Unable to process request to: {}", provider, cause);
       if (cause instanceof HttpOperationFailedException) {
         HttpOperationFailedException httpException = (HttpOperationFailedException) cause;
         status.message(prettifyHttpError(httpException)).status(httpException.getStatusCode());
-
       } else {
         status
             .message(cause.getMessage())
@@ -74,6 +78,7 @@ public class BackendUtils {
       status
           .message(exception.getMessage())
           .status(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
+      LOGGER.warn("Unable to process request to: {}", provider, exception);
     }
     exchange.getMessage().setBody(status);
   }
@@ -108,6 +113,8 @@ public class BackendUtils {
         return text + ": The provided credentials don't have the required permissions.";
       case 429:
         return text + ": The rate limit has been exceeded.";
+      case 500:
+        return text + ": " + httpException.getResponseBody();
       default:
         return text;
     }

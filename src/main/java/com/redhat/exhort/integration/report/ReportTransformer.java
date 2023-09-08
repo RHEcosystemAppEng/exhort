@@ -68,17 +68,16 @@ public class ReportTransformer {
 
     direct.forEach(
         d -> {
-          if (uniqueDeps.contains(d.ref())) {
-            return;
-          }
-          uniqueDeps.add(d.ref());
           List<Issue> issues = request.issues().get(d.ref().name());
           if (issues == null) {
             issues = Collections.emptyList();
           }
           List<TransitiveDependencyReport> transitiveReport =
               getTransitiveDependenciesReport(d, request);
-          updateVulnerabilitySummary(issues, transitiveReport, counter, uniqueDeps);
+          if (!uniqueDeps.contains(d.ref())) {
+            uniqueDeps.add(d.ref());
+            updateVulnerabilitySummary(issues, transitiveReport, counter, uniqueDeps);
+          }
           Optional<Issue> highestVulnerability =
               issues.stream().max(Comparator.comparing(Issue::getCvssScore));
           Optional<Issue> highestTransitive =
