@@ -120,17 +120,18 @@ public class AnalyticsService {
     if (report != null) {
       Map<String, Object> providers = new HashMap<>();
       Map<String, Object> reportProps = new HashMap<>();
-      // TODO: Adapt after multi-source is implemented
-      reportProps.put("dependencies", report.getSummary().getDependencies());
-      reportProps.put("vulnerabilities", report.getSummary().getVulnerabilities());
-      providers.put("report", reportProps);
-      providers.put("provider", Constants.SNYK_PROVIDER);
-      providers.put("recommendations", countRecommendations(report));
-      providers.put("remediations", countRemediations(report));
       properties.put(
           "requestType", exchange.getProperty(Constants.REQUEST_CONTENT_PROPERTY, String.class));
-      properties.put("providers", providers);
       properties.put("sbom", exchange.getProperty(Constants.SBOM_TYPE_PARAM, String.class));
+      // TODO: Adapt after multi-source is implemented
+      Map<String, Object> snykReport = new HashMap<>();
+      reportProps.put("dependencies", report.getSummary().getDependencies());
+      reportProps.put("vulnerabilities", report.getSummary().getVulnerabilities());
+      snykReport.put("report", reportProps);
+      snykReport.put("recommendations", countRecommendations(report));
+      snykReport.put("remediations", countRemediations(report));
+      providers.put(Constants.SNYK_PROVIDER, snykReport);
+      properties.put("providers", providers);
     }
     try {
       Response response = segmentService.track(builder.properties(properties).build());
