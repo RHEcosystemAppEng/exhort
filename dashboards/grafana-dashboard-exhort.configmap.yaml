@@ -516,14 +516,38 @@ data:
                 "uid": "${datasource}"
               },
               "editorMode": "code",
-              "expr": "sum(rate(http_server_requests_seconds_count{namespace=~\"$namespace\", job=\"exhort\", status!~\"5..\"}[7d]))\n/\nsum(rate(http_server_requests_seconds_count{namespace=~\"$namespace\", job=\"exhort\"}[7d]))",
+              "expr": "histogram_quantile(0.90, sum(rate(http_server_requests_seconds_bucket{ status!~\"5..\", uri=\"/api/v3/analysis\"}[2m])) by (le))",
               "interval": "",
-              "legendFormat": "Latency",
+              "legendFormat": "0.90",
               "range": true,
               "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "histogram_quantile(0.95, sum(rate(http_server_requests_seconds_bucket{ status!~\"5..\", uri=\"/api/v3/analysis\"}[2m])) by (le))",
+              "interval": "",
+              "legendFormat": "0.95",
+              "range": true,
+              "refId": "B"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "histogram_quantile(0.99, sum(rate(http_server_requests_seconds_bucket{ status!~\"5..\", uri=\"/api/v3/analysis\"}[2m])) by (le))",
+              "interval": "",
+              "legendFormat": "0.99",
+              "range": true,
+              "refId": "C"
             }
           ],
-          "title": "Latency (NOT READY)",
+          "title": "Latency",
           "type": "timeseries"
         },
         {
