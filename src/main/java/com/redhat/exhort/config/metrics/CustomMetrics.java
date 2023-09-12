@@ -31,8 +31,19 @@ import jakarta.inject.Singleton;
 @Singleton
 public class CustomMetrics {
 
-  private static final Collection<String> HISTOGRAMS =
-      List.of("http.server.connections", "camel.route.policy");
+  private static final String HTTP_SERVER_REQUESTS_METRIC = "http.server.requests";
+  private static final String CAMEL_ROUTES_METRIC = "camel.route.policy";
+  private static final String ROUTE_ID_TAG = "routeId";
+
+  private static final Collection<String> MONITORED_ROUTES =
+      List.of(
+          "snykValidateToken",
+          "snykRequest",
+          "ossValidateCredentials",
+          "ossSplitReq",
+          "ossIndexRequest",
+          "gavRequest",
+          "vexRequest");
 
   @Produces
   @Singleton
@@ -40,9 +51,9 @@ public class CustomMetrics {
     return new MeterFilter() {
       @Override
       public DistributionStatisticConfig configure(Id id, DistributionStatisticConfig config) {
-        if (HISTOGRAMS.contains(id.getName())) {
+        if (requiresHistogram(id)) {
           return DistributionStatisticConfig.builder()
-              .percentiles(0.7, 0.95, 0.99)
+              .percentiles(0.90, 0.95, 0.99)
               .percentilesHistogram(Boolean.TRUE)
               .build()
               .merge(config);
@@ -50,5 +61,19 @@ public class CustomMetrics {
         return config;
       }
     };
+  }
+
+  private boolean requiresHistogram(Id id) {
+    if (HTTP_SERVER_REQUESTS_METRIC.equalsIgnoreCase(id.getName())) {
+      return true;
+    }
+    if (CAMEL_ROUTES_METRIC.equalsIgnoreCase(id.getName())) {
+      String routeTag = id.getTag(ROUTE_ID_TAG);
+      if (routeTag == null) {
+        return false;
+      }
+      return MONITORED_ROUTES.contains(routeTag);
+    }
+    return false;
   }
 }

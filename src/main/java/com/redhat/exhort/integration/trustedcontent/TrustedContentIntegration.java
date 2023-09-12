@@ -93,7 +93,7 @@ public class TrustedContentIntegration extends EndpointRouteBuilder {
         .otherwise().setBody(constant(Collections.emptyMap()));
 
     from(direct("vexRequest"))
-        .routeId("doVexRequest")
+        .routeId("vexRequest")
         .marshal().json()
         .to(vertxHttp("{{api.trustedContent.vex.host}}"))
         .unmarshal(new ListJacksonDataFormat(VexResult.class));
