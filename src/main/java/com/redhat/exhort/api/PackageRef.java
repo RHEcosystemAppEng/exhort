@@ -54,7 +54,13 @@ public class PackageRef {
   public String name() {
     switch (purl.getType()) {
       case Constants.GOLANG_PKG_MANAGER:
-        return new StringBuffer(purl.getNamespace()).append("/").append(purl.getName()).toString();
+        if (purl().getNamespace() != null) {
+          return new StringBuffer(purl.getNamespace())
+              .append("/")
+              .append(purl.getName())
+              .toString();
+        }
+        return purl.getName();
       default:
         if (purl.getNamespace() == null) {
           return purl.getName();
