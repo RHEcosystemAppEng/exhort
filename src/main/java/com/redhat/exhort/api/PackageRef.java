@@ -52,13 +52,13 @@ public class PackageRef {
   }
 
   public String name() {
+    if (purl.getNamespace() == null) {
+      return purl.getName();
+    }
     switch (purl.getType()) {
       case Constants.GOLANG_PKG_MANAGER:
         return new StringBuffer(purl.getNamespace()).append("/").append(purl.getName()).toString();
       default:
-        if (purl.getNamespace() == null) {
-          return purl.getName();
-        }
         return new StringBuilder(purl.getNamespace()).append(":").append(purl.getName()).toString();
     }
   }
