@@ -103,6 +103,11 @@ public class SpdxParser extends SbomParser {
                         .filter(e -> !e.getKey().equals(k))
                         .noneMatch(e -> e.getValue().contains(k)))
             .collect(Collectors.toSet());
+    if (!links.isEmpty() && directDeps.isEmpty()) {
+      throw new SpdxProcessingException(
+          "Unable to calculate direct dependencies due to a cyclic relationship");
+    }
+
     Map<String, Set<String>> flatDepTree = new HashMap<>();
     directDeps.stream()
         .forEach(

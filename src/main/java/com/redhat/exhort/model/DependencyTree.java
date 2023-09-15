@@ -18,6 +18,7 @@
 
 package com.redhat.exhort.model;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
@@ -55,10 +56,13 @@ public record DependencyTree(PackageRef root, Map<PackageRef, DirectDependency> 
   }
 
   public int transitiveCount() {
-    return dependencies.values().stream()
-        .map(d -> d.transitive().size())
-        .reduce(Integer::sum)
-        .orElse(0);
+    return Long.valueOf(
+            dependencies.values().stream()
+                .map(d -> d.transitive())
+                .flatMap(Collection::stream)
+                .distinct()
+                .count())
+        .intValue();
   }
 
   public int count() {
