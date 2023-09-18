@@ -1,0 +1,255 @@
+{
+  "SPDXID" : "SPDXRef-DOCUMENT",
+  "spdxVersion" : "SPDX-2.3",
+  "creationInfo" : {
+    "comment" : "Converted from CycloneDX spec version 1.4",
+    "created" : "2023-07-26T09:11:18Z",
+    "creators" : [ "Tool: CycloneToSpdx-0.1.4" ],
+    "licenseListVersion" : "3.21"
+  },
+  "name" : "postgresql-orm-quarkus",
+  "dataLicense" : "CC0-1.0",
+  "documentNamespace" : "https://cyclonedx/fc12be53-d648-445d-8df3-9fe49c1924ac_1",
+  "packages" : [ {
+    "SPDXID" : "SPDXRef-pkg-maven-io.quarkus-quarkus-jdbc-postgresql-2.13.5.Final-type-jar",
+    "annotations" : [ {
+      "annotationDate" : "2023-07-26T09:11:19Z",
+      "annotationType" : "OTHER",
+      "annotator" : "Tool: CycloneToSpdx",
+      "comment" : "MISSING_CDX_PROPERTY:componentType=\"LIBRARY\""
+    } ],
+    "copyrightText" : "NOASSERTION",
+    "downloadLocation" : "NOASSERTION",
+    "externalRefs" : [ {
+      "referenceCategory" : "PACKAGE-MANAGER",
+      "referenceLocator" : "pkg:maven/io.quarkus/quarkus-jdbc-postgresql@2.13.5.Final?type=jar",
+      "referenceType" : "purl"
+    } ],
+    "filesAnalyzed" : false,
+    "licenseConcluded" : "NOASSERTION",
+    "licenseDeclared" : "NOASSERTION",
+    "name" : "quarkus-jdbc-postgresql",
+    "primaryPackagePurpose" : "LIBRARY"
+  }, {
+    "SPDXID" : "SPDXRef-pkg-maven-io.quarkus-quarkus-hibernate-orm-2.13.5.Final-type-jar",
+    "annotations" : [ {
+      "annotationDate" : "2023-07-26T09:11:19Z",
+      "annotationType" : "OTHER",
+      "annotator" : "Tool: CycloneToSpdx",
+      "comment" : "MISSING_CDX_PROPERTY:componentType=\"LIBRARY\""
+    } ],
+    "copyrightText" : "NOASSERTION",
+    "downloadLocation" : "NOASSERTION",
+    "externalRefs" : [ {
+      "referenceCategory" : "PACKAGE-MANAGER",
+      "referenceLocator" : "pkg:maven/io.quarkus/quarkus-hibernate-orm@2.13.5.Final?type=jar",
+      "referenceType" : "purl"
+    } ],
+    "filesAnalyzed" : false,
+    "licenseConcluded" : "NOASSERTION",
+    "licenseDeclared" : "NOASSERTION",
+    "name" : "quarkus-hibernate-orm",
+    "primaryPackagePurpose" : "LIBRARY"
+  }, {
+    "SPDXID" : "SPDXRef-pkg-maven-org.acme.dbaas-postgresql-orm-quarkus-1.0.0-SNAPSHOT-type-jar",
+    "annotations" : [ {
+      "annotationDate" : "2023-07-26T09:11:19Z",
+      "annotationType" : "OTHER",
+      "annotator" : "Tool: CycloneToSpdx",
+      "comment" : "MISSING_CDX_PROPERTY:componentType=\"LIBRARY\""
+    } ],
+    "copyrightText" : "NOASSERTION",
+    "downloadLocation" : "NOASSERTION",
+    "externalRefs" : [ {
+      "referenceCategory" : "PACKAGE-MANAGER",
+      "referenceLocator" : "pkg:maven/org.acme.dbaas/postgresql-orm-quarkus@1.0.0-SNAPSHOT?type=jar",
+      "referenceType" : "purl"
+    } ],
+    "filesAnalyzed" : false,
+    "licenseConcluded" : "NOASSERTION",
+    "licenseDeclared" : "NOASSERTION",
+    "name" : "postgresql-orm-quarkus",
+    "primaryPackagePurpose" : "LIBRARY"
+  }, {
+    "SPDXID" : "SPDXRef-pkg-maven-com.fasterxml.jackson.core-jackson-databind-2.13.1-type-jar",
+    "annotations" : [ {
+      "annotationDate" : "2023-07-26T09:11:19Z",
+      "annotationType" : "OTHER",
+      "annotator" : "Tool: CycloneToSpdx",
+      "comment" : "MISSING_CDX_PROPERTY:componentType=\"LIBRARY\""
+    } ],
+    "copyrightText" : "NOASSERTION",
+    "downloadLocation" : "NOASSERTION",
+    "externalRefs" : [ {
+      "referenceCategory" : "PACKAGE-MANAGER",
+      "referenceLocator" : "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.1?type=jar",
+      "referenceType" : "purl"
+    } ],
+    "filesAnalyzed" : false,
+    "licenseConcluded" : "NOASSERTION",
+    "licenseDeclared" : "NOASSERTION",
+    "name" : "jackson-databind",
+    "primaryPackagePurpose" : "LIBRARY"
+  }, {
+    "SPDXID" : "SPDXRef-pkg-maven-org.postgresql-postgresql-42.5.0-type-jar",
+    "annotations" : [ {
+      "annotationDate" : "2023-07-26T09:11:19Z",
+      "annotationType" : "OTHER",
+      "annotator" : "Tool: CycloneToSpdx",
+      "comment" : "MISSING_CDX_PROPERTY:componentType=\"LIBRARY\""
+    } ],
+    "copyrightText" : "NOASSERTION",
+    "downloadLocation" : "NOASSERTION",
+    "externalRefs" : [ {
+      "referenceCategory" : "PACKAGE-MANAGER",
+      "referenceLocator" : "pkg:maven/org.postgresql/postgresql@42.5.0?type=jar",
+      "referenceType" : "purl"
+    } ],
+    "filesAnalyzed" : false,
+    "licenseConcluded" : "NOASSERTION",
+    "licenseDeclared" : "NOASSERTION",
+    "name" : "postgresql",
+    "primaryPackagePurpose" : "LIBRARY"
+  }, {
+    "SPDXID" : "SPDXRef-pkg-maven-jakarta.el-jakarta.el-api-3.0.3-type-jar",
+    "annotations" : [ {
+      "annotationDate" : "2023-07-26T09:11:19Z",
+      "annotationType" : "OTHER",
+      "annotator" : "Tool: CycloneToSpdx",
+      "comment" : "MISSING_CDX_PROPERTY:componentType=\"LIBRARY\""
+    } ],
+    "copyrightText" : "NOASSERTION",
+    "downloadLocation" : "NOASSERTION",
+    "externalRefs" : [ {
+      "referenceCategory" : "PACKAGE-MANAGER",
+      "referenceLocator" : "pkg:maven/jakarta.el/jakarta.el-api@3.0.3?type=jar",
+      "referenceType" : "purl"
+    } ],
+    "filesAnalyzed" : false,
+    "licenseConcluded" : "NOASSERTION",
+    "licenseDeclared" : "NOASSERTION",
+    "name" : "jakarta.el-api",
+    "primaryPackagePurpose" : "LIBRARY"
+  }, {
+    "SPDXID" : "SPDXRef-pkg-maven-io.quarkus-quarkus-narayana-jta-2.13.5.Final-type-jar",
+    "annotations" : [ {
+      "annotationDate" : "2023-07-26T09:11:19Z",
+      "annotationType" : "OTHER",
+      "annotator" : "Tool: CycloneToSpdx",
+      "comment" : "MISSING_CDX_PROPERTY:componentType=\"LIBRARY\""
+    } ],
+    "copyrightText" : "NOASSERTION",
+    "downloadLocation" : "NOASSERTION",
+    "externalRefs" : [ {
+      "referenceCategory" : "PACKAGE-MANAGER",
+      "referenceLocator" : "pkg:maven/io.quarkus/quarkus-narayana-jta@2.13.5.Final?type=jar",
+      "referenceType" : "purl"
+    } ],
+    "filesAnalyzed" : false,
+    "licenseConcluded" : "NOASSERTION",
+    "licenseDeclared" : "NOASSERTION",
+    "name" : "quarkus-narayana-jta",
+    "primaryPackagePurpose" : "LIBRARY"
+  }, {
+    "SPDXID" : "SPDXRef-pkg-maven-io.quarkus-quarkus-core-2.13.5.Final-type-jar",
+    "annotations" : [ {
+      "annotationDate" : "2023-07-26T09:11:19Z",
+      "annotationType" : "OTHER",
+      "annotator" : "Tool: CycloneToSpdx",
+      "comment" : "MISSING_CDX_PROPERTY:componentType=\"LIBRARY\""
+    } ],
+    "copyrightText" : "NOASSERTION",
+    "downloadLocation" : "NOASSERTION",
+    "externalRefs" : [ {
+      "referenceCategory" : "PACKAGE-MANAGER",
+      "referenceLocator" : "pkg:maven/io.quarkus/quarkus-core@2.13.5.Final?type=jar",
+      "referenceType" : "purl"
+    } ],
+    "filesAnalyzed" : false,
+    "licenseConcluded" : "NOASSERTION",
+    "licenseDeclared" : "NOASSERTION",
+    "name" : "quarkus-core",
+    "primaryPackagePurpose" : "LIBRARY"
+  }, {
+    "SPDXID" : "SPDXRef-pkg-maven-jakarta.interceptor-jakarta.interceptor-api-1.2.5-type-jar",
+    "annotations" : [ {
+      "annotationDate" : "2023-07-26T09:11:19Z",
+      "annotationType" : "OTHER",
+      "annotator" : "Tool: CycloneToSpdx",
+      "comment" : "MISSING_CDX_PROPERTY:componentType=\"LIBRARY\""
+    } ],
+    "copyrightText" : "NOASSERTION",
+    "downloadLocation" : "NOASSERTION",
+    "externalRefs" : [ {
+      "referenceCategory" : "PACKAGE-MANAGER",
+      "referenceLocator" : "pkg:maven/jakarta.interceptor/jakarta.interceptor-api@1.2.5?type=jar",
+      "referenceType" : "purl"
+    } ],
+    "filesAnalyzed" : false,
+    "licenseConcluded" : "NOASSERTION",
+    "licenseDeclared" : "NOASSERTION",
+    "name" : "jakarta.interceptor-api",
+    "primaryPackagePurpose" : "LIBRARY"
+  }, {
+    "SPDXID" : "SPDXRef-pkg-maven-jakarta.enterprise-jakarta.enterprise.cdi-api-2.0.2-type-jar",
+    "annotations" : [ {
+      "annotationDate" : "2023-07-26T09:11:19Z",
+      "annotationType" : "OTHER",
+      "annotator" : "Tool: CycloneToSpdx",
+      "comment" : "MISSING_CDX_PROPERTY:componentType=\"LIBRARY\""
+    } ],
+    "copyrightText" : "NOASSERTION",
+    "downloadLocation" : "NOASSERTION",
+    "externalRefs" : [ {
+      "referenceCategory" : "PACKAGE-MANAGER",
+      "referenceLocator" : "pkg:maven/jakarta.enterprise/jakarta.enterprise.cdi-api@2.0.2?type=jar",
+      "referenceType" : "purl"
+    } ],
+    "filesAnalyzed" : false,
+    "licenseConcluded" : "NOASSERTION",
+    "licenseDeclared" : "NOASSERTION",
+    "name" : "jakarta.enterprise.cdi-api",
+    "primaryPackagePurpose" : "LIBRARY"
+  } ],
+  "relationships" : [ {
+    "spdxElementId" : "SPDXRef-DOCUMENT",
+    "relationshipType" : "DESCRIBES",
+    "relatedSpdxElement" : "SPDXRef-pkg-maven-org.acme.dbaas-postgresql-orm-quarkus-1.0.0-SNAPSHOT-type-jar"
+  }, {
+    "spdxElementId" : "SPDXRef-pkg-maven-io.quarkus-quarkus-jdbc-postgresql-2.13.5.Final-type-jar",
+    "relationshipType" : "DEPENDS_ON",
+    "relatedSpdxElement" : "SPDXRef-pkg-maven-org.postgresql-postgresql-42.5.0-type-jar"
+  }, {
+    "spdxElementId" : "SPDXRef-pkg-maven-io.quarkus-quarkus-jdbc-postgresql-2.13.5.Final-type-jar",
+    "relationshipType" : "DEPENDS_ON",
+    "relatedSpdxElement" : "SPDXRef-pkg-maven-io.quarkus-quarkus-hibernate-orm-2.13.5.Final-type-jar"
+  },{
+    "spdxElementId" : "SPDXRef-pkg-maven-io.quarkus-quarkus-hibernate-orm-2.13.5.Final-type-jar",
+    "relationshipType" : "DEPENDS_ON",
+    "relatedSpdxElement" : "SPDXRef-pkg-maven-io.quarkus-quarkus-narayana-jta-2.13.5.Final-type-jar"
+  }, {
+    "spdxElementId" : "SPDXRef-pkg-maven-io.quarkus-quarkus-hibernate-orm-2.13.5.Final-type-jar",
+    "relationshipType" : "DEPENDS_ON",
+    "relatedSpdxElement" : "SPDXRef-pkg-maven-io.quarkus-quarkus-core-2.13.5.Final-type-jar"
+  }, {
+    "spdxElementId" : "SPDXRef-pkg-maven-io.quarkus-quarkus-hibernate-orm-2.13.5.Final-type-jar",
+    "relationshipType" : "DEPENDS_ON",
+    "relatedSpdxElement" : "SPDXRef-pkg-maven-io.quarkus-quarkus-jdbc-postgresql-2.13.5.Final-type-jar"
+  }, {
+    "spdxElementId" : "SPDXRef-pkg-maven-io.quarkus-quarkus-core-2.13.5.Final-type-jar",
+    "relationshipType" : "DEPENDS_ON",
+    "relatedSpdxElement" : "SPDXRef-pkg-maven-jakarta.enterprise-jakarta.enterprise.cdi-api-2.0.2-type-jar"
+  }, {
+    "spdxElementId" : "SPDXRef-pkg-maven-io.quarkus-quarkus-core-2.13.5.Final-type-jar",
+    "relationshipType" : "DEPENDS_ON",
+    "relatedSpdxElement" : "SPDXRef-pkg-maven-com.fasterxml.jackson.core-jackson-databind-2.13.1-type-jar"
+  }, {
+    "spdxElementId" : "SPDXRef-pkg-maven-jakarta.enterprise-jakarta.enterprise.cdi-api-2.0.2-type-jar",
+    "relationshipType" : "DEPENDS_ON",
+    "relatedSpdxElement" : "SPDXRef-pkg-maven-jakarta.interceptor-jakarta.interceptor-api-1.2.5-type-jar"
+  }, {
+    "spdxElementId" : "SPDXRef-pkg-maven-jakarta.enterprise-jakarta.enterprise.cdi-api-2.0.2-type-jar",
+    "relationshipType" : "DEPENDS_ON",
+    "relatedSpdxElement" : "SPDXRef-pkg-maven-jakarta.el-jakarta.el-api-3.0.3-type-jar"
+  } ]
+}

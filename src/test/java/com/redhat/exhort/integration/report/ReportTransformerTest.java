@@ -107,7 +107,7 @@ public class ReportTransformerTest {
     assertEquals(1, report.getDependencies().get(1).getTransitive().size());
 
     assertEquals(2, report.getSummary().getDependencies().getScanned());
-    assertEquals(4, report.getSummary().getDependencies().getTransitive());
+    assertEquals(3, report.getSummary().getDependencies().getTransitive());
 
     assertEquals(2, report.getSummary().getVulnerabilities().getTotal());
   }

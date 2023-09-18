@@ -139,8 +139,11 @@ public class CycloneDxParser extends SbomParser {
     }
     deps.forEach(
         d -> {
-          builder.transitive.add(componentPurls.get(d.getRef()));
-          addDependencies(d.getRef(), indexedDeps, builder, componentPurls);
+          PackageRef tRef = componentPurls.get(d.getRef());
+          if (!builder.transitive.contains(tRef)) {
+            builder.transitive.add(tRef);
+            addDependencies(d.getRef(), indexedDeps, builder, componentPurls);
+          }
         });
   }
 }
