@@ -213,9 +213,12 @@ The possible responses are:
 
 ## Telemetry
 
-API Clients are expected to send a `rhda-token` HTTP Header that will be used to correlate
-different events related to the same user.
-If the header is not provided an anonymous event with a generated UUID will be sent instead.
+API Clients are expected to send the following HTTP Headers in order to help observe the use of the Backend service:
+
+- `rhda-token` HTTP Header that will be used to correlate different events related to the same user. If the header
+is not provided an anonymous event with a generated UUID will be sent instead.
+- `rhda-source` The client consuming the Exhort API. It will default to the `User-Agent` HTTP Header
+- `rhda-operation-type` When performing an analysis, clients might specify whether it is a component-analysis or a stack-analysis
 
 Telemetry connects to [Segment](https://segment.com/) for sending events.
 The connection can be configured with the following properties.

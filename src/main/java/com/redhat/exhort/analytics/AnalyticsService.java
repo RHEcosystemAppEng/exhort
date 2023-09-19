@@ -26,6 +26,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.camel.Exchange;
+import org.apache.camel.Message;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.slf4j.Logger;
@@ -51,7 +52,11 @@ public class AnalyticsService {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(AnalyticsService.class);
 
-  private static final String RHDA_TOKEN = "rhda-token";
+  private static final String RHDA_TOKEN_HEADER = "rhda-token";
+  private static final String RHDA_SOURCE_HEADER = "rhda-source";
+  private static final String RHDA_OPERATION_TYPE_HEADER = "rhda-operation-type";
+  private static final String USER_AGENT_HEADER = "User-Agent";
+
   private static final String ANONYMOUS_ID = "telemetry-anonymous-id";
   private static final String ANALYSIS_EVENT = "rhda.exhort.analysis";
   private static final String TOKEN_EVENT = "rhda.exhort.token";
@@ -78,35 +83,36 @@ public class AnalyticsService {
       return;
     }
 
-    String userId = exchange.getIn().getHeader(RHDA_TOKEN, String.class);
+    String userId = exchange.getIn().getHeader(RHDA_TOKEN_HEADER, String.class);
+    Map<String, String> traits = new HashMap<>();
+    traits.put("serverName", projectName);
+    traits.put("serverVersion", projectVersion);
+    traits.put("serverBuild", projectBuild);
+
+    IdentifyEvent.Builder builder =
+        new IdentifyEvent.Builder()
+            .context(
+                new Context(new Library(projectId, projectVersion), getSource(exchange.getIn())))
+            .traits(traits);
+
     if (userId == null) {
       String anonymousId = UUID.randomUUID().toString();
-      Map<String, String> traits = new HashMap<>();
-      traits.put("serverName", projectName);
-      traits.put("serverVersion", projectVersion);
-      traits.put("serverBuild", projectBuild);
-      IdentifyEvent event =
-          new IdentifyEvent.Builder()
-              .context(new Context(new Library(projectId, projectVersion)))
-              .anonymousId(anonymousId)
-              .traits(traits)
-              .build();
-      try {
-        Response response = segmentService.identify(event);
-        if (response.getStatus() >= 400) {
-          LOGGER.warn(
-              String.format(
-                  "Unable to send event to segment: %d - %s",
-                  response.getStatus(), response.getStatusInfo()));
-        }
-      } catch (Exception e) {
-        LOGGER.warn("Unable to send event to segment", e);
-      }
+      builder.anonymousId(anonymousId);
       exchange.setProperty(ANONYMOUS_ID, anonymousId);
     } else {
-      // no need to IDENTIFY as we expect the caller to have done that already
-      exchange.setProperty(RHDA_TOKEN, userId);
-      exchange.getIn().removeHeader(RHDA_TOKEN);
+      builder.userId(userId);
+      exchange.setProperty(RHDA_TOKEN_HEADER, userId);
+    }
+    try {
+      Response response = segmentService.identify(builder.build());
+      if (response.getStatus() >= 400) {
+        LOGGER.warn(
+            String.format(
+                "Unable to send event to segment: %d - %s",
+                response.getStatus(), response.getStatusInfo()));
+      }
+    } catch (Exception e) {
+      LOGGER.warn("Unable to send event to segment", e);
     }
   }
 
@@ -132,6 +138,10 @@ public class AnalyticsService {
       snykReport.put("remediations", countRemediations(report));
       providers.put(Constants.SNYK_PROVIDER, snykReport);
       properties.put("providers", providers);
+      String operationType = exchange.getIn().getHeader(RHDA_OPERATION_TYPE_HEADER, String.class);
+      if (operationType != null) {
+        properties.put("operationType", operationType);
+      }
     }
     try {
       Response response = segmentService.track(builder.properties(properties).build());
@@ -168,16 +178,31 @@ public class AnalyticsService {
     }
   }
 
+  private String getSource(Message message) {
+    String customSource = message.getHeader(RHDA_SOURCE_HEADER, String.class);
+    if (customSource != null) {
+      return customSource;
+    }
+    String userAgent = message.getHeader(USER_AGENT_HEADER, String.class);
+    if (userAgent != null) {
+      return userAgent;
+    }
+    return null;
+  }
+
   private TrackEvent.Builder prepareTrackEvent(Exchange exchange, String eventName) {
-    TrackEvent.Builder builder = new TrackEvent.Builder(eventName);
-    String userId = exchange.getProperty(RHDA_TOKEN, String.class);
+    TrackEvent.Builder builder =
+        new TrackEvent.Builder(eventName)
+            .context(
+                new Context(new Library(projectId, projectVersion), getSource(exchange.getIn())));
+    String userId = exchange.getProperty(RHDA_TOKEN_HEADER, String.class);
     if (userId != null) {
       builder.userId(userId);
     } else {
       String anonymousId = exchange.getProperty(ANONYMOUS_ID, String.class);
       builder.anonymousId(anonymousId);
     }
-    return builder.context(new Context(new Library(projectId, projectVersion)));
+    return builder;
   }
 
   private long countRemediations(AnalysisReport report) {
