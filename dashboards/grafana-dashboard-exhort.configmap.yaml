@@ -634,7 +634,7 @@ data:
                 "uid": "${datasource}"
               },
               "editorMode": "code",
-              "expr": "sum(rate(http_server_requests_seconds_count{namespace=\"exhort-stage\"}[2m])) by (status)",
+              "expr": "sum(rate(http_server_requests_seconds_count{namespace=~\"$namespace\", job=\"exhort\"}[2m])) by (status)",
               "interval": "",
               "legendFormat": "__auto",
               "range": true,
