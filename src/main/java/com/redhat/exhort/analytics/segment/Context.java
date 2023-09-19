@@ -18,4 +18,9 @@
 
 package com.redhat.exhort.analytics.segment;
 
-public record Context(Library library) {}
+import static com.fasterxml.jackson.annotation.JsonInclude.Include;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+@JsonInclude(Include.NON_NULL)
+public record Context(Library library, String source) {}
