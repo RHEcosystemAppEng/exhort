@@ -57,36 +57,38 @@ export const TransitiveDependenciesTable = ({ providerName, dependency, transiti
             <Table variant={TableVariant.compact}>
               <Thead>
                 <Tr>
-                  <Th width={20}>Dependency</Th>
-                  <Th>Severity</Th>
-                  <Th>Exploit Maturity</Th>
-                  <Th width={20}>Description</Th>
-                  <Th width={15}>CVSS</Th>
-                  <Th width={10}>CVE</Th>
-                  <Th width={20}>Remediation</Th>
+                    <Th>Vulnerability ID</Th>
+                    <Th>Description</Th>
+                    <Th>Severity</Th>
+                    <Th>CVSS Score</Th>
+                    <Th>Transitive Dependency</Th>
+                    <Th>Remediation</Th>
                 </Tr>
               </Thead>
-              <ConditionalTableBody
-                isNoData={transitiveDependencies.length === 0}
-                numRenderedColumns={7}
-              >
-                <Tbody>
+              <ConditionalTableBody isNoData={transitiveDependencies.length === 0} numRenderedColumns={7}>
                   {transitiveDependencies?.map((item, rowIndex) => {
-                    return item.issues.map((vuln, subRowIndex) => {
-                      const mavenPackagesRemediation = vuln.cves
-                        ?.map((cve) => {
-                          return dependency.transitive
-                            .map((e) => e.remediations[cve])
-                            .filter((e) => e);
-                        })
-                        .flatMap((e) => e)
-                        .map((e) => e.mavenPackage);
+                      return item.issues.map((vuln, subRowIndex) => {
+                          const mavenPackagesRemediation = vuln.cves
+                              ?.map((cve) => {
+                                  return dependency.transitive
+                                      .map((e) => e.remediations[cve])
+                                      .filter((e) => e);
+                              })
+                              .flatMap((e) => e)
+                              .map((e) => e.mavenPackage);
+
 
                       return (
-                          <Tr key={`${rowIndex}-${subRowIndex}`}>
-                              <Td >
-                                  <DependencyLink name={item.ref} />
-                              </Td>
+                          <Tbody key={`${rowIndex}-${subRowIndex}`}>
+                          {/*<Tr key={`${rowIndex}-${subRowIndex}`}>*/}
+                              {vuln.cves?.map((cve, cveIndex) => (
+                                  <Tr key={`${rowIndex}-${cveIndex}`}>
+                                      <Td>
+                                          <p>{cve}</p>
+                                      </Td>
+                              {/*<Td >*/}
+                              {/*    {vuln.cves ? vuln.cves.map(i => <p>{i}</p>) : ''}*/}
+                              {/*</Td>*/}
 
                         {/* skip dependency name     */}
                         {/*<Tr key={`${rowIndex}-${subRowIndex}`}>*/}
@@ -99,12 +101,11 @@ export const TransitiveDependenciesTable = ({ providerName, dependency, transiti
 
                           {!vuln.unique ? (
                             <>
+                                <Td>{vuln.title}</Td>
                               <Td noPadding>
                                 <VulnerabilitySeverityLabel vulnerability={vuln} />
                                   {uppercaseFirstLetter(vuln.severity)}
                               </Td>
-                              <Td>{vuln.cvss?.exploitCodeMaturity || 'No known exploit'}</Td>
-                              <Td>{vuln.title}</Td>
                             </>
                           ) : (
                             <>
@@ -123,7 +124,9 @@ export const TransitiveDependenciesTable = ({ providerName, dependency, transiti
                             {/*)}*/}
                               <VulnerabilityScore vulnerability={vuln} />
                           </Td>
-                          <Td>{vuln.cves ? vuln.cves.map(i => <p>{i}</p>) : ''}</Td>
+                          <Td>
+                              <DependencyLink name={item.ref} />
+                          </Td>
                           <Td>
                             {mavenPackagesRemediation && mavenPackagesRemediation.length > 0 ? (
                               mavenPackagesRemediation.map((e, index) => (
@@ -138,10 +141,12 @@ export const TransitiveDependenciesTable = ({ providerName, dependency, transiti
                             )}
                           </Td>
                         </Tr>
-                      );
-                    });
-                  })}
+                    ))}
                 </Tbody>
+                      );
+
+                      });
+                  })}
               </ConditionalTableBody>
             </Table>
           </Card>

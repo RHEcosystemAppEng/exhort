@@ -4,6 +4,7 @@ import CheckCircleIcon from '@patternfly/react-icons/dist/esm/icons/check-circle
 
 import { extractDependencyVersion } from '../utils/utils';
 import { useAppContext } from '../App';
+import RedhatIcon from "@patternfly/react-icons/dist/esm/icons/redhat-icon";
 
 interface RemediationLinkProps {
   packageName: string;
@@ -19,8 +20,9 @@ export const RemediationLink: React.FC<RemediationLinkProps> = ({ packageName, c
     <>
       <Button variant={ButtonVariant.link} onClick={toggleModal}>
         <Icon isInline status="success">
-          <CheckCircleIcon />
-        </Icon>{' '}
+          {/*<RedhatIcon style={{fill: "#cc0000"}}/>*/}
+            <CheckCircleIcon />
+        </Icon>&nbsp;
         {extractDependencyVersion(packageName)}
       </Button>
 
