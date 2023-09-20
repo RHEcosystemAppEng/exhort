@@ -183,7 +183,7 @@ export const DependenciesTable = ({ name, provider }: { name: string; provider: 
                       </Td>
                       <Td>
                         {item.highestVulnerability && (
-                          <VulnerabilityScore vunerability={item.highestVulnerability} />
+                          <VulnerabilityScore vulnerability={item.highestVulnerability} />
                         )}
                       </Td>
                       <Td>

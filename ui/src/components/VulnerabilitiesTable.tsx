@@ -8,6 +8,8 @@ import { VulnerabilityScore } from './VulnerabilityScore';
 import { VulnerabilitySeverityLabel } from './VulnerabilitySeverityLabel';
 import { VulnerabilityLink } from './VulnerabilityLink';
 import { RemediationLink } from './RemediationLink';
+import { Card } from '@patternfly/react-core';
+import { uppercaseFirstLetter } from '../utils/utils';
 
 // interface VulnerabilitiesTableProps {
 //   providerName: 'snyk' | 'oss-index';
@@ -23,13 +25,18 @@ export const VulnerabilitiesTable = ({ providerName, dependency, vulnerabilities
 //   vulnerabilities,
 // }) => {
   return (
-    <div
-      style={{
-        backgroundColor: 'var(--pf-v5-global--BackgroundColor--100)',
-      }}
-    >
+    // <div
+    //   style={{
+    //     backgroundColor: 'var(--pf-v5-global--BackgroundColor--100)',
+    //   }}
+    // >
+      <Card
+          style={{
+            backgroundColor: 'var(--pf-v5-global--BackgroundColor--100)',
+          }}
+      >
       <Table variant={TableVariant.compact}>
-        <Caption>Details of the dependency</Caption>
+        {/*<Caption>Details of the dependency</Caption>*/}
         <Thead>
           <Tr>
             <Th>Severity</Th>
@@ -52,13 +59,15 @@ export const VulnerabilitiesTable = ({ providerName, dependency, vulnerabilities
                 <Tr>
                   <Td>
                     <VulnerabilitySeverityLabel vulnerability={vuln} />
+                      {/*<text>test</text>*/}
+                      {uppercaseFirstLetter(vuln.severity)}
                   </Td>
                   <Td>{vuln.cvss?.exploitCodeMaturity || 'No known exploit'}</Td>
                   <Td>{vuln.title}</Td>
                   <Td>
-                    <VulnerabilityScore vunerability={vuln} />
+                    <VulnerabilityScore vulnerability={vuln} />
                   </Td>
-                  <Td>{vuln.cves}</Td>
+                  <Td>{vuln.cves ? vuln.cves.map(i => <p>{i}</p>) : ''}</Td>
                   <Td>
                     {mavenPackagesRemediation && mavenPackagesRemediation.length > 0 ? (
                       mavenPackagesRemediation.map((e, index) => (
@@ -74,6 +83,6 @@ export const VulnerabilitiesTable = ({ providerName, dependency, vulnerabilities
           })}
         </ConditionalTableBody>
       </Table>
-    </div>
+    </Card>
   );
 };

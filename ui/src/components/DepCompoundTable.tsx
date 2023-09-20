@@ -9,7 +9,7 @@ import {
   EmptyState,
   EmptyStateBody,
   EmptyStateIcon,
-  EmptyStateVariant,
+  EmptyStateVariant, Flex, FlexItem, Icon,
   SearchInput,
   Stack,
   StackItem,
@@ -40,6 +40,7 @@ import { RemediationsCount } from './RemediationsCount';
 import { TransitiveDependenciesTable } from './TransitiveDependenciesTable';
 import { VulnerabilitiesTable } from './VulnerabilitiesTable';
 import { extractDependencyVersion } from '../utils/utils';
+import ShieldAltIcon from "@patternfly/react-icons/dist/esm/icons/shield-alt-icon";
 
 export const DepCompoundTable = ({ name, provider }: { name: string; provider: Provider }) => {
   const appContext = useAppContext();
@@ -193,16 +194,69 @@ export const DepCompoundTable = ({ name, provider }: { name: string; provider: P
                           dataLabel={columnNames.direct}
                           compoundExpand={compoundExpandParams(item, 'direct', rowIndex, 2)}
                       >
-                        {item.issues?.length || 0}
+                        {(item.issues?.length )? (
+                            <Flex>
+                            <FlexItem>{item.issues?.length}</FlexItem>
+                            <Divider
+                                orientation={{
+                                  default: 'vertical'
+                                }}
+                            />
+                              <FlexItem>
+                                <Icon isInline status="danger">
+                                  <ShieldAltIcon />
+                                </Icon>
+                                <Icon isInline status="warning">
+                                  <ShieldAltIcon />
+                                </Icon>
+                                <Icon isInline status="custom">
+                                  <ShieldAltIcon />
+                                </Icon>
+                                <Icon isInline status="info">
+                                  <ShieldAltIcon />
+                                </Icon>
+                              </FlexItem>
+                          </Flex>
+                        ) : 0}
+                        {/*{item.issues?.length || 0}*/}
                       </Td>
                       <Td
                           width={15}
                           dataLabel={columnNames.transitive}
                           compoundExpand={compoundExpandParams(item, 'transitive', rowIndex, 3)}
                       >
-                        {item.transitive
-                            .map((e) => e.issues.length)
-                            .reduce((prev, current) => prev + current, 0)}
+                        {(item.transitive.length )? (
+                            <Flex>
+                              <FlexItem>{item.transitive
+                                  .map((e) => e.issues.length)
+                                  .reduce((prev, current) =>
+                                      prev + current)}</FlexItem>
+                              <Divider
+                                  orientation={{
+                                    default: 'vertical'
+                                  }}
+                              />
+                              <FlexItem>
+                                <Icon isInline >
+                                  <ShieldAltIcon />
+                                </Icon>
+                                <Icon isInline >
+                                  <ShieldAltIcon />
+                                </Icon>
+                                <Icon isInline>
+                                  <ShieldAltIcon />
+                                </Icon>
+                                <Icon isInline >
+                                  <ShieldAltIcon style={{fill: "green"}}/>
+                                </Icon>
+                              </FlexItem>
+                            </Flex>
+                        ) : 0}
+
+                        {/*{item.transitive*/}
+                        {/*    .map((e) => e.issues.length)*/}
+                        {/*    .reduce((prev, current) =>*/}
+                        {/*        prev + current, 0)}*/}
                       </Td>
                       <Td width={15}
                           dataLabel={columnNames.rhRemediation}
@@ -241,118 +295,6 @@ export const DepCompoundTable = ({ name, provider }: { name: string; provider: P
             })}
           </Table>
 
-
-          <Divider style={{margin: 55}}/>
-          <p>Old Table</p>
-
-
-          <Table isExpandable>
-            <Thead>
-              <Tr>
-                <Th></Th>
-                <Th
-                  width={25}
-                  sort={{
-                    columnIndex: 1,
-                    sortBy: { ...currentSortBy },
-                    onSort: onChangeSortBy,
-                  }}
-                >
-                  Dependency
-                </Th>
-                <Th>Direct</Th>
-                <Th>Transitive</Th>
-                <Th width={20}>Highest CVSS</Th>
-                <Th width={25}>Highest Severity</Th>
-                <Th width={15}>Red Hat remediation available</Th>
-              </Tr>
-            </Thead>
-            <ConditionalTableBody
-              isNoData={filteredItems.length === 0}
-              numRenderedColumns={8}
-              noDataEmptyState={
-                <EmptyState variant={EmptyStateVariant.sm}>
-                  <EmptyStateIcon icon={CubesIcon} />
-                  <Title headingLevel="h2" size="lg">
-                    No vulnerabilities found
-                  </Title>
-                  <EmptyStateBody>
-                    The vulnerability scan did not find any vulnerabilities in your project.
-                  </EmptyStateBody>
-                </EmptyState>
-              }
-            >
-              {pageItems?.map((item, rowIndex) => {
-                return (
-                  <Tbody key={rowIndex} isExpanded={isRowExpanded(item)}>
-                    <Tr>
-                      <Td
-                        expand={{
-                          rowIndex,
-                          isExpanded: isRowExpanded(item),
-                          onToggle: () => toggleRowExpanded(item),
-                        }}
-                      />
-                      <Td>
-                        <DependencyLink name={item.ref} />
-                      </Td>
-                      <Td>{item.issues?.length || 0}</Td>
-                      <Td>
-                        {item.transitive
-                          .map((e) => e.issues.length)
-                          .reduce((prev, current) => prev + current, 0)}
-                      </Td>
-                      <Td>
-                        {item.highestVulnerability && (
-                          <VulnerabilityScore vunerability={item.highestVulnerability} />
-                        )}
-                      </Td>
-                      <Td>
-                        {item.highestVulnerability && (
-                          <VulnerabilityLink
-                            providerName={provider.status.name}
-                            vunerability={item.highestVulnerability}
-                          />
-                        )}
-                      </Td>
-                      <Td>
-                        <RemediationsCount dependency={item} />
-                      </Td>
-                    </Tr>
-                    {isRowExpanded(item) ? (
-                      <Tr isExpanded>
-                        <Td />
-                        <Td className={spacing.pyLg} colSpan={6}>
-                          <ExpandableRowContent>
-                            <Stack hasGutter>
-                              {item.issues && item.issues.length > 0 && (
-                                <StackItem>
-                                  <VulnerabilitiesTable
-                                    providerName={provider.status.name}
-                                    dependency={item}
-                                    vulnerabilities={item.issues}
-                                  />
-                                </StackItem>
-                              )}
-                              {item.transitive && item.transitive.length > 0 && (
-                                <StackItem>
-                                  <TransitiveDependenciesTable
-                                    providerName={provider.status.name}
-                                    dependency={item}
-                                    transitiveDependencies={item.transitive}
-                                  />
-                                </StackItem>
-                              )}
-                            </Stack>
-                          </ExpandableRowContent>
-                        </Td>
-                      </Tr>
-                    ) : null}
-                  </Tbody>
-                );
-              })}
-            </ConditionalTableBody>
-          </Table>
           <SimplePagination
             isTop={false}
             count={filteredItems.length}

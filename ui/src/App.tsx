@@ -19,7 +19,19 @@ function App() {
   return (
     <AppContext.Provider value={data}>
       <ReportErrorAlert />
-            <TabbedLayout />
+        <PageSection variant={PageSectionVariants.light}>
+          <Grid hasGutter>
+            <GridItem>
+              <SummaryCard/>
+            </GridItem>
+            {/*<GridItem md={6}>*/}
+            {/*  <ChartCard provider={provider} />*/}
+            {/*</GridItem>*/}
+          </Grid>
+        </PageSection>
+      <PageSection variant={PageSectionVariants.default}>
+          <TabbedLayout />
+      </PageSection>
       {/*<PageSection variant={PageSectionVariants.light}>*/}
       {/*  <Grid hasGutter>*/}
       {/*    <GridItem>*/}

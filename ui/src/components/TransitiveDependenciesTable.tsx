@@ -2,7 +2,7 @@ import React, { useReducer } from 'react';
 import { Table, TableVariant, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 
 import {Dependency, TransitiveDependency, Vulnerability} from '../api/report';
-import { SYNK_SIGNUP_URL } from '../utils/utils';
+import {SYNK_SIGNUP_URL, uppercaseFirstLetter} from '../utils/utils';
 
 import { ConditionalTableBody } from './TableControls/ConditionalTableBody';
 import { DependencyLink } from './DependencyLink';
@@ -49,7 +49,7 @@ export const TransitiveDependenciesTable = ({ providerName, dependency, transiti
     //           backgroundColor: 'var(--pf-v5-global--BackgroundColor--100)',
     //         }}
     //       >
-      <div
+      <Card
           style={{
             backgroundColor: 'var(--pf-v5-global--BackgroundColor--100)',
           }}
@@ -83,17 +83,25 @@ export const TransitiveDependenciesTable = ({ providerName, dependency, transiti
                         .map((e) => e.mavenPackage);
 
                       return (
-                        <Tr key={`${rowIndex}-${subRowIndex}`}>
-                          {subRowIndex === 0 && (
-                            <Td rowSpan={item.issues.length}>
-                              <DependencyLink name={item.ref} />
-                            </Td>
-                          )}
+                          <Tr key={`${rowIndex}-${subRowIndex}`}>
+                              <Td >
+                                  <DependencyLink name={item.ref} />
+                              </Td>
+
+                        {/* skip dependency name     */}
+                        {/*<Tr key={`${rowIndex}-${subRowIndex}`}>*/}
+                        {/*  {subRowIndex === 0 && (*/}
+                        {/*    <Td rowSpan={item.issues.length}>*/}
+                        {/*      <DependencyLink name={item.ref} />*/}
+                        {/*    </Td>*/}
+                        {/*  )}*/}
+
 
                           {!vuln.unique ? (
                             <>
                               <Td noPadding>
                                 <VulnerabilitySeverityLabel vulnerability={vuln} />
+                                  {uppercaseFirstLetter(vuln.severity)}
                               </Td>
                               <Td>{vuln.cvss?.exploitCodeMaturity || 'No known exploit'}</Td>
                               <Td>{vuln.title}</Td>
@@ -110,11 +118,12 @@ export const TransitiveDependenciesTable = ({ providerName, dependency, transiti
                           )}
 
                           <Td>
-                            {item.highestVulnerability && (
-                              <VulnerabilityScore vunerability={item.highestVulnerability} />
-                            )}
+                            {/*{item.highestVulnerability && (*/}
+                            {/*  <VulnerabilityScore vunerability={item.highestVulnerability} />*/}
+                            {/*)}*/}
+                              <VulnerabilityScore vulnerability={vuln} />
                           </Td>
-                          <Td>{vuln.cves}</Td>
+                          <Td>{vuln.cves ? vuln.cves.map(i => <p>{i}</p>) : ''}</Td>
                           <Td>
                             {mavenPackagesRemediation && mavenPackagesRemediation.length > 0 ? (
                               mavenPackagesRemediation.map((e, index) => (
@@ -135,7 +144,7 @@ export const TransitiveDependenciesTable = ({ providerName, dependency, transiti
                 </Tbody>
               </ConditionalTableBody>
             </Table>
-          </div>
+          </Card>
     //     </CardBody>
     //   </CardExpandableContent>
     // </Card>

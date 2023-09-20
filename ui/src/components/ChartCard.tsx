@@ -7,30 +7,30 @@ import {Provider} from '../api/report';
 
 export const ChartCard = ({ provider }: { provider: Provider }) => {
   return (
-    <Card isFlat isFullHeight>
-      <CardHeader>
-        <CardTitle>{`${provider.summary.vulnerabilities.total} vulnerabilities in ${provider.dependencies.length} dependencies`}</CardTitle>
-      </CardHeader>
-      <Divider />
-      <CardBody>
-        <Bullseye>
+    // <Card isFlat isFullHeight>
+    //   <CardHeader>
+    //     <CardTitle>{`${provider.summary.vulnerabilities.total} vulnerabilities in ${provider.dependencies.length} dependencies`}</CardTitle>
+    //   </CardHeader>
+    //   <Divider />
+    //   <CardBody>
+      <div>
+          <text>{provider.dependencies.length} dependencies</text>
+          <Bullseye>
           <div style={{ height: '230px', width: '350px' }}>
             <ChartDonut
               constrainToVisibleArea
               data={[
-                { x: 'High', y: provider.summary.vulnerabilities.high },
-                {
-                  x: 'Medium',
-                  y: provider.summary.vulnerabilities.medium,
-                },
-                { x: 'Low', y: provider.summary.vulnerabilities.low },
+                  { x: 'Critical', y: provider.summary.vulnerabilities.critical },
+                  { x: 'High', y: provider.summary.vulnerabilities.high },
+                  { x: 'Medium', y: provider.summary.vulnerabilities.medium,},
+                  { x: 'Low', y: provider.summary.vulnerabilities.low },
               ]}
               labels={({ datum }) => `${datum.x}: ${datum.y}%`}
               legendData={[
-                { name: `High: ${provider.summary.vulnerabilities.high}` },
-                {
-                  name: `Medium: ${provider.summary.vulnerabilities.medium}`,
-                },
+                  { name: `Critical: ${provider.summary.vulnerabilities.critical}` },
+
+                  { name: `High: ${provider.summary.vulnerabilities.high}` },
+                {name: `Medium: ${provider.summary.vulnerabilities.medium}`},
                 { name: `Low: ${provider.summary.vulnerabilities.low}` },
               ]}
               legendOrientation="vertical"
@@ -44,11 +44,12 @@ export const ChartCard = ({ provider }: { provider: Provider }) => {
               subTitle="Vulnerabilities"
               title={`${provider.summary.vulnerabilities.total}`}
               width={350}
-              themeColor={ChartThemeColor.blue}
+              themeColor={ChartThemeColor.default}
             />
           </div>
         </Bullseye>
-      </CardBody>
-    </Card>
+      </div>
+    //   </CardBody>
+    // </Card>
   );
 };
