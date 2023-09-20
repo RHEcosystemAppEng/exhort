@@ -37,6 +37,9 @@ public class PackageRefTest {
     ref = new PackageRef("pkg:npm/foobar@12.3.1");
     assertEquals("foobar", ref.name());
 
+    ref = new PackageRef("pkg:npm/%40babel/helper-compilation-targets@7.17.7");
+    assertEquals("@babel/helper-compilation-targets", ref.name());
+
     ref = new PackageRef("pkg:maven/org.apache.xmlgraphics/batik-anim@1.9.1?packaging=sources");
     assertEquals("org.apache.xmlgraphics:batik-anim", ref.name());
   }
