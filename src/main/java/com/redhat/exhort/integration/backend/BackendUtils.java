@@ -65,14 +65,16 @@ public class BackendUtils {
     Throwable cause = exception.getCause();
 
     if (cause != null) {
-      LOGGER.warn("Unable to process request to: {}", provider, cause);
       if (cause instanceof HttpOperationFailedException) {
         HttpOperationFailedException httpException = (HttpOperationFailedException) cause;
-        status.message(prettifyHttpError(httpException)).status(httpException.getStatusCode());
+        String message = prettifyHttpError(httpException);
+        status.message(message).status(httpException.getStatusCode());
+        LOGGER.warn("Unable to process request: {}", message, cause);
       } else {
         status
             .message(cause.getMessage())
             .status(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
+        LOGGER.warn("Unable to process request to: {}", provider, cause);
       }
     } else {
       status
@@ -113,10 +115,8 @@ public class BackendUtils {
         return text + ": The provided credentials don't have the required permissions.";
       case 429:
         return text + ": The rate limit has been exceeded.";
-      case 500:
-        return text + ": " + httpException.getResponseBody();
       default:
-        return text;
+        return text + ": " + httpException.getResponseBody();
     }
   }
 }

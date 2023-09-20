@@ -56,10 +56,10 @@ public class PackageRef {
       return purl.getName();
     }
     switch (purl.getType()) {
-      case Constants.GOLANG_PKG_MANAGER:
-        return new StringBuffer(purl.getNamespace()).append("/").append(purl.getName()).toString();
-      default:
+      case Constants.MAVEN_PKG_MANAGER:
         return new StringBuilder(purl.getNamespace()).append(":").append(purl.getName()).toString();
+      default:
+        return new StringBuffer(purl.getNamespace()).append("/").append(purl.getName()).toString();
     }
   }
 
