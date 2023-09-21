@@ -62,7 +62,7 @@ export const VulnerabilitiesTable = ({ providerName, dependency, vulnerabilities
                       <Td>
                           <p>{cve}</p>
                       </Td>
-                  <Td>{vuln.cvss?.exploitCodeMaturity || 'No known exploit'}</Td>
+                  <Td>{vuln.title}</Td>
                   <Td>
                       <VulnerabilitySeverityLabel vulnerability={vuln} />
                       {uppercaseFirstLetter(vuln.severity)}

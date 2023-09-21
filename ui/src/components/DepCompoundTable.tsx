@@ -39,6 +39,7 @@ import { VulnerabilityLink } from './VulnerabilityLink';
 import { RemediationsCount } from './RemediationsCount';
 import { TransitiveDependenciesTable } from './TransitiveDependenciesTable';
 import { VulnerabilitiesTable } from './VulnerabilitiesTable';
+import { VulnerabilitiesCountBySeverity} from './VulnerabilitiesCountBySeverity'
 import { extractDependencyVersion } from '../utils/utils';
 import ShieldAltIcon from "@patternfly/react-icons/dist/esm/icons/shield-alt-icon";
 
@@ -202,20 +203,7 @@ export const DepCompoundTable = ({ name, provider }: { name: string; provider: P
                                   default: 'vertical'
                                 }}
                             />
-                              <FlexItem>
-                                <Icon isInline status="danger">
-                                  <ShieldAltIcon />
-                                </Icon>
-                                <Icon isInline status="warning">
-                                  <ShieldAltIcon />
-                                </Icon>
-                                <Icon isInline status="custom">
-                                  <ShieldAltIcon />
-                                </Icon>
-                                <Icon isInline status="info">
-                                  <ShieldAltIcon />
-                                </Icon>
-                              </FlexItem>
+                              <VulnerabilitiesCountBySeverity vulnerabilities = {item.issues} />
                           </Flex>
                         ) : 0}
                         {/*{item.issues?.length || 0}*/}
@@ -236,20 +224,7 @@ export const DepCompoundTable = ({ name, provider }: { name: string; provider: P
                                     default: 'vertical'
                                   }}
                               />
-                              <FlexItem>
-                                <Icon isInline >
-                                  <ShieldAltIcon />
-                                </Icon>
-                                <Icon isInline >
-                                  <ShieldAltIcon />
-                                </Icon>
-                                <Icon isInline>
-                                  <ShieldAltIcon />
-                                </Icon>
-                                <Icon isInline >
-                                  <ShieldAltIcon style={{fill: "green"}}/>
-                                </Icon>
-                              </FlexItem>
+                              <VulnerabilitiesCountBySeverity transitiveDependencies={item.transitive} />
                             </Flex>
                         ) : 0}
 
