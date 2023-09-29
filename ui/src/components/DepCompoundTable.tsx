@@ -1,18 +1,20 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 
 import {
+  Button,
   Card,
   CardBody,
-  CardHeader,
-  CardTitle,
   Divider,
   EmptyState,
+  EmptyStateActions,
   EmptyStateBody,
+  EmptyStateFooter,
+  EmptyStateHeader,
   EmptyStateIcon,
-  EmptyStateVariant, Flex, FlexItem, Icon,
+  EmptyStateVariant,
+  Flex,
+  FlexItem,
   SearchInput,
-  Stack,
-  StackItem,
   Title,
   Toolbar,
   ToolbarContent,
@@ -20,28 +22,25 @@ import {
   ToolbarItemVariant,
   ToolbarToggleGroup,
 } from '@patternfly/react-core';
-import {ExpandableRowContent, Table, Tbody, Td, TdProps, Th, Thead, Tr} from '@patternfly/react-table';
-import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
+import {ExpandableRowContent, Table, TableVariant, Tbody, Td, TdProps, Th, Thead, Tr} from '@patternfly/react-table';
 import FilterIcon from '@patternfly/react-icons/dist/esm/icons/filter-icon';
-import CubesIcon from '@patternfly/react-icons/dist/esm/icons/cubes-icon';
 
-import { useAppContext } from '../App';
+import {useAppContext} from '../App';
 import {Dependency, Provider} from '../api/report';
-import { useSelectionState } from '../hooks/useSelectionState';
-import { useTable } from '../hooks/useTable';
-import { useTableControls } from '../hooks/useTableControls';
+import {useSelectionState} from '../hooks/useSelectionState';
+import {useTable} from '../hooks/useTable';
+import {useTableControls} from '../hooks/useTableControls';
+import {SimplePagination} from './TableControls/SimplePagination';
+import {DependencyLink} from './DependencyLink';
+import {RemediationsCount} from './RemediationsCount';
+import {TransitiveDependenciesTable} from './TransitiveDependenciesTable';
+import {VulnerabilitiesTable} from './VulnerabilitiesTable';
+import {VulnerabilitiesCountBySeverity} from './VulnerabilitiesCountBySeverity'
+import {extractDependencyVersion} from '../utils/utils';
+import CubesIcon from "@patternfly/react-icons/dist/esm/icons/cubes-icon";
+import SearchIcon from '@patternfly/react-icons/dist/esm/icons/search-icon';
 
 import { ConditionalTableBody } from './TableControls/ConditionalTableBody';
-import { SimplePagination } from './TableControls/SimplePagination';
-import { DependencyLink } from './DependencyLink';
-import { VulnerabilityScore } from './VulnerabilityScore';
-import { VulnerabilityLink } from './VulnerabilityLink';
-import { RemediationsCount } from './RemediationsCount';
-import { TransitiveDependenciesTable } from './TransitiveDependenciesTable';
-import { VulnerabilitiesTable } from './VulnerabilitiesTable';
-import { VulnerabilitiesCountBySeverity} from './VulnerabilitiesCountBySeverity'
-import { extractDependencyVersion } from '../utils/utils';
-import ShieldAltIcon from "@patternfly/react-icons/dist/esm/icons/shield-alt-icon";
 
 export const DepCompoundTable = ({ name, provider }: { name: string; provider: Provider }) => {
   const appContext = useAppContext();
@@ -106,7 +105,7 @@ export const DepCompoundTable = ({ name, provider }: { name: string; provider: P
     // This is to prevent state from being based on row and column order index in case we later add sorting and rearranging columns.
     // Note that this behavior is very similar to selection state.
     const [expandedCells, setExpandedCells] = React.useState<Record<string, ColumnKey>>({
-      'siemur/test-space': 'name' // Default to the first cell of the first row being expanded
+       'siemur/test-space': 'name' // Default to the first cell of the first row being expanded
     });
     const setCellExpanded = (repo: Dependency, columnKey: ColumnKey, isExpanding = true) => {
       const newExpandedCells = { ...expandedCells };
@@ -156,18 +155,24 @@ export const DepCompoundTable = ({ name, provider }: { name: string; provider: P
                 align={{ default: 'alignRight' }}
               >
                 <SimplePagination
-                  isTop={true}
-                  count={filteredItems.length}
-                  params={currentPage}
-                  onChange={onPageChange}
+                    isTop={true}
+                    count={filteredItems.length}
+                    params={currentPage}
+                    onChange={onPageChange}
                 />
               </ToolbarItem>
             </ToolbarContent>
           </Toolbar>
-          <Table aria-label="Compound expandable table">
+          <Table aria-label="Compound expandable table" variant={TableVariant.compact}>
             <Thead>
               <Tr>
-                <Th>{columnNames.name}</Th>
+                <Th width={25}
+                    sort={{
+                      columnIndex: 1,
+                      sortBy: { ...currentSortBy },
+                      onSort: onChangeSortBy,
+                    }}
+                >{columnNames.name}</Th>
                 <Th>{columnNames.version}</Th>
                 <Th>{columnNames.direct}</Th>
                 <Th>{columnNames.transitive}</Th>
@@ -175,6 +180,20 @@ export const DepCompoundTable = ({ name, provider }: { name: string; provider: P
                 <Th />
               </Tr>
             </Thead>
+            <ConditionalTableBody
+                isNoData={filteredItems.length === 0}
+                numRenderedColumns={8}
+                noDataEmptyState={
+                  <EmptyState variant={EmptyStateVariant.sm}>
+                    <EmptyStateHeader
+                        icon={<EmptyStateIcon icon={SearchIcon} />}
+                        titleText="No results found"
+                        headingLevel="h2"
+                    />
+                    <EmptyStateBody>Clear all filters and try again.</EmptyStateBody>
+                  </EmptyState>
+                }
+            >
             {pageItems?.map((item, rowIndex) => {
               const expandedCellKey = expandedCells[item.ref];
               const isRowExpanded = !!expandedCellKey;
@@ -268,6 +287,8 @@ export const DepCompoundTable = ({ name, provider }: { name: string; provider: P
                   </Tbody>
               );
             })}
+            </ConditionalTableBody>
+
           </Table>
 
           <SimplePagination

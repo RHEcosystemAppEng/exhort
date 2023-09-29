@@ -1,36 +1,18 @@
 import React from 'react';
-import { Caption, Table, TableVariant, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
+import {Table, TableVariant, Tbody, Td, Th, Thead, Tr} from '@patternfly/react-table';
 
-import { Dependency, Vulnerability } from '../api/report';
+import {Dependency, Vulnerability} from '../api/report';
 
-import { ConditionalTableBody } from './TableControls/ConditionalTableBody';
-import { VulnerabilityScore } from './VulnerabilityScore';
-import { VulnerabilitySeverityLabel } from './VulnerabilitySeverityLabel';
-import { VulnerabilityLink } from './VulnerabilityLink';
-import { RemediationLink } from './RemediationLink';
-import { Card } from '@patternfly/react-core';
-import { uppercaseFirstLetter } from '../utils/utils';
-import { DependencyLink } from './DependencyLink';
-
-// interface VulnerabilitiesTableProps {
-//   providerName: 'snyk' | 'oss-index';
-//   dependency: Dependency;
-//   vulnerabilities: Vulnerability[];
-// }
+import {ConditionalTableBody} from './TableControls/ConditionalTableBody';
+import {VulnerabilityScore} from './VulnerabilityScore';
+import {VulnerabilitySeverityLabel} from './VulnerabilitySeverityLabel';
+import {VulnerabilityLink} from './VulnerabilityLink';
+import {RemediationLink} from './RemediationLink';
+import {Card} from '@patternfly/react-core';
+import {DependencyLink} from './DependencyLink';
 
 export const VulnerabilitiesTable = ({ providerName, dependency, vulnerabilities }: { providerName: string; dependency: Dependency; vulnerabilities: Vulnerability[] }) => {
-
-// export const VulnerabilitiesTable: React.FC<VulnerabilitiesTableProps> = ({
-//   providerName,
-//   dependency,
-//   vulnerabilities,
-// }) => {
   return (
-    // <div
-    //   style={{
-    //     backgroundColor: 'var(--pf-v5-global--BackgroundColor--100)',
-    //   }}
-    // >
       <Card
           style={{
             backgroundColor: 'var(--pf-v5-global--BackgroundColor--100)',
@@ -40,11 +22,11 @@ export const VulnerabilitiesTable = ({ providerName, dependency, vulnerabilities
         {/*<Caption>Details of the dependency</Caption>*/}
         <Thead>
           <Tr>
-            <Th>Vulnerability ID</Th>
-            <Th>Description</Th>
+            <Th width={20}>Vulnerability ID</Th>
+            <Th width={20}>Description</Th>
             <Th>Severity</Th>
-            <Th>CVSS Score</Th>
-            <Th>Transitive Dependency</Th>
+            <Th width={20}>CVSS Score</Th>
+            <Th width={20}>Transitive Dependency</Th>
             <Th>Remediation</Th>
           </Tr>
         </Thead>
@@ -65,7 +47,6 @@ export const VulnerabilitiesTable = ({ providerName, dependency, vulnerabilities
                   <Td>{vuln.title}</Td>
                   <Td>
                       <VulnerabilitySeverityLabel vulnerability={vuln} />
-                      {uppercaseFirstLetter(vuln.severity)}
                   </Td>
                   <Td>
                     <VulnerabilityScore vulnerability={vuln} />

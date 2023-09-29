@@ -48,7 +48,7 @@ export const SimplePagination: React.FC<ISimplePaginationProps> = ({
       onPerPageSelect={(_, perPage) => {
         onChange({ page: 1, perPage });
       }}
-      isCompact={isTop || isCompact}
+   //   isCompact={isTop || isCompact}
       widgetId="pagination-options-menu"
       variant={isTop ? PaginationVariant.top : PaginationVariant.bottom}
       perPageOptions={mapPerPageOptions(perPageOptions || [10, 20, 50, 100])}

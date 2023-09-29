@@ -1,12 +1,11 @@
-import { createContext, useContext } from 'react';
-import { Grid, GridItem, PageSection, PageSectionVariants } from '@patternfly/react-core';
+import {createContext, useContext} from 'react';
+import {Grid, GridItem, PageSection, PageSectionVariants} from '@patternfly/react-core';
 
-import { Report } from './api/report';
-import { SummaryCard } from './components/SummaryCard';
-import { DependenciesTable } from './components/DependenciesTable';
-import { ReportErrorAlert } from './components/ReportErrorAlert';
+import {Report} from './api/report';
+import {SummaryCard} from './components/SummaryCard';
+import {ReportErrorAlert} from './components/ReportErrorAlert';
 
-import { MOCK_REPORT } from './mocks/report.mock';
+import {MOCK_REPORT} from './mocks/report.mock';
 import {TabbedLayout} from "./components/TabbedLayout";
 
 const data: Report =
@@ -24,24 +23,12 @@ function App() {
             <GridItem>
               <SummaryCard/>
             </GridItem>
-            {/*<GridItem md={6}>*/}
-            {/*  <ChartCard provider={provider} />*/}
-            {/*</GridItem>*/}
           </Grid>
         </PageSection>
       <PageSection variant={PageSectionVariants.default}>
           <TabbedLayout />
       </PageSection>
-      {/*<PageSection variant={PageSectionVariants.light}>*/}
-      {/*  <Grid hasGutter>*/}
-      {/*    <GridItem>*/}
-      {/*      <SummaryCard />*/}
-      {/*    </GridItem>*/}
-      {/*  </Grid>*/}
-      {/*</PageSection>*/}
-      {/*<PageSection variant={PageSectionVariants.default}>*/}
-      {/*  <DependenciesTable />*/}
-      {/*</PageSection>*/}
+
     </AppContext.Provider>
   );
 }

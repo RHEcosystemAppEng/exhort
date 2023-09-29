@@ -1,19 +1,7 @@
 import React from 'react';
-import {
-  Tabs,
-  Tab,
-  TabTitleText,
-  PageSection,
-  TextContent,
-  Text,
-  PageSectionVariants,
-  Grid,
-  GridItem,
-} from '@patternfly/react-core';
-import { SummaryCard } from './SummaryCard';
-import { ChartCard } from './ChartCard';
-import { useAppContext } from '../App';
-import {DependenciesTable} from "./DependenciesTable";
+import {PageSection, PageSectionVariants, Tab, Tabs, TabTitleText,} from '@patternfly/react-core';
+import {useAppContext} from '../App';
+// import {DependenciesTable} from "./DependenciesTable";
 import {DepCompoundTable} from "./DepCompoundTable";
 
 export const TabbedLayout = () => {
@@ -35,19 +23,6 @@ export const TabbedLayout = () => {
   };
 
   const tabs = providers.map((name) => {
- //  const tabs = [
- //    // Overview tab
- //    <Tab
- //        eventKey="overview"
- //        title={<TabTitleText>Overview</TabTitleText>}
- //        aria-label="Overview"
- //    >
- //      {/* Content for Overview tab */}
- //      <p>Red Hat Info</p>
- //
- //    </Tab>,
- //    // Dynamically generated tabs
- //    ...providers.map((name) => {
     const provider = appContext.report[name];
     return (
         <Tab
@@ -55,16 +30,6 @@ export const TabbedLayout = () => {
             title={<TabTitleText>{name}</TabTitleText>}
             aria-label={`${name} provider`}
         >
-          {/*<PageSection variant={PageSectionVariants.light}>*/}
-          {/*  <Grid hasGutter>*/}
-          {/*    <GridItem md={6}>*/}
-          {/*      <SummaryCard provider={provider} />*/}
-          {/*    </GridItem>*/}
-          {/*    <GridItem md={6}>*/}
-          {/*      <ChartCard provider={provider} />*/}
-          {/*    </GridItem>*/}
-          {/*  </Grid>*/}
-          {/*</PageSection>*/}
           <PageSection variant={PageSectionVariants.default}>
             <DepCompoundTable name={name} provider={provider} />
           </PageSection>

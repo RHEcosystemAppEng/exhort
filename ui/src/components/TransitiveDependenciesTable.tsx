@@ -1,54 +1,19 @@
-import React, { useReducer } from 'react';
-import { Table, TableVariant, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
+import React from 'react';
+import {Table, TableVariant, Tbody, Td, Th, Thead, Tr} from '@patternfly/react-table';
 
-import {Dependency, TransitiveDependency, Vulnerability} from '../api/report';
-import {SYNK_SIGNUP_URL, uppercaseFirstLetter} from '../utils/utils';
+import {Dependency, TransitiveDependency} from '../api/report';
+import {SYNK_SIGNUP_URL} from '../utils/utils';
 
-import { ConditionalTableBody } from './TableControls/ConditionalTableBody';
-import { DependencyLink } from './DependencyLink';
-import { VulnerabilityScore } from './VulnerabilityScore';
-import { VulnerabilityLink } from './VulnerabilityLink';
-import { VulnerabilitySeverityLabel } from './VulnerabilitySeverityLabel';
-import { RemediationLink } from './RemediationLink';
-import {
-  Card,
-  CardBody,
-  CardExpandableContent,
-  CardHeader,
-  CardTitle,
-} from '@patternfly/react-core';
-
-// interface TransitiveDependenciesTableProps {
-//   providerName: 'snyk' | 'oss-index';
-//   dependency: Dependency;
-//   transitiveDependencies: TransitiveDependency[];
-// }
+import {ConditionalTableBody} from './TableControls/ConditionalTableBody';
+import {DependencyLink} from './DependencyLink';
+import {VulnerabilityScore} from './VulnerabilityScore';
+import {VulnerabilityLink} from './VulnerabilityLink';
+import {VulnerabilitySeverityLabel} from './VulnerabilitySeverityLabel';
+import {RemediationLink} from './RemediationLink';
+import {Card,} from '@patternfly/react-core';
 
 export const TransitiveDependenciesTable = ({ providerName, dependency, transitiveDependencies }: { providerName: string; dependency: Dependency; transitiveDependencies: TransitiveDependency[] }) => {
-
-// export const TransitiveDependenciesTable: React.FC<TransitiveDependenciesTableProps> = ({
-//   providerName,
-//   dependency,
-//   transitiveDependencies,
-// }) => {
-//   const [isCardExpanded, toggleCard] = useReducer((val) => !val, false);
   return (
-    // <Card isExpanded={isCardExpanded} isCompact isFlat>
-    //   <CardHeader
-    //     onExpand={toggleCard}
-    //     toggleButtonProps={{
-    //       'aria-expanded': isCardExpanded,
-    //     }}
-    //   >
-    //     <CardTitle>Transitive dependencies with vulnerabilities</CardTitle>
-    //   </CardHeader>
-    //   <CardExpandableContent>
-    //     <CardBody>
-    //       <div
-    //         style={{
-    //           backgroundColor: 'var(--pf-v5-global--BackgroundColor--100)',
-    //         }}
-    //       >
       <Card
           style={{
             backgroundColor: 'var(--pf-v5-global--BackgroundColor--100)',
@@ -57,11 +22,11 @@ export const TransitiveDependenciesTable = ({ providerName, dependency, transiti
             <Table variant={TableVariant.compact}>
               <Thead>
                 <Tr>
-                    <Th>Vulnerability ID</Th>
-                    <Th>Description</Th>
-                    <Th>Severity</Th>
-                    <Th>CVSS Score</Th>
-                    <Th>Transitive Dependency</Th>
+                    <Th width={10}>Vulnerability ID</Th>
+                    <Th width={25}>Description</Th>
+                    <Th width={10}>Severity</Th>
+                    <Th width={15}>CVSS Score</Th>
+                    <Th width={20}>Transitive Dependency</Th>
                     <Th>Remediation</Th>
                 </Tr>
               </Thead>
@@ -80,31 +45,16 @@ export const TransitiveDependenciesTable = ({ providerName, dependency, transiti
 
                       return (
                           <Tbody key={`${rowIndex}-${subRowIndex}`}>
-                          {/*<Tr key={`${rowIndex}-${subRowIndex}`}>*/}
                               {vuln.cves?.map((cve, cveIndex) => (
                                   <Tr key={`${rowIndex}-${cveIndex}`}>
                                       <Td>
                                           <p>{cve}</p>
                                       </Td>
-                              {/*<Td >*/}
-                              {/*    {vuln.cves ? vuln.cves.map(i => <p>{i}</p>) : ''}*/}
-                              {/*</Td>*/}
-
-                        {/* skip dependency name     */}
-                        {/*<Tr key={`${rowIndex}-${subRowIndex}`}>*/}
-                        {/*  {subRowIndex === 0 && (*/}
-                        {/*    <Td rowSpan={item.issues.length}>*/}
-                        {/*      <DependencyLink name={item.ref} />*/}
-                        {/*    </Td>*/}
-                        {/*  )}*/}
-
-
                           {!vuln.unique ? (
                             <>
                                 <Td>{vuln.title}</Td>
                               <Td noPadding>
                                 <VulnerabilitySeverityLabel vulnerability={vuln} />
-                                  {uppercaseFirstLetter(vuln.severity)}
                               </Td>
                             </>
                           ) : (
@@ -150,8 +100,5 @@ export const TransitiveDependenciesTable = ({ providerName, dependency, transiti
               </ConditionalTableBody>
             </Table>
           </Card>
-    //     </CardBody>
-    //   </CardExpandableContent>
-    // </Card>
   );
 };

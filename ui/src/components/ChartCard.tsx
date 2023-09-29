@@ -3,10 +3,9 @@ import { Bullseye, Card, CardBody, CardHeader, CardTitle, Divider } from '@patte
 import { ChartDonut, ChartThemeColor } from '@patternfly/react-charts';
 import {Provider} from '../api/report';
 
-
-
 export const ChartCard = ({ provider }: { provider: Provider }) => {
-  return (
+    const customColors = ['#800000', '#FF0000', '#FFA500', '#808000'];
+    return (
     // <Card isFlat isFullHeight>
     //   <CardHeader>
     //     <CardTitle>{`${provider.summary.vulnerabilities.total} vulnerabilities in ${provider.dependencies.length} dependencies`}</CardTitle>
@@ -14,7 +13,7 @@ export const ChartCard = ({ provider }: { provider: Provider }) => {
     //   <Divider />
     //   <CardBody>
       <div>
-          <text>{provider.dependencies.length} dependencies</text>
+          <span>{provider.dependencies.length} dependencies</span>
           <Bullseye>
           <div style={{ height: '230px', width: '350px' }}>
             <ChartDonut
@@ -28,10 +27,9 @@ export const ChartCard = ({ provider }: { provider: Provider }) => {
               labels={({ datum }) => `${datum.x}: ${datum.y}%`}
               legendData={[
                   { name: `Critical: ${provider.summary.vulnerabilities.critical}` },
-
                   { name: `High: ${provider.summary.vulnerabilities.high}` },
-                {name: `Medium: ${provider.summary.vulnerabilities.medium}`},
-                { name: `Low: ${provider.summary.vulnerabilities.low}` },
+                  {name: `Medium: ${provider.summary.vulnerabilities.medium}`},
+                  { name: `Low: ${provider.summary.vulnerabilities.low}` },
               ]}
               legendOrientation="vertical"
               legendPosition="right"
@@ -44,7 +42,7 @@ export const ChartCard = ({ provider }: { provider: Provider }) => {
               subTitle="Vulnerabilities"
               title={`${provider.summary.vulnerabilities.total}`}
               width={350}
-              themeColor={ChartThemeColor.default}
+              colorScale={customColors}
             />
           </div>
         </Bullseye>
