@@ -8,22 +8,23 @@ import {
   Divider,
   EmptyState,
   EmptyStateBody,
+  EmptyStateHeader,
   EmptyStateIcon,
   EmptyStateVariant,
   SearchInput,
   Stack,
   StackItem,
-  Title,
   Toolbar,
   ToolbarContent,
   ToolbarItem,
   ToolbarItemVariant,
   ToolbarToggleGroup,
 } from '@patternfly/react-core';
-import {ExpandableRowContent, Table, Tbody, Td, Th, Thead, Tr} from '@patternfly/react-table';
+import {ExpandableRowContent, Table, TableVariant, Tbody, Td, Th, Thead, Tr} from '@patternfly/react-table';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import FilterIcon from '@patternfly/react-icons/dist/esm/icons/filter-icon';
-import CubesIcon from '@patternfly/react-icons/dist/esm/icons/cubes-icon';
+import SearchIcon from '@patternfly/react-icons/dist/esm/icons/search-icon';
+
 
 import {useAppContext} from '../App';
 import {Dependency} from '../api/report';
@@ -149,13 +150,12 @@ export const DependenciesTable = () => {
               numRenderedColumns={8}
               noDataEmptyState={
                 <EmptyState variant={EmptyStateVariant.sm}>
-                  <EmptyStateIcon icon={CubesIcon} />
-                  <Title headingLevel="h2" size="lg">
-                    No vulnerabilities found
-                  </Title>
-                  <EmptyStateBody>
-                    The vulnerability scan did not find any vulnerabilities in your project.
-                  </EmptyStateBody>
+                  <EmptyStateHeader
+                      icon={<EmptyStateIcon icon={SearchIcon} />}
+                      titleText="No results found"
+                      headingLevel="h2"
+                  />
+                  <EmptyStateBody>Clear all filters and try again.</EmptyStateBody>
                 </EmptyState>
               }
             >
