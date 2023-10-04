@@ -9,10 +9,10 @@ import {
   DescriptionListDescription,
   DescriptionListGroup,
   DescriptionListTerm,
-  Divider,
+  Divider, Grid, GridItem,
   Icon,
   List,
-  ListItem,
+  ListItem, Title, TitleSizes,
 } from '@patternfly/react-core';
 import ExclamationTriangleIcon from '@patternfly/react-icons/dist/esm/icons/exclamation-triangle-icon';
 import RedhatIcon from '@patternfly/react-icons/dist/esm/icons/redhat-icon';
@@ -26,83 +26,118 @@ import React from "react";
 export const SummaryCard = () => {
   const appContext = useAppContext();
   const providers = Object.keys(appContext.report);
-    return (
+  return (
+    <Grid hasGutter>
+      <Title headingLevel="h3" size={TitleSizes['2xl']} style={{paddingLeft: '15px'}}>
+        <Icon isInline status="info">
+          <ExclamationTriangleIcon style={{fill: "#f0ab00"}}/>
+        </Icon>&nbsp;Red Hat Overview of security Issues
+      </Title>
+      <Divider />
+      <GridItem md={6}>
         <Card isFlat isFullHeight>
           <CardHeader>
             <CardTitle>
-              <Icon isInline status="info">
-                <ExclamationTriangleIcon style={{fill: "#f0ab00"}}/>
-              </Icon>&nbsp;Red Hat Overview of security Issues</CardTitle>
+              <DescriptionListTerm style={{fontSize: "large"}}>
+                Below is a list of dependencies affected with CVE.
+              </DescriptionListTerm>
+            </CardTitle>
           </CardHeader>
-          <Divider />
+          {/*<Divider/>*/}
           <CardBody>
             <DescriptionListGroup>
               <DescriptionListDescription>
                 <DescriptionListTerm>
-                    Below is a list of dependencies affected with CVE.
-                  </DescriptionListTerm>
+                  Below is a list of dependencies affected with CVE.
+                </DescriptionListTerm>
               </DescriptionListDescription>
             </DescriptionListGroup>
             <DescriptionList isAutoFit>
               {providers?.map((name, index) => {
                 const provider = appContext.report[name];
                 return (
-                    <DescriptionListGroup key={index}>
-                      <DescriptionListTerm>{name}</DescriptionListTerm>
-                      <DescriptionListDescription>
-                        <ChartCard provider={provider} />
-                      </DescriptionListDescription>
-                    </DescriptionListGroup>
+                  <DescriptionListGroup key={index}>
+                    <DescriptionListTerm>{name}</DescriptionListTerm>
+                    <DescriptionListDescription>
+                      <ChartCard provider={provider}/>
+                    </DescriptionListDescription>
+                  </DescriptionListGroup>
                 )
               })
               }
             </DescriptionList>
           </CardBody>
-            <Divider/>
-            <CardFooter>
-              <DescriptionList
-                  columnModifier={{
-                    default: '2Col',
-                  }}
-              >
-                <DescriptionListGroup>
-                  <DescriptionListTerm style={{fontSize: "large"}}>
-                    <Icon isInline status="info">
-                      <RedhatIcon style={{fill: "#cc0000"}}/>
-                    </Icon>&nbsp;
-                    Red Hat Remediations
-                  </DescriptionListTerm>
-                  <DescriptionListDescription>
-                    <List isPlain>
-                      <ListItem>
-                        <Icon isInline status="success">
-                          <img src={SecurityCheckIcon} alt="Security Check Icon" />
-                        </Icon>&nbsp;
-                        10+ vulnerable packages
-                      </ListItem>
-                    </List>
-                  </DescriptionListDescription>
-                </DescriptionListGroup>
-
-                <DescriptionListGroup>
-                  <DescriptionListTerm style={{fontSize: "large"}}>
-                    Subscribe to stay updated
-                  </DescriptionListTerm>
-                  <DescriptionListDescription>
-                    <List isPlain>
-                      <ListItem>
-                        Do you want to subscribe for Red Hat Trusted Content Service to keep your projects risk profile updated?
-                      </ListItem>
-                      <ListItem>
-                        <Button variant="primary" size="sm">
-                          Sign up
-                        </Button>
-                      </ListItem>
-                    </List>
-                  </DescriptionListDescription>
-                </DescriptionListGroup>
-              </DescriptionList>
-          </CardFooter>
+          <Divider/>
         </Card>
-    );
-  };
+      </GridItem>
+      <GridItem md={6}>
+        <Card isFlat>
+          <DescriptionListGroup>
+            <CardTitle component="h4">
+              <DescriptionListTerm style={{fontSize: "large"}}>
+                <Icon isInline status="info">
+                  <RedhatIcon style={{fill: "#cc0000"}}/>
+                </Icon>&nbsp;
+                Red Hat Remediations
+              </DescriptionListTerm>
+            </CardTitle>
+            <CardBody>
+              <DescriptionListDescription>
+                <List isPlain>
+                  <ListItem>
+                    <Icon isInline status="success">
+                      <img src={SecurityCheckIcon} alt="Security Check Icon"/>
+                    </Icon>&nbsp;
+                    10+ vulnerable packages
+                  </ListItem>
+                </List>
+              </DescriptionListDescription>
+            </CardBody>
+          </DescriptionListGroup>
+        </Card>&nbsp;
+        <Card isFlat>
+          <DescriptionListGroup>
+            <CardTitle component="h4">
+              <DescriptionListTerm style={{fontSize: "large"}}>
+                Subscribe to stay updated
+              </DescriptionListTerm>
+            </CardTitle>
+            <CardBody>
+              <DescriptionListDescription>
+                <List isPlain>
+                  <ListItem>
+                    Do you want to subscribe for Red Hat Trusted Content Service to keep your
+                    projects risk profile updated?
+                  </ListItem>
+                  <ListItem>
+                    <Button variant="primary" size="sm">
+                      Sign up
+                    </Button>
+                  </ListItem>
+                </List>
+              </DescriptionListDescription>
+            </CardBody>
+          </DescriptionListGroup>
+        </Card>&nbsp;
+        <Card isFlat>
+          <DescriptionListGroup>
+            <CardTitle component="h4">
+              <DescriptionListTerm style={{fontSize: "large"}}>
+                Licenses
+              </DescriptionListTerm>
+            </CardTitle>
+            <CardBody>
+              <DescriptionListDescription>
+                <List isPlain>
+                  <ListItem>
+                    Some info here
+                  </ListItem>
+                </List>
+              </DescriptionListDescription>
+            </CardBody>
+          </DescriptionListGroup>
+        </Card>
+      </GridItem>
+    </Grid>
+  );
+};
