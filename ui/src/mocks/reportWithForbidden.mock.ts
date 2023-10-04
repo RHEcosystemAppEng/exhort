@@ -6,6 +6,13 @@ export const forbiddenReport: Report = {
   providerPrivateData: null,
   vexPath: 'https://tc-storage-mvp.s3.amazonaws.com/vexes/',
   report: {
+    snyk: {
+      status: {
+        ok: false,
+        name: 'snyk',
+        code: 403,
+        message: "Forbidden: The provided credentials don't have the required permissions.",
+      },
       summary: {
         dependencies: { scanned: null, transitive: null },
         vulnerabilities: {
@@ -16,15 +23,10 @@ export const forbiddenReport: Report = {
           medium: null,
           low: null,
         },
-        providerStatuses:[{
-          ok: false,
-          provider: 'snyk',
-          status: 403,
-          message:'Forbidden: The provided credentials don\'t have the required permissions.'
-        }]
       },
       dependencies: [],
     },
+  },
   ossIndexIssueLinkFormatter: { issuePathRegex: 'http://ossindex.sonatype.org/vulnerability/%s' },
   snykIssueLinkFormatter: {
     issuePathRegex:

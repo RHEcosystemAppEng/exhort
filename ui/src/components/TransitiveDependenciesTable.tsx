@@ -1,4 +1,4 @@
-import React, {useReducer} from 'react';
+import React from 'react';
 import {Table, TableVariant, Tbody, Td, Th, Thead, Tr} from '@patternfly/react-table';
 
 import {Dependency, TransitiveDependency} from '../api/report';
@@ -9,66 +9,49 @@ import {DependencyLink} from './DependencyLink';
 import {VulnerabilityScore} from './VulnerabilityScore';
 import {VulnerabilityLink} from './VulnerabilityLink';
 import {VulnerabilitySeverityLabel} from './VulnerabilitySeverityLabel';
-import {Card, CardBody, CardExpandableContent, CardHeader, CardTitle,} from '@patternfly/react-core';
+import {RemediationLink} from './RemediationLink';
+import {Card,} from '@patternfly/react-core';
 import { usePrivateIssueHelper } from '../hooks/usePrivateDataHelper';
 
-interface TransitiveDependenciesTableProps {
-  providerName: 'snyk' | 'oss-index';
-  dependency: Dependency;
-  transitiveDependencies: TransitiveDependency[];
-}
-
-export const TransitiveDependenciesTable: React.FC<TransitiveDependenciesTableProps> = ({
-  providerName,
-  dependency,
-  transitiveDependencies,
-}) => {
+export const TransitiveDependenciesTable = ({ providerName, dependency, transitiveDependencies }: { providerName: string; dependency: Dependency; transitiveDependencies: TransitiveDependency[] }) => {
   const privateIssueHelper = usePrivateIssueHelper();
-  const [isCardExpanded, toggleCard] = useReducer((val) => !val, false);
   return (
-    <Card isExpanded={isCardExpanded} isCompact isFlat>
-      <CardHeader
-        onExpand={toggleCard}
-        toggleButtonProps={{
-          'aria-expanded': isCardExpanded,
-        }}
+      <Card
+          style={{
+            backgroundColor: 'var(--pf-v5-global--BackgroundColor--100)',
+          }}
       >
-        <CardTitle>Transitive dependencies with vulnerabilities</CardTitle>
-      </CardHeader>
-      <CardExpandableContent>
-        <CardBody>
-          <div
-            style={{
-              backgroundColor: 'var(--pf-v5-global--BackgroundColor--100)',
-            }}
-          >
             <Table variant={TableVariant.compact}>
               <Thead>
                 <Tr>
-                  <Th width={20}>Dependency</Th>
-                  <Th>Severity</Th>
-                  <Th>Exploit Maturity</Th>
-                  <Th width={20}>Description</Th>
-                  <Th width={15}>CVSS</Th>
-                  <Th width={10}>CVE</Th>
-                  <Th width={20}>Remediation</Th>
+                    <Th width={10}>Vulnerability ID</Th>
+                    <Th width={25}>Description</Th>
+                    <Th width={10}>Severity</Th>
+                    <Th width={15}>CVSS Score</Th>
+                    <Th width={20}>Transitive Dependency</Th>
+                    <Th>Remediation</Th>
                 </Tr>
               </Thead>
-              <ConditionalTableBody
-                isNoData={transitiveDependencies.length === 0}
-                numRenderedColumns={7}
-              >
-                <Tbody>
+              <ConditionalTableBody isNoData={transitiveDependencies.length === 0} numRenderedColumns={7}>
                   {transitiveDependencies?.map((item, rowIndex) => {
-                    return item.issues.map((vuln, subRowIndex) => {
-                      return (
-                        <Tr key={`${rowIndex}-${subRowIndex}`}>
-                          {subRowIndex === 0 && (
-                            <Td rowSpan={item.issues.length}>
-                              <DependencyLink name={item.ref} />
-                            </Td>
-                          )}
+                      return item.issues.map((vuln, subRowIndex) => {
+                          const mavenPackagesRemediation = vuln.cves
+                              ?.map((cve) => {
+                                  return dependency.transitive
+                                      .map((e) => e.remediations[cve])
+                                      .filter((e) => e);
+                              })
+                              .flatMap((e) => e)
+                              .map((e) => e.mavenPackage);
 
+
+                      return (
+                          <Tbody key={`${rowIndex}-${subRowIndex}`}>
+                              {vuln.cves?.map((cve, cveIndex) => (
+                                  <Tr key={`${rowIndex}-${cveIndex}`}>
+                                      <Td>
+                                          <p>{cve}</p>
+                                      </Td>
                           {privateIssueHelper.hideIssue(providerName, vuln.unique) ? (
                             <>
                               <Td colSpan={3}>
@@ -80,31 +63,44 @@ export const TransitiveDependenciesTable: React.FC<TransitiveDependenciesTablePr
                             </>
                           ) : (
                             <>
+                                <Td>{vuln.title}</Td>
                               <Td noPadding>
                                 <VulnerabilitySeverityLabel vulnerability={vuln} />
                               </Td>
-                              <Td>{vuln.cvss?.exploitCodeMaturity || 'No known exploit'}</Td>
-                              <Td>{vuln.title}</Td>
                             </>
                           )}
 
                           <Td>
+                            {/*{item.highestVulnerability && (*/}
+                            {/*  <VulnerabilityScore vulnerability={item.highestVulnerability} />*/}
+                            {/*)}*/}
                               <VulnerabilityScore vulnerability={vuln} />
                           </Td>
-                          <Td>{vuln.cves ? vuln.cves.map(i => <p>{i}</p>) : ''}</Td>
                           <Td>
+                              <DependencyLink name={item.ref} />
+                          </Td>
+                          <Td>
+                            {mavenPackagesRemediation && mavenPackagesRemediation.length > 0 ? (
+                              mavenPackagesRemediation.map((e, index) => (
+                                <RemediationLink
+                                  key={index}
+                                  cves={vuln.cves || []}
+                                  packageName={e}
+                                />
+                              ))
+                            ) : (
                               <VulnerabilityLink providerName={providerName} vulnerability={vuln} />
+                            )}
                           </Td>
                         </Tr>
-                      );
-                    });
-                  })}
+                    ))}
                 </Tbody>
+                      );
+
+                      });
+                  })}
               </ConditionalTableBody>
             </Table>
-          </div>
-        </CardBody>
-      </CardExpandableContent>
-    </Card>
+          </Card>
   );
 };

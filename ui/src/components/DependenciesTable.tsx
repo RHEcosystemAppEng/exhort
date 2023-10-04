@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import { useState } from 'react';
 
 import {
   Card,
@@ -20,32 +20,33 @@ import {
   ToolbarItemVariant,
   ToolbarToggleGroup,
 } from '@patternfly/react-core';
-import {ExpandableRowContent, Table, TableVariant, Tbody, Td, Th, Thead, Tr} from '@patternfly/react-table';
+import { ExpandableRowContent, Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import FilterIcon from '@patternfly/react-icons/dist/esm/icons/filter-icon';
 import SearchIcon from '@patternfly/react-icons/dist/esm/icons/search-icon';
 
 
-import {useAppContext} from '../App';
-import {Dependency} from '../api/report';
-import {useSelectionState} from '../hooks/useSelectionState';
-import {useTable} from '../hooks/useTable';
-import {useTableControls} from '../hooks/useTableControls';
+import { useAppContext } from '../App';
+import {Dependency, Provider} from '../api/report';
+import { useSelectionState } from '../hooks/useSelectionState';
+import { useTable } from '../hooks/useTable';
+import { useTableControls } from '../hooks/useTableControls';
 
-import {ConditionalTableBody} from './TableControls/ConditionalTableBody';
-import {SimplePagination} from './TableControls/SimplePagination';
-import {DependencyLink} from './DependencyLink';
-import {VulnerabilityScore} from './VulnerabilityScore';
-import {VulnerabilityLink} from './VulnerabilityLink';
-import {TransitiveDependenciesTable} from './TransitiveDependenciesTable';
-import {VulnerabilitiesTable} from './VulnerabilitiesTable';
+import { ConditionalTableBody } from './TableControls/ConditionalTableBody';
+import { SimplePagination } from './TableControls/SimplePagination';
+import { DependencyLink } from './DependencyLink';
+import { VulnerabilityScore } from './VulnerabilityScore';
+import { VulnerabilityLink } from './VulnerabilityLink';
+import { RemediationsCount } from './RemediationsCount';
+import { TransitiveDependenciesTable } from './TransitiveDependenciesTable';
+import { VulnerabilitiesTable } from './VulnerabilitiesTable';
 
-export const DependenciesTable = () => {
+export const DependenciesTable = ({ name, provider }: { name: string; provider: Provider }) => {
   const appContext = useAppContext();
 
-  const providerName = 'snyk';
-  const synkReport = appContext.report;
-  const tableData = synkReport.dependencies;
+  // const providerName = 'snyk';
+  // const synkReport = appContext.report[providerName];
+  // const tableData = synkReport.dependencies;
 
   // Filters
   const [filterText, setFilterText] = useState('');
@@ -53,7 +54,7 @@ export const DependenciesTable = () => {
   // Rows
   const { isItemSelected: isRowExpanded, toggleItemSelected: toggleRowExpanded } =
     useSelectionState<Dependency>({
-      items: tableData,
+      items: provider.dependencies,
       isEqual: (a, b) => a.ref === b.ref,
     });
 
@@ -65,7 +66,7 @@ export const DependenciesTable = () => {
   } = useTableControls();
 
   const { pageItems, filteredItems } = useTable({
-    items: tableData,
+    items: provider.dependencies,
     currentPage: currentPage,
     currentSortBy: currentSortBy,
     compareToByColumn: (a: Dependency, b: Dependency, columnIndex?: number) => {
@@ -142,7 +143,8 @@ export const DependenciesTable = () => {
                 <Th>Direct</Th>
                 <Th>Transitive</Th>
                 <Th width={20}>Highest CVSS</Th>
-                <Th width={30}>Highest Severity</Th>
+                <Th width={25}>Highest Severity</Th>
+                <Th width={15}>Red Hat remediation available</Th>
               </Tr>
             </Thead>
             <ConditionalTableBody
@@ -187,10 +189,13 @@ export const DependenciesTable = () => {
                       <Td>
                         {item.highestVulnerability && (
                           <VulnerabilityLink
-                            providerName={providerName}
+                            providerName={provider.status.name}
                             vulnerability={item.highestVulnerability}
                           />
                         )}
+                      </Td>
+                      <Td>
+                        <RemediationsCount dependency={item} />
                       </Td>
                     </Tr>
                     {isRowExpanded(item) ? (
@@ -202,7 +207,7 @@ export const DependenciesTable = () => {
                               {item.issues && item.issues.length > 0 && (
                                 <StackItem>
                                   <VulnerabilitiesTable
-                                    providerName={providerName}
+                                    providerName={provider.status.name}
                                     dependency={item}
                                     vulnerabilities={item.issues}
                                   />
@@ -211,7 +216,7 @@ export const DependenciesTable = () => {
                               {item.transitive && item.transitive.length > 0 && (
                                 <StackItem>
                                   <TransitiveDependenciesTable
-                                    providerName={providerName}
+                                    providerName={provider.status.name}
                                     dependency={item}
                                     transitiveDependencies={item.transitive}
                                   />

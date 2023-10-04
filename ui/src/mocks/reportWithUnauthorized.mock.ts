@@ -6,6 +6,13 @@ export const unauthorizedReport: Report = {
   providerPrivateData: null,
   vexPath: 'https://tc-storage-mvp.s3.amazonaws.com/vexes/',
   report: {
+    snyk: {
+      status: {
+        ok: false,
+        name: 'snyk',
+        code: 401,
+        message: 'Unauthorized: Verify the provided credentials are valid.',
+      },
       summary: {
         dependencies: { scanned: null, transitive: null },
         vulnerabilities: {
@@ -16,15 +23,10 @@ export const unauthorizedReport: Report = {
           medium: null,
           low: null,
         },
-        providerStatuses:[{
-          ok: false,
-          provider: 'snyk',
-          status: 401,
-          message:'Unauthorized: Verify the provided credentials are valid.'
-        }]
       },
       dependencies: [],
     },
+  },
   ossIndexIssueLinkFormatter: { issuePathRegex: 'http://ossindex.sonatype.org/vulnerability/%s' },
   snykIssueLinkFormatter: {
     issuePathRegex:

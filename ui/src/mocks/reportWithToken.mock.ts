@@ -6,15 +6,144 @@ export const withTokenReport: Report = {
   providerPrivateData: null,
   vexPath: 'https://tc-storage-mvp.s3.amazonaws.com/vexes/',
   report: {
+    'oss-index': {
+      status: { ok: true, name: 'oss-index', code: 200, message: 'OK' },
+      summary: {
+        dependencies: { scanned: 2, transitive: 7 },
+        vulnerabilities: { direct: 0, total: 3, critical: 0, high: 3, medium: 0, low: 0 },
+      },
+      dependencies: [
+        {
+          ref: 'pkg:maven/io.quarkus/quarkus-hibernate-orm@2.13.5.Final',
+          issues: [],
+          transitive: [
+            {
+              ref: 'pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.1',
+              issues: [
+                {
+                  id: 'CVE-2020-36518',
+                  title: '[CVE-2020-36518] CWE-787: Out-of-bounds Write',
+                  cvss: {
+                    attackVector: 'Network',
+                    attackComplexity: 'Low',
+                    privilegesRequired: 'None',
+                    userInteraction: 'None',
+                    scope: 'Unchanged',
+                    confidentialityImpact: 'None',
+                    integrityImpact: 'None',
+                    availabilityImpact: 'High',
+                    exploitCodeMaturity: null,
+                    remediationLevel: null,
+                    reportConfidence: null,
+                    cvss: 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H',
+                  },
+                  cvssScore: 7.5,
+                  severity: 'HIGH',
+                  cves: ['CVE-2020-36518'],
+                  unique: false,
+                },
+                {
+                  id: 'CVE-2022-42003',
+                  title: '[CVE-2022-42003] CWE-502: Deserialization of Untrusted Data',
+                  cvss: {
+                    attackVector: 'Network',
+                    attackComplexity: 'Low',
+                    privilegesRequired: 'None',
+                    userInteraction: 'None',
+                    scope: 'Unchanged',
+                    confidentialityImpact: 'None',
+                    integrityImpact: 'None',
+                    availabilityImpact: 'High',
+                    exploitCodeMaturity: null,
+                    remediationLevel: null,
+                    reportConfidence: null,
+                    cvss: 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H',
+                  },
+                  cvssScore: 7.5,
+                  severity: 'HIGH',
+                  cves: ['CVE-2022-42003'],
+                  unique: false,
+                },
+                {
+                  id: 'CVE-2022-42004',
+                  title: '[CVE-2022-42004] CWE-502: Deserialization of Untrusted Data',
+                  cvss: {
+                    attackVector: 'Network',
+                    attackComplexity: 'Low',
+                    privilegesRequired: 'None',
+                    userInteraction: 'None',
+                    scope: 'Unchanged',
+                    confidentialityImpact: 'None',
+                    integrityImpact: 'None',
+                    availabilityImpact: 'High',
+                    exploitCodeMaturity: null,
+                    remediationLevel: null,
+                    reportConfidence: null,
+                    cvss: 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H',
+                  },
+                  cvssScore: 7.5,
+                  severity: 'HIGH',
+                  cves: ['CVE-2022-42004'],
+                  unique: false,
+                },
+              ],
+              remediations: {},
+              highestVulnerability: {
+                id: 'CVE-2020-36518',
+                title: '[CVE-2020-36518] CWE-787: Out-of-bounds Write',
+                cvss: {
+                  attackVector: 'Network',
+                  attackComplexity: 'Low',
+                  privilegesRequired: 'None',
+                  userInteraction: 'None',
+                  scope: 'Unchanged',
+                  confidentialityImpact: 'None',
+                  integrityImpact: 'None',
+                  availabilityImpact: 'High',
+                  exploitCodeMaturity: null,
+                  remediationLevel: null,
+                  reportConfidence: null,
+                  cvss: 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H',
+                },
+                cvssScore: 7.5,
+                severity: 'HIGH',
+                cves: ['CVE-2020-36518'],
+                unique: false,
+              },
+            },
+          ],
+          recommendation: 'pkg:maven/io.quarkus/quarkus-hibernate-orm@2.13.5.redhat-00001',
+          remediations: {},
+          highestVulnerability: {
+            id: 'CVE-2020-36518',
+            title: '[CVE-2020-36518] CWE-787: Out-of-bounds Write',
+            cvss: {
+              attackVector: 'Network',
+              attackComplexity: 'Low',
+              privilegesRequired: 'None',
+              userInteraction: 'None',
+              scope: 'Unchanged',
+              confidentialityImpact: 'None',
+              integrityImpact: 'None',
+              availabilityImpact: 'High',
+              exploitCodeMaturity: null,
+              remediationLevel: null,
+              reportConfidence: null,
+              cvss: 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H',
+            },
+            cvssScore: 7.5,
+            severity: 'HIGH',
+            cves: ['CVE-2020-36518'],
+            unique: false,
+          },
+        },
+      ],
+    },
+    snyk: {
+      status: { ok: true, name: 'snyk', code: 200, message: 'OK' },
       summary: {
         dependencies: { scanned: 2, transitive: 7 },
         vulnerabilities: { direct: 0, total: 4, critical: 0, high: 1, medium: 3, low: 0 },
-        providerStatuses:[{
-          ok: true,
-          provider: 'snyk',
-          status: 200,
-          message:'OK'
-        }]
       },
       dependencies: [
         {
@@ -27,7 +156,6 @@ export const withTokenReport: Report = {
                 {
                   id: 'SNYK-JAVA-COMFASTERXMLJACKSONCORE-2421244',
                   title: 'Denial of Service (DoS)',
-                  source: 'snyk',
                   cvss: {
                     attackVector: 'Network',
                     attackComplexity: 'Low',
@@ -50,7 +178,6 @@ export const withTokenReport: Report = {
                 {
                   id: 'SNYK-JAVA-COMFASTERXMLJACKSONCORE-3038424',
                   title: 'Denial of Service (DoS)',
-                  source: 'snyk',
                   cvss: {
                     attackVector: 'Network',
                     attackComplexity: 'High',
@@ -73,7 +200,6 @@ export const withTokenReport: Report = {
                 {
                   id: 'SNYK-JAVA-COMFASTERXMLJACKSONCORE-3038426',
                   title: 'Denial of Service (DoS)',
-                  source: 'snyk',
                   cvss: {
                     attackVector: 'Network',
                     attackComplexity: 'High',
@@ -98,7 +224,6 @@ export const withTokenReport: Report = {
               highestVulnerability: {
                 id: 'SNYK-JAVA-COMFASTERXMLJACKSONCORE-2421244',
                 title: 'Denial of Service (DoS)',
-                source: 'snyk',
                 cvss: {
                   attackVector: 'Network',
                   attackComplexity: 'Low',
@@ -125,7 +250,6 @@ export const withTokenReport: Report = {
           highestVulnerability: {
             id: 'SNYK-JAVA-COMFASTERXMLJACKSONCORE-2421244',
             title: 'Denial of Service (DoS)',
-            source: 'snyk',
             cvss: {
               attackVector: 'Network',
               attackComplexity: 'Low',
@@ -156,7 +280,6 @@ export const withTokenReport: Report = {
                 {
                   id: 'SNYK-JAVA-ORGPOSTGRESQL-3146847',
                   title: 'Information Exposure',
-                  source: 'snyk',
                   cvss: {
                     attackVector: 'Local',
                     attackComplexity: 'High',
@@ -181,7 +304,6 @@ export const withTokenReport: Report = {
               highestVulnerability: {
                 id: 'SNYK-JAVA-ORGPOSTGRESQL-3146847',
                 title: 'Information Exposure',
-                source: 'snyk',
                 cvss: {
                   attackVector: 'Local',
                   attackComplexity: 'High',
@@ -208,7 +330,6 @@ export const withTokenReport: Report = {
           highestVulnerability: {
             id: 'SNYK-JAVA-ORGPOSTGRESQL-3146847',
             title: 'Information Exposure',
-            source: 'snyk',
             cvss: {
               attackVector: 'Local',
               attackComplexity: 'High',
@@ -231,6 +352,7 @@ export const withTokenReport: Report = {
         },
       ],
     },
+  },
   ossIndexIssueLinkFormatter: { issuePathRegex: 'http://ossindex.sonatype.org/vulnerability/%s' },
   snykIssueLinkFormatter: {
     issuePathRegex:

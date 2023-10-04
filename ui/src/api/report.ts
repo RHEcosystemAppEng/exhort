@@ -4,22 +4,7 @@ export interface Report {
   providerPrivateData?: string[] | null;
   vexPath: string;
   report: {
-    summary: {
-      dependencies: {
-        scanned: number | null;
-        transitive: number | null;
-      };
-      vulnerabilities: {
-        direct: number | null;
-        total: number | null;
-        critical: number | null;
-        high: number | null;
-        medium: number | null;
-        low: number | null;
-      };
-      providerStatuses: Status[];
-    };
-    dependencies: Dependency[];
+    [providerName: string]: Provider;
   };
   ossIndexIssueLinkFormatter: {
     issuePathRegex: string;
@@ -30,6 +15,30 @@ export interface Report {
   sbomPath: string;
   snykSignup: string;
   dependencyHelper: {};
+}
+
+export interface Provider {
+  status: {
+    ok: boolean;
+    name: string;
+    code: number;
+    message: string;
+  };
+  summary: {
+    dependencies: {
+      scanned: number | null;
+      transitive: number | null;
+    };
+    vulnerabilities: {
+      direct: number | null;
+      total: number | null;
+      critical: number | null;
+      high: number | null;
+      medium: number | null;
+      low: number | null;
+    };
+  };
+  dependencies: Dependency[];
 }
 
 export interface TransitiveDependency {
@@ -63,7 +72,6 @@ export interface Dependency {
 export interface Vulnerability {
   id: string;
   title: string;
-  source: string;
   cvss: Cvss | null;
   cvssScore: number;
   severity: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';
@@ -84,11 +92,4 @@ export interface Cvss {
   remediationLevel: string | null;
   reportConfidence?: string | null;
   cvss: string;
-}
-
-export interface Status {
-  ok: boolean;
-  provider: string;
-  status: number;
-  message: string;
 }
