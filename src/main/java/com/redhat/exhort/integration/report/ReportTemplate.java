@@ -29,6 +29,8 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.redhat.exhort.api.AnalysisReport;
 import com.redhat.exhort.api.Issue;
 import com.redhat.exhort.integration.Constants;
@@ -78,6 +80,10 @@ public class ReportTemplate {
     params.put("sbomPath", sbomPath);
     params.put("snykSignup", snykSignup);
     params.put("dependencyHelper", new DependencyReportHelper());
+
+    ObjectWriter objectWriter = new ObjectMapper().writer();
+    String reportJson = objectWriter.writeValueAsString(params);
+    params.put("reportJson", reportJson);
 
     return params;
   }

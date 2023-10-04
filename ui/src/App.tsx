@@ -1,0 +1,36 @@
+import {createContext, useContext} from 'react';
+import {Grid, GridItem, PageSection, PageSectionVariants} from '@patternfly/react-core';
+
+import {Report} from './api/report';
+import {SummaryCard} from './components/SummaryCard';
+import {ReportErrorAlert} from './components/ReportErrorAlert';
+
+import {MOCK_REPORT} from './mocks/report.mock';
+import {TabbedLayout} from "./components/TabbedLayout";
+
+const data: Report =
+  process.env.NODE_ENV === 'production' ? ((window as any)['report'] as Report) : MOCK_REPORT.mixed;
+
+export const AppContext = createContext<Report>(data);
+export const useAppContext = (): Report => useContext(AppContext);
+
+function App() {
+  return (
+    <AppContext.Provider value={data}>
+      <ReportErrorAlert />
+        <PageSection variant={PageSectionVariants.light}>
+          <Grid hasGutter>
+            <GridItem>
+              <SummaryCard/>
+            </GridItem>
+          </Grid>
+        </PageSection>
+      <PageSection variant={PageSectionVariants.default}>
+          <TabbedLayout />
+      </PageSection>
+
+    </AppContext.Provider>
+  );
+}
+
+export default App;
