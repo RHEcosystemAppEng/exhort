@@ -20,6 +20,7 @@ package com.redhat.exhort.integration.report;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
+import org.apache.camel.component.jackson.JacksonDataFormat;
 
 import com.redhat.exhort.integration.Constants;
 
@@ -34,6 +35,7 @@ public class ReportIntegration extends EndpointRouteBuilder {
 
   @Inject ReportTemplate reportTemplate;
   @Inject Configuration configuration;
+  @Inject JacksonDataFormat dataFormat;
 
   @PostConstruct
   void updateFreemarkerConfig() {
@@ -48,7 +50,6 @@ public class ReportIntegration extends EndpointRouteBuilder {
     // fmt:off
         from(direct("report"))
             .routeId("report")
-            .bean(ReportTransformer.class, "transform")
             .setProperty(Constants.REPORT_PROPERTY, body())
             .choice()
                 .when(exchangeProperty(Constants.REQUEST_CONTENT_PROPERTY).isEqualTo(MediaType.TEXT_HTML))
@@ -77,7 +78,7 @@ public class ReportIntegration extends EndpointRouteBuilder {
             .routeId("jsonReport")
             .setBody(exchangeProperty(Constants.REPORT_PROPERTY))
             .bean(ReportTransformer.class, "filterVerboseResult")
-            .marshal().json();
+            .marshal(dataFormat);
         //fmt:on
   }
 }

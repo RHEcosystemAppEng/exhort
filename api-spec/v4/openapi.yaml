@@ -1,0 +1,325 @@
+openapi: 3.0.3
+info:
+  title: CodeReady Dependency Analytics API
+  description: Vulnerability analysis with Red Hat CodeReady Dependency Analytics
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: 3.0.0
+servers:
+- url: http://prod-exhort.apps.sssc-cl01.appeng.rhecoeng.com/api/v3
+  description: Production server
+- url: http://pre-exhort.apps.sssc-cl01.appeng.rhecoeng.com/api/v3
+  description: Staging server
+- url: http://dev-exhort.apps.sssc-cl01.appeng.rhecoeng.com/api/v3
+  description: Development server
+- url: http://localhost:8080/api/v3
+  description: Local development
+paths:
+  /analysis:
+    post:
+      operationId: analysis
+      summary:  Takes a client-resolved dependency graph to perform a full stack analysis from all the available Vulnerability sources
+      security:
+        - RhdaTokenAuth: []
+        - SnykTokenAuth: []
+        - OssIndexUserAuth: []
+          OssIndexTokenAuth: []
+      parameters:
+      - name: providers
+        in: query
+        description: List of vulnerability providers to get the report from
+        required: false
+        schema:
+          enum:
+          - snyk
+          - oss-index
+          type: string
+        example: snyk
+      requestBody:
+        required: true
+        description: Dependency graph in SBOM format
+        content:
+          application/vnd.cyclonedx+json:
+            schema:
+              type: object
+          application/vnd.spdx+json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Full dependency analysis from all the available providers
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnalysisReport'
+            text/html:
+              schema:
+                type: object
+            multipart/mixed:
+              schema:
+                type: object
+                properties:
+                  json_report:
+                    $ref: '#/components/schemas/AnalysisReport'
+                  html_report:
+                    type: object
+        '422':
+          description: Invalid request
+          content:
+            text/plain:
+              schema:
+                type: string
+                description: Error message  
+  /token:
+    get:
+      operationId: validateToken
+      summary: Validates a vulnerability provider token
+      security:
+        - RhdaTokenAuth: []
+        - SnykTokenAuth: []
+        - OssIndexUserAuth: []
+          OssIndexTokenAuth: []
+      responses:
+        '200':
+          description: Successful token validation
+          content:
+            text/plain:
+              schema:
+                type: string
+                description: Response message
+        '401':
+          description: Invalid token
+          content:
+            text/plain:
+              schema:
+                type: string
+                description: Error message
+        '403':
+          description: Forbidden. The token does not have permissions
+          content:
+            text/plain:
+              schema:
+                type: string
+                description: Error message
+        '429':
+          description: Too many requests. Rate limit exceeded
+          content:
+            text/plain:
+              schema:
+                type: string
+                description: Error message
+        '400':
+          description: Invalid request
+          content:
+            text/plain:
+              schema:
+                type: string
+                description: Missing token
+
+components:
+  securitySchemes:
+    RhdaTokenAuth:
+      type: apiKey
+      in: header
+      name: rhda-token
+    SnykTokenAuth:
+      type: apiKey
+      in: header
+      name: ex-snyk-token
+    OssIndexUserAuth:
+      type: apiKey
+      in: header
+      name: ex-oss-index-name
+    OssIndexTokenAuth:
+      type: apiKey
+      in: header
+      name: ex-oss-index-token
+  schemas:
+    AnalysisReport:
+      type: object
+      properties:
+        summary:
+          $ref: '#/components/schemas/Summary'
+        dependencies:
+          type: array
+          items:
+            $ref: '#/components/schemas/DependencyReport'
+    PackageRef:
+      type: string
+      description: PackageURL used to identify a dependency artifact
+      example: pkg:maven/io.quarkus/quarkus-hibernate-orm@2.13.5.Final
+    DependencyReport:
+      type: object
+      properties:
+        ref:
+          $ref: '#/components/schemas/PackageRef'
+        issues:
+          type: array
+          items:
+            $ref: '#/components/schemas/Issue'
+        transitive:
+          type: array
+          items:
+            $ref: '#/components/schemas/TransitiveDependencyReport'
+        recommendation:
+          description: Trusted Content recommendation that is not related to any security vulnerability
+          allOf:
+            - $ref: '#/components/schemas/PackageRef'
+        highestVulnerability:
+          description: Highest vulnerability found for this dependency
+          $ref: '#/components/schemas/Issue'
+    Severity:
+      type: string
+      enum:
+        - CRITICAL
+        - HIGH
+        - MEDIUM
+        - LOW
+    Issue:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        source:
+          $ref: '#/components/schemas/Source'
+        cvss:
+          $ref: '#/components/schemas/CvssVector'
+        cvssScore:
+          type: number
+          format: float
+        severity:
+          $ref: '#/components/schemas/Severity'
+        cves:
+          type: array
+          items:
+            type: string
+        unique:
+          type: boolean
+          default: false
+        remediation:
+          $ref: '#/components/schemas/Remediation'
+    Source:
+      type: object
+      properties:
+        provider:
+          description: The service in charge of providing the vulnerability data
+          type: string
+        origin:
+          description: The vulnerability provider reporting this issue
+          type: string
+    TransitiveDependencyReport:
+      type: object
+      properties:
+        ref:
+          $ref: '#/components/schemas/PackageRef'
+        issues:
+          type: array
+          items:
+            $ref: '#/components/schemas/Issue'
+        highestVulnerability:
+          description: Highest vulnerability found for this dependency
+          $ref: '#/components/schemas/Issue'
+    Remediation:
+      type: object
+      properties:
+        fixedIn:
+          type: array
+          items:
+            type: string
+        trustedContent:
+          type: object
+          properties:
+            mavenPackage:
+              $ref: '#/components/schemas/PackageRef'
+            productStatus:
+              type: string
+    Summary:
+      type: object
+      properties:
+        dependencies:
+          $ref: '#/components/schemas/DependenciesSummary'
+        providers:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ProviderSummary'
+    DependenciesSummary:
+      type: object
+      description: Number of dependencies scanned
+      properties:
+        total:
+          type: integer
+        direct:
+          type: integer
+        transitive:
+          type: integer
+    ProviderSummary:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/ProviderStatus'
+        sources:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/VulnerabilitiesSummary'
+    ProviderStatus:
+      type: object
+      properties:
+        ok:
+          type: boolean
+        name:
+          type: string
+        status:
+          type: integer
+        message:
+          type: string
+    VulnerabilitiesSummary:
+      type: object
+      properties:
+        direct:
+          type: integer
+        transitive:
+          type: integer
+        total:
+          type: integer
+        critical:
+          type: integer
+        high:
+          type: integer
+        medium:
+          type: integer
+        low:
+          type: integer
+        remediations:
+          type: integer
+        recommendations:
+          type: integer
+    CvssVector:
+      type: object
+      properties:
+        attackVector:
+          type: string
+        attackComplexity:
+          type: string
+        privilegesRequired:
+          type: string
+        userInteraction:
+          type: string
+        scope:
+          type: string
+        confidentialityImpact:
+          type: string
+        integrityImpact:
+          type: string
+        availabilityImpact:
+          type: string
+        exploitCodeMaturity:
+          type: string
+        remediationLevel:
+          type: string
+        reportConfidence:
+          type: string
+        cvss:
+          type: string

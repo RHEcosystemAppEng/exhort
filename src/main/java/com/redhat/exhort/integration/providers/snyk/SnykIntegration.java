@@ -16,17 +16,16 @@
  * limitations under the License.
  */
 
-package com.redhat.exhort.integration.snyk;
+package com.redhat.exhort.integration.providers.snyk;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
-import org.apache.camel.builder.AggregationStrategies;
 import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import com.redhat.exhort.integration.Constants;
-import com.redhat.exhort.integration.VulnerabilityProvider;
 import com.redhat.exhort.integration.backend.BackendUtils;
+import com.redhat.exhort.integration.providers.VulnerabilityProvider;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -51,20 +50,21 @@ public class SnykIntegration extends EndpointRouteBuilder {
     from(direct("snykDepGraph"))
         .routeId("snykDepGraph")
         .process(this::setAuthToken)
-        .enrich(direct("snykRequest"), AggregationStrategies.bean(SnykAggregationStrategy.class, "aggregate"));
+          .circuitBreaker()
+          .faultToleranceConfiguration()
+            .timeoutEnabled(true)
+            .timeoutDuration(timeout)
+          .end()
+        .to(direct("snykRequest"))
+        .onFallback()
+          .process(e -> BackendUtils.processResponseError(e, Constants.SNYK_PROVIDER));
 
     from(direct("snykRequest"))
         .routeId("snykRequest")
         .transform().method(SnykRequestBuilder.class, "fromDiGraph")
         .process(this::processDepGraphRequest)
-        .circuitBreaker()
-          .faultToleranceConfiguration()
-            .timeoutEnabled(true)
-            .timeoutDuration(timeout)
-          .end()
-            .to(vertxHttp("{{api.snyk.host}}"))
-        .onFallback()
-          .process(e -> BackendUtils.processResponseError(e, Constants.SNYK_PROVIDER));
+        .to(vertxHttp("{{api.snyk.host}}"))
+        .transform().method(SnykResponseHandler.class, "buildReport");
 
     from(direct("snykValidateToken"))
         .routeId("snykValidateToken")

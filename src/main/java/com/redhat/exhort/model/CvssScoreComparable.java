@@ -20,9 +20,9 @@ package com.redhat.exhort.model;
 
 import java.util.Comparator;
 
-import com.redhat.exhort.api.DependencyReport;
-import com.redhat.exhort.api.Issue;
-import com.redhat.exhort.api.TransitiveDependencyReport;
+import com.redhat.exhort.api.v4.DependencyReport;
+import com.redhat.exhort.api.v4.Issue;
+import com.redhat.exhort.api.v4.TransitiveDependencyReport;
 
 public interface CvssScoreComparable {
 

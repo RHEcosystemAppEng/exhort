@@ -18,31 +18,9 @@
 
 package com.redhat.exhort.api;
 
-import com.redhat.exhort.api.v4.Severity;
+import java.util.List;
 
-import io.quarkus.runtime.annotations.RegisterForReflection;
+import com.redhat.exhort.api.v4.DependencyReport;
+import com.redhat.exhort.api.v4.ProviderSummary;
 
-@RegisterForReflection
-public class SeverityUtils {
-
-  public static Severity fromValue(String value) {
-    if (value == null) {
-      return null;
-    }
-    return Severity.valueOf(value.toUpperCase());
-  }
-
-  // From: https://nvd.nist.gov/vuln-metrics/cvss
-  public static Severity fromScore(float score) {
-    if (score < 4) {
-      return Severity.LOW;
-    }
-    if (score < 7) {
-      return Severity.MEDIUM;
-    }
-    if (score < 9) {
-      return Severity.HIGH;
-    }
-    return Severity.CRITICAL;
-  }
-}
+public record ProviderResponse(List<DependencyReport> report, ProviderSummary summary) {}

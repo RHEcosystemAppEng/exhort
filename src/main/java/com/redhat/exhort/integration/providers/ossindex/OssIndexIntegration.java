@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.redhat.exhort.integration.ossindex;
+package com.redhat.exhort.integration.providers.ossindex;
 
 import java.util.Base64;
 import java.util.List;
@@ -52,10 +52,6 @@ public class OssIndexIntegration extends EndpointRouteBuilder {
     // fmt:off
     from(direct("ossIndexScan"))
         .routeId("ossIndexScan")
-        .enrich(direct("ossIndexRequest"), AggregationStrategies.bean(OssIndexAggregationStrategy.class, "aggregate"));
-
-    from(direct("ossIndexRequest"))
-        .routeId("ossIndexRequest")
         .circuitBreaker()
           .faultToleranceConfiguration()
             .timeoutEnabled(true)
@@ -67,13 +63,13 @@ public class OssIndexIntegration extends EndpointRouteBuilder {
 
     from(direct("ossSplitReq"))
         .routeId("ossSplitReq")
-        .transform(method(OssIndexAggregationStrategy.class, "split"))
-        .split(body(), AggregationStrategies.bean(OssIndexAggregationStrategy.class, "aggregateSplit"))
+        .transform(method(OssIndexRequestBuilder.class, "split"))
+        .split(body(), AggregationStrategies.bean(OssIndexResponseHandler.class, "aggregateSplit"))
           .parallelProcessing()
           .transform().method(OssIndexRequestBuilder.class, "buildRequest")
           .process(this::processComponentRequest)
           .to(vertxHttp("{{api.ossindex.host}}"))
-          .transform(method(OssIndexRequestBuilder.class, "responseToIssues"));
+          .transform(method(OssIndexResponseHandler.class, "buildReport"));
     
     from(direct("ossValidateCredentials"))
       .routeId("ossValidateCredentials")

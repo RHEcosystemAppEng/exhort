@@ -18,6 +18,7 @@
 
 package com.redhat.exhort.integration.backend;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.camel.Exchange;
@@ -27,7 +28,9 @@ import org.jboss.resteasy.reactive.common.util.MediaTypeHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.redhat.exhort.api.ProviderStatus;
+import com.redhat.exhort.api.ProviderResponse;
+import com.redhat.exhort.api.v4.ProviderStatus;
+import com.redhat.exhort.api.v4.ProviderSummary;
 import com.redhat.exhort.integration.Constants;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
@@ -60,7 +63,7 @@ public class BackendUtils {
   }
 
   public static void processResponseError(Exchange exchange, String provider) {
-    ProviderStatus status = new ProviderStatus().ok(false).provider(provider);
+    ProviderStatus status = new ProviderStatus().ok(false).name(provider);
     Exception exception = (Exception) exchange.getProperty(Exchange.EXCEPTION_CAUGHT);
     Throwable cause = exception.getCause();
 
@@ -82,7 +85,9 @@ public class BackendUtils {
           .status(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
       LOGGER.warn("Unable to process request to: {}", provider, exception);
     }
-    exchange.getMessage().setBody(status);
+    ProviderSummary summary = new ProviderSummary().status(status).sources(Collections.emptyMap());
+    ProviderResponse response = new ProviderResponse(Collections.emptyList(), summary);
+    exchange.getMessage().setBody(response);
   }
 
   public static void processTokenFallBack(Exchange exchange, String provider) {

@@ -37,8 +37,10 @@ import com.redhat.exhort.analytics.segment.IdentifyEvent;
 import com.redhat.exhort.analytics.segment.Library;
 import com.redhat.exhort.analytics.segment.SegmentService;
 import com.redhat.exhort.analytics.segment.TrackEvent;
-import com.redhat.exhort.api.AnalysisReport;
-import com.redhat.exhort.api.DependencyReport;
+import com.redhat.exhort.api.v4.AnalysisReport;
+import com.redhat.exhort.api.v4.DependencyReport;
+import com.redhat.exhort.api.v4.Issue;
+import com.redhat.exhort.api.v4.TransitiveDependencyReport;
 import com.redhat.exhort.integration.Constants;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
@@ -132,7 +134,7 @@ public class AnalyticsService {
       // TODO: Adapt after multi-source is implemented
       Map<String, Object> snykReport = new HashMap<>();
       reportProps.put("dependencies", report.getSummary().getDependencies());
-      reportProps.put("vulnerabilities", report.getSummary().getVulnerabilities());
+      // reportProps.put("vulnerabilities", report.getSummary().getVulnerabilities());
       snykReport.put("report", reportProps);
       snykReport.put("recommendations", countRecommendations(report));
       snykReport.put("remediations", countRemediations(report));
@@ -207,24 +209,40 @@ public class AnalyticsService {
 
   private long countRemediations(AnalysisReport report) {
     AtomicLong counter = new AtomicLong();
-    report
-        .getDependencies()
+    report.getDependencies().stream()
         .forEach(
             d -> {
-              if (d.getRemediations() != null) {
-                counter.addAndGet(d.getRemediations().size());
-              }
-              if (d.getTransitive() != null) {
-                d.getTransitive()
-                    .forEach(
-                        t -> {
-                          if (t.getRemediations() != null) {
-                            counter.addAndGet(t.getRemediations().size());
-                          }
-                        });
-              }
+              counter.addAndGet(countDirectRemediations(d));
+              counter.addAndGet(countTransitiveRemediations(d.getTransitive()));
             });
+
     return counter.get();
+  }
+
+  private long countDirectRemediations(DependencyReport dep) {
+    if (dep == null || dep.getIssues() == null) {
+      return 0;
+    }
+    return countIssuesRemediations(dep.getIssues());
+  }
+
+  private long countTransitiveRemediations(List<TransitiveDependencyReport> transitive) {
+    if (transitive == null || transitive.isEmpty()) {
+      return 0;
+    }
+    return transitive.stream()
+        .map(t -> t.getIssues())
+        .map(this::countIssuesRemediations)
+        .reduce(0L, Long::sum);
+  }
+
+  private long countIssuesRemediations(List<Issue> issues) {
+    if (issues == null) {
+      return 0;
+    }
+    return issues.stream()
+        .filter(i -> i.getRemediation() != null && i.getRemediation().getTrustedContent() != null)
+        .count();
   }
 
   private long countRecommendations(AnalysisReport report) {
