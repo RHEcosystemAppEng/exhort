@@ -25,7 +25,6 @@ import static org.hamcrest.core.StringStartsWith.startsWithIgnoringCase;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
@@ -61,7 +60,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 @QuarkusTest
-public class AnalysisTest extends AbstractAnalysisTest {
+public class AnalysisV3Test extends AbstractAnalysisTest {
 
   private static final String CYCLONEDX = "cyclonedx";
   private static final String SPDX = "spdx";
@@ -76,7 +75,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
         .queryParam(Constants.PROVIDERS_PARAM, "unknown")
         .body(req)
         .when()
-        .post("/api/v4/analysis")
+        .post("/api/v3/analysis")
         .then()
         .assertThat()
         .statusCode(422)
@@ -93,7 +92,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
         .header(CONTENT_TYPE, getContentType(sbom))
         .body(loadFileAsString(String.format("%s/unsupported-invalid-sbom.json", sbom)))
         .when()
-        .post("/api/v4/analysis")
+        .post("/api/v3/analysis")
         .then()
         .assertThat()
         .statusCode(422)
@@ -110,7 +109,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
         .header(CONTENT_TYPE, getContentType(sbom))
         .body(loadFileAsString(String.format("%s/unsupported-mixed-sbom.json", sbom)))
         .when()
-        .post("/api/v4/analysis")
+        .post("/api/v3/analysis")
         .then()
         .assertThat()
         .statusCode(422)
@@ -136,7 +135,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .queryParam(Constants.PROVIDERS_PARAM, providers)
             .body(loadFileAsString(String.format("%s/empty-sbom.json", CYCLONEDX)))
             .when()
-            .post("/api/v4/analysis")
+            .post("/api/v3/analysis")
             .then()
             .assertThat()
             .statusCode(200)
@@ -158,14 +157,17 @@ public class AnalysisTest extends AbstractAnalysisTest {
 
     assertEquals(0, report.getSummary().getDependencies().getDirect());
     assertEquals(0, report.getSummary().getDependencies().getTransitive());
-    providers.forEach(p -> {
-        assertTrue(report.getSummary().getProviders().containsKey(p));
- assertTrue(
-        report.getSummary().getProviders().get(p).getSources().isEmpty());
-    });
-   
+    assertEquals(
+        0,
+        report
+            .getSummary()
+            .getProviders()
+            .get(Constants.SNYK_PROVIDER)
+            .getSources()
+            .get(Constants.SNYK_PROVIDER)
+            .getTotal());
 
-    assertNull(report.getDependencies());
+    assertTrue(report.getDependencies().isEmpty());
 
     verifyProviders(providers, authHeaders, true);
 
@@ -235,7 +237,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .header(Constants.OSS_INDEX_TOKEN_HEADER, OK_TOKEN)
             .body(loadSBOMFile(CYCLONEDX))
             .when()
-            .post("/api/v4/analysis")
+            .post("/api/v3/analysis")
             .then()
             .assertThat()
             .statusCode(200)
@@ -262,7 +264,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .queryParam(Constants.PROVIDERS_PARAM, Constants.SNYK_PROVIDER)
             .body(loadSBOMFile(CYCLONEDX))
             .when()
-            .post("/api/v4/analysis")
+            .post("/api/v3/analysis")
             .then()
             .assertThat()
             .statusCode(200)
@@ -288,7 +290,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .header("Accept", MediaType.APPLICATION_JSON)
             .header(Constants.SNYK_TOKEN_HEADER, INVALID_TOKEN)
             .when()
-            .post("/api/v4/analysis")
+            .post("/api/v3/analysis")
             .then()
             .assertThat()
             .statusCode(200)
@@ -321,7 +323,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .header("Accept", MediaType.APPLICATION_JSON)
             .header(Constants.SNYK_TOKEN_HEADER, UNAUTH_TOKEN)
             .when()
-            .post("/api/v4/analysis")
+            .post("/api/v3/analysis")
             .then()
             .assertThat()
             .statusCode(200)
@@ -354,7 +356,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .header("Accept", MediaType.APPLICATION_JSON)
             .header(Constants.SNYK_TOKEN_HEADER, OK_TOKEN)
             .when()
-            .post("/api/v4/analysis")
+            .post("/api/v3/analysis")
             .then()
             .assertThat()
             .statusCode(200)
@@ -382,7 +384,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .header("Accept", MediaType.APPLICATION_JSON)
             .queryParam(Constants.VERBOSE_MODE_HEADER, Boolean.FALSE)
             .when()
-            .post("/api/v4/analysis")
+            .post("/api/v3/analysis")
             .then()
             .assertThat()
             .statusCode(200)
@@ -411,7 +413,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .queryParam(Constants.VERBOSE_MODE_HEADER, Boolean.FALSE)
             .body(loadSBOMFile(CYCLONEDX))
             .when()
-            .post("/api/v4/analysis")
+            .post("/api/v3/analysis")
             .then()
             .assertThat()
             .statusCode(200)
@@ -438,7 +440,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .body(loadSBOMFile(CYCLONEDX))
             .header("Accept", MediaType.TEXT_HTML)
             .when()
-            .post("/api/v4/analysis")
+            .post("/api/v3/analysis")
             .then()
             .assertThat()
             .statusCode(200)
@@ -469,7 +471,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .header(Constants.OSS_INDEX_USER_HEADER, OK_USER)
             .header(Constants.OSS_INDEX_TOKEN_HEADER, OK_TOKEN)
             .when()
-            .post("/api/v4/analysis")
+            .post("/api/v3/analysis")
             .then()
             .assertThat()
             .statusCode(200)
@@ -495,7 +497,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
 
     HttpClient client = HttpClient.newHttpClient();
     HttpRequest request =
-        HttpRequest.newBuilder(URI.create("http://localhost:8081/api/v4/analysis"))
+        HttpRequest.newBuilder(URI.create("http://localhost:8081/api/v3/analysis"))
             .setHeader(Constants.RHDA_TOKEN_HEADER, DEFAULT_RHDA_TOKEN)
             .setHeader(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
             .setHeader("Accept", Constants.MULTIPART_MIXED)
@@ -527,7 +529,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .header("Accept", MediaType.TEXT_HTML)
             .header(Constants.SNYK_TOKEN_HEADER, INVALID_TOKEN)
             .when()
-            .post("/api/v4/analysis")
+            .post("/api/v3/analysis")
             .then()
             .assertThat()
             .statusCode(200)
@@ -558,7 +560,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .header("Accept", MediaType.TEXT_HTML)
             .header(Constants.SNYK_TOKEN_HEADER, UNAUTH_TOKEN)
             .when()
-            .post("/api/v4/analysis")
+            .post("/api/v3/analysis")
             .then()
             .assertThat()
             .statusCode(200)
@@ -589,7 +591,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .header("Accept", MediaType.TEXT_HTML)
             .header(Constants.SNYK_TOKEN_HEADER, ERROR_TOKEN)
             .when()
-            .post("/api/v4/analysis")
+            .post("/api/v3/analysis")
             .then()
             .assertThat()
             .statusCode(200)
@@ -614,7 +616,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
         .body(loadSBOMFile(CYCLONEDX))
         .header("Accept", MediaType.APPLICATION_XML)
         .when()
-        .post("/api/v4/analysis")
+        .post("/api/v3/analysis")
         .then()
         .assertThat()
         .statusCode(415)

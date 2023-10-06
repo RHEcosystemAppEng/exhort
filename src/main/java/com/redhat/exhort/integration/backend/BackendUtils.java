@@ -71,18 +71,18 @@ public class BackendUtils {
       if (cause instanceof HttpOperationFailedException) {
         HttpOperationFailedException httpException = (HttpOperationFailedException) cause;
         String message = prettifyHttpError(httpException);
-        status.message(message).status(httpException.getStatusCode());
+        status.message(message).code(httpException.getStatusCode());
         LOGGER.warn("Unable to process request: {}", message, cause);
       } else {
         status
             .message(cause.getMessage())
-            .status(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
+            .code(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
         LOGGER.warn("Unable to process request to: {}", provider, cause);
       }
     } else {
       status
           .message(exception.getMessage())
-          .status(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
+          .code(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
       LOGGER.warn("Unable to process request to: {}", provider, exception);
     }
     ProviderSummary summary = new ProviderSummary().status(status).sources(Collections.emptyMap());

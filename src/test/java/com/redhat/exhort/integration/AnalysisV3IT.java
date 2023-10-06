@@ -16,11 +16,13 @@
  * limitations under the License.
  */
 
-package com.redhat.exhort.api;
+package com.redhat.exhort.integration;
 
-import java.util.List;
+import io.quarkus.test.junit.QuarkusIntegrationTest;
 
-import com.redhat.exhort.api.v4.DependencyReport;
-import com.redhat.exhort.api.v4.ProviderSummary;
+@QuarkusIntegrationTest
+public class AnalysisV3IT extends AnalysisV3Test {
 
-public record ProviderResponse(List<DependencyReport> reports, ProviderSummary summary) {}
+  // Run the same tests
+
+}

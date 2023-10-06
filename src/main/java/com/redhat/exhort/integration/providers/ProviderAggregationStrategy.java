@@ -60,7 +60,7 @@ public class ProviderAggregationStrategy {
     summary.dependencies(depsSummary);
     return new AnalysisReport()
         .dependencies(
-            responses.stream().map(ProviderResponse::report).flatMap(List::stream).toList())
+            responses.stream().map(ProviderResponse::reports).flatMap(List::stream).toList())
         .summary(summary);
   }
 }

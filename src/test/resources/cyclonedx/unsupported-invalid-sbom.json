@@ -21,9 +21,25 @@
         "group" : "io.quarkus",
         "name" : "quarkus-hibernate-orm",
         "version" : "2.13.5.Final"
+      },
+      {
+        "name" : "quarkus-hibernate-orm",
+        "purl" : "pkg:foo/io.quarkus/quarkus-hibernate-orm@2.13.5.Final?type=jar",
+        "type" : "library",
+        "bom-ref" : "pkg:foo/io.quarkus/quarkus-hibernate-orm@2.13.5.Final?type=jar"
       }
     ],
     "dependencies" : [
-
+      {
+        "ref" : "pkg:foo/org.acme.dbaas/postgresql-orm-quarkus@1.0.0-SNAPSHOT?type=jar",
+        "dependsOn" : [
+          "pkg:foo/io.quarkus/quarkus-hibernate-orm@2.13.5.Final?type=jar"
+        ]
+      },
+      {
+        "ref" : "pkg:foo/io.quarkus/quarkus-hibernate-orm@2.13.5.Final?type=jar",
+        "dependsOn" : [
+        ]
+      }
     ]
   }

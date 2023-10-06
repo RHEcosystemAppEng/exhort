@@ -64,12 +64,15 @@ public class OssIndexIntegration extends EndpointRouteBuilder {
     from(direct("ossSplitReq"))
         .routeId("ossSplitReq")
         .transform(method(OssIndexRequestBuilder.class, "split"))
-        .split(body(), AggregationStrategies.bean(OssIndexResponseHandler.class, "aggregateSplit"))
-          .parallelProcessing()
-          .transform().method(OssIndexRequestBuilder.class, "buildRequest")
-          .process(this::processComponentRequest)
-          .to(vertxHttp("{{api.ossindex.host}}"))
-          .transform(method(OssIndexResponseHandler.class, "buildReport"));
+        .choice().when(simple("${body.isEmpty}"))
+          .setBody(method(OssIndexResponseHandler.class, "emptyResponse")).endChoice()
+        .otherwise()
+          .split(body(), AggregationStrategies.bean(OssIndexResponseHandler.class, "aggregateSplit"))
+            .parallelProcessing()
+            .transform().method(OssIndexRequestBuilder.class, "buildRequest")
+            .process(this::processComponentRequest)
+            .to(vertxHttp("{{api.ossindex.host}}"))
+            .transform(method(OssIndexResponseHandler.class, "buildReport"));
     
     from(direct("ossValidateCredentials"))
       .routeId("ossValidateCredentials")

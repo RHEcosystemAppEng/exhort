@@ -42,6 +42,7 @@ import com.redhat.exhort.api.v4.ProviderSummary;
 import com.redhat.exhort.api.v4.TransitiveDependencyReport;
 import com.redhat.exhort.api.v4.VulnerabilitiesSummary;
 import com.redhat.exhort.integration.Constants;
+import com.redhat.exhort.model.CvssScoreComparable.DependencyScoreComparator;
 import com.redhat.exhort.model.CvssScoreComparable.TransitiveScoreComparator;
 import com.redhat.exhort.model.DependencyTree;
 
@@ -59,7 +60,7 @@ public abstract class ProviderResponseHandler {
         .name(provider)
         .ok(Boolean.TRUE)
         .message(Response.Status.OK.getReasonPhrase())
-        .status(Response.Status.OK.getStatusCode());
+        .code(Response.Status.OK.getStatusCode());
   }
 
   protected DependencyReport toDependencyReport(PackageRef ref, List<Issue> issues) {
@@ -73,6 +74,14 @@ public abstract class ProviderResponseHandler {
 
   protected abstract Map<String, List<Issue>> responseToIssues(
       byte[] response, String privateProviders) throws IOException;
+
+  public ProviderResponse emptyResponse(@ExchangeProperty(Constants.DEPENDENCY_TREE_PROPERTY) DependencyTree tree) {
+    ProviderSummary summary =
+        new ProviderSummary()
+            .status(defaultOkStatus(getProviderName()))
+            .sources(buildSummary(Collections.emptyMap(), tree));
+    return new ProviderResponse(Collections.emptyList(), summary);
+  }
 
   public ProviderResponse buildReport(
       @Body byte[] response,
@@ -123,7 +132,7 @@ public abstract class ProviderResponseHandler {
                           })
                       .filter(d -> !d.getIssues().isEmpty())
                       .collect(Collectors.toList());
-              transitiveReports.sort(new TransitiveScoreComparator());
+              transitiveReports.sort(Collections.reverseOrder(new TransitiveScoreComparator()));
               directReport.setTransitive(transitiveReports);
               if (directReport.getHighestVulnerability() != null) {
                 reports.add(directReport);
@@ -133,6 +142,7 @@ public abstract class ProviderResponseHandler {
         new ProviderSummary()
             .status(defaultOkStatus(getProviderName()))
             .sources(buildSummary(issuesData, tree));
+    reports.sort(Collections.reverseOrder(new DependencyScoreComparator()));
     return new ProviderResponse(reports, summary);
   }
 
@@ -229,7 +239,9 @@ public abstract class ProviderResponseHandler {
           .low(low.get())
           .direct(direct.get())
           .transitive(total.get() - direct.get())
-          .remediations(remediations.get());
+          .remediations(remediations.get())
+          // TODO: Calculate recommendations
+          .recommendations(0);
     }
   }
 }

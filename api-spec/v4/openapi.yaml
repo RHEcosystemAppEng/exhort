@@ -271,7 +271,7 @@ components:
           type: boolean
         name:
           type: string
-        status:
+        code:
           type: integer
         message:
           type: string
@@ -280,22 +280,31 @@ components:
       properties:
         direct:
           type: integer
+          default: 0
         transitive:
           type: integer
+          default: 0
         total:
           type: integer
+          default: 0
         critical:
           type: integer
+          default: 0
         high:
           type: integer
+          default: 0
         medium:
           type: integer
+          default: 0
         low:
           type: integer
+          default: 0
         remediations:
           type: integer
+          default: 0
         recommendations:
           type: integer
+          default: 0
     CvssVector:
       type: object
       properties:

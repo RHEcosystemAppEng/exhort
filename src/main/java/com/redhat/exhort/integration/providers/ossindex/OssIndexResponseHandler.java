@@ -64,7 +64,7 @@ public class OssIndexResponseHandler extends ProviderResponseHandler {
       if (!oldExchange.summary().getStatus().getOk()) {
         return oldExchange;
       }
-      oldExchange.report().addAll(newExchange.report());
+      oldExchange.reports().addAll(newExchange.reports());
       oldExchange
           .summary()
           .getSources()
