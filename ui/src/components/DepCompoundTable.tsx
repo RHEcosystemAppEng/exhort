@@ -26,7 +26,7 @@ import {ExpandableRowContent, Table, TableVariant, Tbody, Td, TdProps, Th, Thead
 import FilterIcon from '@patternfly/react-icons/dist/esm/icons/filter-icon';
 
 import {useAppContext} from '../App';
-import {Dependency, Provider} from '../api/report';
+import {Dependency, Report} from '../api/report';
 import {useSelectionState} from '../hooks/useSelectionState';
 import {useTable} from '../hooks/useTable';
 import {useTableControls} from '../hooks/useTableControls';
@@ -37,12 +37,11 @@ import {TransitiveDependenciesTable} from './TransitiveDependenciesTable';
 import {VulnerabilitiesTable} from './VulnerabilitiesTable';
 import {VulnerabilitiesCountBySeverity} from './VulnerabilitiesCountBySeverity'
 import {extractDependencyVersion} from '../utils/utils';
-import CubesIcon from "@patternfly/react-icons/dist/esm/icons/cubes-icon";
 import SearchIcon from '@patternfly/react-icons/dist/esm/icons/search-icon';
 
 import { ConditionalTableBody } from './TableControls/ConditionalTableBody';
 
-export const DepCompoundTable = ({ name, provider }: { name: string; provider: Provider }) => {
+export const DepCompoundTable = ({ name, dependencies }: { name: string; dependencies: Dependency[] }) => {
   const appContext = useAppContext();
   // Filters
   const [filterText, setFilterText] = useState('');
@@ -50,7 +49,7 @@ export const DepCompoundTable = ({ name, provider }: { name: string; provider: P
   // Rows
   const { isItemSelected: isRowExpanded, toggleItemSelected: toggleRowExpanded } =
     useSelectionState<Dependency>({
-      items: provider.dependencies,
+      items: dependencies,
       isEqual: (a, b) => a.ref === b.ref,
     });
 
@@ -62,7 +61,7 @@ export const DepCompoundTable = ({ name, provider }: { name: string; provider: P
   } = useTableControls();
 
   const { pageItems, filteredItems } = useTable({
-    items: provider.dependencies,
+    items: dependencies,
     currentPage: currentPage,
     currentSortBy: currentSortBy,
     compareToByColumn: (a: Dependency, b: Dependency, columnIndex?: number) => {
@@ -232,11 +231,11 @@ export const DepCompoundTable = ({ name, provider }: { name: string; provider: P
                           dataLabel={columnNames.transitive}
                           compoundExpand={compoundExpandParams(item, 'transitive', rowIndex, 3)}
                       >
-                        {(item.transitive.length )? (
+                        {(item.transitive.length)? (
                             <Flex>
                               <FlexItem>{item.transitive
-                                  .map((e) => e.issues.length)
-                                  .reduce((prev, current) =>
+                                  .map(e => e.issues?.length)
+                                  .reduce((prev = 0, current = 0) =>
                                       prev + current)}</FlexItem>
                               <Divider
                                   orientation={{
@@ -266,14 +265,14 @@ export const DepCompoundTable = ({ name, provider }: { name: string; provider: P
                                 {(expandedCellKey === 'direct' && item.issues && item.issues.length > 0 )? (
                                     // Content for direct column
                                     <VulnerabilitiesTable
-                                        providerName={provider.status.name}
+                                        providerName={name}
                                         dependency={item}
                                         vulnerabilities={item.issues}
                                     />
                                 ) : (expandedCellKey === 'transitive' && item.transitive && item.transitive.length > 0 )? (
                                     // Content for transitive column
                                     <TransitiveDependenciesTable
-                                        providerName={provider.status.name}
+                                        providerName={name}
                                         dependency={item}
                                         transitiveDependencies={item.transitive}
                                     />

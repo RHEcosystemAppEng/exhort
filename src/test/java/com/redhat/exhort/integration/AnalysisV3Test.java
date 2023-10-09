@@ -126,7 +126,6 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
   public void testEmptySbom(
       List<String> providers, Map<String, String> authHeaders, String pkgManager) {
     stubAllProviders();
-    stubTCRequests();
 
     AnalysisReport report =
         given()
@@ -170,8 +169,6 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
     assertTrue(report.getDependencies().isEmpty());
 
     verifyProviders(providers, authHeaders, true);
-
-    verifyNoInteractionsWithTC();
   }
 
   private static Stream<Arguments> emptySbomArguments() {
@@ -225,8 +222,6 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
   @Test
   public void testAllWithToken() {
     stubAllProviders();
-    stubTCRequests();
-    stubTCRequests();
 
     String body =
         given()
@@ -249,13 +244,11 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
     assertJson("reports/report_all_token.json", body);
     verifySnykRequest(OK_TOKEN);
     verifyOssRequest(OK_USER, OK_TOKEN, false);
-    verifyTCRequests();
   }
 
   @Test
   public void testSnykWithNoToken() {
     stubAllProviders();
-    stubTCRequests();
 
     String body =
         given()
@@ -275,13 +268,11 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
 
     assertJson("reports/report_all_no_snyk_token.json", body);
     verifySnykRequest(null);
-    verifyTCRequests();
   }
 
   @Test
   public void testUnauthorizedRequest() {
     stubAllProviders();
-    stubTCRequests();
 
     AnalysisReport report =
         given()
@@ -308,13 +299,11 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
     assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), status.getCode());
 
     verifySnykRequest(INVALID_TOKEN);
-    verifyNoInteractionsWithTC();
   }
 
   @Test
   public void testForbiddenRequest() {
     stubAllProviders();
-    stubTCRequests();
 
     AnalysisReport report =
         given()
@@ -341,13 +330,11 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
     assertEquals(Response.Status.FORBIDDEN.getStatusCode(), status.getCode());
 
     verifySnykRequest(UNAUTH_TOKEN);
-    verifyNoInteractionsWithTC();
   }
 
   @Test
   public void testSBOMJsonWithToken() {
     stubAllProviders();
-    stubTCRequests();
 
     AnalysisReport report =
         given()
@@ -368,14 +355,12 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
     assertSummary(report.getSummary());
     assertDependenciesReport(report.getDependencies());
 
-    verifyTCRequests();
     verifySnykRequest(OK_TOKEN);
   }
 
   @Test
   public void testNonVerboseJson() {
     stubAllProviders();
-    stubTCRequests();
 
     AnalysisReport report =
         given()
@@ -396,14 +381,12 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
     assertSummary(report.getSummary());
     assertTrue(report.getDependencies().isEmpty());
 
-    verifyTCRequests();
     verifySnykRequest(null);
   }
 
   @Test
   public void testNonVerboseWithToken() {
     stubAllProviders();
-    stubTCRequests();
 
     AnalysisReport report =
         given()
@@ -426,12 +409,10 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
     assertTrue(report.getDependencies().isEmpty());
 
     verifySnykRequest(OK_TOKEN);
-    verifyTCRequests();
   }
 
   @Test
   public void testHtmlWithoutToken() {
-    stubTCRequests();
     stubAllProviders();
 
     String body =
@@ -454,13 +435,11 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
     assertReportContains("SNYK-PRIVATE-VULNERABILITY", body);
 
     verifySnykRequest(null);
-    verifyTCRequests();
   }
 
   @Test
   public void testHtmlWithToken() {
     stubAllProviders();
-    stubTCRequests();
 
     String body =
         given()
@@ -485,7 +464,6 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
     assertReportDoesNotContains("SNYK-PRIVATE-VULNERABILITY", body);
 
     verifySnykRequest(OK_TOKEN);
-    verifyTCRequests();
     verifyOssRequest(OK_USER, OK_TOKEN, false);
   }
 
@@ -493,7 +471,6 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
   @ValueSource(strings = {"HTTP_1_1", "HTTP_2"})
   public void testMultipart_HttpVersions(String version) throws IOException, InterruptedException {
     stubAllProviders();
-    stubTCRequests();
 
     HttpClient client = HttpClient.newHttpClient();
     HttpRequest request =
@@ -513,14 +490,12 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
     assertEquals(Response.Status.OK.getStatusCode(), response.statusCode());
 
     verifySnykRequest(OK_TOKEN);
-    verifyTCRequests();
     verifyOssRequest(OK_USER, OK_TOKEN, false);
   }
 
   @Test
   public void testHtmlUnauthorized() {
     stubAllProviders();
-    stubTCRequests();
 
     String body =
         given()
@@ -543,15 +518,12 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
     assertReportContains("Unauthorized: Verify the provided credentials are valid.", body);
 
     verifySnykRequest(INVALID_TOKEN);
-    verifyTCRecommendations();
-    verifyNoInteractionsWithTCRemediations();
     verifyNoInteractionsWithOSS();
   }
 
   @Test
   public void testHtmlForbidden() {
     stubAllProviders();
-    stubTCRequests();
 
     String body =
         given()
@@ -574,15 +546,12 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
         "Forbidden: The provided credentials don't have the required permissions.", body);
 
     verifySnykRequest(UNAUTH_TOKEN);
-    verifyTCRecommendations();
-    verifyNoInteractionsWithTCRemediations();
     verifyNoInteractionsWithOSS();
   }
 
   @Test
   public void testHtmlError() {
     stubAllProviders();
-    stubTCRequests();
 
     String body =
         given()
@@ -604,8 +573,6 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
     assertReportContains("Server Error", body);
 
     verifySnykRequest(ERROR_TOKEN);
-    verifyTCRecommendations();
-    verifyNoInteractionsWithTCRemediations();
     verifyNoInteractionsWithOSS();
   }
 

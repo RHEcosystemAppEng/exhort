@@ -287,6 +287,9 @@ components:
         total:
           type: integer
           default: 0
+        dependencies:
+          type: integer
+          default: 0
         critical:
           type: integer
           default: 0

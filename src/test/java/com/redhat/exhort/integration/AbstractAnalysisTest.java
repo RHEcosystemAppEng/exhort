@@ -432,68 +432,9 @@ public abstract class AbstractAnalysisTest {
     }
   }
 
-  protected void stubTCRequests() {
-    server.stubFor(
-        post(urlMatching(Constants.TRUSTED_CONTENT_PATH + ".*"))
-            .withHeader(Exchange.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON))
-            .willReturn(
-                aResponse()
-                    .withStatus(200)
-                    .withHeader(Exchange.CONTENT_ENCODING, "identity")
-                    .withHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                    .withBodyFile("trustedcontent/gav_report.json")));
-    server.stubFor(
-        post(urlMatching(Constants.TRUSTED_CONTENT_VEX_PATH))
-            .withHeader(Exchange.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON))
-            .withRequestBody(
-                equalToJson(loadFileAsString("__files/trustedcontent/oss_vulns_vex_request.json")))
-            .willReturn(
-                aResponse()
-                    .withStatus(200)
-                    .withHeader(Exchange.CONTENT_ENCODING, "identity")
-                    .withHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                    .withBodyFile("trustedcontent/short_vex_report.json")));
-    server.stubFor(
-        post(urlMatching(Constants.TRUSTED_CONTENT_VEX_PATH))
-            .withHeader(Exchange.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON))
-            .withRequestBody(
-                equalToJson(loadFileAsString("__files/trustedcontent/snyk_vulns_vex_request.json")))
-            .willReturn(
-                aResponse()
-                    .withStatus(200)
-                    .withHeader(Exchange.CONTENT_ENCODING, "identity")
-                    .withHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                    .withBodyFile("trustedcontent/short_vex_report.json")));
-    server.stubFor(
-        post(urlMatching(Constants.TRUSTED_CONTENT_VEX_PATH))
-            .withHeader(Exchange.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON))
-            .withRequestBody(
-                equalToJson(loadFileAsString("__files/trustedcontent/long_vex_request.json")))
-            .willReturn(
-                aResponse()
-                    .withStatus(200)
-                    .withHeader(Exchange.CONTENT_ENCODING, "identity")
-                    .withHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                    .withBodyFile("trustedcontent/long_vex_report.json")));
-  }
-
-  protected void verifyTCRequests() {
-    verifyTCRemediations();
-    verifyTCRecommendations();
-  }
-
-  protected void verifyTCRecommendations() {
-    server.verify(1, postRequestedFor(urlMatching(Constants.TRUSTED_CONTENT_PATH + ".*")));
-  }
-
-  protected void verifyTCRemediations() {
-    server.verify(1, postRequestedFor(urlMatching(Constants.TRUSTED_CONTENT_VEX_PATH)));
-  }
-
   protected void verifyNoInteractions() {
     verifyNoInteractionsWithSnyk();
     verifyNoInteractionsWithOSS();
-    verifyNoInteractionsWithTC();
   }
 
   protected void verifyNoInteractionsWithSnyk() {
@@ -505,16 +446,4 @@ public abstract class AbstractAnalysisTest {
     server.verify(0, postRequestedFor(urlEqualTo(Constants.OSS_INDEX_AUTH_COMPONENT_API_PATH)));
   }
 
-  protected void verifyNoInteractionsWithTC() {
-    verifyNoInteractionsWithTCRecommendations();
-    verifyNoInteractionsWithTCRemediations();
-  }
-
-  protected void verifyNoInteractionsWithTCRemediations() {
-    server.verify(0, postRequestedFor(urlMatching(Constants.TRUSTED_CONTENT_VEX_PATH)));
-  }
-
-  protected void verifyNoInteractionsWithTCRecommendations() {
-    server.verify(0, postRequestedFor(urlMatching(Constants.TRUSTED_CONTENT_PATH + ".*")));
-  }
 }

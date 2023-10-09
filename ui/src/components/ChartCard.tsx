@@ -1,24 +1,23 @@
-import React from 'react';
-import { Bullseye, Card, CardBody, CardHeader, CardTitle, Divider } from '@patternfly/react-core';
-import { ChartDonut, ChartThemeColor } from '@patternfly/react-charts';
-import { Provider } from '../api/report';
+import { Bullseye, CardBody, CardHeader, CardTitle, Divider } from '@patternfly/react-core';
+import { ChartDonut } from '@patternfly/react-charts';
+import { Dependency, SourceSummary } from '../api/report';
 
 const customColors = ['#800000', '#FF0000', '#FFA500', '#808000'];
 
-export const ChartCard = ({ provider }: { provider: Provider }) => {
+export const ChartCard = ({ summary }: { summary: SourceSummary}) => {
 
   const legendData = [
-    { name: `Critical: ${provider.summary.vulnerabilities.critical}`,symbol: { type: 'square', fill: customColors[0] } },
-    { name: `High: ${provider.summary.vulnerabilities.high}`, symbol: { type: 'square', fill: customColors[1] } },
-    { name: `Medium: ${provider.summary.vulnerabilities.medium}`, symbol: { type: 'square', fill: customColors[2] } },
-    { name: `Low: ${provider.summary.vulnerabilities.low}`, symbol: { type: 'square', fill: customColors[3] } },
+    { name: `Critical: ${summary.critical}`,symbol: { type: 'square', fill: customColors[0] } },
+    { name: `High: ${summary.high}`, symbol: { type: 'square', fill: customColors[1] } },
+    { name: `Medium: ${summary.medium}`, symbol: { type: 'square', fill: customColors[2] } },
+    { name: `Low: ${summary.low}`, symbol: { type: 'square', fill: customColors[3] } },
   ];
 
   return (
     <div>
       {/* CardHeader */}
       <CardHeader>
-        <CardTitle>{`${provider.summary.vulnerabilities.total} vulnerabilities in ${provider.dependencies.length} dependencies`}</CardTitle>
+        <CardTitle>{`${summary.total} vulnerabilities in ${summary.dependencies} dependencies`}</CardTitle>
       </CardHeader>
       <Divider />
 
@@ -29,10 +28,10 @@ export const ChartCard = ({ provider }: { provider: Provider }) => {
             <ChartDonut
               constrainToVisibleArea
               data={[
-                { x: 'Critical', y: provider.summary.vulnerabilities.critical },
-                { x: 'High', y: provider.summary.vulnerabilities.high },
-                { x: 'Medium', y: provider.summary.vulnerabilities.medium },
-                { x: 'Low', y: provider.summary.vulnerabilities.low },
+                { x: 'Critical', y: summary.critical },
+                { x: 'High', y: summary.high },
+                { x: 'Medium', y: summary.medium },
+                { x: 'Low', y: summary.low },
               ]}
               labels={({ datum }) => `${datum.x}: ${datum.y}%`}
               legendData={legendData}
@@ -45,7 +44,7 @@ export const ChartCard = ({ provider }: { provider: Provider }) => {
                 top: 20,
               }}
               subTitle="Vulnerabilities"
-              title={`${provider.summary.vulnerabilities.total}`}
+              title={`${summary.total}`}
               width={350}
               colorScale={customColors}
             />

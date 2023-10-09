@@ -2,7 +2,6 @@ import {
   Button,
   Card,
   CardBody,
-  CardFooter,
   CardHeader,
   CardTitle,
   DescriptionList,
@@ -19,13 +18,12 @@ import RedhatIcon from '@patternfly/react-icons/dist/esm/icons/redhat-icon';
 import {useAppContext} from '../App';
 import {ChartCard} from './ChartCard';
 import SecurityCheckIcon from '../images/security-check.svg';
-import React from "react";
+import { getSourceName, getSourceSummary, getSources } from '@app/api/report';
 
 
 // export const SummaryCard = ({ provider }: { provider: Provider }) => {
 export const SummaryCard = () => {
   const appContext = useAppContext();
-  const providers = Object.keys(appContext.report);
   return (
     <Grid hasGutter>
       <Title headingLevel="h3" size={TitleSizes['2xl']} style={{paddingLeft: '15px'}}>
@@ -53,17 +51,18 @@ export const SummaryCard = () => {
               </DescriptionListDescription>
             </DescriptionListGroup>
             <DescriptionList isAutoFit>
-              {providers?.map((name, index) => {
-                const provider = appContext.report[name];
-                return (
-                  <DescriptionListGroup key={index}>
-                    <DescriptionListTerm>{name}</DescriptionListTerm>
-                    <DescriptionListDescription>
-                      <ChartCard provider={provider}/>
-                    </DescriptionListDescription>
-                  </DescriptionListGroup>
-                )
-              })
+              {
+                getSources(appContext.report).map((source, index) => {
+                  const summary = getSourceSummary(appContext.report, source);
+                  return (
+                    <DescriptionListGroup key={index}>
+                      <DescriptionListTerm>{getSourceName(source)}</DescriptionListTerm>
+                      <DescriptionListDescription>
+                        <ChartCard summary={summary}/>
+                      </DescriptionListDescription>
+                    </DescriptionListGroup>
+                  )
+                })
               }
             </DescriptionList>
           </CardBody>

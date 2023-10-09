@@ -81,8 +81,8 @@ public class ReportTemplate {
     params.put("dependencyHelper", new DependencyReportHelper());
 
     ObjectWriter objectWriter = new ObjectMapper().writer();
-    String reportJson = objectWriter.writeValueAsString(params);
-    params.put("reportJson", reportJson);
+    String appData = objectWriter.writeValueAsString(params);
+    params.put("appData", appData);
 
     return params;
   }

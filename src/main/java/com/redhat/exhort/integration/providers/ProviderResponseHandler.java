@@ -195,6 +195,7 @@ public abstract class ProviderResponseHandler {
               && i.getRemediation().getTrustedContent().getMavenPackage() != null) {
             counter.remediations.incrementAndGet();
           }
+          counter.dependencies.incrementAndGet();
         });
   }
 
@@ -217,10 +218,12 @@ public abstract class ProviderResponseHandler {
       AtomicInteger medium,
       AtomicInteger low,
       AtomicInteger direct,
+      AtomicInteger dependencies,
       AtomicInteger remediations) {
 
     VulnerabilityCounter() {
       this(
+          new AtomicInteger(),
           new AtomicInteger(),
           new AtomicInteger(),
           new AtomicInteger(),
@@ -239,6 +242,7 @@ public abstract class ProviderResponseHandler {
           .low(low.get())
           .direct(direct.get())
           .transitive(total.get() - direct.get())
+          .dependencies(dependencies.get())
           .remediations(remediations.get())
           // TODO: Calculate recommendations
           .recommendations(0);

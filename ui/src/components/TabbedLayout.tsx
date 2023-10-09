@@ -3,12 +3,13 @@ import {PageSection, PageSectionVariants, Tab, Tabs, TabTitleText,} from '@patte
 import {useAppContext} from '../App';
 // import {DependenciesTable} from "./DependenciesTable";
 import {DepCompoundTable} from "./DepCompoundTable";
+import { getSourceName, getSources } from '@app/api/report';
 
 export const TabbedLayout = () => {
   const appContext = useAppContext();
-  const providers = Object.keys(appContext.report);
+  const sources = getSources(appContext.report);
 
-  const [activeTabKey, setActiveTabKey] = React.useState<string | number>(providers[0]);
+  const [activeTabKey, setActiveTabKey] = React.useState<string | number>(getSourceName(sources[0]));
   const [isTabsLightScheme, setIsTabsLightScheme] = React.useState<boolean>(true);
 
   // Toggle currently active tab
@@ -22,16 +23,16 @@ export const TabbedLayout = () => {
     setIsTabsLightScheme(checked);
   };
 
-  const tabs = providers.map((name) => {
-    const provider = appContext.report[name];
+  const tabs = sources.map((source) => {
+    const srcName = getSourceName(source);
     return (
         <Tab
-            eventKey={name}
-            title={<TabTitleText>{name}</TabTitleText>}
-            aria-label={`${name} provider`}
+            eventKey={srcName}
+            title={<TabTitleText>{srcName}</TabTitleText>}
+            aria-label={`${srcName} source`}
         >
           <PageSection variant={PageSectionVariants.default}>
-            <DepCompoundTable name={name} provider={provider} />
+            <DepCompoundTable name={srcName} dependencies={appContext.report.dependencies} />
           </PageSection>
         </Tab>
     );

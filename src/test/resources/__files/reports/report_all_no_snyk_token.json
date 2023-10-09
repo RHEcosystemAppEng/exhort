@@ -1,30 +1,37 @@
 {
     "summary": {
         "dependencies": {
-            "scanned": 2,
+            "total": 9,
+            "direct": 2,
             "transitive": 7
         },
-        "vulnerabilities": {
-            "total": 4,
-            "direct": 2,
-            "critical": 0,
-            "high": 1,
-            "medium": 3,
-            "low": 0
-        },
-        "providerStatuses": [
-            {
-                "ok": true,
-                "provider": "snyk",
-                "status": 200,
-                "message": "OK"
+        "providers": {
+            "snyk": {
+                "status": {
+                    "ok": true,
+                    "name": "snyk",
+                    "code": 200,
+                    "message": "OK"
+                },
+                "sources": {
+                    "snyk": {
+                        "direct": 0,
+                        "transitive": 4,
+                        "total": 4,
+                        "critical": 0,
+                        "high": 1,
+                        "medium": 3,
+                        "low": 0,
+                        "remediations": 0,
+                        "recommendations": 0
+                    }
+                }
             }
-        ]
+        }
     },
     "dependencies": [
         {
             "ref": "pkg:maven/io.quarkus/quarkus-hibernate-orm@2.13.5.Final",
-            "issues": [],
             "transitive": [
                 {
                     "ref": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.1",
@@ -32,7 +39,10 @@
                         {
                             "id": "SNYK-JAVA-COMFASTERXMLJACKSONCORE-2421244",
                             "title": "Denial of Service (DoS)",
-                            "source": "snyk",
+                            "source": {
+                                "provider": "snyk",
+                                "origin": "snyk"
+                            },
                             "cvss": {
                                 "attackVector": "Network",
                                 "attackComplexity": "Low",
@@ -42,9 +52,6 @@
                                 "confidentialityImpact": "None",
                                 "integrityImpact": "None",
                                 "availabilityImpact": "High",
-                                "exploitCodeMaturity": null,
-                                "remediationLevel": null,
-                                "reportConfidence": null,
                                 "cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
                             },
                             "cvssScore": 7.5,
@@ -52,22 +59,38 @@
                             "cves": [
                                 "CVE-2020-36518"
                             ],
-                            "unique": false
+                            "unique": false,
+                            "remediation": {
+                                "fixedIn": [
+                                    "2.12.6.1",
+                                    "2.13.2.1",
+                                    "2.14.0"
+                                ]
+                            }
                         },
                         {
                             "id": "SNYK-PRIVATE-VULNERABILITY",
                             "title": "Sign up for a Snyk account to learn aboutn the vulnerabilities found",
-                            "source": "snyk",
-                            "cvss": null,
+                            "source": {
+                                "provider": "snyk",
+                                "origin": "snyk"
+                            },
                             "cvssScore": 5.9,
                             "severity": "MEDIUM",
-                            "cves": null,
-                            "unique": true
+                            "unique": true,
+                            "remediation": {
+                                "fixedIn": [
+                                    "2.13.4"
+                                ]
+                            }
                         },
                         {
                             "id": "SNYK-JAVA-COMFASTERXMLJACKSONCORE-3038426",
                             "title": "Denial of Service (DoS)",
-                            "source": "snyk",
+                            "source": {
+                                "provider": "snyk",
+                                "origin": "snyk"
+                            },
                             "cvss": {
                                 "attackVector": "Network",
                                 "attackComplexity": "High",
@@ -78,8 +101,6 @@
                                 "integrityImpact": "None",
                                 "availabilityImpact": "High",
                                 "exploitCodeMaturity": "Proof of concept code",
-                                "remediationLevel": null,
-                                "reportConfidence": null,
                                 "cvss": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H/E:P"
                             },
                             "cvssScore": 5.9,
@@ -87,20 +108,22 @@
                             "cves": [
                                 "CVE-2022-42003"
                             ],
-                            "unique": false
+                            "unique": false,
+                            "remediation": {
+                                "fixedIn": [
+                                    "2.12.7.1",
+                                    "2.13.4.2"
+                                ]
+                            }
                         }
                     ],
-                    "remediations": {
-                        "CVE-2020-36518": {
-                            "issueRef": "CVE-2020-36518",
-                            "mavenPackage": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.1.Final-redhat-00002",
-                            "productStatus": "known_affected"
-                        }
-                    },
                     "highestVulnerability": {
                         "id": "SNYK-JAVA-COMFASTERXMLJACKSONCORE-2421244",
                         "title": "Denial of Service (DoS)",
-                        "source": "snyk",
+                        "source": {
+                            "provider": "snyk",
+                            "origin": "snyk"
+                        },
                         "cvss": {
                             "attackVector": "Network",
                             "attackComplexity": "Low",
@@ -110,9 +133,6 @@
                             "confidentialityImpact": "None",
                             "integrityImpact": "None",
                             "availabilityImpact": "High",
-                            "exploitCodeMaturity": null,
-                            "remediationLevel": null,
-                            "reportConfidence": null,
                             "cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
                         },
                         "cvssScore": 7.5,
@@ -120,16 +140,24 @@
                         "cves": [
                             "CVE-2020-36518"
                         ],
-                        "unique": false
+                        "unique": false,
+                        "remediation": {
+                            "fixedIn": [
+                                "2.12.6.1",
+                                "2.13.2.1",
+                                "2.14.0"
+                            ]
+                        }
                     }
                 }
             ],
-            "recommendation": "pkg:maven/io.quarkus/quarkus-hibernate-orm@2.13.5.redhat-00001",
-            "remediations": {},
             "highestVulnerability": {
                 "id": "SNYK-JAVA-COMFASTERXMLJACKSONCORE-2421244",
                 "title": "Denial of Service (DoS)",
-                "source": "snyk",
+                "source": {
+                    "provider": "snyk",
+                    "origin": "snyk"
+                },
                 "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -139,9 +167,6 @@
                     "confidentialityImpact": "None",
                     "integrityImpact": "None",
                     "availabilityImpact": "High",
-                    "exploitCodeMaturity": null,
-                    "remediationLevel": null,
-                    "reportConfidence": null,
                     "cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
                 },
                 "cvssScore": 7.5,
@@ -149,12 +174,18 @@
                 "cves": [
                     "CVE-2020-36518"
                 ],
-                "unique": false
+                "unique": false,
+                "remediation": {
+                    "fixedIn": [
+                        "2.12.6.1",
+                        "2.13.2.1",
+                        "2.14.0"
+                    ]
+                }
             }
         },
         {
             "ref": "pkg:maven/io.quarkus/quarkus-jdbc-postgresql@2.13.5.Final",
-            "issues": [],
             "transitive": [
                 {
                     "ref": "pkg:maven/org.postgresql/postgresql@42.5.0",
@@ -162,7 +193,10 @@
                         {
                             "id": "SNYK-JAVA-ORGPOSTGRESQL-3146847",
                             "title": "Information Exposure",
-                            "source": "snyk",
+                            "source": {
+                                "provider": "snyk",
+                                "origin": "snyk"
+                            },
                             "cvss": {
                                 "attackVector": "Local",
                                 "attackComplexity": "High",
@@ -172,9 +206,6 @@
                                 "confidentialityImpact": "High",
                                 "integrityImpact": "None",
                                 "availabilityImpact": "None",
-                                "exploitCodeMaturity": null,
-                                "remediationLevel": null,
-                                "reportConfidence": null,
                                 "cvss": "CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:H/I:N/A:N"
                             },
                             "cvssScore": 4.7,
@@ -182,20 +213,24 @@
                             "cves": [
                                 "CVE-2022-41946"
                             ],
-                            "unique": false
+                            "unique": false,
+                            "remediation": {
+                                "fixedIn": [
+                                    "42.2.27",
+                                    "42.3.8",
+                                    "42.4.3",
+                                    "42.5.1"
+                                ]
+                            }
                         }
                     ],
-                    "remediations": {
-                        "CVE-2022-41946": {
-                            "issueRef": "CVE-2022-41946",
-                            "mavenPackage": "pkg:maven/io.quarkus/quarkus-jdbc-postgresql@2.13.7.Final-redhat-00003",
-                            "productStatus": "fixed"
-                        }
-                    },
                     "highestVulnerability": {
                         "id": "SNYK-JAVA-ORGPOSTGRESQL-3146847",
                         "title": "Information Exposure",
-                        "source": "snyk",
+                        "source": {
+                            "provider": "snyk",
+                            "origin": "snyk"
+                        },
                         "cvss": {
                             "attackVector": "Local",
                             "attackComplexity": "High",
@@ -205,9 +240,6 @@
                             "confidentialityImpact": "High",
                             "integrityImpact": "None",
                             "availabilityImpact": "None",
-                            "exploitCodeMaturity": null,
-                            "remediationLevel": null,
-                            "reportConfidence": null,
                             "cvss": "CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:H/I:N/A:N"
                         },
                         "cvssScore": 4.7,
@@ -215,16 +247,25 @@
                         "cves": [
                             "CVE-2022-41946"
                         ],
-                        "unique": false
+                        "unique": false,
+                        "remediation": {
+                            "fixedIn": [
+                                "42.2.27",
+                                "42.3.8",
+                                "42.4.3",
+                                "42.5.1"
+                            ]
+                        }
                     }
                 }
             ],
-            "recommendation": null,
-            "remediations": {},
             "highestVulnerability": {
                 "id": "SNYK-JAVA-ORGPOSTGRESQL-3146847",
                 "title": "Information Exposure",
-                "source": "snyk",
+                "source": {
+                    "provider": "snyk",
+                    "origin": "snyk"
+                },
                 "cvss": {
                     "attackVector": "Local",
                     "attackComplexity": "High",
@@ -234,9 +275,6 @@
                     "confidentialityImpact": "High",
                     "integrityImpact": "None",
                     "availabilityImpact": "None",
-                    "exploitCodeMaturity": null,
-                    "remediationLevel": null,
-                    "reportConfidence": null,
                     "cvss": "CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:H/I:N/A:N"
                 },
                 "cvssScore": 4.7,
@@ -244,7 +282,15 @@
                 "cves": [
                     "CVE-2022-41946"
                 ],
-                "unique": false
+                "unique": false,
+                "remediation": {
+                    "fixedIn": [
+                        "42.2.27",
+                        "42.3.8",
+                        "42.4.3",
+                        "42.5.1"
+                    ]
+                }
             }
         }
     ]
