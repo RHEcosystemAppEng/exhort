@@ -1,10 +1,10 @@
 import { Bullseye, CardBody, CardHeader, CardTitle, Divider } from '@patternfly/react-core';
 import { ChartDonut } from '@patternfly/react-charts';
-import { Dependency, SourceSummary } from '../api/report';
+import { Summary } from '../api/report';
 
 const customColors = ['#800000', '#FF0000', '#FFA500', '#808000'];
 
-export const ChartCard = ({ summary }: { summary: SourceSummary}) => {
+export const ChartCard = ({ summary }: { summary: Summary}) => {
 
   const legendData = [
     { name: `Critical: ${summary.critical}`,symbol: { type: 'square', fill: customColors[0] } },

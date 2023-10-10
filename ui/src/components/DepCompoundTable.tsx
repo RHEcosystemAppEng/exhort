@@ -6,16 +6,13 @@ import {
   CardBody,
   Divider,
   EmptyState,
-  EmptyStateActions,
   EmptyStateBody,
-  EmptyStateFooter,
   EmptyStateHeader,
   EmptyStateIcon,
   EmptyStateVariant,
   Flex,
   FlexItem,
   SearchInput,
-  Title,
   Toolbar,
   ToolbarContent,
   ToolbarItem,
@@ -26,7 +23,7 @@ import {ExpandableRowContent, Table, TableVariant, Tbody, Td, TdProps, Th, Thead
 import FilterIcon from '@patternfly/react-icons/dist/esm/icons/filter-icon';
 
 import {useAppContext} from '../App';
-import {Dependency, Report} from '../api/report';
+import {Dependency} from '../api/report';
 import {useSelectionState} from '../hooks/useSelectionState';
 import {useTable} from '../hooks/useTable';
 import {useTableControls} from '../hooks/useTableControls';

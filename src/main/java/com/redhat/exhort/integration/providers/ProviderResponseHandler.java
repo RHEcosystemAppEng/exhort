@@ -198,6 +198,9 @@ public abstract class ProviderResponseHandler {
 
   private void incrementCounter(
       List<Issue> issues, VulnerabilityCounter counter, boolean isDirect) {
+    if(!issues.isEmpty()) {
+counter.dependencies.incrementAndGet();
+    }
     issues.forEach(
         i -> {
           int vulnerabilities = countVulnerabilities(i);
@@ -224,7 +227,6 @@ public abstract class ProviderResponseHandler {
               && i.getRemediation().getTrustedContent().getMavenPackage() != null) {
             counter.remediations.incrementAndGet();
           }
-          counter.dependencies.incrementAndGet();
         });
   }
 

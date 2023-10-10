@@ -58,7 +58,7 @@ export const VulnerabilitiesTable = ({ providerName, dependency, vulnerabilities
                         <RemediationLink key={index} cves={vuln.cves || []} packageName={e} />
                       ))
                     ) : (
-                      <VulnerabilityLink providerName={providerName} vulnerability={vuln} />
+                      <VulnerabilityLink sourceName={providerName} vulnerability={vuln} />
                     )}
                   </Td>
                 </Tr>

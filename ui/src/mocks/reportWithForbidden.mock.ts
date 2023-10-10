@@ -1,31 +1,34 @@
-import { Report } from '@app/api/report';
+import { AppData } from '@app/api/report';
 
-export const forbiddenReport: Report = {
+export const forbiddenReport: AppData = {
   packagePath: 'https://central.sonatype.com/artifact/',
   remediationPath: 'https://maven.repository.redhat.com/ga/',
   providerPrivateData: null,
   vexPath: 'https://tc-storage-mvp.s3.amazonaws.com/vexes/',
   report: {
-    snyk: {
-      status: {
-        ok: false,
-        name: 'snyk',
-        code: 403,
-        message: "Forbidden: The provided credentials don't have the required permissions.",
-      },
-      summary: {
-        dependencies: { scanned: null, transitive: null },
-        vulnerabilities: {
-          direct: null,
-          total: null,
-          critical: null,
-          high: null,
-          medium: null,
-          low: null,
-        },
-      },
-      dependencies: [],
+    "scanned": {
+      "total": 9,
+      "direct": 2,
+      "transitive": 7
     },
+    "providers": {
+      "oss-index": {
+        "status": {
+          "ok": false,
+          "name": "oss-index",
+          "code": 403,
+          "message": "Forbidden: The provided credentials don't have the required permissions."
+        }
+      },
+      "snyk": {
+        "status": {
+          "ok": false,
+          "name": "snyk",
+          "code": 403,
+          "message": "Forbidden: The provided credentials don't have the required permissions."
+        }
+      }
+    }
   },
   ossIndexIssueLinkFormatter: { issuePathRegex: 'http://ossindex.sonatype.org/vulnerability/%s' },
   snykIssueLinkFormatter: {

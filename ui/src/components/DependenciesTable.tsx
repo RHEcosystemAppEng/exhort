@@ -27,7 +27,7 @@ import SearchIcon from '@patternfly/react-icons/dist/esm/icons/search-icon';
 
 
 import { useAppContext } from '../App';
-import {Dependency, Provider} from '../api/report';
+import {Dependency, SourceReport} from '../api/report';
 import { useSelectionState } from '../hooks/useSelectionState';
 import { useTable } from '../hooks/useTable';
 import { useTableControls } from '../hooks/useTableControls';
@@ -41,7 +41,7 @@ import { RemediationsCount } from './RemediationsCount';
 import { TransitiveDependenciesTable } from './TransitiveDependenciesTable';
 import { VulnerabilitiesTable } from './VulnerabilitiesTable';
 
-export const DependenciesTable = ({ name, provider }: { name: string; provider: Provider }) => {
+export const DependenciesTable = ({ name, source }: { name: string; source: SourceReport }) => {
   const appContext = useAppContext();
 
   // const providerName = 'snyk';
@@ -54,7 +54,7 @@ export const DependenciesTable = ({ name, provider }: { name: string; provider: 
   // Rows
   const { isItemSelected: isRowExpanded, toggleItemSelected: toggleRowExpanded } =
     useSelectionState<Dependency>({
-      items: provider.dependencies,
+      items: source.dependencies,
       isEqual: (a, b) => a.ref === b.ref,
     });
 
@@ -66,7 +66,7 @@ export const DependenciesTable = ({ name, provider }: { name: string; provider: 
   } = useTableControls();
 
   const { pageItems, filteredItems } = useTable({
-    items: provider.dependencies,
+    items: source.dependencies,
     currentPage: currentPage,
     currentSortBy: currentSortBy,
     compareToByColumn: (a: Dependency, b: Dependency, columnIndex?: number) => {
@@ -178,8 +178,8 @@ export const DependenciesTable = ({ name, provider }: { name: string; provider: 
                       <Td>{item.issues?.length || 0}</Td>
                       <Td>
                         {item.transitive
-                          .map((e) => e.issues.length)
-                          .reduce((prev, current) => prev + current, 0)}
+                          .map((e) => e.issues?.length)
+                          .reduce((prev = 0, current = 0) => prev + current, 0)}
                       </Td>
                       <Td>
                         {item.highestVulnerability && (
@@ -189,7 +189,7 @@ export const DependenciesTable = ({ name, provider }: { name: string; provider: 
                       <Td>
                         {item.highestVulnerability && (
                           <VulnerabilityLink
-                            providerName={provider.status.name}
+                            sourceName={name}
                             vulnerability={item.highestVulnerability}
                           />
                         )}
@@ -207,7 +207,7 @@ export const DependenciesTable = ({ name, provider }: { name: string; provider: 
                               {item.issues && item.issues.length > 0 && (
                                 <StackItem>
                                   <VulnerabilitiesTable
-                                    providerName={provider.status.name}
+                                    providerName={name}
                                     dependency={item}
                                     vulnerabilities={item.issues}
                                   />
@@ -216,7 +216,7 @@ export const DependenciesTable = ({ name, provider }: { name: string; provider: 
                               {item.transitive && item.transitive.length > 0 && (
                                 <StackItem>
                                   <TransitiveDependenciesTable
-                                    providerName={provider.status.name}
+                                    providerName={name}
                                     dependency={item}
                                     transitiveDependencies={item.transitive}
                                   />

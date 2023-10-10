@@ -32,7 +32,7 @@ export const TabbedLayout = () => {
             aria-label={`${srcName} source`}
         >
           <PageSection variant={PageSectionVariants.default}>
-            <DepCompoundTable name={srcName} dependencies={appContext.report.dependencies} />
+            <DepCompoundTable name={srcName} dependencies={source.report.dependencies} />
           </PageSection>
         </Tab>
     );

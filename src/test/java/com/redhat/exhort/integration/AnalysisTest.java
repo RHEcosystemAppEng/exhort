@@ -155,12 +155,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
           assertTrue(provider.get().getStatus().getOk());
           assertEquals(
               Response.Status.OK.getReasonPhrase(), provider.get().getStatus().getMessage());
-          // consider single sourced providers
-          assertEquals(1, provider.get().getSources().size());
-          SourceSummary summary = provider.get().getSources().get(p).getSummary();
-          assertEquals(0, summary.getDirect());
-          assertEquals(0, summary.getTransitive());
-          assertNull(provider.get().getSources().get(p).getDependencies());
+          assertTrue(provider.get().getSources().isEmpty());
         });
 
     verifyProviders(providers, authHeaders, true);
@@ -286,15 +281,12 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .as(AnalysisReport.class);
 
     assertEquals(1, report.getProviders().size());
-    assertEquals(
-        0,
+    assertTrue(
         report
             .getProviders()
             .get(Constants.SNYK_PROVIDER)
             .getSources()
-            .get(Constants.SNYK_PROVIDER)
-            .getSummary()
-            .getTotal());
+            .isEmpty());
     ProviderStatus status = report.getProviders().get(Constants.SNYK_PROVIDER).getStatus();
     assertFalse(status.getOk());
     assertEquals(Constants.SNYK_PROVIDER, status.getName());
@@ -324,15 +316,12 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .as(AnalysisReport.class);
 
     assertEquals(1, report.getProviders().size());
-    assertEquals(
-        0,
+    assertTrue(
         report
             .getProviders()
             .get(Constants.SNYK_PROVIDER)
             .getSources()
-            .get(Constants.SNYK_PROVIDER)
-            .getSummary()
-            .getTotal());
+            .isEmpty());
     ProviderStatus status = report.getProviders().get(Constants.SNYK_PROVIDER).getStatus();
     assertFalse(status.getOk());
     assertEquals(Constants.SNYK_PROVIDER, status.getName());

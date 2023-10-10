@@ -89,7 +89,7 @@ export const TransitiveDependenciesTable = ({ providerName, dependency, transiti
                                 />
                               ))
                             ) : (
-                              <VulnerabilityLink providerName={providerName} vulnerability={vuln} />
+                              <VulnerabilityLink sourceName={providerName} vulnerability={vuln} />
                             )}
                           </Td>
                         </Tr>

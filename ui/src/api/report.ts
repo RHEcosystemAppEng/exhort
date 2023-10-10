@@ -15,77 +15,39 @@ export interface AppData {
   dependencyHelper: {};
 }
 
-export interface ProviderSummary {
-  status: {
-    ok: boolean;
-    name: string;
-    code: number;
-    message: string | null;
-  };
-  sources?: {
-    [key: string]: SourceSummary;
-  };
-};
-
-export function getSourceName(source: Source): string {
-  if(source.origin === source.provider) {
-    return source.provider;
-  }
-  return `$source.provider/$source.origin`;
-}
-
-export function getSources(report: Report): Source[] {
-  var sources: Source[] = [];
-  const providers = Object.keys(report.summary.providers);
-  providers.map(provName => {
-    const provider = report.summary.providers[provName];
-    if(provider !== undefined && provider.sources !== undefined) {
-      const origins = Object.keys(provider.sources);
-      origins.map(origName => {
-        sources.push(<Source>{
-          provider: provName,
-          origin: origName
-        });
-      })
-    }
-  });
-  return sources;
-}
-
-export function getSourceSummary(report: Report, source: Source): SourceSummary {
-  const provider = report.summary.providers[source.provider];
-  if(provider === undefined || provider.sources === undefined) {
-    return <SourceSummary>{};
-  }
-  return provider.sources[source.origin];
-}
-
-export interface SourceSummary {
-  direct: number | null;
-  transitive: number | null;
-  total: number | null;
-  dependencies: number | null;
-  critical: number | null;
-  high: number | null;
-  medium: number | null;
-  low: number | null;
-  remediations: number | null;
-  recommendations: number | null;
-};
-
 export interface Report {
-  summary: {
-    dependencies: {
-      direct: number;
-      transitive: number;
-      total: number;
-    };
-    providers: {
-      [key: string]: ProviderSummary;
-    };
-  };
-  dependencies: Dependency[];
+  scanned: {
+    direct: number;
+    transitive: number;
+    total: number;
+  }
+  providers: {
+    [key: string]: {
+      status: {
+        ok: boolean;
+        name: string;
+        code: number;
+        message: string | null;
+      },
+      sources?: {
+        [key: string]: SourceReport
+      }
+    }
+  }
 };
+
+export interface Summary {
+  direct: number,
+  transitive: number,
+  total: number,
+  dependencies: number,
+  critical: number,
+  high: number,
+  medium: number,
+  low: number,
+  remediations: number,
+  recommendations: number
+}
 
 export interface TransitiveDependency {
   ref: string;
@@ -107,15 +69,45 @@ export interface Dependency {
   highestVulnerability: Vulnerability | null;
 }
 
-export interface Source {
-  provider: string;
-  origin: string;
+export function getSources(report: Report): SourceItem[] {
+  var result: SourceItem[] = [];
+  Object.keys(report.providers).forEach(provider => {
+    const sources = report.providers[provider].sources;
+    if(sources !== undefined) {
+      Object.keys(sources).forEach(source => {
+        result.push(<SourceItem>{
+          provider: provider,
+          source: source,
+          report: sources[source]
+        })
+      })
+    }
+  })
+  return result;
+}
+
+export function getSourceName(item: SourceItem): string {
+  if(item.provider !== item.source) {
+    return `$item.provider/$item.source`
+  }
+  return item.provider;
+}
+
+export interface SourceItem {
+  provider: string,
+  source: string,
+  report: SourceReport
+}
+
+export interface SourceReport {
+  summary: Summary,
+  dependencies: Dependency[]
 }
 
 export interface Vulnerability {
   id: string;
   title: string;
-  source: Source;
+  source: string;
   cvss: Cvss | null;
   cvssScore: number;
   severity: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';
