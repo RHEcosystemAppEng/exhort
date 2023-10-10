@@ -18,6 +18,8 @@
 
 package com.redhat.exhort.integration.providers.snyk;
 
+import static com.redhat.exhort.integration.Constants.SNYK_PROVIDER;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,15 +28,12 @@ import java.util.Map;
 
 import org.apache.camel.Body;
 import org.apache.camel.ExchangeProperty;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.redhat.exhort.api.SeverityUtils;
 import com.redhat.exhort.api.v4.Issue;
 import com.redhat.exhort.api.v4.Remediation;
-import com.redhat.exhort.api.v4.Source;
 import com.redhat.exhort.config.ObjectMapperProducer;
 import com.redhat.exhort.integration.Constants;
 import com.redhat.exhort.integration.providers.ProviderResponseHandler;
@@ -48,18 +47,13 @@ public class SnykResponseHandler extends ProviderResponseHandler {
   private static final String SNYK_PRIVATE_VULNERABILITY_ID = "SNYK-PRIVATE-VULNERABILITY";
   private static final String SNYK_PRIVATE_VULNERABILITY_TITLE =
       "Sign up for a Snyk account to learn aboutn the vulnerabilities found";
-  private static final Source SNYK_SOURCE =
-      new Source().origin(Constants.SNYK_PROVIDER).provider(Constants.SNYK_PROVIDER);
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(SnykResponseHandler.class);
   private final ObjectMapper mapper = ObjectMapperProducer.newInstance();
 
   public Map<String, List<Issue>> responseToIssues(
       @Body byte[] providerResponse,
       @ExchangeProperty(Constants.PROVIDER_PRIVATE_DATA_PROPERTY) String privateProviders)
       throws IOException {
-    boolean filterUnique =
-        privateProviders != null && privateProviders.contains(Constants.SNYK_PROVIDER);
+    boolean filterUnique = privateProviders != null && privateProviders.contains(SNYK_PROVIDER);
 
     JsonNode snykResponse = mapper.readTree((byte[]) providerResponse);
     return getIssues(snykResponse, filterUnique);
@@ -100,8 +94,8 @@ public class SnykResponseHandler extends ProviderResponseHandler {
     }
     return new Issue()
         .id(id)
-        .source(SNYK_SOURCE)
         .title(data.get("title").asText())
+        .source(SNYK_PROVIDER)
         .severity(SeverityUtils.fromValue(data.get("severity").asText()))
         .cvss(CvssParser.fromVectorString(cvssV3))
         .cvssScore(data.get("cvssScore").floatValue())
@@ -113,8 +107,8 @@ public class SnykResponseHandler extends ProviderResponseHandler {
   private Issue toFilteredIssue(JsonNode data, Remediation remediation) {
     return new Issue()
         .id(SNYK_PRIVATE_VULNERABILITY_ID)
-        .source(SNYK_SOURCE)
         .title(SNYK_PRIVATE_VULNERABILITY_TITLE)
+        .source(SNYK_PROVIDER)
         .severity(SeverityUtils.fromValue(data.get("severity").asText()))
         .cvssScore(data.get("cvssScore").floatValue())
         .remediation(remediation)
@@ -123,6 +117,6 @@ public class SnykResponseHandler extends ProviderResponseHandler {
 
   @Override
   protected String getProviderName() {
-    return SNYK_SOURCE.getProvider();
+    return SNYK_PROVIDER;
   }
 }

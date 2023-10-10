@@ -50,9 +50,11 @@ import org.junit.jupiter.params.provider.ValueSource;
 import com.redhat.exhort.api.PackageRef;
 import com.redhat.exhort.api.v4.AnalysisReport;
 import com.redhat.exhort.api.v4.DependencyReport;
+import com.redhat.exhort.api.v4.ProviderReport;
 import com.redhat.exhort.api.v4.ProviderStatus;
-import com.redhat.exhort.api.v4.ProviderSummary;
-import com.redhat.exhort.api.v4.Summary;
+import com.redhat.exhort.api.v4.Scanned;
+import com.redhat.exhort.api.v4.Source;
+import com.redhat.exhort.api.v4.SourceSummary;
 import com.redhat.exhort.api.v4.TransitiveDependencyReport;
 
 import io.quarkus.test.junit.QuarkusTest;
@@ -145,29 +147,23 @@ public class AnalysisTest extends AbstractAnalysisTest {
 
     providers.forEach(
         p -> {
-          Optional<ProviderSummary> summary =
-              report.getSummary().getProviders().values().stream()
+          Optional<ProviderReport> provider =
+              report.getProviders().values().stream()
                   .filter(s -> s.getStatus().getName().equals(p))
                   .findFirst();
-          assertEquals(Response.Status.OK.getStatusCode(), summary.get().getStatus().getCode());
-          assertTrue(summary.get().getStatus().getOk());
+          assertEquals(Response.Status.OK.getStatusCode(), provider.get().getStatus().getCode());
+          assertTrue(provider.get().getStatus().getOk());
           assertEquals(
-              Response.Status.OK.getReasonPhrase(), summary.get().getStatus().getMessage());
+              Response.Status.OK.getReasonPhrase(), provider.get().getStatus().getMessage());
+          // consider single sourced providers
+          assertEquals(1, provider.get().getSources().size());
+          SourceSummary summary = provider.get().getSources().get(p).getSummary();
+          assertEquals(0, summary.getDirect());
+          assertEquals(0, summary.getTransitive());
+          assertNull(provider.get().getSources().get(p).getDependencies());
         });
 
-    assertEquals(0, report.getSummary().getDependencies().getDirect());
-    assertEquals(0, report.getSummary().getDependencies().getTransitive());
-    providers.forEach(p -> {
-        assertTrue(report.getSummary().getProviders().containsKey(p));
- assertTrue(
-        report.getSummary().getProviders().get(p).getSources().isEmpty());
-    });
-   
-
-    assertNull(report.getDependencies());
-
     verifyProviders(providers, authHeaders, true);
-
   }
 
   private static Stream<Arguments> emptySbomArguments() {
@@ -289,10 +285,17 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .body()
             .as(AnalysisReport.class);
 
-    assertEquals(0, report.getSummary().getDependencies().getTotal());
-    assertEquals(1, report.getSummary().getProviders().size());
-    ProviderStatus status =
-        report.getSummary().getProviders().get(Constants.SNYK_PROVIDER).getStatus();
+    assertEquals(1, report.getProviders().size());
+    assertEquals(
+        0,
+        report
+            .getProviders()
+            .get(Constants.SNYK_PROVIDER)
+            .getSources()
+            .get(Constants.SNYK_PROVIDER)
+            .getSummary()
+            .getTotal());
+    ProviderStatus status = report.getProviders().get(Constants.SNYK_PROVIDER).getStatus();
     assertFalse(status.getOk());
     assertEquals(Constants.SNYK_PROVIDER, status.getName());
     assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), status.getCode());
@@ -320,10 +323,17 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .body()
             .as(AnalysisReport.class);
 
-    assertEquals(0, report.getSummary().getDependencies().getTotal());
-    assertEquals(1, report.getSummary().getProviders().size());
-    ProviderStatus status =
-        report.getSummary().getProviders().get(Constants.SNYK_PROVIDER).getStatus();
+    assertEquals(1, report.getProviders().size());
+    assertEquals(
+        0,
+        report
+            .getProviders()
+            .get(Constants.SNYK_PROVIDER)
+            .getSources()
+            .get(Constants.SNYK_PROVIDER)
+            .getSummary()
+            .getTotal());
+    ProviderStatus status = report.getProviders().get(Constants.SNYK_PROVIDER).getStatus();
     assertFalse(status.getOk());
     assertEquals(Constants.SNYK_PROVIDER, status.getName());
     assertEquals(Response.Status.FORBIDDEN.getStatusCode(), status.getCode());
@@ -351,8 +361,15 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .body()
             .as(AnalysisReport.class);
 
-    assertSummary(report.getSummary());
-    assertDependenciesReport(report.getDependencies());
+    assertScanned(report.getScanned());
+    Source snykSource =
+        report
+            .getProviders()
+            .get(Constants.SNYK_PROVIDER)
+            .getSources()
+            .get(Constants.SNYK_PROVIDER);
+    assertSummary(snykSource.getSummary());
+    assertDependenciesReport(snykSource.getDependencies());
 
     verifySnykRequest(OK_TOKEN);
   }
@@ -377,8 +394,15 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .body()
             .as(AnalysisReport.class);
 
-    assertSummary(report.getSummary());
-    assertNull(report.getDependencies());
+    assertScanned(report.getScanned());
+    Source snykSource =
+        report
+            .getProviders()
+            .get(Constants.SNYK_PROVIDER)
+            .getSources()
+            .get(Constants.SNYK_PROVIDER);
+    assertSummary(snykSource.getSummary());
+    assertNull(snykSource.getDependencies());
 
     verifySnykRequest(null);
   }
@@ -404,8 +428,15 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .body()
             .as(AnalysisReport.class);
 
-    assertSummary(report.getSummary());
-    assertNull(report.getDependencies());
+    assertScanned(report.getScanned());
+    Source snykSource =
+        report
+            .getProviders()
+            .get(Constants.SNYK_PROVIDER)
+            .getSources()
+            .get(Constants.SNYK_PROVIDER);
+    assertSummary(snykSource.getSummary());
+    assertNull(snykSource.getDependencies());
 
     verifySnykRequest(OK_TOKEN);
   }
@@ -591,67 +622,21 @@ public class AnalysisTest extends AbstractAnalysisTest {
     verifyNoInteractions();
   }
 
-  private void assertSummary(Summary summary) {
-    assertEquals(2, summary.getDependencies().getDirect());
-    assertEquals(7, summary.getDependencies().getTransitive());
-    assertEquals(9, summary.getDependencies().getTotal());
+  private void assertScanned(Scanned scanned) {
+    assertEquals(2, scanned.getDirect());
+    assertEquals(7, scanned.getTransitive());
+    assertEquals(9, scanned.getTotal());
+  }
 
-    assertEquals(
-        4,
-        summary
-            .getProviders()
-            .get(Constants.SNYK_PROVIDER)
-            .getSources()
-            .get(Constants.SNYK_PROVIDER)
-            .getTotal());
-    assertEquals(
-        0,
-        summary
-            .getProviders()
-            .get(Constants.SNYK_PROVIDER)
-            .getSources()
-            .get(Constants.SNYK_PROVIDER)
-            .getDirect());
-    assertEquals(
-        4,
-        summary
-            .getProviders()
-            .get(Constants.SNYK_PROVIDER)
-            .getSources()
-            .get(Constants.SNYK_PROVIDER)
-            .getTransitive());
-    assertEquals(
-        0,
-        summary
-            .getProviders()
-            .get(Constants.SNYK_PROVIDER)
-            .getSources()
-            .get(Constants.SNYK_PROVIDER)
-            .getCritical());
-    assertEquals(
-        1,
-        summary
-            .getProviders()
-            .get(Constants.SNYK_PROVIDER)
-            .getSources()
-            .get(Constants.SNYK_PROVIDER)
-            .getHigh());
-    assertEquals(
-        3,
-        summary
-            .getProviders()
-            .get(Constants.SNYK_PROVIDER)
-            .getSources()
-            .get(Constants.SNYK_PROVIDER)
-            .getMedium());
-    assertEquals(
-        0,
-        summary
-            .getProviders()
-            .get(Constants.SNYK_PROVIDER)
-            .getSources()
-            .get(Constants.SNYK_PROVIDER)
-            .getLow());
+  private void assertSummary(SourceSummary summary) {
+    assertEquals(4, summary.getTotal());
+
+    assertEquals(0, summary.getDirect());
+    assertEquals(4, summary.getTransitive());
+    assertEquals(0, summary.getCritical());
+    assertEquals(1, summary.getHigh());
+    assertEquals(3, summary.getMedium());
+    assertEquals(0, summary.getLow());
   }
 
   private void assertDependenciesReport(List<DependencyReport> dependencies) {

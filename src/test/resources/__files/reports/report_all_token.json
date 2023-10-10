@@ -26,7 +26,7 @@
 						"remediations": 0,
 						"recommendations": 0
 					},
-					"dependencies": {
+					"dependencies": [{
 						"ref": "pkg:maven/io.quarkus/quarkus-hibernate-orm@2.13.5.Final",
 						"transitive": [
 							{
@@ -157,9 +157,8 @@
 							"unique": false
 						}
 						
-					}
+					}]
 				}
-
 			}
 		},	
 			"snyk": {

@@ -18,16 +18,15 @@
 
 package com.redhat.exhort.integration.providers;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.camel.Body;
 import org.apache.camel.ExchangeProperty;
 
-import com.redhat.exhort.api.ProviderResponse;
 import com.redhat.exhort.api.v4.AnalysisReport;
-import com.redhat.exhort.api.v4.DependenciesSummary;
-import com.redhat.exhort.api.v4.Summary;
+import com.redhat.exhort.api.v4.ProviderReport;
+import com.redhat.exhort.api.v4.Scanned;
 import com.redhat.exhort.integration.Constants;
 import com.redhat.exhort.model.DependencyTree;
 
@@ -36,31 +35,20 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 @RegisterForReflection
 public class ProviderAggregationStrategy {
 
-  public List<ProviderResponse> aggregate(
-      List<ProviderResponse> aggregated, ProviderResponse response) {
+  public Map<String, ProviderReport> aggregate(
+      Map<String, ProviderReport> aggregated, ProviderReport report) {
     if (aggregated == null) {
-      return List.of(response);
+      aggregated = new HashMap<>();
     }
-    List<ProviderResponse> result = new ArrayList<>(aggregated);
-    result.add(response);
-    return result;
+    aggregated.put(report.getStatus().getName(), report);
+    return aggregated;
   }
 
   public AnalysisReport toReport(
-      @Body List<ProviderResponse> responses,
+      @Body Map<String, ProviderReport> reports,
       @ExchangeProperty(Constants.DEPENDENCY_TREE_PROPERTY) DependencyTree tree) {
-    Summary summary = new Summary();
-    responses.forEach(
-        r -> summary.putProvidersItem(r.summary().getStatus().getName(), r.summary()));
-    DependenciesSummary depsSummary = new DependenciesSummary();
-    depsSummary
-        .direct(tree.directCount())
-        .transitive(tree.transitiveCount())
-        .total(depsSummary.getDirect() + depsSummary.getTransitive());
-    summary.dependencies(depsSummary);
-    return new AnalysisReport()
-        .dependencies(
-            responses.stream().map(ProviderResponse::reports).flatMap(List::stream).toList())
-        .summary(summary);
+    Scanned scanned = new Scanned().direct(tree.directCount()).transitive(tree.transitiveCount());
+    scanned.total(scanned.getDirect() + scanned.getTransitive());
+    return new AnalysisReport().providers(reports).scanned(scanned);
   }
 }

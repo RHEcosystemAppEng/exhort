@@ -34,13 +34,13 @@ import org.apache.camel.Body;
 import org.apache.camel.ExchangeProperty;
 
 import com.redhat.exhort.api.PackageRef;
-import com.redhat.exhort.api.ProviderResponse;
 import com.redhat.exhort.api.v4.DependencyReport;
 import com.redhat.exhort.api.v4.Issue;
+import com.redhat.exhort.api.v4.ProviderReport;
 import com.redhat.exhort.api.v4.ProviderStatus;
-import com.redhat.exhort.api.v4.ProviderSummary;
+import com.redhat.exhort.api.v4.Source;
+import com.redhat.exhort.api.v4.SourceSummary;
 import com.redhat.exhort.api.v4.TransitiveDependencyReport;
-import com.redhat.exhort.api.v4.VulnerabilitiesSummary;
 import com.redhat.exhort.integration.Constants;
 import com.redhat.exhort.model.CvssScoreComparable.DependencyScoreComparator;
 import com.redhat.exhort.model.CvssScoreComparable.TransitiveScoreComparator;
@@ -72,24 +72,64 @@ public abstract class ProviderResponseHandler {
                 .collect(Collectors.toList()));
   }
 
-  protected abstract Map<String, List<Issue>> responseToIssues(
+  public abstract Map<String, List<Issue>> responseToIssues(
       byte[] response, String privateProviders) throws IOException;
 
-  public ProviderResponse emptyResponse(@ExchangeProperty(Constants.DEPENDENCY_TREE_PROPERTY) DependencyTree tree) {
-    ProviderSummary summary =
-        new ProviderSummary()
-            .status(defaultOkStatus(getProviderName()))
-            .sources(buildSummary(Collections.emptyMap(), tree));
-    return new ProviderResponse(Collections.emptyList(), summary);
+  public ProviderReport emptyResponse(
+      @ExchangeProperty(Constants.DEPENDENCY_TREE_PROPERTY) DependencyTree tree) {
+    return new ProviderReport()
+        .status(defaultOkStatus(getProviderName()))
+        .sources(Collections.emptyMap());
   }
 
-  public ProviderResponse buildReport(
-      @Body byte[] response,
+  private Map<String, Map<String, List<Issue>>> splitIssuesBySource(
+      Map<String, List<Issue>> issuesData) {
+    Map<String, Map<String, List<Issue>>> sourcesIssues = new HashMap<>();
+    if (issuesData == null) {
+      return sourcesIssues;
+    }
+    issuesData
+        .entrySet()
+        .forEach(
+            e -> {
+              e.getValue()
+                  .forEach(
+                      i -> {
+                        Map<String, List<Issue>> issues = sourcesIssues.get(i.getSource());
+                        if (issues == null) {
+                          issues = new HashMap<>();
+                          sourcesIssues.put(i.getSource(), issues);
+                        }
+                        List<Issue> depIssues = issues.get(e.getKey());
+                        if (depIssues == null) {
+                          depIssues = new ArrayList<>();
+                          issues.put(e.getKey(), depIssues);
+                        }
+                        depIssues.add(i);
+                      });
+            });
+    return sourcesIssues;
+  }
+
+  public ProviderReport buildReport(
+      @Body Map<String, List<Issue>> issuesData,
       @ExchangeProperty(Constants.DEPENDENCY_TREE_PROPERTY) DependencyTree tree,
       @ExchangeProperty(Constants.PROVIDER_PRIVATE_DATA_PROPERTY) String privateProviders)
       throws IOException {
-    Map<String, List<Issue>> issuesData = responseToIssues(response, privateProviders);
-    List<DependencyReport> reports = new ArrayList<>();
+    Map<String, Map<String, List<Issue>>> sourcesIssues = splitIssuesBySource(issuesData);
+    Map<String, Source> reports = new HashMap<>();
+    sourcesIssues
+        .keySet()
+        .forEach(
+            k -> {
+              reports.put(k, buildReportForSource(sourcesIssues.get(k), tree, privateProviders));
+            });
+    return new ProviderReport().status(defaultOkStatus(getProviderName())).sources(reports);
+  }
+
+  public Source buildReportForSource(
+      Map<String, List<Issue>> issuesData, DependencyTree tree, String privateProviders) {
+    List<DependencyReport> sourceReport = new ArrayList<>();
     tree.dependencies().entrySet().stream()
         .forEach(
             e -> {
@@ -135,42 +175,31 @@ public abstract class ProviderResponseHandler {
               transitiveReports.sort(Collections.reverseOrder(new TransitiveScoreComparator()));
               directReport.setTransitive(transitiveReports);
               if (directReport.getHighestVulnerability() != null) {
-                reports.add(directReport);
+                sourceReport.add(directReport);
               }
             });
-    ProviderSummary summary =
-        new ProviderSummary()
-            .status(defaultOkStatus(getProviderName()))
-            .sources(buildSummary(issuesData, tree));
-    reports.sort(Collections.reverseOrder(new DependencyScoreComparator()));
-    return new ProviderResponse(reports, summary);
+
+    sourceReport.sort(Collections.reverseOrder(new DependencyScoreComparator()));
+    return new Source().summary(buildSummary(issuesData, tree)).dependencies(sourceReport);
   }
 
-  private Map<String, VulnerabilitiesSummary> buildSummary(
-      Map<String, List<Issue>> issuesData, DependencyTree tree) {
-    Map<String, VulnerabilityCounter> counters = new HashMap<>();
+  private SourceSummary buildSummary(Map<String, List<Issue>> issuesData, DependencyTree tree) {
+    VulnerabilityCounter counter = new VulnerabilityCounter();
     Set<String> directRefs =
         tree.dependencies().keySet().stream().map(PackageRef::name).collect(Collectors.toSet());
     issuesData
         .entrySet()
         .forEach(
             e -> {
-              incrementCounters(e.getValue(), counters, directRefs.contains(e.getKey()));
+              incrementCounter(e.getValue(), counter, directRefs.contains(e.getKey()));
             });
-    return counters.entrySet().stream()
-        .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().getSummary()));
+    return counter.getSummary();
   }
 
-  private void incrementCounters(
-      List<Issue> issues, Map<String, VulnerabilityCounter> counters, boolean isDirect) {
+  private void incrementCounter(
+      List<Issue> issues, VulnerabilityCounter counter, boolean isDirect) {
     issues.forEach(
         i -> {
-          String origin = i.getSource().getOrigin();
-          VulnerabilityCounter counter = counters.get(origin);
-          if (counter == null) {
-            counter = new VulnerabilityCounter();
-            counters.put(origin, counter);
-          }
           int vulnerabilities = countVulnerabilities(i);
           switch (i.getSeverity()) {
             case CRITICAL:
@@ -233,8 +262,8 @@ public abstract class ProviderResponseHandler {
           new AtomicInteger());
     }
 
-    VulnerabilitiesSummary getSummary() {
-      return new VulnerabilitiesSummary()
+    SourceSummary getSummary() {
+      return new SourceSummary()
           .total(total.get())
           .critical(critical.get())
           .high(high.get())

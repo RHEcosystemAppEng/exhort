@@ -72,7 +72,9 @@ public class OssIndexIntegration extends EndpointRouteBuilder {
             .transform().method(OssIndexRequestBuilder.class, "buildRequest")
             .process(this::processComponentRequest)
             .to(vertxHttp("{{api.ossindex.host}}"))
-            .transform(method(OssIndexResponseHandler.class, "buildReport"));
+            .transform(method(OssIndexResponseHandler.class, "responseToIssues"))
+        .endChoice()
+          .transform().method(OssIndexResponseHandler.class, "buildReport");
     
     from(direct("ossValidateCredentials"))
       .routeId("ossValidateCredentials")

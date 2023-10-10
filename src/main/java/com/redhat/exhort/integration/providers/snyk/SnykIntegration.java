@@ -64,6 +64,7 @@ public class SnykIntegration extends EndpointRouteBuilder {
         .transform().method(SnykRequestBuilder.class, "fromDiGraph")
         .process(this::processDepGraphRequest)
         .to(vertxHttp("{{api.snyk.host}}"))
+        .transform().method(SnykResponseHandler.class, "responseToIssues")
         .transform().method(SnykResponseHandler.class, "buildReport");
 
     from(direct("snykValidateToken"))

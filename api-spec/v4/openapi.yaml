@@ -139,12 +139,86 @@ components:
     AnalysisReport:
       type: object
       properties:
+        scanned:
+          $ref: '#/components/schemas/Scanned'
+        providers:
+          $ref: '#/components/schemas/Providers'
+    Scanned:
+      type: object
+      description: Number of dependencies scanned
+      properties:
+        total:
+          type: integer
+        direct:
+          type: integer
+        transitive:
+          type: integer
+    Providers:
+      type: object
+      additionalProperties:
+        $ref: '#/components/schemas/ProviderReport'
+    ProviderReport:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/ProviderStatus'
+        sources:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/Source'
+    ProviderStatus:
+      type: object
+      properties:
+        ok:
+          type: boolean
+        name:
+          type: string
+        code:
+          type: integer
+        message:
+          type: string
+    Source:
+      type: object
+      properties:
         summary:
-          $ref: '#/components/schemas/Summary'
+          $ref: '#/components/schemas/SourceSummary'
         dependencies:
           type: array
           items:
             $ref: '#/components/schemas/DependencyReport'
+    SourceSummary:
+      type: object
+      properties:
+        direct:
+          type: integer
+          default: 0
+        transitive:
+          type: integer
+          default: 0
+        total:
+          type: integer
+          default: 0
+        dependencies:
+          type: integer
+          default: 0
+        critical:
+          type: integer
+          default: 0
+        high:
+          type: integer
+          default: 0
+        medium:
+          type: integer
+          default: 0
+        low:
+          type: integer
+          default: 0
+        remediations:
+          type: integer
+          default: 0
+        recommendations:
+          type: integer
+          default: 0
     PackageRef:
       type: string
       description: PackageURL used to identify a dependency artifact
@@ -184,7 +258,7 @@ components:
         title:
           type: string
         source:
-          $ref: '#/components/schemas/Source'
+          type: string
         cvss:
           $ref: '#/components/schemas/CvssVector'
         cvssScore:
@@ -201,15 +275,6 @@ components:
           default: false
         remediation:
           $ref: '#/components/schemas/Remediation'
-    Source:
-      type: object
-      properties:
-        provider:
-          description: The service in charge of providing the vulnerability data
-          type: string
-        origin:
-          description: The vulnerability provider reporting this issue
-          type: string
     TransitiveDependencyReport:
       type: object
       properties:
@@ -236,78 +301,6 @@ components:
               $ref: '#/components/schemas/PackageRef'
             productStatus:
               type: string
-    Summary:
-      type: object
-      properties:
-        dependencies:
-          $ref: '#/components/schemas/DependenciesSummary'
-        providers:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/ProviderSummary'
-    DependenciesSummary:
-      type: object
-      description: Number of dependencies scanned
-      properties:
-        total:
-          type: integer
-        direct:
-          type: integer
-        transitive:
-          type: integer
-    ProviderSummary:
-      type: object
-      properties:
-        status:
-          $ref: '#/components/schemas/ProviderStatus'
-        sources:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/VulnerabilitiesSummary'
-    ProviderStatus:
-      type: object
-      properties:
-        ok:
-          type: boolean
-        name:
-          type: string
-        code:
-          type: integer
-        message:
-          type: string
-    VulnerabilitiesSummary:
-      type: object
-      properties:
-        direct:
-          type: integer
-          default: 0
-        transitive:
-          type: integer
-          default: 0
-        total:
-          type: integer
-          default: 0
-        dependencies:
-          type: integer
-          default: 0
-        critical:
-          type: integer
-          default: 0
-        high:
-          type: integer
-          default: 0
-        medium:
-          type: integer
-          default: 0
-        low:
-          type: integer
-          default: 0
-        remediations:
-          type: integer
-          default: 0
-        recommendations:
-          type: integer
-          default: 0
     CvssVector:
       type: object
       properties:

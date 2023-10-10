@@ -18,14 +18,14 @@
 
 package com.redhat.exhort.integration.report;
 
-import java.util.Collections;
-
 import org.apache.camel.Body;
 import org.apache.camel.Exchange;
 import org.apache.camel.Header;
 import org.apache.camel.attachment.AttachmentMessage;
 
 import com.redhat.exhort.api.v4.AnalysisReport;
+import com.redhat.exhort.api.v4.ProviderReport;
+import com.redhat.exhort.api.v4.Source;
 import com.redhat.exhort.integration.Constants;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
@@ -39,9 +39,25 @@ public class ReportTransformer {
   public AnalysisReport filterVerboseResult(
       @Body AnalysisReport report, @Header(Constants.VERBOSE_MODE_HEADER) Boolean verbose) {
     if (Boolean.FALSE.equals(verbose)) {
-      return new AnalysisReport()
-          .summary(report.getSummary())
-          .dependencies(Collections.emptyList());
+      AnalysisReport filtered = new AnalysisReport().scanned(report.getScanned());
+      report
+          .getProviders()
+          .entrySet()
+          .forEach(
+              e -> {
+                ProviderReport providerReport =
+                    new ProviderReport().status(e.getValue().getStatus());
+                e.getValue()
+                    .getSources()
+                    .entrySet()
+                    .forEach(
+                        se -> {
+                          providerReport.putSourcesItem(
+                              se.getKey(), new Source().summary(se.getValue().getSummary()));
+                        });
+                filtered.putProvidersItem(e.getKey(), providerReport);
+              });
+      return filtered;
     }
     return report;
   }

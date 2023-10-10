@@ -28,9 +28,8 @@ import org.jboss.resteasy.reactive.common.util.MediaTypeHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.redhat.exhort.api.ProviderResponse;
+import com.redhat.exhort.api.v4.ProviderReport;
 import com.redhat.exhort.api.v4.ProviderStatus;
-import com.redhat.exhort.api.v4.ProviderSummary;
 import com.redhat.exhort.integration.Constants;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
@@ -85,9 +84,8 @@ public class BackendUtils {
           .code(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
       LOGGER.warn("Unable to process request to: {}", provider, exception);
     }
-    ProviderSummary summary = new ProviderSummary().status(status).sources(Collections.emptyMap());
-    ProviderResponse response = new ProviderResponse(Collections.emptyList(), summary);
-    exchange.getMessage().setBody(response);
+    ProviderReport report = new ProviderReport().status(status).sources(Collections.emptyMap());
+    exchange.getMessage().setBody(report);
   }
 
   public static void processTokenFallBack(Exchange exchange, String provider) {

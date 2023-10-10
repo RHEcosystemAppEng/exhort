@@ -34,14 +34,13 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import com.redhat.exhort.api.PackageRef;
-import com.redhat.exhort.api.ProviderResponse;
 import com.redhat.exhort.api.SeverityUtils;
 import com.redhat.exhort.api.v4.DependencyReport;
 import com.redhat.exhort.api.v4.Issue;
-import com.redhat.exhort.api.v4.ProviderSummary;
+import com.redhat.exhort.api.v4.ProviderReport;
 import com.redhat.exhort.api.v4.Source;
+import com.redhat.exhort.api.v4.SourceSummary;
 import com.redhat.exhort.api.v4.TransitiveDependencyReport;
-import com.redhat.exhort.api.v4.VulnerabilitiesSummary;
 import com.redhat.exhort.integration.Constants;
 import com.redhat.exhort.model.DependencyTree;
 import com.redhat.exhort.model.DirectDependency;
@@ -50,18 +49,19 @@ import jakarta.ws.rs.core.Response;
 
 public class ProviderResponseHandlerTest {
 
-  private static final Source TEST_SOURCE = new Source().origin("example").provider("test");
+  private static final String TEST_PROVIDER = "example";
+  private static final String TEST_SOURCE = "test-source";
 
   @ParameterizedTest
   @MethodSource("getSummaryValues")
   public void testSummary(
-      Map<String, List<Issue>> issuesData, DependencyTree tree, VulnerabilitiesSummary expected)
+      Map<String, List<Issue>> issuesData, DependencyTree tree, SourceSummary expected)
       throws IOException {
 
-    ProviderResponseHandler handler = new TestResponseHandler(issuesData);
-    ProviderResponse response = handler.buildReport(null, tree, null);
+    ProviderResponseHandler handler = new TestResponseHandler();
+    ProviderReport response = handler.buildReport(issuesData, tree, null);
     assertOkStatus(response);
-    VulnerabilitiesSummary summary = getValidSummary(response.summary());
+    SourceSummary summary = getValidSource(response).getSummary();
 
     assertEquals(expected.getDirect(), summary.getDirect());
     assertEquals(expected.getTotal(), summary.getTotal());
@@ -72,6 +72,7 @@ public class ProviderResponseHandlerTest {
     assertEquals(expected.getLow(), summary.getLow());
     assertEquals(expected.getRecommendations(), summary.getRecommendations());
     assertEquals(expected.getRemediations(), summary.getRemediations());
+    assertEquals(expected.getDependencies(), summary.getDependencies());
   }
 
   private static Stream<Arguments> getSummaryValues() {
@@ -79,33 +80,41 @@ public class ProviderResponseHandlerTest {
         Arguments.of(
             Map.of("aa", List.of(buildIssue(1, 5f))),
             buildTree(),
-            new VulnerabilitiesSummary().direct(1).total(1).medium(1)),
+            new SourceSummary().direct(1).total(1).medium(1).dependencies(1)),
         Arguments.of(
             Map.of(
                 "aa", List.of(buildIssue(1, 3f)),
                 "aaa", List.of(buildIssue(2, 4f)),
                 "aba", List.of(buildIssue(3, 8f))),
             buildTree(),
-            new VulnerabilitiesSummary().total(3).direct(1).transitive(2).high(1).medium(1).low(1)),
+            new SourceSummary()
+                .total(3)
+                .direct(1)
+                .transitive(2)
+                .high(1)
+                .medium(1)
+                .low(1)
+                .dependencies(3)),
         Arguments.of(
             Map.of(
                 "aa", List.of(buildIssue(1, 5f)),
                 "aaa", List.of(buildIssue(2, 5f))),
             buildTreeWithDuplicates(),
-            new VulnerabilitiesSummary().total(2).direct(1).transitive(1).medium(2)));
+            new SourceSummary().total(2).direct(1).transitive(1).medium(2).dependencies(2)));
   }
 
   @Test
   public void testFilterDepsWithoutIssues() throws IOException {
-    ProviderResponseHandler handler =
-        new TestResponseHandler(Map.of("aa", List.of(buildIssue(1, 5f))));
+    Map<String, List<Issue>> issues = Map.of("aa", List.of(buildIssue(1, 5f)));
+    ProviderResponseHandler handler = new TestResponseHandler();
     DependencyTree tree = buildTree();
-    ProviderResponse response = handler.buildReport(null, tree, null);
+    ProviderReport response = handler.buildReport(issues, tree, null);
     assertOkStatus(response);
-    assertEquals(1, response.reports().size());
-    DependencyReport report = response.reports().get(0);
-    assertEquals(1, report.getIssues().size());
-    assertEquals("aa", report.getRef().name());
+    assertEquals(1, response.getSources().size());
+    Source report = response.getSources().get(TEST_SOURCE);
+    assertEquals(1, report.getDependencies().size());
+    assertEquals(1, report.getDependencies().get(0).getIssues().size());
+    assertEquals("aa", report.getDependencies().get(0).getRef().name());
   }
 
   @Test
@@ -116,16 +125,21 @@ public class ProviderResponseHandlerTest {
             "aa", List.of(buildIssue(1, 3f)),
             "aaa", List.of(buildIssue(2, 4f)),
             "aba", List.of(buildIssue(3, 8f)));
-    ProviderResponseHandler handler = new TestResponseHandler(issues);
+    ProviderResponseHandler handler = new TestResponseHandler();
 
-    ProviderResponse response = handler.buildReport(null, buildTree(), null);
+    ProviderReport response = handler.buildReport(issues, buildTree(), null);
 
     assertOkStatus(response);
 
     // Validate aa has 1 direct and 1 transitive being the transitive the highestVulnerability
-    assertEquals(2, response.reports().size());
+    assertEquals(1, response.getSources().size());
+    Source source = response.getSources().get(TEST_SOURCE);
+    assertEquals(2, source.getDependencies().size());
     DependencyReport report =
-        response.reports().stream().filter(r -> "aa".equals(r.getRef().name())).findFirst().get();
+        source.getDependencies().stream()
+            .filter(r -> "aa".equals(r.getRef().name()))
+            .findFirst()
+            .get();
     assertEquals(1, report.getIssues().size());
     assertEquals("aa", report.getRef().name());
     assertEquals(4f, report.getHighestVulnerability().getCvssScore());
@@ -137,7 +151,10 @@ public class ProviderResponseHandlerTest {
 
     // Validate that ab has no issues and one transitive.
     report =
-        response.reports().stream().filter(r -> "ab".equals(r.getRef().name())).findFirst().get();
+        source.getDependencies().stream()
+            .filter(r -> "ab".equals(r.getRef().name()))
+            .findFirst()
+            .get();
     assertTrue(report.getIssues().isEmpty());
     assertEquals("ab", report.getRef().name());
     assertEquals(8f, report.getHighestVulnerability().getCvssScore());
@@ -159,40 +176,40 @@ public class ProviderResponseHandlerTest {
             "aba", List.of(buildIssue(5, 3f)),
             "abb", List.of(buildIssue(6, 9f)),
             "abc", List.of(buildIssue(7, 6f)));
-    ProviderResponseHandler handler = new TestResponseHandler(issues);
+    ProviderResponseHandler handler = new TestResponseHandler();
 
-    ProviderResponse response = handler.buildReport(null, buildTree(), null);
+    ProviderReport response = handler.buildReport(issues, buildTree(), null);
 
     assertOkStatus(response);
-    DependencyReport reportHighest = response.reports().get(0);
+    DependencyReport reportHighest = getValidSource(response).getDependencies().get(0);
     assertEquals("ab", reportHighest.getRef().name());
 
     assertEquals("abb", reportHighest.getTransitive().get(0).getRef().name());
     assertEquals("abc", reportHighest.getTransitive().get(1).getRef().name());
     assertEquals("aba", reportHighest.getTransitive().get(2).getRef().name());
 
-    DependencyReport reportLowest = response.reports().get(1);
+    DependencyReport reportLowest = getValidSource(response).getDependencies().get(1);
     assertEquals("aa", reportLowest.getRef().name());
     assertEquals("aaa", reportLowest.getTransitive().get(0).getRef().name());
     assertEquals("aab", reportLowest.getTransitive().get(1).getRef().name());
   }
 
-  private void assertOkStatus(ProviderResponse response) {
+  private void assertOkStatus(ProviderReport response) {
     assertNotNull(response);
-    assertNotNull(response.reports());
+    assertNotNull(response.getStatus());
 
-    assertEquals(Response.Status.OK.getStatusCode(), response.summary().getStatus().getCode());
-    assertEquals(Response.Status.OK.getReasonPhrase(), response.summary().getStatus().getMessage());
-    assertTrue(response.summary().getStatus().getOk());
-    assertEquals(TEST_SOURCE.getProvider(), response.summary().getStatus().getName());
+    assertEquals(Response.Status.OK.getStatusCode(), response.getStatus().getCode());
+    assertEquals(Response.Status.OK.getReasonPhrase(), response.getStatus().getMessage());
+    assertTrue(response.getStatus().getOk());
+    assertEquals(TEST_PROVIDER, response.getStatus().getName());
   }
 
-  private VulnerabilitiesSummary getValidSummary(ProviderSummary summary) {
-    assertNotNull(summary);
-    assertNotNull(summary.getSources());
-    VulnerabilitiesSummary vulSummary = summary.getSources().get(TEST_SOURCE.getOrigin());
-    assertNotNull(vulSummary);
-    return vulSummary;
+  private Source getValidSource(ProviderReport report) {
+    assertNotNull(report);
+    assertNotNull(report.getSources());
+    Source source = report.getSources().get(TEST_SOURCE);
+    assertNotNull(source);
+    return source;
   }
 
   private static DependencyTree buildTree() {
@@ -323,21 +340,16 @@ public class ProviderResponseHandlerTest {
   }
 
   private static class TestResponseHandler extends ProviderResponseHandler {
-    Map<String, List<Issue>> issues;
-
-    TestResponseHandler(Map<String, List<Issue>> issues) {
-      this.issues = issues;
-    }
 
     @Override
     protected String getProviderName() {
-      return TEST_SOURCE.getProvider();
+      return TEST_PROVIDER;
     }
 
     @Override
-    protected Map<String, List<Issue>> responseToIssues(byte[] response, String privateProviders)
+    public Map<String, List<Issue>> responseToIssues(byte[] response, String privateProviders)
         throws IOException {
-      return issues;
+      throw new IllegalArgumentException("not implemented");
     }
   }
 }
