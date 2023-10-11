@@ -281,12 +281,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .as(AnalysisReport.class);
 
     assertEquals(1, report.getProviders().size());
-    assertTrue(
-        report
-            .getProviders()
-            .get(Constants.SNYK_PROVIDER)
-            .getSources()
-            .isEmpty());
+    assertTrue(report.getProviders().get(Constants.SNYK_PROVIDER).getSources().isEmpty());
     ProviderStatus status = report.getProviders().get(Constants.SNYK_PROVIDER).getStatus();
     assertFalse(status.getOk());
     assertEquals(Constants.SNYK_PROVIDER, status.getName());
@@ -316,12 +311,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .as(AnalysisReport.class);
 
     assertEquals(1, report.getProviders().size());
-    assertTrue(
-        report
-            .getProviders()
-            .get(Constants.SNYK_PROVIDER)
-            .getSources()
-            .isEmpty());
+    assertTrue(report.getProviders().get(Constants.SNYK_PROVIDER).getSources().isEmpty());
     ProviderStatus status = report.getProviders().get(Constants.SNYK_PROVIDER).getStatus();
     assertFalse(status.getOk());
     assertEquals(Constants.SNYK_PROVIDER, status.getName());

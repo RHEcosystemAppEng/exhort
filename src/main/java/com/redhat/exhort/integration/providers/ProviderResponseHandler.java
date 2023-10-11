@@ -198,8 +198,8 @@ public abstract class ProviderResponseHandler {
 
   private void incrementCounter(
       List<Issue> issues, VulnerabilityCounter counter, boolean isDirect) {
-    if(!issues.isEmpty()) {
-counter.dependencies.incrementAndGet();
+    if (!issues.isEmpty()) {
+      counter.dependencies.incrementAndGet();
     }
     issues.forEach(
         i -> {

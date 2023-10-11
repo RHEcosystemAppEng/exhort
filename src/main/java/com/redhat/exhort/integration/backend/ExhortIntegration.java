@@ -31,7 +31,6 @@ import org.apache.camel.builder.AggregationStrategies;
 import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
 import org.apache.camel.component.micrometer.MicrometerConstants;
 import org.apache.camel.component.micrometer.routepolicy.MicrometerRoutePolicyFactory;
-import org.apache.commons.lang3.NotImplementedException;
 
 import com.redhat.exhort.analytics.AnalyticsService;
 import com.redhat.exhort.integration.Constants;
@@ -93,7 +92,7 @@ public class ExhortIntegration extends EndpointRouteBuilder {
             .to("direct:v3analysis")
         .post("/v4/analysis")
             .routeId("restAnalysis")
-            .to("direct:analysis")
+            .to("direct:v4analysis")
         .get("/v3/token")
             .routeId("v3restTokenValidation")
             .to("direct:validateToken")
@@ -103,8 +102,13 @@ public class ExhortIntegration extends EndpointRouteBuilder {
 
     from(direct("v3analysis"))
       .routeId("v3Analysis")
-      .to(direct("analysis"))
-      .process(this::convertToV3Report);
+      .setProperty(Constants.API_VERSION_PROPERTY, constant(Constants.API_VERSION_V3))
+      .to(direct("analysis"));
+    
+    from(direct("v4analysis"))
+      .routeId("v4Analysis")
+      .setProperty(Constants.API_VERSION_PROPERTY, constant(Constants.API_VERSION_V4))
+      .to(direct("analysis"));     
 
     from(direct("analysis"))
         .routeId("dependencyAnalysis")
@@ -181,10 +185,5 @@ public class ExhortIntegration extends EndpointRouteBuilder {
     msg.removeHeaders("ex-.*-token");
     msg.removeHeader("Authorization");
     msg.removeHeaders("rhda-.*");
-  }
-
-  private void convertToV3Report(Exchange exchange1) {
-    // TODO: Implement
-    throw new NotImplementedException("Not yet implemented");
   }
 }
