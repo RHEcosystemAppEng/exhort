@@ -22,12 +22,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.cyclonedx.model.Bom;
 import org.cyclonedx.model.Component;
+import org.cyclonedx.model.Dependency;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,13 +90,27 @@ public class CycloneDxParser extends SbomParser {
       return buildUnknownDependencies(componentPurls);
     }
     Map<PackageRef, DirectDependency.Builder> direct = new HashMap<>();
+    if (rootRef == null) {
+      List<String> transitive =
+          bom.getDependencies().stream()
+              .map(Dependency::getDependencies)
+              .filter(Objects::nonNull)
+              .flatMap(List::stream)
+              .map(Dependency::getRef)
+              .toList();
+      bom.getDependencies().stream()
+          .map(Dependency::getRef)
+          .filter(Predicate.not(transitive::contains))
+          .forEach(
+              dref -> {
+                PackageRef r = componentPurls.get(dref);
+                direct.put(r, DirectDependency.builder().ref(r).transitive(new HashSet<>()));
+              });
+    }
     bom.getDependencies().stream()
         .forEach(
             d -> {
-              if (rootRef == null) {
-                PackageRef ref = componentPurls.get(d.getRef());
-                direct.put(ref, DirectDependency.builder().ref(ref));
-              } else if (d.getRef().equals(rootRef)) {
+              if (d.getRef().equals(rootRef)) {
                 d.getDependencies()
                     .forEach(
                         rootDep -> {

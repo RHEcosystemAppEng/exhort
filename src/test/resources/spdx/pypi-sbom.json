@@ -58,6 +58,27 @@
     "name" : "zope.interface",
     "primaryPackagePurpose" : "LIBRARY",
     "versionInfo" : "5.2.0"
+  }, {
+    "SPDXID" : "SPDXRef-ac3e331e-6848-11ee-8c99-0242ac120002",
+    "annotations" : [ {
+      "annotationDate" : "2023-07-26T09:11:20Z",
+      "annotationType" : "OTHER",
+      "annotator" : "Tool: CycloneToSpdx",
+      "comment" : "MISSING_CDX_PROPERTY:componentType=\"LIBRARY\""
+    } ],
+    "copyrightText" : "NOASSERTION",
+    "downloadLocation" : "NOASSERTION",
+    "externalRefs" : [ {
+      "referenceCategory" : "PACKAGE-MANAGER",
+      "referenceLocator" : "pkg:pypi/werkzeug@3.0.0",
+      "referenceType" : "purl"
+    } ],
+    "filesAnalyzed" : false,
+    "licenseConcluded" : "NOASSERTION",
+    "licenseDeclared" : "NOASSERTION",
+    "name" : "werkzeug",
+    "primaryPackagePurpose" : "LIBRARY",
+    "versionInfo" : "3.0.0"
   }],
   "relationships" : [ {
     "spdxElementId" : "SPDXRef-DOCUMENT",
@@ -67,5 +88,10 @@
     "spdxElementId" : "SPDXRef-DOCUMENT",
     "relationshipType" : "DESCRIBES",
     "relatedSpdxElement" : "SPDXRef-e24c750a-60c8-4dbc-bf36-b248b0fb1dda"
-  }]
+  }, {
+    "spdxElementId" : "SPDXRef-c6e5f959-bbf4-4b97-94aa-1e8d5145737d",
+    "relationshipType" : "DEPENDS_ON",
+    "relatedSpdxElement" : "SPDXRef-ac3e331e-6848-11ee-8c99-0242ac120002"
+  }
+]
 }
