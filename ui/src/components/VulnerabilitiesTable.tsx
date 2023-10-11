@@ -19,7 +19,6 @@ export const VulnerabilitiesTable = ({ providerName, dependency, vulnerabilities
           }}
       >
       <Table variant={TableVariant.compact}>
-        {/*<Caption>Details of the dependency</Caption>*/}
         <Thead>
           <Tr>
             <Th width={20}>Vulnerability ID</Th>
@@ -31,41 +30,41 @@ export const VulnerabilitiesTable = ({ providerName, dependency, vulnerabilities
           </Tr>
         </Thead>
         <ConditionalTableBody isNoData={vulnerabilities.length === 0} numRenderedColumns={6}>
-          {vulnerabilities?.map((vuln, rowIndex) => {
-            const mavenPackagesRemediation = vuln.cves
-              ?.map((cve) => dependency.remediations[cve])
-              .filter((e) => e)
-              .map((e) => e.mavenPackage);
+          {/*{vulnerabilities?.map((vuln, rowIndex) => {*/}
+          {/*  const mavenPackagesRemediation = vuln.cves*/}
+          {/*    ?.map((cve) => dependency.remediations[cve])*/}
+          {/*    .filter((e) => e)*/}
+          {/*    .map((e) => e.mavenPackage);*/}
 
-            return (
-              <Tbody key={rowIndex}>
-                  {vuln.cves?.map((cve, cveIndex) => (
-                  <Tr key={`${rowIndex}-${cveIndex}`}>
-                      <Td>
-                          <p>{cve}</p>
-                      </Td>
-                  <Td>{vuln.title}</Td>
-                  <Td>
-                      <VulnerabilitySeverityLabel vulnerability={vuln} />
-                  </Td>
-                  <Td>
-                    <VulnerabilityScore vulnerability={vuln} />
-                  </Td>
-                  <Td> <DependencyLink name={dependency.ref} /></Td>
-                  <Td>
-                    {mavenPackagesRemediation && mavenPackagesRemediation.length > 0 ? (
-                      mavenPackagesRemediation.map((e, index) => (
-                        <RemediationLink key={index} cves={vuln.cves || []} packageName={e} />
-                      ))
-                    ) : (
-                      <VulnerabilityLink sourceName={providerName} vulnerability={vuln} />
-                    )}
-                  </Td>
-                </Tr>
-                  ))}
-              </Tbody>
-            );
-          })}
+          {/*  return (*/}
+          {/*    <Tbody key={rowIndex}>*/}
+          {/*        {vuln.cves?.map((cve, cveIndex) => (*/}
+          {/*        <Tr key={`${rowIndex}-${cveIndex}`}>*/}
+          {/*            <Td>*/}
+          {/*                <p>{cve}</p>*/}
+          {/*            </Td>*/}
+          {/*        <Td>{vuln.title}</Td>*/}
+          {/*        <Td>*/}
+          {/*            <VulnerabilitySeverityLabel vulnerability={vuln} />*/}
+          {/*        </Td>*/}
+          {/*        <Td>*/}
+          {/*          <VulnerabilityScore vulnerability={vuln} />*/}
+          {/*        </Td>*/}
+          {/*        <Td> <DependencyLink name={dependency.ref} /></Td>*/}
+          {/*        <Td>*/}
+          {/*          {mavenPackagesRemediation && mavenPackagesRemediation.length > 0 ? (*/}
+          {/*            mavenPackagesRemediation.map((e, index) => (*/}
+          {/*              <RemediationLink key={index} cves={vuln.cves || []} packageName={e} />*/}
+          {/*            ))*/}
+          {/*          ) : (*/}
+          {/*            <VulnerabilityLink sourceName={providerName} vulnerability={vuln} />*/}
+          {/*          )}*/}
+          {/*        </Td>*/}
+          {/*      </Tr>*/}
+          {/*        ))}*/}
+          {/*    </Tbody>*/}
+          {/*  );*/}
+          {/*})}*/}
         </ConditionalTableBody>
       </Table>
     </Card>

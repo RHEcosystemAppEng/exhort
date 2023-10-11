@@ -1,15 +1,17 @@
 import React from 'react';
 import {PageSection, PageSectionVariants, Tab, Tabs, TabTitleText,} from '@patternfly/react-core';
 import {useAppContext} from '../App';
-// import {DependenciesTable} from "./DependenciesTable";
 import {DepCompoundTable} from "./DepCompoundTable";
-import { getSourceName, getSources } from '@app/api/report';
 
 export const TabbedLayout = () => {
   const appContext = useAppContext();
-  const sources = getSources(appContext.report);
+  const providers = Object.keys(appContext.report.providers);
 
-  const [activeTabKey, setActiveTabKey] = React.useState<string | number>(getSourceName(sources[0]));
+  const [activeTabKey, setActiveTabKey] = React.useState<string | number>(
+    providers.length > 0
+      ? `${providers[0]}/${Object.keys(appContext.report.providers[providers[0]].sources || {})[0]}`
+      : ''
+  );
   const [isTabsLightScheme, setIsTabsLightScheme] = React.useState<boolean>(true);
 
   // Toggle currently active tab
@@ -23,21 +25,29 @@ export const TabbedLayout = () => {
     setIsTabsLightScheme(checked);
   };
 
-  const tabs = sources.map((source) => {
-    const srcName = getSourceName(source);
-    return (
-        <Tab
-            eventKey={srcName}
-            title={<TabTitleText>{srcName}</TabTitleText>}
-            aria-label={`${srcName} source`}
-        >
-          <PageSection variant={PageSectionVariants.default}>
-            <DepCompoundTable name={srcName} dependencies={source.report.dependencies} />
-          </PageSection>
-        </Tab>
-    );
-    });
-  // ];
+  const tabs = providers?.map((provider, index) => {
+    const sources = appContext.report.providers[provider]?.sources;
+    if (sources !== undefined) {
+      return [
+        ...Object.keys(sources).map((sourceName, sourceIndex) => {
+          const sourceData = sources[sourceName];
+          const term = `${provider}/${sourceName}`;
+          return (
+            <Tab
+              eventKey={term}
+              title={<TabTitleText>{term}</TabTitleText>}
+              aria-label={`${term} source`}
+            >
+              <PageSection variant={PageSectionVariants.default}>
+                <DepCompoundTable name={sourceName} dependencies={sourceData.dependencies} />
+              </PageSection>
+            </Tab>
+          );
+        }),
+      ];
+    }
+    return null; // Ensure there's a return value in case sources is undefined
+  }).flat(); // Use the flat method to flatten the array
 
   return (
       <div>

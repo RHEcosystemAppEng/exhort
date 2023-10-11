@@ -5,9 +5,9 @@ import { useAppContext } from '../App';
 
 export const ReportErrorAlert: React.FC = () => {
   const appContext = useAppContext();
-  const errorReports = Object.keys(appContext.report.summary.providers)
+  const errorReports = Object.keys(appContext.report.providers)
     .map(name => {
-      return appContext.report.summary.providers[name].status;
+      return appContext.report.providers[name].status;
     })
     .filter(e => !e.ok);
 

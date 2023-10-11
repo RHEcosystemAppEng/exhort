@@ -69,19 +69,19 @@ export const withoutTokenReport: AppData = {
                                                 ]
                                             }
                                         },
-                                        {
-                                            "id": "SNYK-PRIVATE-VULNERABILITY",
-                                            "title": "Sign up for a Snyk account to learn aboutn the vulnerabilities found",
-                                            "source": "snyk",
-                                            "cvssScore": 5.9,
-                                            "severity": "MEDIUM",
-                                            "unique": true,
-                                            "remediation": {
-                                                "fixedIn": [
-                                                    "2.13.4"
-                                                ]
-                                            }
-                                        },
+                                        // {
+                                        //     "id": "SNYK-PRIVATE-VULNERABILITY",
+                                        //     "title": "Sign up for a Snyk account to learn aboutn the vulnerabilities found",
+                                        //     "source": "snyk",
+                                        //     "cvssScore": 5.9,
+                                        //     "severity": "MEDIUM",
+                                        //     "unique": true,
+                                        //     "remediation": {
+                                        //         "fixedIn": [
+                                        //             "2.13.4"
+                                        //         ]
+                                        //     }
+                                        // },
                                         {
                                             "id": "SNYK-JAVA-COMFASTERXMLJACKSONCORE-3038426",
                                             "title": "Denial of Service (DoS)",

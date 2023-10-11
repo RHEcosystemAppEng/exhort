@@ -196,7 +196,7 @@ export const DepCompoundTable = ({ name, dependencies }: { name: string; depende
               return (
                   <Tbody key={item.ref} isExpanded={isRowExpanded}>
                     <Tr>
-                      <Td width={35} dataLabel={columnNames.name} component="th">
+                      <Td width={30} dataLabel={columnNames.name} component="th">
                         <DependencyLink name={item.ref} />
                       </Td>
                       <Td
