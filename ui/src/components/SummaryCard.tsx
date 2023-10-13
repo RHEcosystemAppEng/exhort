@@ -8,21 +8,22 @@ import {
   DescriptionListDescription,
   DescriptionListGroup,
   DescriptionListTerm,
-  Divider, Grid, GridItem,
+  Divider,
+  Grid,
+  GridItem,
   Icon,
   List,
-  ListItem, Title, TitleSizes,
+  ListItem,
+  Title,
+  TitleSizes,
 } from '@patternfly/react-core';
 import ExclamationTriangleIcon from '@patternfly/react-icons/dist/esm/icons/exclamation-triangle-icon';
 import RedhatIcon from '@patternfly/react-icons/dist/esm/icons/redhat-icon';
 import {useAppContext} from '../App';
 import {ChartCard} from './ChartCard';
 import SecurityCheckIcon from '../images/security-check.svg';
-import {SourceItem} from "@app/api/report";
-// import { getSourceName, getSourceSummary, getSources } from '../api/report';
+import {getSourceName, getSources} from '../api/report';
 
-
-// export const SummaryCard = ({ provider }: { provider: Provider }) => {
 export const SummaryCard = () => {
   const appContext = useAppContext();
   const providers = Object.keys(appContext.report.providers);
@@ -53,29 +54,18 @@ export const SummaryCard = () => {
               </DescriptionListDescription>
             </DescriptionListGroup>
             <DescriptionList isAutoFit>
-              {providers?.map((provider, index) => {
-                const sources = appContext.report.providers[provider]?.sources;
-                if (sources !== undefined) {
+              {
+                getSources(appContext.report).map((source, index) => {
                   return (
                     <DescriptionListGroup key={index}>
-                      {Object.keys(sources).map((sourceName, sourceIndex) => {
-                        const sourceData = sources[sourceName];
-                        const term = `${provider}/${sourceName}`; // Combine provider and sourceName
-                        return (
-                          <div key={sourceIndex}>
-                            <DescriptionListTerm>{term}</DescriptionListTerm>
-                            <DescriptionListDescription>
-                              {/*<p>Source Data:</p>*/}
-                              {/*<pre>{JSON.stringify(sourceData, null, 2)}</pre>*/}
-                              <ChartCard summary={sourceData.summary}/>
-                            </DescriptionListDescription>
-                          </div>
-                        );
-                      })}
+                      <DescriptionListTerm>{getSourceName(source)}</DescriptionListTerm>
+                      <DescriptionListDescription>
+                        <ChartCard summary={source.report.summary}/>
+                      </DescriptionListDescription>
                     </DescriptionListGroup>
-                  );
-                }
-              })}
+                  )
+                })
+              }
             </DescriptionList>
           </CardBody>
           <Divider/>

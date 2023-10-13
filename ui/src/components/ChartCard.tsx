@@ -2,7 +2,7 @@ import { Bullseye, CardBody, CardHeader, CardTitle, Divider } from '@patternfly/
 import { ChartDonut } from '@patternfly/react-charts';
 import { Summary } from '../api/report';
 
-const customColors = ['#800000', '#FF0000', '#FFA500', '#808000'];
+const customColors = ['#800000', '#FF0000', '#FFA500', '#5BA352'];
 
 export const ChartCard = ({ summary }: { summary: Summary}) => {
 
