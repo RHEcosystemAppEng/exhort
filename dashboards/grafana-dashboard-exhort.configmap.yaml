@@ -1,6 +1,6 @@
 apiVersion: v1
 data:
-  exhort-dashboard.json: |
+  exhort-dashboard.json: |-
     {
       "annotations": {
         "list": [
@@ -28,9 +28,23 @@ data:
       "editable": true,
       "fiscalYearStartMonth": 0,
       "graphTooltip": 0,
+      "id": 348444,
       "links": [],
       "liveNow": false,
       "panels": [
+        {
+          "collapsed": false,
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 0
+          },
+          "id": 47,
+          "panels": [],
+          "title": "Overview",
+          "type": "row"
+        },
         {
           "datasource": {
             "type": "prometheus",
@@ -57,7 +71,7 @@ data:
                   "viz": false
                 },
                 "lineInterpolation": "linear",
-                "lineWidth": 1,
+                "lineWidth": 2,
                 "pointSize": 5,
                 "scaleDistribution": {
                   "type": "linear"
@@ -95,7 +109,7 @@ data:
             "h": 7,
             "w": 8,
             "x": 0,
-            "y": 0
+            "y": 1
           },
           "id": 29,
           "interval": "2m",
@@ -157,7 +171,7 @@ data:
                   "viz": false
                 },
                 "lineInterpolation": "linear",
-                "lineWidth": 1,
+                "lineWidth": 2,
                 "pointSize": 5,
                 "scaleDistribution": {
                   "type": "linear"
@@ -195,7 +209,7 @@ data:
             "h": 7,
             "w": 8,
             "x": 8,
-            "y": 0
+            "y": 1
           },
           "id": 31,
           "interval": "2m",
@@ -293,7 +307,7 @@ data:
             "h": 7,
             "w": 8,
             "x": 16,
-            "y": 0
+            "y": 1
           },
           "id": 42,
           "interval": "2m",
@@ -354,7 +368,7 @@ data:
                   "viz": false
                 },
                 "lineInterpolation": "linear",
-                "lineWidth": 1,
+                "lineWidth": 2,
                 "pointSize": 5,
                 "scaleDistribution": {
                   "type": "linear"
@@ -394,7 +408,7 @@ data:
             "h": 9,
             "w": 8,
             "x": 0,
-            "y": 7
+            "y": 8
           },
           "id": 30,
           "links": [],
@@ -418,14 +432,14 @@ data:
                 "uid": "${datasource}"
               },
               "editorMode": "code",
-              "expr": "sum(rate(http_server_requests_seconds_count{namespace=~\"$namespace\", job=\"exhort\", status!~\"5..\"}[7d]))\n/\nsum(rate(http_server_requests_seconds_count{namespace=~\"$namespace\", job=\"exhort\"}[7d]))",
+              "expr": "sum(rate(http_server_requests_seconds_count{namespace=~\"$namespace\", job=\"exhort\", status!~\"5..\"}[2m]))\n/\nsum(rate(http_server_requests_seconds_count{namespace=~\"$namespace\", job=\"exhort\"}[2m]))",
               "interval": "",
               "legendFormat": "Availability",
               "range": true,
               "refId": "A"
             }
           ],
-          "title": "Availability (7d)",
+          "title": "Availability",
           "type": "timeseries"
         },
         {
@@ -446,7 +460,7 @@ data:
                 "axisPlacement": "auto",
                 "barAlignment": 0,
                 "drawStyle": "line",
-                "fillOpacity": 10,
+                "fillOpacity": 40,
                 "gradientMode": "none",
                 "hideFrom": {
                   "legend": false,
@@ -454,7 +468,7 @@ data:
                   "viz": false
                 },
                 "lineInterpolation": "smooth",
-                "lineWidth": 1,
+                "lineWidth": 2,
                 "pointSize": 5,
                 "scaleDistribution": {
                   "type": "linear"
@@ -477,10 +491,6 @@ data:
                   {
                     "color": "green",
                     "value": null
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
                   }
                 ]
               },
@@ -492,7 +502,7 @@ data:
             "h": 9,
             "w": 8,
             "x": 8,
-            "y": 7
+            "y": 8
           },
           "id": 32,
           "links": [],
@@ -610,7 +620,7 @@ data:
             "h": 9,
             "w": 8,
             "x": 16,
-            "y": 7
+            "y": 8
           },
           "id": 43,
           "links": [],
@@ -649,6 +659,7 @@ data:
             "type": "prometheus",
             "uid": "${datasource}"
           },
+          "description": "",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -661,7 +672,7 @@ data:
                 "axisPlacement": "auto",
                 "barAlignment": 0,
                 "drawStyle": "line",
-                "fillOpacity": 20,
+                "fillOpacity": 42,
                 "gradientMode": "none",
                 "hideFrom": {
                   "legend": false,
@@ -672,7 +683,7 @@ data:
                 "lineStyle": {
                   "fill": "solid"
                 },
-                "lineWidth": 1,
+                "lineWidth": 2,
                 "pointSize": 5,
                 "scaleDistribution": {
                   "type": "linear"
@@ -700,15 +711,16 @@ data:
                     "value": 80
                   }
                 ]
-              }
+              },
+              "unit": "ms"
             },
             "overrides": []
           },
           "gridPos": {
             "h": 8,
-            "w": 12,
+            "w": 8,
             "x": 0,
-            "y": 16
+            "y": 17
           },
           "id": 45,
           "options": {
@@ -760,7 +772,7 @@ data:
               "refId": "C"
             }
           ],
-          "title": "Snyk",
+          "title": "Snyk latency",
           "type": "timeseries"
         },
         {
@@ -769,7 +781,7 @@ data:
             "h": 1,
             "w": 24,
             "x": 0,
-            "y": 24
+            "y": 25
           },
           "id": 36,
           "panels": [
@@ -837,7 +849,7 @@ data:
                 "h": 8,
                 "w": 12,
                 "x": 0,
-                "y": 37
+                "y": 53
               },
               "id": 38,
               "options": {
@@ -959,7 +971,7 @@ data:
                 "h": 8,
                 "w": 12,
                 "x": 12,
-                "y": 37
+                "y": 53
               },
               "id": 39,
               "options": {
@@ -1067,7 +1079,7 @@ data:
                 "h": 8,
                 "w": 12,
                 "x": 0,
-                "y": 45
+                "y": 61
               },
               "id": 40,
               "options": {
@@ -1159,7 +1171,7 @@ data:
                 "h": 8,
                 "w": 12,
                 "x": 12,
-                "y": 45
+                "y": 61
               },
               "id": 41,
               "options": {
@@ -1193,19 +1205,258 @@ data:
           ],
           "title": "Resources",
           "type": "row"
+        },
+        {
+          "collapsed": true,
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 26
+          },
+          "id": 49,
+          "panels": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "description": "$slo_availability_objective percent of requests result in successful (non-5xx) response.",
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "thresholds"
+                  },
+                  "links": [],
+                  "mappings": [],
+                  "max": 1,
+                  "min": 0,
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": null
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "percentunit"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 9,
+                "w": 8,
+                "x": 0,
+                "y": 27
+              },
+              "id": 50,
+              "links": [],
+              "options": {
+                "colorMode": "value",
+                "graphMode": "none",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": {
+                  "calcs": [
+                    "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "textMode": "auto"
+              },
+              "pluginVersion": "9.3.8",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "${datasource}"
+                  },
+                  "editorMode": "code",
+                  "expr": "sum(rate(http_server_requests_seconds_count{namespace=~\"$namespace\", job=\"exhort\", status!~\"5..\"}[28d]))\n/\nsum(rate(http_server_requests_seconds_count{namespace=~\"$namespace\", job=\"exhort\"}[28d]))",
+                  "interval": "",
+                  "legendFormat": "Availability",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Availability ($slo_time_window days)",
+              "type": "stat"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "description": "$slo_latency_objective percent of requests services in <5000ms.\n",
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "thresholds"
+                  },
+                  "links": [],
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": null
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "ms"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 9,
+                "w": 8,
+                "x": 8,
+                "y": 27
+              },
+              "id": 51,
+              "links": [],
+              "options": {
+                "colorMode": "value",
+                "graphMode": "none",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": {
+                  "calcs": [
+                    "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "textMode": "auto"
+              },
+              "pluginVersion": "9.3.8",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "${datasource}"
+                  },
+                  "editorMode": "code",
+                  "expr": "histogram_quantile(0.95, sum(rate(http_server_requests_seconds_bucket{ status!~\"5..\", uri=\"/api/v3/analysis\"}[28d])) by (le))",
+                  "interval": "",
+                  "legendFormat": "0.95",
+                  "range": true,
+                  "refId": "B"
+                }
+              ],
+              "title": "Latency ($slo_time_window days)",
+              "type": "stat"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "description": "",
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "drawStyle": "line",
+                    "fillOpacity": 20,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "lineInterpolation": "smooth",
+                    "lineWidth": 2,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "never",
+                    "spanNulls": true,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  },
+                  "links": [],
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": null
+                      }
+                    ]
+                  },
+                  "unit": "short"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 9,
+                "w": 8,
+                "x": 16,
+                "y": 27
+              },
+              "id": 52,
+              "links": [],
+              "options": {
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "mode": "multi",
+                  "sort": "none"
+                }
+              },
+              "pluginVersion": "9.3.8",
+              "title": "[ TDB] Error budget ($slo_time_window days)",
+              "type": "timeseries"
+            }
+          ],
+          "title": "SLO",
+          "type": "row"
         }
       ],
-      "refresh": "",
+      "refresh": false,
       "schemaVersion": 37,
       "style": "dark",
-      "tags": ["exhort", "trusted-content"],
+      "tags": [
+        "exhort",
+        "trusted-content"
+      ],
       "templating": {
         "list": [
           {
             "current": {
               "selected": true,
-              "text": "app-sre-stage-01-prometheus",
-              "value": "app-sre-stage-01-prometheus"
+              "text": "app-sre-prod-01-prometheus",
+              "value": "app-sre-prod-01-prometheus"
             },
             "hide": 0,
             "includeAll": false,
@@ -1222,8 +1473,8 @@ data:
           {
             "current": {
               "selected": true,
-              "text": "exhort-stage",
-              "value": "exhort-stage"
+              "text": "exhort-production",
+              "value": "exhort-production"
             },
             "hide": 0,
             "includeAll": false,
@@ -1232,12 +1483,12 @@ data:
             "name": "namespace",
             "options": [
               {
-                "selected": true,
+                "selected": false,
                 "text": "exhort-stage",
                 "value": "exhort-stage"
               },
               {
-                "selected": false,
+                "selected": true,
                 "text": "exhort-production",
                 "value": "exhort-production"
               }
@@ -1246,6 +1497,28 @@ data:
             "queryValue": "",
             "skipUrlSync": false,
             "type": "custom"
+          },
+          {
+            "description": "",
+            "hide": 2,
+            "name": "slo_time_window",
+            "query": "28",
+            "skipUrlSync": false,
+            "type": "constant"
+          },
+          {
+            "hide": 2,
+            "name": "slo_availability_objective",
+            "query": "95",
+            "skipUrlSync": false,
+            "type": "constant"
+          },
+          {
+            "hide": 2,
+            "name": "slo_latency_objective",
+            "query": "95",
+            "skipUrlSync": false,
+            "type": "constant"
           }
         ]
       },
@@ -1266,12 +1539,22 @@ data:
           "2h",
           "1d"
         ],
-        "time_options": ["5m", "15m", "1h", "6h", "12h", "24h", "2d", "7d", "30d"]
+        "time_options": [
+          "5m",
+          "15m",
+          "1h",
+          "6h",
+          "12h",
+          "24h",
+          "2d",
+          "7d",
+          "30d"
+        ]
       },
       "timezone": "",
       "title": "Exhort",
       "uid": "trusted-content-exhort",
-      "version": 1,
+      "version": 3,
       "weekStart": ""
     }
 kind: ConfigMap
