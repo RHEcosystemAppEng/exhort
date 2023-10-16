@@ -36,10 +36,6 @@ spec:
             secretKeyRef:
               name: exhort-secret
               key: api-snyk-token
-        - name: API_TRUSTEDCONTENT_VEX_HOST
-          value: http://tc-vex-stub.trusted-content:8080
-        - name: API_TRUSTEDCONTENT_GAV_HOST
-          value: http://swio.trusted-content:8080
 ---
 apiVersion: v1
 kind: Service
