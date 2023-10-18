@@ -1,19 +1,17 @@
 openapi: 3.0.3
 info:
-  title: CodeReady Dependency Analytics API
-  description: Vulnerability analysis with Red Hat CodeReady Dependency Analytics
+  title: Exhort API
+  description: Vulnerability analysis with Red Hat Trusted Profile Analyzer
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
-  version: 3.0.0
+  version: 4.0.0
 servers:
-- url: http://prod-exhort.apps.sssc-cl01.appeng.rhecoeng.com/api/v3
+- url: https://rhda.rhcloud.com/api/v4
   description: Production server
-- url: http://pre-exhort.apps.sssc-cl01.appeng.rhecoeng.com/api/v3
+- url: https://exhort-alpha.stage.devshift.net/api/v4
   description: Staging server
-- url: http://dev-exhort.apps.sssc-cl01.appeng.rhecoeng.com/api/v3
-  description: Development server
-- url: http://localhost:8080/api/v3
+- url: http://localhost:8080/api/v4
   description: Local development
 paths:
   /analysis:
