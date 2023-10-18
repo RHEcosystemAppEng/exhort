@@ -70,50 +70,42 @@ export const DepCompoundTable = ({ name, dependencies }: { name: string; depende
     },
   });
 
-  interface Repository {
-    name: string;
-    version: number;
-    direct: number;
-    transitive: number;
-    rhRemediation: string;
-  }
+  const columnNames = {
+    name: 'Dependency Name',
+    version: 'Current Version',
+    direct: 'Direct Vulnerabilities',
+    transitive: 'Transitive Vulnerabilities',
+    rhRemediation: 'Red Hat Remediation available'
+  };
+  type ColumnKey = keyof typeof columnNames;
 
-    const columnNames = {
-      name: 'Dependency Name',
-      version: 'Current Version',
-      direct: 'Direct Vulnerabilities',
-      transitive: 'Transitive Vulnerabilities',
-      rhRemediation: 'Red Hat Remediation available'
-    };
-    type ColumnKey = keyof typeof columnNames;
-
-    // In this example, expanded cells are tracked by the repo and property names from each row. This could be any pair of unique identifiers.
-    // This is to prevent state from being based on row and column order index in case we later add sorting and rearranging columns.
-    // Note that this behavior is very similar to selection state.
-    const [expandedCells, setExpandedCells] = React.useState<Record<string, ColumnKey>>({
-       'siemur/test-space': 'name' // Default to the first cell of the first row being expanded
-    });
-    const setCellExpanded = (repo: Dependency, columnKey: ColumnKey, isExpanding = true) => {
-      const newExpandedCells = { ...expandedCells };
-      if (isExpanding) {
-        newExpandedCells[repo.ref] = columnKey;
-      } else {
-        delete newExpandedCells[repo.ref];
-      }
-      setExpandedCells(newExpandedCells);
-    };
-    const compoundExpandParams = (
-        dependency: Dependency,
-        columnKey: ColumnKey,
-        rowIndex: number,
-        columnIndex: number
-    ): TdProps['compoundExpand'] => ({
-      isExpanded: expandedCells[dependency.ref] === columnKey,
-      onToggle: () => setCellExpanded(dependency, columnKey, expandedCells[dependency.ref] !== columnKey),
-      expandId: 'compound-expandable-example',
-      rowIndex,
-      columnIndex
-    });
+  // In this example, expanded cells are tracked by the repo and property names from each row. This could be any pair of unique identifiers.
+  // This is to prevent state from being based on row and column order index in case we later add sorting and rearranging columns.
+  // Note that this behavior is very similar to selection state.
+  const [expandedCells, setExpandedCells] = React.useState<Record<string, ColumnKey>>({
+      'siemur/test-space': 'name' // Default to the first cell of the first row being expanded
+  });
+  const setCellExpanded = (repo: Dependency, columnKey: ColumnKey, isExpanding = true) => {
+    const newExpandedCells = { ...expandedCells };
+    if (isExpanding) {
+      newExpandedCells[repo.ref] = columnKey;
+    } else {
+      delete newExpandedCells[repo.ref];
+    }
+    setExpandedCells(newExpandedCells);
+  };
+  const compoundExpandParams = (
+      dependency: Dependency,
+      columnKey: ColumnKey,
+      rowIndex: number,
+      columnIndex: number
+  ): TdProps['compoundExpand'] => ({
+    isExpanded: expandedCells[dependency.ref] === columnKey,
+    onToggle: () => setCellExpanded(dependency, columnKey, expandedCells[dependency.ref] !== columnKey),
+    expandId: 'compound-expandable-example',
+    rowIndex,
+    columnIndex
+  });
 
   return (
     <Card>

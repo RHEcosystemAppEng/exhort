@@ -75,11 +75,11 @@ export function getSources(report: Report): SourceItem[] {
     const sources = report.providers[provider].sources;
     if(sources !== undefined) {
       Object.keys(sources).forEach(source => {
-        result.push(<SourceItem>{
+        result.push({
           provider: provider,
           source: source,
           report: sources[source]
-        })
+        } as SourceItem)
       })
     }
   })
