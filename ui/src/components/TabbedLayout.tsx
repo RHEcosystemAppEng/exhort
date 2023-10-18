@@ -9,7 +9,7 @@ export const TabbedLayout = () => {
   const sources = getSources(appContext.report);
 
   const [activeTabKey, setActiveTabKey] = React.useState<string | number>(getSourceName(sources[0]));
-  const [isTabsLightScheme, setIsTabsLightScheme] = React.useState<boolean>(true);
+  const [isTabsLightScheme] = React.useState<boolean>(true);
 
   // Toggle currently active tab
   const handleTabClick = (
@@ -17,9 +17,6 @@ export const TabbedLayout = () => {
       tabIndex: string | number,
   ) => {
     setActiveTabKey(tabIndex);
-  };
-  const toggleScheme = (checked: boolean) => {
-    setIsTabsLightScheme(checked);
   };
 
   const tabs = sources.map((source) => {

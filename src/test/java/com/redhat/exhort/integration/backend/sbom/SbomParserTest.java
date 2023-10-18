@@ -174,7 +174,7 @@ public class SbomParserTest {
                           .version("0.0.0-development")
                           .pkgManager(Constants.NPM_PKG_MANAGER)
                           .build()));
-              consumer.accept(arguments(t, Constants.PYPI_PKG_MANAGER, 2, 0, DEFAULT_MAVEN_ROOT));
+              consumer.accept(arguments(t, Constants.PYPI_PKG_MANAGER, 2, 1, DEFAULT_MAVEN_ROOT));
             });
   }
 

@@ -64,7 +64,7 @@ public class OssIndexIntegration extends EndpointRouteBuilder {
     from(direct("ossSplitReq"))
         .routeId("ossSplitReq")
         .transform(method(OssIndexRequestBuilder.class, "split"))
-        .choice().when(simple("${body.isEmpty}"))
+        .choice().when(method(OssIndexRequestBuilder.class, "isEmpty"))
           .setBody(method(OssIndexResponseHandler.class, "emptyResponse")).endChoice()
         .otherwise()
           .split(body(), AggregationStrategies.bean(OssIndexResponseHandler.class, "aggregateSplit"))

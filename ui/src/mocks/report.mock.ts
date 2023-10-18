@@ -7,9 +7,9 @@ import { reportMixed } from './reportMixed.mock';
 
 export const MOCK_REPORT = {
   mixed: reportMixed,
-  // withToken: withTokenReport,
-  // withoutToken: withoutTokenReport,
-  // error: errorReport,
-  // forbidden: forbiddenReport,
-  // unauthorizedReport: unauthorizedReport,
+  withToken: withTokenReport,
+  withoutToken: withoutTokenReport,
+  error: errorReport,
+  forbidden: forbiddenReport,
+  unauthorizedReport: unauthorizedReport
 };

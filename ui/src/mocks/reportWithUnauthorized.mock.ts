@@ -15,7 +15,7 @@ export const unauthorizedReport: AppData = {
       "oss-index": {
         "status": {
           "ok": false,
-          "name": 'snyk',
+          "name": 'oss-index',
           "code": 401,
           "message": 'Unauthorized: Verify the provided credentials are valid.'
         }

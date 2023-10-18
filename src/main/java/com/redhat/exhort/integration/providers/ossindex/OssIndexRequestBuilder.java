@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import org.apache.camel.Body;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -55,6 +57,10 @@ public class OssIndexRequestBuilder {
               bulk.add(d);
             });
     return bulks;
+  }
+
+  public boolean isEmpty(@Body List<List<PackageRef>> body) {
+    return body == null || body.isEmpty();
   }
 
   public String buildRequest(List<PackageRef> packages) throws JsonProcessingException {

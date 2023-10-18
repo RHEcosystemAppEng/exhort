@@ -87,6 +87,9 @@ export function getSources(report: Report): SourceItem[] {
 }
 
 export function getSourceName(item: SourceItem): string {
+  if(item === undefined) {
+    return "unknown";
+  }
   if(item.provider !== item.source) {
     return `$item.provider/$item.source`
   }
@@ -104,17 +107,23 @@ export interface SourceReport {
   dependencies: Dependency[]
 }
 
+export interface VulnerabilityItem {
+  id: string,
+  dependencyRef: string,
+  vulnerability: Vulnerability
+}
+
 export interface Vulnerability {
   id: string;
   title: string;
   source: string;
-  cvss: Cvss | null;
+  cvss?: Cvss;
   cvssScore: number;
   severity: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';
   cves?: string[];
   unique: boolean;
   remediation?: {
-    fixedIn: string[] | null;
+    fixedIn?: string[] | null;
     trustedContent?: {
       mavenPackage: string | null;
       productStatus: string | null;
@@ -135,4 +144,41 @@ export interface Cvss {
   remediationLevel?: string;
   reportConfidence?: string;
   cvss: string;
+}
+
+export function hasRemediations(vulnerability: Vulnerability): boolean {
+  if(vulnerability.remediation 
+      && (vulnerability.remediation.fixedIn || vulnerability.remediation?.trustedContent)) {
+    return true;
+  }
+  return false;
+}
+
+export function buildVulnerabilityItems(transitiveDependencies: TransitiveDependency[]): VulnerabilityItem[] {
+  var rows: VulnerabilityItem[] = [];
+  transitiveDependencies.map(transitive => {
+    return {
+      dependencyRef: transitive.ref,
+      vulnerabilities: transitive.issues || []
+    
+  }}).forEach(item => {
+    item.vulnerabilities.forEach(v => {
+      if(v.cves) {
+        v.cves.forEach(cve => {
+          rows.push({
+            id: cve, 
+            dependencyRef: item.dependencyRef,
+            vulnerability: v
+          });
+        })
+      } else {
+        rows.push({
+          id: v.id,
+          dependencyRef: item.dependencyRef,
+          vulnerability: v
+        })
+      }
+    });
+  });
+  return rows.sort((a, b) => b.vulnerability.cvssScore - a.vulnerability.cvssScore);
 }

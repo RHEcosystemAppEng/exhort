@@ -1,7 +1,6 @@
 import React, {useState} from 'react';
 
 import {
-  Button,
   Card,
   CardBody,
   Divider,
@@ -22,9 +21,7 @@ import {
 import {ExpandableRowContent, Table, TableVariant, Tbody, Td, TdProps, Th, Thead, Tr} from '@patternfly/react-table';
 import FilterIcon from '@patternfly/react-icons/dist/esm/icons/filter-icon';
 
-import {useAppContext} from '../App';
 import {Dependency} from '../api/report';
-import {useSelectionState} from '../hooks/useSelectionState';
 import {useTable} from '../hooks/useTable';
 import {useTableControls} from '../hooks/useTableControls';
 import {SimplePagination} from './TableControls/SimplePagination';
@@ -39,17 +36,10 @@ import SearchIcon from '@patternfly/react-icons/dist/esm/icons/search-icon';
 import { ConditionalTableBody } from './TableControls/ConditionalTableBody';
 
 export const DepCompoundTable = ({ name, dependencies }: { name: string; dependencies: Dependency[] }) => {
-  const appContext = useAppContext();
   // Filters
   const [filterText, setFilterText] = useState('');
 
   // Rows
-  const { isItemSelected: isRowExpanded, toggleItemSelected: toggleRowExpanded } =
-    useSelectionState<Dependency>({
-      items: dependencies,
-      isEqual: (a, b) => a.ref === b.ref,
-    });
-
   const {
     page: currentPage,
     sortBy: currentSortBy,

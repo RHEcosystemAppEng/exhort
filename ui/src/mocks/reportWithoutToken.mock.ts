@@ -69,19 +69,19 @@ export const withoutTokenReport: AppData = {
                                                 ]
                                             }
                                         },
-                                        // {
-                                        //     "id": "SNYK-PRIVATE-VULNERABILITY",
-                                        //     "title": "Sign up for a Snyk account to learn aboutn the vulnerabilities found",
-                                        //     "source": "snyk",
-                                        //     "cvssScore": 5.9,
-                                        //     "severity": "MEDIUM",
-                                        //     "unique": true,
-                                        //     "remediation": {
-                                        //         "fixedIn": [
-                                        //             "2.13.4"
-                                        //         ]
-                                        //     }
-                                        // },
+                                        {
+                                            "id": "SNYK-PRIVATE-VULNERABILITY",
+                                            "title": "Sign up for a Snyk account to learn aboutn the vulnerabilities found",
+                                            "source": "snyk",
+                                            "cvssScore": 5.9,
+                                            "severity": "MEDIUM",
+                                            "unique": true,
+                                            "remediation": {
+                                                "fixedIn": [
+                                                    "2.13.4"
+                                                ]
+                                            }
+                                        },
                                         {
                                             "id": "SNYK-JAVA-COMFASTERXMLJACKSONCORE-3038426",
                                             "title": "Denial of Service (DoS)",
@@ -140,6 +140,112 @@ export const withoutTokenReport: AppData = {
                                                 "2.14.0"
                                             ]
                                         }
+                                    }
+                                }
+                            ],
+                            "highestVulnerability": {
+                                "id": "SNYK-JAVA-COMFASTERXMLJACKSONCORE-2421244",
+                                "title": "Denial of Service (DoS)",
+                                "source": "snyk",
+                                "cvss": {
+                                    "attackVector": "Network",
+                                    "attackComplexity": "Low",
+                                    "privilegesRequired": "None",
+                                    "userInteraction": "None",
+                                    "scope": "Unchanged",
+                                    "confidentialityImpact": "None",
+                                    "integrityImpact": "None",
+                                    "availabilityImpact": "High",
+                                    "cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+                                },
+                                "cvssScore": 7.5,
+                                "severity": "HIGH",
+                                "cves": [
+                                    "CVE-2020-36518"
+                                ],
+                                "unique": false,
+                                "remediation": {
+                                    "fixedIn": [
+                                        "2.12.6.1",
+                                        "2.13.2.1",
+                                        "2.14.0"
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "ref": "pkg:maven/io.quarkus/quarkus-hibernate-unique@2.13.5.Final",
+                            "transitive": [],
+                            "issues": [
+                                {
+                                    "id": "SNYK-JAVA-COMFASTERXMLJACKSONCORE-2421244",
+                                    "title": "Denial of Service (DoS)",
+                                    "source": "snyk",
+                                    "cvss": {
+                                        "attackVector": "Network",
+                                        "attackComplexity": "Low",
+                                        "privilegesRequired": "None",
+                                        "userInteraction": "None",
+                                        "scope": "Unchanged",
+                                        "confidentialityImpact": "None",
+                                        "integrityImpact": "None",
+                                        "availabilityImpact": "High",
+                                        "cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+                                    },
+                                    "cvssScore": 7.5,
+                                    "severity": "HIGH",
+                                    "cves": [
+                                        "CVE-2020-36518"
+                                    ],
+                                    "unique": false,
+                                    "remediation": {
+                                        "fixedIn": [
+                                            "2.12.6.1",
+                                            "2.13.2.1",
+                                            "2.14.0"
+                                        ]
+                                    }
+                                },
+                                {
+                                    "id": "SNYK-PRIVATE-VULNERABILITY",
+                                    "title": "Sign up for a Snyk account to learn aboutn the vulnerabilities found",
+                                    "source": "snyk",
+                                    "cvssScore": 5.9,
+                                    "severity": "MEDIUM",
+                                    "unique": true,
+                                    "remediation": {
+                                        "fixedIn": [
+                                            "2.13.4"
+                                        ]
+                                    }
+                                },
+                                {
+                                    "id": "SNYK-JAVA-COMFASTERXMLJACKSONCORE-3038426",
+                                    "title": "Denial of Service (DoS)",
+                                    "source": "snyk",
+                                    "cvss": {
+                                        "attackVector": "Network",
+                                        "attackComplexity": "High",
+                                        "privilegesRequired": "None",
+                                        "userInteraction": "None",
+                                        "scope": "Unchanged",
+                                        "confidentialityImpact": "None",
+                                        "integrityImpact": "None",
+                                        "availabilityImpact": "High",
+                                        "exploitCodeMaturity": "Proof of concept code",
+                                        "cvss": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H/E:P"
+                                    },
+                                    "cvssScore": 5.9,
+                                    "severity": "MEDIUM",
+                                    "cves": [
+                                        "CVE-2022-42003"
+                                    ],
+                                    "unique": false,
+                                    "remediation": {
+                                        "fixedIn": [
+                                            "2.12.7.1",
+                                            "2.13.4.2"
+                                        ]
                                     }
                                 }
                             ],

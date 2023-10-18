@@ -9,7 +9,7 @@ export const extractDependencyName = (name: string) => {
     return name
       .substring(0, name.lastIndexOf('@')) // Remove version
       .substring(MAVEN_PREFIX.length + 1, name.length) // Remove package prefix
-      .replaceAll('/', ':');
+      .replace('/', ':');
   } else {
     return name;
   }

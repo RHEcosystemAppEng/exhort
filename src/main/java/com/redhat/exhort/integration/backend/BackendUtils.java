@@ -111,6 +111,10 @@ public class BackendUtils {
 
   private static String prettifyHttpError(HttpOperationFailedException httpException) {
     String text = httpException.getStatusText();
+    String defaultReason =
+        httpException.getResponseBody() != null
+            ? httpException.getResponseBody()
+            : httpException.getMessage();
     switch (httpException.getStatusCode()) {
       case 401:
         return text + ": Verify the provided credentials are valid.";
@@ -119,7 +123,7 @@ public class BackendUtils {
       case 429:
         return text + ": The rate limit has been exceeded.";
       default:
-        return text + ": " + httpException.getResponseBody();
+        return text + ": " + defaultReason;
     }
   }
 }

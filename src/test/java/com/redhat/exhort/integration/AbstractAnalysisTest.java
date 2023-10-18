@@ -128,21 +128,20 @@ public abstract class AbstractAnalysisTest {
     assertFalse(currentBody.contains(expectedText));
   }
 
-  protected void testHtmlIsValid(String html) {
+  protected HtmlPage extractPage(String html) {
     try (WebClient webClient = new WebClient(BrowserVersion.BEST_SUPPORTED)) {
       HtmlPage page = webClient.loadHtmlCodeIntoCurrentWindow(html);
       webClient.waitForBackgroundJavaScript(50000);
-
       assertTrue(page.isHtmlPage(), "The string is valid HTML.");
       assertEquals("Dependency Analysis", page.getTitleText());
       assertNotNull(page.getElementsById("root"));
-      assertNotNull(page.getFirstByXPath("//div[@class='pf-v5-c-card']"));
-      assertNotNull(page.getFirstByXPath("//div[@class='pf-v5-c-card__header']"));
-      assertNotNull(page.getFirstByXPath("//section[@class='pf-v5-c-page__main-section']"));
-      assertNotNull(page.getElementsByTagName("table"));
-
-    } catch (Exception e) {
+      assertNotNull(
+          page.getFirstByXPath(
+              "//section[contains(@class, 'pf-v5-c-page__main-section pf-m-light')]"));
+      return page;
+    } catch (IOException e) {
       fail("The string is not valid HTML.", e);
+      return null;
     }
   }
 
@@ -270,7 +269,7 @@ public abstract class AbstractAnalysisTest {
     server.stubFor(
         get(Constants.SNYK_TOKEN_API_PATH)
             .withHeader("Authorization", equalTo("token " + ERROR_TOKEN))
-            .willReturn(aResponse().withStatus(500)));
+            .willReturn(aResponse().withStatus(500).withBody("This is an example error")));
     // Invalid token
     server.stubFor(
         get(Constants.SNYK_TOKEN_API_PATH)
@@ -323,7 +322,7 @@ public abstract class AbstractAnalysisTest {
     server.stubFor(
         post(Constants.SNYK_DEP_GRAPH_API_PATH)
             .withHeader("Authorization", equalTo("token " + ERROR_TOKEN))
-            .willReturn(aResponse().withStatus(500)));
+            .willReturn(aResponse().withStatus(500).withBody("This is an example error")));
     // Invalid token
     server.stubFor(
         post(Constants.SNYK_DEP_GRAPH_API_PATH)
@@ -417,7 +416,7 @@ public abstract class AbstractAnalysisTest {
         post(Constants.OSS_INDEX_AUTH_COMPONENT_API_PATH)
             .withBasicAuth(OK_USER, ERROR_TOKEN)
             .withHeader(Exchange.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON))
-            .willReturn(aResponse().withStatus(500)));
+            .willReturn(aResponse().withStatus(500).withBody("This is an example error")));
   }
 
   protected void verifyOssRequest(String user, String pass, boolean isEmpty) {

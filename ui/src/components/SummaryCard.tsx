@@ -26,7 +26,6 @@ import {getSourceName, getSources} from '../api/report';
 
 export const SummaryCard = () => {
   const appContext = useAppContext();
-  const providers = Object.keys(appContext.report.providers);
   return (
     <Grid hasGutter>
       <Title headingLevel="h3" size={TitleSizes['2xl']} style={{paddingLeft: '15px'}}>

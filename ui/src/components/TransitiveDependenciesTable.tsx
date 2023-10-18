@@ -1,17 +1,16 @@
-import React from 'react';
 import {Table, TableVariant, Tbody, Td, Th, Thead, Tr} from '@patternfly/react-table';
 
-import {Dependency, TransitiveDependency} from '../api/report';
-import {SYNK_SIGNUP_URL} from '../utils/utils';
+import {Dependency, TransitiveDependency, buildVulnerabilityItems, hasRemediations} from '../api/report';
 
 import {ConditionalTableBody} from './TableControls/ConditionalTableBody';
-import {DependencyLink} from './DependencyLink';
-import {VulnerabilityScore} from './VulnerabilityScore';
-import {VulnerabilityLink} from './VulnerabilityLink';
-import {VulnerabilitySeverityLabel} from './VulnerabilitySeverityLabel';
-import {RemediationLink} from './RemediationLink';
 import {Card,} from '@patternfly/react-core';
-import {usePrivateIssueHelper} from '../hooks/usePrivateDataHelper';
+import { usePrivateIssueHelper } from '../hooks/usePrivateDataHelper';
+import { SYNK_SIGNUP_URL } from '../utils/utils';
+import { VulnerabilitySeverityLabel } from './VulnerabilitySeverityLabel';
+import { VulnerabilityScore } from './VulnerabilityScore';
+import { DependencyLink } from './DependencyLink';
+import { RemediationLink } from './RemediationLink';
+import { VulnerabilityLink } from './VulnerabilityLink';
 
 export const TransitiveDependenciesTable = ({
                                               providerName,
@@ -37,111 +36,49 @@ export const TransitiveDependenciesTable = ({
           </Tr>
         </Thead>
         <ConditionalTableBody isNoData={transitiveDependencies.length === 0} numRenderedColumns={7}>
-          {transitiveDependencies?.map((item, rowIndex) => {
-            return item.issues?.map((vuln, subRowIndex) => {
-              const mavenPackagesRemediation = vuln.cves
-                ?.map((cve) => {
-                  return dependency.transitive
-                    .map((e) => e.remediations?.[cve])
-                    .filter((e) => e);
-                })
-                .flatMap((e) => e)
-                .map((e) => e?.mavenPackage);
-
-
-              return (
-                <Tbody key={`${rowIndex}-${subRowIndex}`}>
-                  {vuln.cves && vuln.cves.length > 0
-                    ? vuln.cves.map((cve, cveIndex) => (
-                      <Tr key={`${rowIndex}-${cveIndex}`}>
-                        <Td>
-                          <p>{cve}</p>
-                        </Td>
-                        {privateIssueHelper.hideIssue(providerName, vuln.unique) ? (
-                          <>
-                            <Td colSpan={3}>
-                              <a href={SYNK_SIGNUP_URL} target="_blank" rel="noreferrer">
-                                Sign up for a Snyk account
-                              </a>{' '}
-                              to learn about the vulnerabilities found
-                            </Td>
-                          </>
-                        ) : (
-                          <>
-                            <Td>{vuln.title}</Td>
-                            <Td noPadding>
-                              <VulnerabilitySeverityLabel vulnerability={vuln}/>
-                            </Td>
-                          </>
-                        )}
-                        <Td>
-                          <VulnerabilityScore vulnerability={vuln}/>
-                        </Td>
-                        <Td>
-                          <DependencyLink name={item.ref}/>
-                        </Td>
-                        <Td>
-                          {mavenPackagesRemediation && mavenPackagesRemediation.length > 0 ? (
-                            mavenPackagesRemediation.map((e, index) => (
-                              <RemediationLink
-                                key={index}
-                                cves={vuln.cves || []}
-                                packageName={e ?? "N/A"} // Provide a default value
-                              />
-                            ))
-                          ) : (
-                            <VulnerabilityLink sourceName={providerName} vulnerability={vuln}/>
-                          )}
-                        </Td>
-                      </Tr>
-                    ))
-                    : (
-                      <Tr>
-                        <Td>
-                          <p></p>
-                        </Td>
-                        {privateIssueHelper.hideIssue(providerName, vuln.unique) ? (
-                          <>
-                            <Td colSpan={3}>
-                              <a href={SYNK_SIGNUP_URL} target="_blank" rel="noreferrer">
-                                Sign up for a Snyk account
-                              </a>{' '}
-                              to learn about the vulnerabilities found
-                            </Td>
-                          </>
-                        ) : (
-                          <>
-                            <Td>{vuln.title}</Td>
-                            <Td noPadding>
-                              <VulnerabilitySeverityLabel vulnerability={vuln}/>
-                            </Td>
-                          </>
-                        )}
-                        <Td>
-                          <VulnerabilityScore vulnerability={vuln}/>
-                        </Td>
-                        <Td>
-                          <DependencyLink name={item.ref}/>
-                        </Td>
-                        <Td>
-                          {mavenPackagesRemediation && mavenPackagesRemediation.length > 0 ? (
-                            mavenPackagesRemediation.map((e, index) => (
-                              <RemediationLink
-                                key={index}
-                                cves={vuln.cves || []}
-                                packageName={e ?? "N/A"} // Provide a default value
-                              />
-                            ))
-                          ) : (
-                            <VulnerabilityLink sourceName={providerName} vulnerability={vuln}/>
-                          )}
-                        </Td>
-                      </Tr>
-                    )
-                  }
-                </Tbody>
-              );
-            });
+        {buildVulnerabilityItems(transitiveDependencies).map((item, rowIndex) => {
+            return (
+              <Tbody key={rowIndex}>
+                  
+                <Tr key={rowIndex}>
+                  {privateIssueHelper.hideIssue(providerName, item.vulnerability.unique) ? (
+                    <>
+                      <Td colSpan={3}>
+                        <a href={SYNK_SIGNUP_URL} target="_blank" rel="noreferrer">
+                          Sign up for a Snyk account
+                        </a>{' '}
+                        to learn about the vulnerabilities found
+                      </Td>
+                    </>
+                  ) : (
+                    <>
+                      <Td>
+                        <p>{item.id}</p>
+                      </Td>
+                      <Td>{item.vulnerability.title}</Td>
+                      <Td noPadding>
+                        <VulnerabilitySeverityLabel vulnerability={item.vulnerability}/>
+                      </Td>
+                    </>
+                  )}
+                  <Td>
+                    <VulnerabilityScore vulnerability={item.vulnerability}/>
+                  </Td>
+                  <Td>
+                    <DependencyLink name={item.dependencyRef}/>
+                  </Td>
+                  <Td>
+                  {item.vulnerability.remediation?.trustedContent && 
+                        <RemediationLink key={rowIndex} cves={item.vulnerability.cves || []} packageName={item.dependencyRef} />
+                    }
+                    {item.vulnerability.remediation?.fixedIn && 
+                        <VulnerabilityLink sourceName={providerName} vulnerability={item.vulnerability} />
+                    }
+                    {!hasRemediations(item.vulnerability) && "N/A"}
+                  </Td>
+                </Tr>
+              </Tbody>
+            )
           })}
         </ConditionalTableBody>
       </Table>
