@@ -3,13 +3,6 @@
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![CI](https://github.com/RHEcosystemAppEng/exhort/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/RHEcosystemAppEng/exhort/actions/workflows/ci.yaml)
 
-## Dependencies
-
-See the [application.properties](./src/main/resources/application.properties) for default values and configuration properties
-
-- Trusted Content service: `api.trustedContent.gav.host`
-- Trusted Content VEX stub: `api.trustedContent.vex.host`
-
 ### Third party dependencies
 
 - Snyk API

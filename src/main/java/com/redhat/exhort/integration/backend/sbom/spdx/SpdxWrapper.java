@@ -98,7 +98,8 @@ public class SpdxWrapper {
               .findFirst();
       if (ref.isEmpty()) {
         throw new SpdxProcessingException(
-            "Missing Purl External Reference for Package: " + spdxPackage.getName());
+            "Missing Purl External Reference for Package: "
+                + spdxPackage.getName().orElse("unknown"));
       }
       return new PackageRef(ref.get().getReferenceLocator());
     } catch (InvalidSPDXAnalysisException e) {

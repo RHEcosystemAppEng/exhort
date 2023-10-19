@@ -18,11 +18,12 @@
 
 package com.redhat.exhort.integration.backend;
 
+import static com.redhat.exhort.integration.Constants.PROVIDERS_PARAM;
 import static com.redhat.exhort.integration.Constants.REQUEST_CONTENT_PROPERTY;
+import static com.redhat.exhort.integration.Constants.VERBOSE_MODE_HEADER;
 
 import java.io.InputStream;
 import java.util.Arrays;
-import java.util.List;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
@@ -33,12 +34,11 @@ import org.apache.camel.component.micrometer.routepolicy.MicrometerRoutePolicyFa
 
 import com.redhat.exhort.analytics.AnalyticsService;
 import com.redhat.exhort.integration.Constants;
-import com.redhat.exhort.integration.ProviderAggregationStrategy;
 import com.redhat.exhort.integration.VulnerabilityProvider;
 import com.redhat.exhort.integration.backend.sbom.SbomParser;
 import com.redhat.exhort.integration.backend.sbom.SbomParserFactory;
+import com.redhat.exhort.integration.providers.ProviderAggregationStrategy;
 import com.redhat.exhort.model.DependencyTree;
-import com.redhat.exhort.model.GraphRequest;
 
 import io.micrometer.core.instrument.MeterRegistry;
 
@@ -69,7 +69,7 @@ public class ExhortIntegration extends EndpointRouteBuilder {
     getContext().getRegistry().bind(MicrometerConstants.METRICS_REGISTRY_NAME, registry);
     getContext().addRoutePolicyFactory(new MicrometerRoutePolicyFactory());
     
-    restConfiguration().contextPath("/api/v3/")
+    restConfiguration().contextPath("/api/")
         .clientRequestValidation(true);
 
     onException(IllegalArgumentException.class)
@@ -87,21 +87,38 @@ public class ExhortIntegration extends EndpointRouteBuilder {
         .setBody().simple("${exception.message}");
 
     rest()
-        .post("/analysis")
+        .post("/v3/analysis")
+            .routeId("v3restAnalysis")
+            .to("direct:v3analysis")
+        .post("/v4/analysis")
             .routeId("restAnalysis")
-            .to("direct:analysis")
-        .get("/token")
+            .to("direct:v4analysis")
+        .get("/v3/token")
+            .routeId("v3restTokenValidation")
+            .to("direct:validateToken")
+        .get("/v4/token")
             .routeId("restTokenValidation")
             .to("direct:validateToken");
+
+    from(direct("v3analysis"))
+      .routeId("v3Analysis")
+      .setProperty(Constants.API_VERSION_PROPERTY, constant(Constants.API_VERSION_V3))
+      .to(direct("analysis"));
+    
+    from(direct("v4analysis"))
+      .routeId("v4Analysis")
+      .setProperty(Constants.API_VERSION_PROPERTY, constant(Constants.API_VERSION_V4))
+      .to(direct("analysis"));     
 
     from(direct("analysis"))
         .routeId("dependencyAnalysis")
         .to(seda("analyticsIdentify"))
-        .setProperty(Constants.PROVIDERS_PARAM, method(vulnerabilityProvider, "getProvidersFromQueryParam"))
+        .setProperty(PROVIDERS_PARAM, method(vulnerabilityProvider, "getProvidersFromQueryParam"))
         .setProperty(REQUEST_CONTENT_PROPERTY, method(BackendUtils.class, "getResponseMediaType"))
+        .setProperty(VERBOSE_MODE_HEADER, header(VERBOSE_MODE_HEADER))
         .process(this::processAnalysisRequest)
         .to(direct("findVulnerabilities"))
-        .to(direct("recommendAllTrustedContent"))
+        .transform().method(ProviderAggregationStrategy.class, "toReport")
         .to(direct("report"))
         .to(seda("analyticsTrackAnalysis"))
         .process(this::cleanUpHeaders);
@@ -109,7 +126,7 @@ public class ExhortIntegration extends EndpointRouteBuilder {
     from(direct("findVulnerabilities"))
         .routeId("findVulnerabilities")
         .recipientList(method(vulnerabilityProvider, "getProviderEndpoints"))
-        .aggregationStrategy(AggregationStrategies.bean(ProviderAggregationStrategy.class, "aggregate"))
+        .aggregationStrategy(AggregationStrategies.beanAllowNull(ProviderAggregationStrategy.class, "aggregate"))
             .parallelProcessing();
 
     from(direct("validateToken"))
@@ -117,13 +134,13 @@ public class ExhortIntegration extends EndpointRouteBuilder {
         .to(seda("analyticsIdentify"))
         .choice()
             .when(header(Constants.SNYK_TOKEN_HEADER).isNotNull())
-                .setProperty(Constants.PROVIDERS_PARAM, constant(Arrays.asList(Constants.SNYK_PROVIDER)))
+                .setProperty(PROVIDERS_PARAM, constant(Arrays.asList(Constants.SNYK_PROVIDER)))
                 .to(direct("snykValidateToken"))
             .when(header(Constants.OSS_INDEX_TOKEN_HEADER).isNotNull())
-            .setProperty(Constants.PROVIDERS_PARAM, constant(Arrays.asList(Constants.OSS_INDEX_PROVIDER)))
+            .setProperty(PROVIDERS_PARAM, constant(Arrays.asList(Constants.OSS_INDEX_PROVIDER)))
                 .to(direct("ossValidateCredentials"))
             .otherwise()
-                .setProperty(Constants.PROVIDERS_PARAM, constant(Arrays.asList(Constants.UNKNOWN_PROVIDER)))
+                .setProperty(PROVIDERS_PARAM, constant(Arrays.asList(Constants.UNKNOWN_PROVIDER)))
                 .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(Response.Status.BAD_REQUEST.getStatusCode()))
                 .setBody(constant("Missing provider authentication headers"))
         .end()
@@ -145,11 +162,9 @@ public class ExhortIntegration extends EndpointRouteBuilder {
     //fmt:on
   }
 
-  @SuppressWarnings("unchecked")
   private void processAnalysisRequest(Exchange exchange) {
     exchange.getIn().removeHeader(Constants.ACCEPT_HEADER);
     exchange.getIn().removeHeader(Constants.ACCEPT_ENCODING_HEADER);
-
     ContentType ct;
     try {
       ct = new ContentType(exchange.getIn().getHeader(Exchange.CONTENT_TYPE, String.class));
@@ -159,16 +174,13 @@ public class ExhortIntegration extends EndpointRouteBuilder {
     SbomParser parser = SbomParserFactory.newInstance(ct.getBaseType());
     exchange.setProperty(Constants.SBOM_TYPE_PARAM, ct.getBaseType());
     DependencyTree tree = parser.parse(exchange.getIn().getBody(InputStream.class));
-    List<String> providers = exchange.getProperty(Constants.PROVIDERS_PARAM, List.class);
-    exchange
-        .getIn()
-        .setBody(
-            new GraphRequest.Builder(tree.root().purl().getType(), providers).tree(tree).build());
+    exchange.setProperty(Constants.DEPENDENCY_TREE_PROPERTY, tree);
+    exchange.getIn().setBody(tree);
   }
 
   private void cleanUpHeaders(Exchange exchange) {
     Message msg = exchange.getIn();
-    msg.removeHeader(Constants.VERBOSE_MODE_HEADER);
+    msg.removeHeader(VERBOSE_MODE_HEADER);
     msg.removeHeaders("ex-.*-user");
     msg.removeHeaders("ex-.*-token");
     msg.removeHeader("Authorization");

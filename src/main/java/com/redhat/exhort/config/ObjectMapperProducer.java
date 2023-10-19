@@ -18,12 +18,30 @@
 
 package com.redhat.exhort.config;
 
+import org.apache.camel.component.jackson.JacksonDataFormat;
+
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
+import jakarta.enterprise.inject.Produces;
+import jakarta.inject.Singleton;
+
 public class ObjectMapperProducer {
 
+  @Singleton
+  @Produces
   public static ObjectMapper newInstance() {
-    return new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
+    return new ObjectMapper()
+        .enable(SerializationFeature.INDENT_OUTPUT)
+        .setSerializationInclusion(Include.NON_EMPTY);
+  }
+
+  @Singleton
+  @Produces
+  public static JacksonDataFormat newDataFormat() {
+    JacksonDataFormat df = new JacksonDataFormat();
+    df.setObjectMapper(newInstance());
+    return df;
   }
 }

@@ -50,7 +50,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <script>
-        window["report"]=[=body.reportJson];
+        window["appData"]=[=body.appData];
     </script>
     <style>
         [#include "generated/vendor.css" parse="false"]
@@ -62,30 +62,30 @@
 </head>
 
 <body>
-<div id="root" class="pf-v5-u-h-100">
-    <div
+    <div id="root" class="pf-v5-u-h-100">
+        <div
             class="pf-v5-u-display-flex pf-v5-u-flex-direction-column pf-v5-u-align-items-center pf-v5-u-justify-content-center pf-v5-u-h-100">
-        <div>Loading...</div>
-        <svg
+            <div>Loading...</div>
+            <svg
                 class="pf-v5-c-spinner"
                 role="progressbar"
                 viewBox="0 0 100 100"
                 aria-label="Loading...">
-            <circle
+                <circle
                     class="pf-v5-c-spinner__path"
                     cx="50"
                     cy="50"
                     r="45"
                     fill="none" />
-        </svg>
+            </svg>
+        </div>
     </div>
-</div>
-<script>
-    [#include "generated/vendor.js" parse="false"]
-</script>
-<script>
-    [#include "generated/main.js" parse="false"]
-</script>
+    <script>
+        [#include "generated/vendor.js" parse="false"]
+    </script>
+    <script>
+        [#include "generated/main.js" parse="false"]
+    </script>
 </body>
 
 </html>

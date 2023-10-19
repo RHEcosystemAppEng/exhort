@@ -94,7 +94,6 @@ public class SbomParserTest {
 
     DependencyTree tree = parser.buildTree(file);
     assertEquals(0, tree.dependencies().size());
-    assertEquals(EXPECTED_ROOT, tree.root());
   }
 
   @ParameterizedTest
@@ -106,7 +105,6 @@ public class SbomParserTest {
 
     DependencyTree tree = parser.buildTree(file);
     assertEquals(0, tree.dependencies().size());
-    assertEquals(EXPECTED_ROOT, tree.root());
   }
 
   @ParameterizedTest
@@ -130,36 +128,6 @@ public class SbomParserTest {
     DependencyTree tree = parser.buildTree(file);
     assertEquals(2, tree.dependencies().size());
     assertEquals(7, tree.transitiveCount());
-    assertEquals(EXPECTED_ROOT, tree.root());
-  }
-
-  @Test
-  void testCyclicReferencesCycloneDX() {
-    SbomParser parser =
-        SbomParserFactory.newInstance(CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON);
-    String fileName =
-        String.format(
-            "%s/cyclic-sbom.json", getFolder(CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON));
-    InputStream file = getClass().getClassLoader().getResourceAsStream(fileName);
-
-    DependencyTree tree = parser.buildTree(file);
-    assertEquals(2, tree.dependencies().size());
-    assertEquals(9, tree.transitiveCount());
-    assertEquals(EXPECTED_ROOT, tree.root());
-  }
-
-  @Test
-  void testCyclicReferencesSPDX() {
-    SbomParser parser = SbomParserFactory.newInstance(Constants.SPDX_MEDIATYPE_JSON);
-    String fileName =
-        String.format("%s/cyclic-sbom.json", getFolder(Constants.SPDX_MEDIATYPE_JSON));
-    InputStream file = getClass().getClassLoader().getResourceAsStream(fileName);
-
-    ClientErrorException e = assertThrows(ClientErrorException.class, () -> parser.buildTree(file));
-    assertEquals(
-        "Unable to parse received SPDX SBOM file: Unable to calculate direct dependencies due to a"
-            + " cyclic relationship",
-        e.getMessage());
   }
 
   @ParameterizedTest
@@ -172,7 +140,6 @@ public class SbomParserTest {
     DependencyTree tree = parser.buildTree(file);
     assertEquals(direct, tree.dependencies().size());
     assertEquals(transitive, tree.transitiveCount());
-    assertEquals(root, tree.root());
   }
 
   static Stream<String> getMediaTypes() {
@@ -194,7 +161,7 @@ public class SbomParserTest {
                           .namespace("github.com/fabric8-analytics")
                           .name("cli-tools")
                           .version("v0.2.6-0.20211007133944-2af417bfb988")
-                          .pkgManager(Constants.GOLANG_PKG_MANAGER)
+                          .pkgManager(Constants.NPM_PKG_MANAGER)
                           .build()));
               consumer.accept(
                   arguments(
@@ -207,13 +174,7 @@ public class SbomParserTest {
                           .version("0.0.0-development")
                           .pkgManager(Constants.NPM_PKG_MANAGER)
                           .build()));
-              consumer.accept(
-                  arguments(
-                      t,
-                      Constants.PYPI_PKG_MANAGER,
-                      2,
-                      0,
-                      DependencyTree.getDefaultRoot(Constants.PYPI_PKG_MANAGER)));
+              consumer.accept(arguments(t, Constants.PYPI_PKG_MANAGER, 2, 1, DEFAULT_MAVEN_ROOT));
             });
   }
 

@@ -11,5 +11,5 @@ export const MOCK_REPORT = {
   withoutToken: withoutTokenReport,
   error: errorReport,
   forbidden: forbiddenReport,
-  unauthorizedReport: unauthorizedReport,
+  unauthorizedReport: unauthorizedReport
 };

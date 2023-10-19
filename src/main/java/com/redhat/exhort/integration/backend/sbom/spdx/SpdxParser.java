@@ -67,7 +67,7 @@ public class SpdxParser extends SbomParser {
           root = DependencyTree.getDefaultRoot(first.get().purl().getType());
         }
       }
-      DependencyTree tree = new DependencyTree(root, deps);
+      DependencyTree tree = new DependencyTree(deps);
       return tree;
     } catch (SpdxProcessingException | InvalidSPDXAnalysisException | IOException e) {
       LOGGER.error("Unable to parse the SPDX SBOM file", e);

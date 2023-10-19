@@ -42,7 +42,7 @@
     <compiler-plugin.version>3.11.0</compiler-plugin.version>
     <surefire-plugin.version>3.0.0</surefire-plugin.version>
     <resources-plugin.version>3.3.1</resources-plugin.version>
-    <openapi-generator-maven-plugin.version>6.6.0</openapi-generator-maven-plugin.version>
+    <openapi-generator-maven-plugin.version>7.0.1</openapi-generator-maven-plugin.version>
     <build-helper-maven-plugin.version>3.4.0</build-helper-maven-plugin.version>
     <spotless-maven-plugin.version>2.37.0</spotless-maven-plugin.version>
     <maven-release-plugin.version>3.0.1</maven-release-plugin.version>
@@ -251,9 +251,9 @@
               <resources>
                 <resource>
                   <directory>${project.basedir}/api-spec/v3/</directory>
-                  <includes>
-                    <include>openapi.yaml</include>
-                  </includes>
+                </resource>
+                <resource>
+                  <directory>${project.basedir}/api-spec/v4/</directory>
                 </resource>
               </resources>
             </configuration>
@@ -393,13 +393,44 @@
         <version>${openapi-generator-maven-plugin.version}</version>
         <executions>
           <execution>
+            <id>generate-v3</id>
             <goals>
               <goal>generate</goal>
             </goals>
             <configuration>
               <inputSpec>${project.basedir}/api-spec/v3/openapi.yaml</inputSpec>
               <generatorName>java</generatorName>
-              <modelPackage>com.redhat.exhort.api</modelPackage>
+              <modelPackage>com.redhat.exhort.api.v3</modelPackage>
+              <output>${project.build.directory}</output>
+              <configOptions>
+                <documentationProvider>none</documentationProvider>
+                <hideGenerationTimestamp>true</hideGenerationTimestamp>
+                <serializableModel>true</serializableModel>
+                <serializationLibrary>jackson</serializationLibrary>
+                <sourceFolder>generated-sources</sourceFolder>
+                <useJakartaEe>true</useJakartaEe>
+              </configOptions>
+              <library>native</library>
+              <generateApis>false</generateApis>
+              <generateSupportingFiles>false</generateSupportingFiles>
+              <generateModelTests>false</generateModelTests>
+              <generateModelDocumentation>false</generateModelDocumentation>
+              <generateApiTests>false</generateApiTests>
+              <addCompileSourceRoot>false</addCompileSourceRoot>
+              <addTestCompileSourceRoot>false</addTestCompileSourceRoot>
+              <inlineSchemaNameMappings>analysis_200_response=AnalysisResponse</inlineSchemaNameMappings>
+              <schemaMappings>PackageRef=com.redhat.exhort.api.PackageRef</schemaMappings>
+            </configuration>
+          </execution>
+          <execution>
+            <id>generate-v4</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>${project.basedir}/api-spec/v4/openapi.yaml</inputSpec>
+              <generatorName>java</generatorName>
+              <modelPackage>com.redhat.exhort.api.v4</modelPackage>
               <output>${project.build.directory}</output>
               <configOptions>
                 <documentationProvider>none</documentationProvider>

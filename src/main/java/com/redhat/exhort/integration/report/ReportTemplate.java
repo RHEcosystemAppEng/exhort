@@ -31,7 +31,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.redhat.exhort.api.AnalysisReport;
+import com.redhat.exhort.api.v4.AnalysisReport;
 import com.redhat.exhort.integration.Constants;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
@@ -81,8 +81,8 @@ public class ReportTemplate {
     params.put("dependencyHelper", new DependencyReportHelper());
 
     ObjectWriter objectWriter = new ObjectMapper().writer();
-    String reportJson = objectWriter.writeValueAsString(params);
-    params.put("reportJson", reportJson);
+    String appData = objectWriter.writeValueAsString(params);
+    params.put("appData", appData);
 
     return params;
   }

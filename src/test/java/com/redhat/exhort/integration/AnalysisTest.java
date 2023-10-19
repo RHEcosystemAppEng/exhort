@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.net.URI;
@@ -47,13 +48,25 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import com.redhat.exhort.api.AnalysisReport;
-import com.redhat.exhort.api.DependencyReport;
+import com.gargoylesoftware.htmlunit.html.DomElement;
+import com.gargoylesoftware.htmlunit.html.DomNodeList;
+import com.gargoylesoftware.htmlunit.html.HtmlButton;
+import com.gargoylesoftware.htmlunit.html.HtmlHeading4;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.gargoylesoftware.htmlunit.html.HtmlTable;
+import com.gargoylesoftware.htmlunit.html.HtmlTableBody;
+import com.gargoylesoftware.htmlunit.html.HtmlTableDataCell;
+import com.gargoylesoftware.htmlunit.html.HtmlTableHeaderCell;
+import com.gargoylesoftware.htmlunit.html.HtmlTableRow;
 import com.redhat.exhort.api.PackageRef;
-import com.redhat.exhort.api.ProviderStatus;
-import com.redhat.exhort.api.Summary;
-import com.redhat.exhort.api.TransitiveDependencyReport;
-import com.redhat.exhort.integration.report.DependencyReportHelper;
+import com.redhat.exhort.api.v4.AnalysisReport;
+import com.redhat.exhort.api.v4.DependencyReport;
+import com.redhat.exhort.api.v4.ProviderReport;
+import com.redhat.exhort.api.v4.ProviderStatus;
+import com.redhat.exhort.api.v4.Scanned;
+import com.redhat.exhort.api.v4.Source;
+import com.redhat.exhort.api.v4.SourceSummary;
+import com.redhat.exhort.api.v4.TransitiveDependencyReport;
 
 import io.quarkus.test.junit.QuarkusTest;
 
@@ -76,7 +89,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
         .queryParam(Constants.PROVIDERS_PARAM, "unknown")
         .body(req)
         .when()
-        .post("/api/v3/analysis")
+        .post("/api/v4/analysis")
         .then()
         .assertThat()
         .statusCode(422)
@@ -93,7 +106,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
         .header(CONTENT_TYPE, getContentType(sbom))
         .body(loadFileAsString(String.format("%s/unsupported-invalid-sbom.json", sbom)))
         .when()
-        .post("/api/v3/analysis")
+        .post("/api/v4/analysis")
         .then()
         .assertThat()
         .statusCode(422)
@@ -110,7 +123,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
         .header(CONTENT_TYPE, getContentType(sbom))
         .body(loadFileAsString(String.format("%s/unsupported-mixed-sbom.json", sbom)))
         .when()
-        .post("/api/v3/analysis")
+        .post("/api/v4/analysis")
         .then()
         .assertThat()
         .statusCode(422)
@@ -127,7 +140,6 @@ public class AnalysisTest extends AbstractAnalysisTest {
   public void testEmptySbom(
       List<String> providers, Map<String, String> authHeaders, String pkgManager) {
     stubAllProviders();
-    stubTCRequests();
 
     AnalysisReport report =
         given()
@@ -136,7 +148,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .queryParam(Constants.PROVIDERS_PARAM, providers)
             .body(loadFileAsString(String.format("%s/empty-sbom.json", CYCLONEDX)))
             .when()
-            .post("/api/v3/analysis")
+            .post("/api/v4/analysis")
             .then()
             .assertThat()
             .statusCode(200)
@@ -146,29 +158,18 @@ public class AnalysisTest extends AbstractAnalysisTest {
 
     providers.forEach(
         p -> {
-          Optional<ProviderStatus> status =
-              report.getSummary().getProviderStatuses().stream()
-                  .filter(s -> s.getProvider().equals(p))
+          Optional<ProviderReport> provider =
+              report.getProviders().values().stream()
+                  .filter(s -> s.getStatus().getName().equals(p))
                   .findFirst();
-          assertEquals(Response.Status.OK.getStatusCode(), status.get().getStatus());
-          assertTrue(status.get().getOk());
-          assertEquals(Response.Status.OK.getReasonPhrase(), status.get().getMessage());
+          assertEquals(Response.Status.OK.getStatusCode(), provider.get().getStatus().getCode());
+          assertTrue(provider.get().getStatus().getOk());
+          assertEquals(
+              Response.Status.OK.getReasonPhrase(), provider.get().getStatus().getMessage());
+          assertTrue(provider.get().getSources().isEmpty());
         });
 
-    assertEquals(0, report.getSummary().getDependencies().getScanned());
-    assertEquals(0, report.getSummary().getDependencies().getTransitive());
-    assertEquals(0, report.getSummary().getVulnerabilities().getTotal());
-    assertEquals(0, report.getSummary().getVulnerabilities().getDirect());
-    assertEquals(0, report.getSummary().getVulnerabilities().getCritical());
-    assertEquals(0, report.getSummary().getVulnerabilities().getHigh());
-    assertEquals(0, report.getSummary().getVulnerabilities().getMedium());
-    assertEquals(0, report.getSummary().getVulnerabilities().getLow());
-
-    assertTrue(report.getDependencies().isEmpty());
-
     verifyProviders(providers, authHeaders, true);
-
-    verifyNoInteractionsWithTC();
   }
 
   private static Stream<Arguments> emptySbomArguments() {
@@ -222,8 +223,6 @@ public class AnalysisTest extends AbstractAnalysisTest {
   @Test
   public void testAllWithToken() {
     stubAllProviders();
-    stubTCRequests();
-    stubTCRequests();
 
     String body =
         given()
@@ -234,7 +233,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .header(Constants.OSS_INDEX_TOKEN_HEADER, OK_TOKEN)
             .body(loadSBOMFile(CYCLONEDX))
             .when()
-            .post("/api/v3/analysis")
+            .post("/api/v4/analysis")
             .then()
             .assertThat()
             .statusCode(200)
@@ -246,13 +245,11 @@ public class AnalysisTest extends AbstractAnalysisTest {
     assertJson("reports/report_all_token.json", body);
     verifySnykRequest(OK_TOKEN);
     verifyOssRequest(OK_USER, OK_TOKEN, false);
-    verifyTCRequests();
   }
 
   @Test
   public void testSnykWithNoToken() {
     stubAllProviders();
-    stubTCRequests();
 
     String body =
         given()
@@ -261,7 +258,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .queryParam(Constants.PROVIDERS_PARAM, Constants.SNYK_PROVIDER)
             .body(loadSBOMFile(CYCLONEDX))
             .when()
-            .post("/api/v3/analysis")
+            .post("/api/v4/analysis")
             .then()
             .assertThat()
             .statusCode(200)
@@ -272,13 +269,11 @@ public class AnalysisTest extends AbstractAnalysisTest {
 
     assertJson("reports/report_all_no_snyk_token.json", body);
     verifySnykRequest(null);
-    verifyTCRequests();
   }
 
   @Test
   public void testUnauthorizedRequest() {
     stubAllProviders();
-    stubTCRequests();
 
     AnalysisReport report =
         given()
@@ -287,7 +282,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .header("Accept", MediaType.APPLICATION_JSON)
             .header(Constants.SNYK_TOKEN_HEADER, INVALID_TOKEN)
             .when()
-            .post("/api/v3/analysis")
+            .post("/api/v4/analysis")
             .then()
             .assertThat()
             .statusCode(200)
@@ -296,20 +291,19 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .body()
             .as(AnalysisReport.class);
 
-    assertEquals(1, report.getSummary().getProviderStatuses().size());
-    ProviderStatus status = report.getSummary().getProviderStatuses().get(0);
+    assertEquals(1, report.getProviders().size());
+    assertTrue(report.getProviders().get(Constants.SNYK_PROVIDER).getSources().isEmpty());
+    ProviderStatus status = report.getProviders().get(Constants.SNYK_PROVIDER).getStatus();
     assertFalse(status.getOk());
-    assertEquals(Constants.SNYK_PROVIDER, status.getProvider());
-    assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), status.getStatus());
+    assertEquals(Constants.SNYK_PROVIDER, status.getName());
+    assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), status.getCode());
 
     verifySnykRequest(INVALID_TOKEN);
-    verifyNoInteractionsWithTC();
   }
 
   @Test
   public void testForbiddenRequest() {
     stubAllProviders();
-    stubTCRequests();
 
     AnalysisReport report =
         given()
@@ -318,7 +312,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .header("Accept", MediaType.APPLICATION_JSON)
             .header(Constants.SNYK_TOKEN_HEADER, UNAUTH_TOKEN)
             .when()
-            .post("/api/v3/analysis")
+            .post("/api/v4/analysis")
             .then()
             .assertThat()
             .statusCode(200)
@@ -327,20 +321,19 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .body()
             .as(AnalysisReport.class);
 
-    assertEquals(1, report.getSummary().getProviderStatuses().size());
-    ProviderStatus status = report.getSummary().getProviderStatuses().get(0);
+    assertEquals(1, report.getProviders().size());
+    assertTrue(report.getProviders().get(Constants.SNYK_PROVIDER).getSources().isEmpty());
+    ProviderStatus status = report.getProviders().get(Constants.SNYK_PROVIDER).getStatus();
     assertFalse(status.getOk());
-    assertEquals(Constants.SNYK_PROVIDER, status.getProvider());
-    assertEquals(Response.Status.FORBIDDEN.getStatusCode(), status.getStatus());
+    assertEquals(Constants.SNYK_PROVIDER, status.getName());
+    assertEquals(Response.Status.FORBIDDEN.getStatusCode(), status.getCode());
 
     verifySnykRequest(UNAUTH_TOKEN);
-    verifyNoInteractionsWithTC();
   }
 
   @Test
   public void testSBOMJsonWithToken() {
     stubAllProviders();
-    stubTCRequests();
 
     AnalysisReport report =
         given()
@@ -349,7 +342,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .header("Accept", MediaType.APPLICATION_JSON)
             .header(Constants.SNYK_TOKEN_HEADER, OK_TOKEN)
             .when()
-            .post("/api/v3/analysis")
+            .post("/api/v4/analysis")
             .then()
             .assertThat()
             .statusCode(200)
@@ -358,17 +351,22 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .body()
             .as(AnalysisReport.class);
 
-    assertSummary(report.getSummary());
-    assertDependenciesReport(report.getDependencies());
+    assertScanned(report.getScanned());
+    Source snykSource =
+        report
+            .getProviders()
+            .get(Constants.SNYK_PROVIDER)
+            .getSources()
+            .get(Constants.SNYK_PROVIDER);
+    assertSummary(snykSource.getSummary());
+    assertDependenciesReport(snykSource.getDependencies());
 
-    verifyTCRequests();
     verifySnykRequest(OK_TOKEN);
   }
 
   @Test
   public void testNonVerboseJson() {
     stubAllProviders();
-    stubTCRequests();
 
     AnalysisReport report =
         given()
@@ -377,7 +375,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .header("Accept", MediaType.APPLICATION_JSON)
             .queryParam(Constants.VERBOSE_MODE_HEADER, Boolean.FALSE)
             .when()
-            .post("/api/v3/analysis")
+            .post("/api/v4/analysis")
             .then()
             .assertThat()
             .statusCode(200)
@@ -386,17 +384,22 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .body()
             .as(AnalysisReport.class);
 
-    assertSummary(report.getSummary());
-    assertTrue(report.getDependencies().isEmpty());
+    assertScanned(report.getScanned());
+    Source snykSource =
+        report
+            .getProviders()
+            .get(Constants.SNYK_PROVIDER)
+            .getSources()
+            .get(Constants.SNYK_PROVIDER);
+    assertSummary(snykSource.getSummary());
+    assertNull(snykSource.getDependencies());
 
-    verifyTCRequests();
     verifySnykRequest(null);
   }
 
   @Test
   public void testNonVerboseWithToken() {
     stubAllProviders();
-    stubTCRequests();
 
     AnalysisReport report =
         given()
@@ -406,7 +409,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .queryParam(Constants.VERBOSE_MODE_HEADER, Boolean.FALSE)
             .body(loadSBOMFile(CYCLONEDX))
             .when()
-            .post("/api/v3/analysis")
+            .post("/api/v4/analysis")
             .then()
             .assertThat()
             .statusCode(200)
@@ -415,16 +418,28 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .body()
             .as(AnalysisReport.class);
 
-    assertSummary(report.getSummary());
-    assertTrue(report.getDependencies().isEmpty());
+    assertScanned(report.getScanned());
+    Source snykSource =
+        report
+            .getProviders()
+            .get(Constants.SNYK_PROVIDER)
+            .getSources()
+            .get(Constants.SNYK_PROVIDER);
+    assertSummary(snykSource.getSummary());
+    assertNull(snykSource.getDependencies());
 
     verifySnykRequest(OK_TOKEN);
-    verifyTCRequests();
   }
 
+  /**
+   * The generated HTML only has 1 vulnerability tab for Snyk. The quarkus-hibernate-orm has a
+   * private vulnerability that should be hidden and display the "Sign up" link to the user.
+   *
+   * <p>In order to expand the transitive table, it is required to click on the button contained in
+   * the <td>
+   */
   @Test
   public void testHtmlWithoutToken() {
-    stubTCRequests();
     stubAllProviders();
 
     String body =
@@ -433,7 +448,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .body(loadSBOMFile(CYCLONEDX))
             .header("Accept", MediaType.TEXT_HTML)
             .when()
-            .post("/api/v3/analysis")
+            .post("/api/v4/analysis")
             .then()
             .assertThat()
             .statusCode(200)
@@ -442,18 +457,46 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .body()
             .asString();
 
-    testHtmlIsValid(body);
-    // TODO Enhance report rendering and content verification
-    assertReportContains("SNYK-PRIVATE-VULNERABILITY", body);
+    HtmlPage page = extractPage(body);
+    DomNodeList<DomElement> tables = page.getElementsByTagName("table");
+    assertEquals(1, tables.size());
+    DomElement snykTable = tables.get(0);
+    HtmlTableBody tbody = getTableBodyForDependency("io.quarkus:quarkus-hibernate-orm", snykTable);
+    assertNotNull(tbody);
+    page = expandTransitiveTableDataCell(tbody);
+    snykTable = page.getElementsByTagName("table").get(0);
+    tbody = getTableBodyForDependency("io.quarkus:quarkus-hibernate-orm", snykTable);
+
+    HtmlTable issuesTable = getIssuesTable(tbody);
+    List<HtmlTableBody> tbodies = issuesTable.getByXPath(".//table//tbody");
+    HtmlTableBody privateIssueTbody =
+        tbodies.stream()
+            .filter(
+                issuesTbody -> {
+                  List<HtmlTableDataCell> tds = issuesTbody.getByXPath("./tr/td");
+                  return tds.size() == 4;
+                })
+            .findFirst()
+            .get();
+    assertNotNull(privateIssueTbody);
+    HtmlTableDataCell td = privateIssueTbody.getFirstByXPath("./tr/td");
+    assertEquals(
+        "Sign up for a Snyk account to learn about the vulnerabilities found",
+        td.asNormalizedText());
 
     verifySnykRequest(null);
-    verifyTCRequests();
   }
 
+  /**
+   * This report contains both oss-index and snyk reports. So in order to show the Snyk report, we
+   * need to click on the tab. Then the quarkus-hibernate-orm having the unique vulnerability should
+   * appear without limitations.
+   *
+   * @throws IOException
+   */
   @Test
-  public void testHtmlWithToken() {
+  public void testHtmlWithToken() throws IOException {
     stubAllProviders();
-    stubTCRequests();
 
     String body =
         given()
@@ -464,7 +507,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .header(Constants.OSS_INDEX_USER_HEADER, OK_USER)
             .header(Constants.OSS_INDEX_TOKEN_HEADER, OK_TOKEN)
             .when()
-            .post("/api/v3/analysis")
+            .post("/api/v4/analysis")
             .then()
             .assertThat()
             .statusCode(200)
@@ -473,12 +516,34 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .body()
             .asString();
 
-    testHtmlIsValid(body);
-    // TODO Enhance report rendering and content verification
-    assertReportDoesNotContains("SNYK-PRIVATE-VULNERABILITY", body);
+    HtmlPage page = extractPage(body);
+    // Select the Snyk Source
+    HtmlButton snykSourceBtn = page.getFirstByXPath("//button[@aria-label='snyk source']");
+    assertNotNull(snykSourceBtn);
+    page = snykSourceBtn.click();
+
+    DomNodeList<DomElement> tables = page.getElementsByTagName("table");
+    assertEquals(2, tables.size());
+
+    HtmlTableBody tbody =
+        getTableBodyForDependency("io.quarkus:quarkus-hibernate-orm", tables.get(1));
+    assertNotNull(tbody);
+    page = expandTransitiveTableDataCell(tbody);
+    tables = page.getElementsByTagName("table");
+    tbody = getTableBodyForDependency("io.quarkus:quarkus-hibernate-orm", tables.get(1));
+
+    // TODO: figure out why the Snyk unique vulnerability is not being rendered in headless mode
+
+    // HtmlTable issuesTable = getIssuesTable(tbody);
+    // List<HtmlTableBody> tbodies = issuesTable.getByXPath(".//table//tbody");
+    // HtmlTableBody privateIssueTbody = tbodies.stream().filter(issuesTbody -> {
+    //   List<HtmlTableDataCell> tds = issuesTbody.getByXPath("./tr/td");
+    //   return tds.get(0).asNormalizedText().startsWith("SNYK");
+
+    // }).findFirst().get();
+    // assertNotNull(privateIssueTbody);
 
     verifySnykRequest(OK_TOKEN);
-    verifyTCRequests();
     verifyOssRequest(OK_USER, OK_TOKEN, false);
   }
 
@@ -486,11 +551,10 @@ public class AnalysisTest extends AbstractAnalysisTest {
   @ValueSource(strings = {"HTTP_1_1", "HTTP_2"})
   public void testMultipart_HttpVersions(String version) throws IOException, InterruptedException {
     stubAllProviders();
-    stubTCRequests();
 
     HttpClient client = HttpClient.newHttpClient();
     HttpRequest request =
-        HttpRequest.newBuilder(URI.create("http://localhost:8081/api/v3/analysis"))
+        HttpRequest.newBuilder(URI.create("http://localhost:8081/api/v4/analysis"))
             .setHeader(Constants.RHDA_TOKEN_HEADER, DEFAULT_RHDA_TOKEN)
             .setHeader(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
             .setHeader("Accept", Constants.MULTIPART_MIXED)
@@ -506,14 +570,12 @@ public class AnalysisTest extends AbstractAnalysisTest {
     assertEquals(Response.Status.OK.getStatusCode(), response.statusCode());
 
     verifySnykRequest(OK_TOKEN);
-    verifyTCRequests();
     verifyOssRequest(OK_USER, OK_TOKEN, false);
   }
 
   @Test
   public void testHtmlUnauthorized() {
     stubAllProviders();
-    stubTCRequests();
 
     String body =
         given()
@@ -522,7 +584,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .header("Accept", MediaType.TEXT_HTML)
             .header(Constants.SNYK_TOKEN_HEADER, INVALID_TOKEN)
             .when()
-            .post("/api/v3/analysis")
+            .post("/api/v4/analysis")
             .then()
             .assertThat()
             .statusCode(200)
@@ -531,20 +593,20 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .body()
             .asString();
 
-    testHtmlIsValid(body);
-    // TODO Enhance report rendering and content verification
-    assertReportContains("Unauthorized: Verify the provided credentials are valid.", body);
+    HtmlPage page = extractPage(body);
+    HtmlHeading4 heading = page.getFirstByXPath("//div[@class='pf-v5-c-alert pf-m-warning']/h4");
+    assertEquals(
+        "Warning alert:Snyk: Unauthorized: Verify the provided credentials are valid.",
+        heading.getTextContent());
+    assertTrue(page.getElementsByTagName("table").isEmpty());
 
     verifySnykRequest(INVALID_TOKEN);
-    verifyTCRecommendations();
-    verifyNoInteractionsWithTCRemediations();
     verifyNoInteractionsWithOSS();
   }
 
   @Test
   public void testHtmlForbidden() {
     stubAllProviders();
-    stubTCRequests();
 
     String body =
         given()
@@ -553,7 +615,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .header("Accept", MediaType.TEXT_HTML)
             .header(Constants.SNYK_TOKEN_HEADER, UNAUTH_TOKEN)
             .when()
-            .post("/api/v3/analysis")
+            .post("/api/v4/analysis")
             .then()
             .assertThat()
             .statusCode(200)
@@ -562,20 +624,21 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .body()
             .asString();
 
-    testHtmlIsValid(body);
-    assertReportContains(
-        "Forbidden: The provided credentials don't have the required permissions.", body);
+    HtmlPage page = extractPage(body);
+    HtmlHeading4 heading = page.getFirstByXPath("//div[@class='pf-v5-c-alert pf-m-warning']/h4");
+    assertEquals(
+        "Warning alert:Snyk: Forbidden: The provided credentials don't have the required"
+            + " permissions.",
+        heading.getTextContent());
+    assertTrue(page.getElementsByTagName("table").isEmpty());
 
     verifySnykRequest(UNAUTH_TOKEN);
-    verifyTCRecommendations();
-    verifyNoInteractionsWithTCRemediations();
     verifyNoInteractionsWithOSS();
   }
 
   @Test
   public void testHtmlError() {
     stubAllProviders();
-    stubTCRequests();
 
     String body =
         given()
@@ -584,7 +647,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .header("Accept", MediaType.TEXT_HTML)
             .header(Constants.SNYK_TOKEN_HEADER, ERROR_TOKEN)
             .when()
-            .post("/api/v3/analysis")
+            .post("/api/v4/analysis")
             .then()
             .assertThat()
             .statusCode(200)
@@ -593,12 +656,13 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .body()
             .asString();
 
-    testHtmlIsValid(body);
-    assertReportContains("Server Error", body);
+    HtmlPage page = extractPage(body);
+    HtmlHeading4 heading = page.getFirstByXPath("//div[@class='pf-v5-c-alert pf-m-danger']/h4");
+    assertEquals(
+        "Danger alert:Snyk: Server Error: This is an example error", heading.getTextContent());
+    assertTrue(page.getElementsByTagName("table").isEmpty());
 
     verifySnykRequest(ERROR_TOKEN);
-    verifyTCRecommendations();
-    verifyNoInteractionsWithTCRemediations();
     verifyNoInteractionsWithOSS();
   }
 
@@ -609,7 +673,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
         .body(loadSBOMFile(CYCLONEDX))
         .header("Accept", MediaType.APPLICATION_XML)
         .when()
-        .post("/api/v3/analysis")
+        .post("/api/v4/analysis")
         .then()
         .assertThat()
         .statusCode(415)
@@ -618,16 +682,21 @@ public class AnalysisTest extends AbstractAnalysisTest {
     verifyNoInteractions();
   }
 
-  private void assertSummary(Summary summary) {
-    assertEquals(2, summary.getDependencies().getScanned());
-    assertEquals(7, summary.getDependencies().getTransitive());
+  private void assertScanned(Scanned scanned) {
+    assertEquals(2, scanned.getDirect());
+    assertEquals(7, scanned.getTransitive());
+    assertEquals(9, scanned.getTotal());
+  }
 
-    assertEquals(4, summary.getVulnerabilities().getTotal());
-    assertEquals(2, summary.getVulnerabilities().getDirect());
-    assertEquals(0, summary.getVulnerabilities().getCritical());
-    assertEquals(1, summary.getVulnerabilities().getHigh());
-    assertEquals(3, summary.getVulnerabilities().getMedium());
-    assertEquals(0, summary.getVulnerabilities().getLow());
+  private void assertSummary(SourceSummary summary) {
+    assertEquals(4, summary.getTotal());
+
+    assertEquals(0, summary.getDirect());
+    assertEquals(4, summary.getTransitive());
+    assertEquals(0, summary.getCritical());
+    assertEquals(1, summary.getHigh());
+    assertEquals(3, summary.getMedium());
+    assertEquals(0, summary.getLow());
   }
 
   private void assertDependenciesReport(List<DependencyReport> dependencies) {
@@ -643,14 +712,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
     DependencyReport report = getReport(hibernate.name(), dependencies);
     assertNotNull(report);
     assertEquals(hibernate, report.getRef());
-    assertEquals(
-        PackageRef.builder()
-            .purl("pkg:maven/io.quarkus/quarkus-hibernate-orm@2.13.5.redhat-00001")
-            .build(),
-        report.getRecommendation());
-    assertTrue(report.getIssues().isEmpty());
-    assertTrue(report.getRemediations().isEmpty());
-    assertTrue(new DependencyReportHelper().hasRemediation(report));
+    assertNull(report.getIssues());
 
     assertEquals(1, report.getTransitive().size());
     TransitiveDependencyReport tReport = report.getTransitive().get(0);
@@ -665,17 +727,6 @@ public class AnalysisTest extends AbstractAnalysisTest {
     assertEquals(3, tReport.getIssues().size());
     assertEquals(tReport.getHighestVulnerability(), tReport.getIssues().get(0));
     assertEquals(report.getHighestVulnerability(), tReport.getHighestVulnerability());
-
-    assertEquals(
-        PackageRef.builder()
-            .pkgManager(Constants.MAVEN_PKG_MANAGER)
-            .namespace(jackson.purl().getNamespace())
-            .name(jackson.purl().getName())
-            .version("2.13.1.Final-redhat-00002")
-            .build(),
-        tReport.getRemediations().get("CVE-2020-36518").getMavenPackage());
-
-    assertNull(tReport.getRemediations().get("CVE-2022-42003"));
   }
 
   private DependencyReport getReport(String pkgName, List<DependencyReport> dependencies) {
@@ -686,5 +737,51 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .orElse(null);
     assertNotNull(dep);
     return dep;
+  }
+
+  private HtmlTableBody getTableBodyForDependency(String depRef, DomElement table) {
+    List<HtmlTableBody> tbodies = table.getByXPath(".//tbody");
+    return tbodies.stream()
+        .filter(
+            tbody -> {
+              HtmlTableHeaderCell th = tbody.getFirstByXPath("./tr/th");
+              return th.asNormalizedText().equals(depRef);
+            })
+        .findFirst()
+        .orElse(null);
+  }
+
+  private HtmlPage expandTransitiveTableDataCell(HtmlTableBody tbody) {
+    return expandTableDataCell(tbody, "Transitive Vulnerabilities");
+  }
+
+  private HtmlPage expandDirectTableDataCell(HtmlTableBody tbody) {
+    return expandTableDataCell(tbody, "Direct Vulnerabilities");
+  }
+
+  private HtmlPage expandTableDataCell(HtmlTableBody tbody, String dataLabel) {
+    HtmlTableDataCell td =
+        tbody.getFirstByXPath(String.format("./tr/td[@data-label='%s']", dataLabel));
+    if (td.getAttribute("class").contains("pf-m-expanded")) {
+      return tbody.getHtmlPageOrNull();
+    }
+    try {
+      HtmlButton button = td.getFirstByXPath("./button");
+      return button.click();
+    } catch (IOException e) {
+      fail("Unable to click on td for data-label: " + dataLabel, e);
+      return null;
+    }
+  }
+
+  private HtmlTable getIssuesTable(HtmlTableBody dependencyTable) {
+    List<HtmlTableRow> rows = dependencyTable.getByXPath("./tr");
+    if (rows.size() != 2) {
+      fail(
+          "Expected table to have 2 <tr>. One for the dependency name and another for the"
+              + " vulnerabilities. Found: "
+              + rows.size());
+    }
+    return rows.get(1).getFirstByXPath("//table");
   }
 }

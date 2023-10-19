@@ -18,14 +18,12 @@
 
 package com.redhat.exhort.integration.report;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import com.redhat.exhort.api.DependencyReport;
-import com.redhat.exhort.api.Issue;
-import com.redhat.exhort.api.PackageRef;
-import com.redhat.exhort.api.Remediation;
+import com.redhat.exhort.api.v4.DependencyReport;
+import com.redhat.exhort.api.v4.Issue;
+import com.redhat.exhort.api.v4.TransitiveDependencyReport;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -36,52 +34,16 @@ public final class DependencyReportHelper {
     return report.getTransitive().stream().mapToInt(t -> t.getIssues().size()).sum();
   }
 
-  public boolean hasRemediation(DependencyReport report) {
-    if (!report.getRemediations().isEmpty()) {
-      return true;
-    }
-    return report.getTransitive() != null
-        && report.getTransitive().stream().anyMatch(t -> !t.getRemediations().isEmpty());
+  public long directRemediationCount(DependencyReport report) {
+    return report.getIssues().stream().map(Issue::getRemediation).filter(Objects::nonNull).count();
   }
 
-  public int transitiveRemediationCount(DependencyReport report) {
-    return report.getTransitive().stream().mapToInt(t -> t.getRemediations().size()).sum();
-  }
-
-  public PackageRef findRemediationByIssue(DependencyReport report, Issue issue) {
-    if (issue.getCves() == null || issue.getCves().isEmpty()) {
-      return null;
-    }
-    List<Remediation> result = new ArrayList<>();
-    issue.getCves().stream()
-        .map(cve -> report.getRemediations().get(cve))
+  public long transitiveRemediationCount(DependencyReport report) {
+    return report.getTransitive().stream()
+        .map(TransitiveDependencyReport::getIssues)
+        .flatMap(List::stream)
+        .map(Issue::getRemediation)
         .filter(Objects::nonNull)
-        .forEach(result::add);
-
-    if (result.isEmpty()) {
-      return null;
-    }
-    // Assuming there's only one CVE by issue
-    return result.get(0).getMavenPackage();
-  }
-
-  public PackageRef findTransitiveRemediationByIssue(DependencyReport report, Issue issue) {
-    if (issue.getCves() == null || issue.getCves().isEmpty()) {
-      return null;
-    }
-    List<Remediation> result = new ArrayList<>();
-    issue.getCves().stream()
-        .forEach(
-            cve ->
-                report.getTransitive().stream()
-                    .map(t -> t.getRemediations().get(cve))
-                    .filter(Objects::nonNull)
-                    .forEach(result::add));
-
-    if (result.isEmpty()) {
-      return null;
-    }
-    // Assuming there's only one CVE by issue
-    return result.get(0).getMavenPackage();
+        .count();
   }
 }

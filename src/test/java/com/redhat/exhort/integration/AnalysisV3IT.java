@@ -16,9 +16,13 @@
  * limitations under the License.
  */
 
-package com.redhat.exhort.model.trustedcontent;
+package com.redhat.exhort.integration;
 
-import io.quarkus.runtime.annotations.RegisterForReflection;
+import io.quarkus.test.junit.QuarkusIntegrationTest;
 
-@RegisterForReflection
-public record MavenPackage(String artifactId, String groupId, String version) {}
+@QuarkusIntegrationTest
+public class AnalysisV3IT extends AnalysisV3Test {
+
+  // Run the same tests
+
+}

@@ -1,66 +1,88 @@
-import React from 'react';
-import {Caption, Table, TableVariant, Tbody, Td, Th, Thead, Tr} from '@patternfly/react-table';
+import {Table, TableVariant, Tbody, Td, Th, Thead, Tr} from '@patternfly/react-table';
 
-import {Dependency, Vulnerability} from '../api/report';
+import {Dependency, Vulnerability, hasRemediations} from '../api/report';
 
 import {ConditionalTableBody} from './TableControls/ConditionalTableBody';
-import {VulnerabilityScore} from './VulnerabilityScore';
-import {VulnerabilitySeverityLabel} from './VulnerabilitySeverityLabel';
-import {VulnerabilityLink} from './VulnerabilityLink';
+import {Card} from '@patternfly/react-core';
+import { usePrivateIssueHelper } from '../hooks/usePrivateDataHelper';
+import { VulnerabilitySeverityLabel } from './VulnerabilitySeverityLabel';
+import { VulnerabilityScore } from './VulnerabilityScore';
+import { DependencyLink } from './DependencyLink';
+import { RemediationLink } from './RemediationLink';
+import { VulnerabilityLink } from './VulnerabilityLink';
+import { SYNK_SIGNUP_URL } from '../utils/utils';
 
-interface VulnerabilitiesTableProps {
-  providerName: 'snyk' | 'oss-index';
-  dependency: Dependency;
-  vulnerabilities: Vulnerability[];
-}
-
-export const VulnerabilitiesTable: React.FC<VulnerabilitiesTableProps> = ({
-  providerName,
-  dependency,
-  vulnerabilities,
-}) => {
+export const VulnerabilitiesTable = ({ providerName, dependency, vulnerabilities }: { providerName: string; dependency: Dependency; vulnerabilities: Vulnerability[] }) => {
+  const privateIssueHelper = usePrivateIssueHelper();
   return (
-    <div
-      style={{
-        backgroundColor: 'var(--pf-v5-global--BackgroundColor--100)',
-      }}
-    >
+      <Card
+          style={{
+            backgroundColor: 'var(--pf-v5-global--BackgroundColor--100)',
+          }}
+      >
       <Table variant={TableVariant.compact}>
-        <Caption>Details of the dependency</Caption>
         <Thead>
           <Tr>
+            <Th width={20}>Vulnerability ID</Th>
+            <Th width={20}>Description</Th>
             <Th>Severity</Th>
-            <Th>Exploit Maturity</Th>
-            <Th width={25}>Description</Th>
-            <Th width={15}>CVSS</Th>
-            <Th>CVE</Th>
+            <Th width={20}>CVSS Score</Th>
+            <Th width={20}>Transitive Dependency</Th>
             <Th>Remediation</Th>
           </Tr>
         </Thead>
         <ConditionalTableBody isNoData={vulnerabilities.length === 0} numRenderedColumns={6}>
           {vulnerabilities?.map((vuln, rowIndex) => {
-
+            let ids = [];
+            if(vuln.cves) {
+              vuln.cves?.forEach(cve => ids.push(cve));
+            } else if(vuln.unique) {
+              ids.push(vuln.id);
+            }
             return (
               <Tbody key={rowIndex}>
-                <Tr>
-                  <Td>
-                    <VulnerabilitySeverityLabel vulnerability={vuln} />
-                  </Td>
-                  <Td>{vuln.cvss?.exploitCodeMaturity || 'No known exploit'}</Td>
-                  <Td>{vuln.title}</Td>
+                  {ids.map((cve, cveIndex) => (
+                  <Tr key={`${rowIndex}-${cveIndex}`}>
+                  {privateIssueHelper.hideIssue(providerName, vuln.unique) ? (
+                      <>
+                        <Td colSpan={3}>
+                          <a href={SYNK_SIGNUP_URL} target="_blank" rel="noreferrer">
+                            Sign up for a Snyk account
+                          </a>{' '}
+                          to learn about the vulnerabilities found
+                        </Td>
+                      </>
+                    ) : (
+                      <>
+                        <Td>
+                          <p>{cve}</p>
+                        </Td>
+                        <Td>{vuln.title}</Td>
+                        <Td noPadding>
+                          <VulnerabilitySeverityLabel vulnerability={vuln}/>
+                        </Td>
+                      </>
+                    )}
                   <Td>
                     <VulnerabilityScore vulnerability={vuln} />
                   </Td>
-                  <Td>{vuln.cves ? vuln.cves.map(i => <p>{i}</p>) : ''}</Td>
+                  <Td> <DependencyLink name={dependency.ref} /></Td>
                   <Td>
-                      <VulnerabilityLink providerName={providerName} vulnerability={vuln} />
+                      {vuln.remediation?.trustedContent && 
+                          <RemediationLink key={cveIndex} cves={vuln.cves || []} packageName={dependency.ref} />
+                      }
+                      {vuln.remediation?.fixedIn && 
+                          <VulnerabilityLink sourceName={providerName} vulnerability={vuln} />
+                      }
+                      {!hasRemediations(vuln) && "N/A"}
                   </Td>
                 </Tr>
+                  ))}
               </Tbody>
             );
           })}
         </ConditionalTableBody>
       </Table>
-    </div>
+    </Card>
   );
 };

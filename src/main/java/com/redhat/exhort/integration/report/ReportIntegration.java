@@ -20,7 +20,10 @@ package com.redhat.exhort.integration.report;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
+import org.apache.camel.component.jackson.JacksonDataFormat;
 
+import com.redhat.exhort.api.AnalysisReportV3Converter;
+import com.redhat.exhort.api.v4.AnalysisReport;
 import com.redhat.exhort.integration.Constants;
 
 import freemarker.template.Configuration;
@@ -34,6 +37,7 @@ public class ReportIntegration extends EndpointRouteBuilder {
 
   @Inject ReportTemplate reportTemplate;
   @Inject Configuration configuration;
+  @Inject JacksonDataFormat dataFormat;
 
   @PostConstruct
   void updateFreemarkerConfig() {
@@ -48,7 +52,6 @@ public class ReportIntegration extends EndpointRouteBuilder {
     // fmt:off
         from(direct("report"))
             .routeId("report")
-            .bean(ReportTransformer.class, "transform")
             .setProperty(Constants.REPORT_PROPERTY, body())
             .choice()
                 .when(exchangeProperty(Constants.REQUEST_CONTENT_PROPERTY).isEqualTo(MediaType.TEXT_HTML))
@@ -77,7 +80,16 @@ public class ReportIntegration extends EndpointRouteBuilder {
             .routeId("jsonReport")
             .setBody(exchangeProperty(Constants.REPORT_PROPERTY))
             .bean(ReportTransformer.class, "filterVerboseResult")
-            .marshal().json();
+            .process(this::convertToApiVersion)
+            .marshal(dataFormat);
         //fmt:on
+  }
+
+  private void convertToApiVersion(Exchange exchange) {
+    String apiVersion = exchange.getProperty(Constants.API_VERSION_PROPERTY, String.class);
+    AnalysisReport report = exchange.getIn().getBody(AnalysisReport.class);
+    if (Constants.API_VERSION_V3.equals(apiVersion)) {
+      exchange.getIn().setBody(AnalysisReportV3Converter.convert(report));
+    }
   }
 }

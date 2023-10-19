@@ -1,9 +1,9 @@
-import React, { useReducer } from 'react';
-import { Button, ButtonVariant, Icon, Modal, ModalVariant } from '@patternfly/react-core';
-import CheckCircleIcon from '@patternfly/react-icons/dist/esm/icons/check-circle-icon';
+import React, {useReducer} from 'react';
+import {Button, ButtonVariant, Icon, Modal, ModalVariant} from '@patternfly/react-core';
 
-import { extractDependencyVersion } from '../utils/utils';
-import { useAppContext } from '../App';
+import {extractDependencyVersion} from '../utils/utils';
+import {useAppContext} from '../App';
+import SecurityCheckIcon from '../images/security-check.svg';
 
 interface RemediationLinkProps {
   packageName: string;
@@ -17,10 +17,10 @@ export const RemediationLink: React.FC<RemediationLinkProps> = ({ packageName, c
 
   return (
     <>
-      <Button variant={ButtonVariant.link} onClick={toggleModal}>
+      <Button variant={ButtonVariant.link} onClick={toggleModal} style={{paddingLeft: "initial"}}>
         <Icon isInline status="success">
-          <CheckCircleIcon />
-        </Icon>{' '}
+            <img src={SecurityCheckIcon} alt="Security Check Icon" />
+        </Icon>&nbsp;
         {extractDependencyVersion(packageName)}
       </Button>
 

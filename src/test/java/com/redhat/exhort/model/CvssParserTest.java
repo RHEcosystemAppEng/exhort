@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import com.redhat.exhort.api.CvssVector;
+import com.redhat.exhort.api.v4.CvssVector;
 
 public class CvssParserTest {
 

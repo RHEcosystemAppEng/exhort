@@ -1,31 +1,35 @@
-import { Report } from '@app/api/report';
+import { AppData } from '@app/api/report';
 
-export const errorReport: Report = {
+export const errorReport: AppData = {
   packagePath: 'https://central.sonatype.com/artifact/',
   remediationPath: 'https://maven.repository.redhat.com/ga/',
   providerPrivateData: null ,
   vexPath: 'https://tc-storage-mvp.s3.amazonaws.com/vexes/',
   report: {
-      summary: {
-        dependencies: { scanned: null, transitive: null },
-        vulnerabilities: {
-          direct: null,
-          total: null,
-          critical: null,
-          high: null,
-          medium: null,
-          low: null,
-        },
-        providerStatuses:[{
-          ok: false,
-          provider: 'snyk',
-          status: 500,
-          message:'Server Error'
-
-        }]
-      },
-      dependencies: [],
+    "scanned": {
+      "total": 9,
+      "direct": 2,
+      "transitive": 7
     },
+    "providers": {
+      "oss-index": {
+        "status": {
+          "ok": false,
+          "name": "oss-index",
+          "code": 500,
+          "message": "Another serious error"
+        }
+      },
+      "snyk": {
+        "status": {
+          "ok": false,
+          "name": "snyk",
+          "code": 500,
+          "message": "Unexpected error"
+        }
+      }
+    }
+  },
   ossIndexIssueLinkFormatter: { issuePathRegex: 'http://ossindex.sonatype.org/vulnerability/%s' },
   snykIssueLinkFormatter: {
     issuePathRegex:

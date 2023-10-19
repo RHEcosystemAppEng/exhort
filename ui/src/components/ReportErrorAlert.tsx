@@ -5,11 +5,11 @@ import { useAppContext } from '../App';
 
 export const ReportErrorAlert: React.FC = () => {
   const appContext = useAppContext();
-  const errorReports = Object.entries(appContext.report.summary.providerStatuses)
-    .map(([_, val]) => {
-      return val;
+  const errorReports = Object.keys(appContext.report.providers)
+    .map(name => {
+      return appContext.report.providers[name].status;
     })
-    .filter((e) => !e.ok);
+    .filter(e => !e.ok);
 
   return (
     <>
@@ -17,9 +17,9 @@ export const ReportErrorAlert: React.FC = () => {
         <Alert
           key={index}
           variant={
-            e.status >= 500 ? AlertVariant.danger : e.status >= 400 ? AlertVariant.warning : undefined
+            e.code >= 500 ? AlertVariant.danger : e.code >= 400 ? AlertVariant.warning : undefined
           }
-          title={`${uppercaseFirstLetter(e.provider)}: ${e.message}`}
+          title={`${uppercaseFirstLetter(e.name)}: ${e.message}`}
         />
       ))}
     </>

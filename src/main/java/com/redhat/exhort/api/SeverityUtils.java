@@ -18,6 +18,8 @@
 
 package com.redhat.exhort.api;
 
+import com.redhat.exhort.api.v4.Severity;
+
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @RegisterForReflection

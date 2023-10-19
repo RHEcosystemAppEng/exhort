@@ -19,12 +19,21 @@
 		"name": "aniso8601",
 		"version": "8.1.0",
 		"purl": "pkg:pypi/aniso8601@8.1.0"
+	}, {
+		"type": "library",
+		"bom-ref": "ac3e331e-6848-11ee-8c99-0242ac120002",
+		"name": "werkzeug",
+		"version": "3.0.0",
+		"purl": "pkg:pypi/werkzeug@3.0.0"
 	}],
 	"dependencies": [{
 		"ref": "d574b448-4022-4dd8-9612-e6296d717e7f",
-		"dependsOn": []
+		"dependsOn": ["ac3e331e-6848-11ee-8c99-0242ac120002"]
 	}, {
 		"ref": "82565562-7694-473b-a0ff-631faf77d488",
+		"dependsOn": []
+	}, {
+		"ref": "ac3e331e-6848-11ee-8c99-0242ac120002",
 		"dependsOn": []
 	}]
 }

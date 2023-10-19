@@ -26,7 +26,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.redhat.exhort.extensions.WiremockV3Extension.SNYK_TOKEN;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -129,21 +128,20 @@ public abstract class AbstractAnalysisTest {
     assertFalse(currentBody.contains(expectedText));
   }
 
-  protected void testHtmlIsValid(String html) {
+  protected HtmlPage extractPage(String html) {
     try (WebClient webClient = new WebClient(BrowserVersion.BEST_SUPPORTED)) {
       HtmlPage page = webClient.loadHtmlCodeIntoCurrentWindow(html);
       webClient.waitForBackgroundJavaScript(50000);
-
       assertTrue(page.isHtmlPage(), "The string is valid HTML.");
       assertEquals("Dependency Analysis", page.getTitleText());
       assertNotNull(page.getElementsById("root"));
-      assertNotNull(page.getFirstByXPath("//div[@class='pf-v5-c-card']"));
-      assertNotNull(page.getFirstByXPath("//div[@class='pf-v5-c-card__header']"));
-      assertNotNull(page.getFirstByXPath("//section[@class='pf-v5-c-page__main-section']"));
-      assertNotNull(page.getElementsByTagName("table"));
-
-    } catch (Exception e) {
+      assertNotNull(
+          page.getFirstByXPath(
+              "//section[contains(@class, 'pf-v5-c-page__main-section pf-m-light')]"));
+      return page;
+    } catch (IOException e) {
       fail("The string is not valid HTML.", e);
+      return null;
     }
   }
 
@@ -271,7 +269,7 @@ public abstract class AbstractAnalysisTest {
     server.stubFor(
         get(Constants.SNYK_TOKEN_API_PATH)
             .withHeader("Authorization", equalTo("token " + ERROR_TOKEN))
-            .willReturn(aResponse().withStatus(500)));
+            .willReturn(aResponse().withStatus(500).withBody("This is an example error")));
     // Invalid token
     server.stubFor(
         get(Constants.SNYK_TOKEN_API_PATH)
@@ -324,7 +322,7 @@ public abstract class AbstractAnalysisTest {
     server.stubFor(
         post(Constants.SNYK_DEP_GRAPH_API_PATH)
             .withHeader("Authorization", equalTo("token " + ERROR_TOKEN))
-            .willReturn(aResponse().withStatus(500)));
+            .willReturn(aResponse().withStatus(500).withBody("This is an example error")));
     // Invalid token
     server.stubFor(
         post(Constants.SNYK_DEP_GRAPH_API_PATH)
@@ -418,7 +416,7 @@ public abstract class AbstractAnalysisTest {
         post(Constants.OSS_INDEX_AUTH_COMPONENT_API_PATH)
             .withBasicAuth(OK_USER, ERROR_TOKEN)
             .withHeader(Exchange.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON))
-            .willReturn(aResponse().withStatus(500)));
+            .willReturn(aResponse().withStatus(500).withBody("This is an example error")));
   }
 
   protected void verifyOssRequest(String user, String pass, boolean isEmpty) {
@@ -432,68 +430,9 @@ public abstract class AbstractAnalysisTest {
     }
   }
 
-  protected void stubTCRequests() {
-    server.stubFor(
-        post(urlMatching(Constants.TRUSTED_CONTENT_PATH + ".*"))
-            .withHeader(Exchange.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON))
-            .willReturn(
-                aResponse()
-                    .withStatus(200)
-                    .withHeader(Exchange.CONTENT_ENCODING, "identity")
-                    .withHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                    .withBodyFile("trustedcontent/gav_report.json")));
-    server.stubFor(
-        post(urlMatching(Constants.TRUSTED_CONTENT_VEX_PATH))
-            .withHeader(Exchange.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON))
-            .withRequestBody(
-                equalToJson(loadFileAsString("__files/trustedcontent/oss_vulns_vex_request.json")))
-            .willReturn(
-                aResponse()
-                    .withStatus(200)
-                    .withHeader(Exchange.CONTENT_ENCODING, "identity")
-                    .withHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                    .withBodyFile("trustedcontent/short_vex_report.json")));
-    server.stubFor(
-        post(urlMatching(Constants.TRUSTED_CONTENT_VEX_PATH))
-            .withHeader(Exchange.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON))
-            .withRequestBody(
-                equalToJson(loadFileAsString("__files/trustedcontent/snyk_vulns_vex_request.json")))
-            .willReturn(
-                aResponse()
-                    .withStatus(200)
-                    .withHeader(Exchange.CONTENT_ENCODING, "identity")
-                    .withHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                    .withBodyFile("trustedcontent/short_vex_report.json")));
-    server.stubFor(
-        post(urlMatching(Constants.TRUSTED_CONTENT_VEX_PATH))
-            .withHeader(Exchange.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON))
-            .withRequestBody(
-                equalToJson(loadFileAsString("__files/trustedcontent/long_vex_request.json")))
-            .willReturn(
-                aResponse()
-                    .withStatus(200)
-                    .withHeader(Exchange.CONTENT_ENCODING, "identity")
-                    .withHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                    .withBodyFile("trustedcontent/long_vex_report.json")));
-  }
-
-  protected void verifyTCRequests() {
-    verifyTCRemediations();
-    verifyTCRecommendations();
-  }
-
-  protected void verifyTCRecommendations() {
-    server.verify(1, postRequestedFor(urlMatching(Constants.TRUSTED_CONTENT_PATH + ".*")));
-  }
-
-  protected void verifyTCRemediations() {
-    server.verify(1, postRequestedFor(urlMatching(Constants.TRUSTED_CONTENT_VEX_PATH)));
-  }
-
   protected void verifyNoInteractions() {
     verifyNoInteractionsWithSnyk();
     verifyNoInteractionsWithOSS();
-    verifyNoInteractionsWithTC();
   }
 
   protected void verifyNoInteractionsWithSnyk() {
@@ -503,18 +442,5 @@ public abstract class AbstractAnalysisTest {
 
   protected void verifyNoInteractionsWithOSS() {
     server.verify(0, postRequestedFor(urlEqualTo(Constants.OSS_INDEX_AUTH_COMPONENT_API_PATH)));
-  }
-
-  protected void verifyNoInteractionsWithTC() {
-    verifyNoInteractionsWithTCRecommendations();
-    verifyNoInteractionsWithTCRemediations();
-  }
-
-  protected void verifyNoInteractionsWithTCRemediations() {
-    server.verify(0, postRequestedFor(urlMatching(Constants.TRUSTED_CONTENT_VEX_PATH)));
-  }
-
-  protected void verifyNoInteractionsWithTCRecommendations() {
-    server.verify(0, postRequestedFor(urlMatching(Constants.TRUSTED_CONTENT_PATH + ".*")));
   }
 }

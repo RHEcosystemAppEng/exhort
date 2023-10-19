@@ -16,51 +16,64 @@
  * limitations under the License.
  */
 
-package com.redhat.exhort.integration.ossindex;
+package com.redhat.exhort.integration.providers.ossindex;
+
+import static com.redhat.exhort.integration.Constants.OSS_INDEX_PROVIDER;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.redhat.exhort.api.Issue;
 import com.redhat.exhort.api.PackageRef;
 import com.redhat.exhort.api.SeverityUtils;
+import com.redhat.exhort.api.v4.Issue;
 import com.redhat.exhort.config.ObjectMapperProducer;
-import com.redhat.exhort.integration.Constants;
+import com.redhat.exhort.integration.providers.ProviderResponseHandler;
 import com.redhat.exhort.model.CvssParser;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @RegisterForReflection
-public class OssIndexRequestBuilder {
+public class OssIndexResponseHandler extends ProviderResponseHandler {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(OssIndexRequestBuilder.class);
 
-  private ObjectMapper mapper = ObjectMapperProducer.newInstance();
+  private final ObjectMapper mapper = ObjectMapperProducer.newInstance();
 
-  public String buildRequest(List<PackageRef> packages) throws JsonProcessingException {
-    ArrayNode coordinates = mapper.createArrayNode();
-    packages.stream()
-        .map(PackageRef::purl)
-        .filter(Objects::nonNull)
-        .forEach(purl -> coordinates.add(purl.getCoordinates()));
-
-    ObjectNode root = mapper.createObjectNode().set("coordinates", coordinates);
-    return mapper.writeValueAsString(root);
+  public Map<String, List<Issue>> aggregateSplit(
+      Map<String, List<Issue>> oldExchange, Map<String, List<Issue>> newExchange)
+      throws IOException {
+    if (oldExchange == null) {
+      return newExchange;
+    }
+    oldExchange
+        .entrySet()
+        .forEach(
+            e -> {
+              List<Issue> issues = newExchange.get(e.getKey());
+              if (issues != null) {
+                e.getValue().addAll(issues);
+              }
+            });
+    newExchange.keySet().stream()
+        .filter(k -> !oldExchange.keySet().contains(k))
+        .forEach(
+            k -> {
+              oldExchange.put(k, newExchange.get(k));
+            });
+    return oldExchange;
   }
 
-  public Map<String, List<Issue>> responseToIssues(byte[] response) throws IOException {
+  public Map<String, List<Issue>> responseToIssues(byte[] response, String privateProviders)
+      throws IOException {
     ArrayNode json = (ArrayNode) mapper.readTree(response);
     return getIssues(json);
   }
@@ -95,6 +108,11 @@ public class OssIndexRequestBuilder {
         .cvss(CvssParser.fromVectorString(data.get("cvssVector").asText()))
         .cvssScore(score)
         .severity(SeverityUtils.fromScore(score))
-        .source(Constants.OSS_INDEX_PROVIDER);
+        .source(OSS_INDEX_PROVIDER);
+  }
+
+  @Override
+  protected String getProviderName() {
+    return OSS_INDEX_PROVIDER;
   }
 }

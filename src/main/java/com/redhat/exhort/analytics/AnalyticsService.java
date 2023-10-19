@@ -21,9 +21,7 @@ package com.redhat.exhort.analytics;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
@@ -37,8 +35,7 @@ import com.redhat.exhort.analytics.segment.IdentifyEvent;
 import com.redhat.exhort.analytics.segment.Library;
 import com.redhat.exhort.analytics.segment.SegmentService;
 import com.redhat.exhort.analytics.segment.TrackEvent;
-import com.redhat.exhort.api.AnalysisReport;
-import com.redhat.exhort.api.DependencyReport;
+import com.redhat.exhort.api.v4.AnalysisReport;
 import com.redhat.exhort.integration.Constants;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
@@ -125,19 +122,28 @@ public class AnalyticsService {
     Map<String, Object> properties = new HashMap<>();
     if (report != null) {
       Map<String, Object> providers = new HashMap<>();
-      Map<String, Object> reportProps = new HashMap<>();
+      report
+          .getProviders()
+          .entrySet()
+          .forEach(
+              pe -> {
+                Map<String, Object> summaries = new HashMap<>();
+                pe.getValue()
+                    .getSources()
+                    .entrySet()
+                    .forEach(
+                        se -> {
+                          summaries.put(se.getKey(), se.getValue().getSummary());
+                        });
+                Map<String, Object> providerReport = new HashMap<>();
+                providerReport.put("sources", summaries);
+                providers.put(pe.getKey(), providerReport);
+              });
+      properties.put("providers", providers);
       properties.put(
           "requestType", exchange.getProperty(Constants.REQUEST_CONTENT_PROPERTY, String.class));
       properties.put("sbom", exchange.getProperty(Constants.SBOM_TYPE_PARAM, String.class));
-      // TODO: Adapt after multi-source is implemented
-      Map<String, Object> snykReport = new HashMap<>();
-      reportProps.put("dependencies", report.getSummary().getDependencies());
-      reportProps.put("vulnerabilities", report.getSummary().getVulnerabilities());
-      snykReport.put("report", reportProps);
-      snykReport.put("recommendations", countRecommendations(report));
-      snykReport.put("remediations", countRemediations(report));
-      providers.put(Constants.SNYK_PROVIDER, snykReport);
-      properties.put("providers", providers);
+      properties.put("scanned", report.getScanned());
       String operationType = exchange.getIn().getHeader(RHDA_OPERATION_TYPE_HEADER, String.class);
       if (operationType != null) {
         properties.put("operationType", operationType);
@@ -203,34 +209,5 @@ public class AnalyticsService {
       builder.anonymousId(anonymousId);
     }
     return builder;
-  }
-
-  private long countRemediations(AnalysisReport report) {
-    AtomicLong counter = new AtomicLong();
-    report
-        .getDependencies()
-        .forEach(
-            d -> {
-              if (d.getRemediations() != null) {
-                counter.addAndGet(d.getRemediations().size());
-              }
-              if (d.getTransitive() != null) {
-                d.getTransitive()
-                    .forEach(
-                        t -> {
-                          if (t.getRemediations() != null) {
-                            counter.addAndGet(t.getRemediations().size());
-                          }
-                        });
-              }
-            });
-    return counter.get();
-  }
-
-  private long countRecommendations(AnalysisReport report) {
-    return report.getDependencies().stream()
-        .map(DependencyReport::getRecommendation)
-        .filter(Objects::nonNull)
-        .count();
   }
 }
