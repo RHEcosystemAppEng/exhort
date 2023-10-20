@@ -97,6 +97,19 @@ objects:
                     secretKeyRef:
                       name: exhort-secret
                       key: telemetry-write-key
+                - name: MONITORING_ENABLED
+                  value: "true"
+                - name: MONITORING_SENTRY_DSN
+                  valueFrom:
+                    secretKeyRef:
+                      name: exhort-secret
+                      key: sentry-dsn
+                - name: MONITORING_SENTRY_SERVERNAME
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.name
+                - name: MONITORING_SENTRY_ENVIRONMENT
+                  value: '${ENV_NAME}'
                 - name: QUARKUS_HTTP_PORT
                   value: '8080'
                 - name: QUARKUS_MANAGEMENT_PORT
