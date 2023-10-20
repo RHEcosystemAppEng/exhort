@@ -24,7 +24,6 @@ import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import com.redhat.exhort.integration.Constants;
-import com.redhat.exhort.integration.backend.BackendUtils;
 import com.redhat.exhort.integration.providers.VulnerabilityProvider;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -43,6 +42,8 @@ public class SnykIntegration extends EndpointRouteBuilder {
 
   @Inject VulnerabilityProvider vulnerabilityProvider;
 
+  @Inject SnykResponseHandler responseHandler;
+
   @Override
   public void configure() {
 
@@ -51,13 +52,14 @@ public class SnykIntegration extends EndpointRouteBuilder {
         .routeId("snykDepGraph")
         .process(this::setAuthToken)
           .circuitBreaker()
+          // .inheritErrorHandler(true)
           .faultToleranceConfiguration()
             .timeoutEnabled(true)
             .timeoutDuration(timeout)
           .end()
         .to(direct("snykRequest"))
         .onFallback()
-          .process(e -> BackendUtils.processResponseError(e, Constants.SNYK_PROVIDER));
+          .process(responseHandler::processResponseError);
 
     from(direct("snykRequest"))
         .routeId("snykRequest")
@@ -78,7 +80,7 @@ public class SnykIntegration extends EndpointRouteBuilder {
           .to(vertxHttp("{{api.snyk.host}}"))
           .setBody(constant("Token validated successfully"))
         .onFallback()
-          .process(e -> BackendUtils.processTokenFallBack(e, Constants.SNYK_PROVIDER));
+          .process(responseHandler::processTokenFallBack);
     // fmt:on
   }
 

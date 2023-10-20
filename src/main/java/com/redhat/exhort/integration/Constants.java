@@ -36,11 +36,15 @@ public final class Constants {
 
   public static final String ACCEPT_HEADER = "Accept";
   public static final String ACCEPT_ENCODING_HEADER = "Accept-Encoding";
-  public static final String RHDA_TOKEN_HEADER = "rhda-token";
   public static final String SNYK_TOKEN_HEADER = "ex-snyk-token";
   public static final String OSS_INDEX_USER_HEADER = "ex-oss-index-user";
   public static final String OSS_INDEX_TOKEN_HEADER = "ex-oss-index-token";
   public static final String VERBOSE_MODE_HEADER = "verbose";
+
+  public static final String RHDA_TOKEN_HEADER = "rhda-token";
+  public static final String RHDA_SOURCE_HEADER = "rhda-source";
+  public static final String RHDA_OPERATION_TYPE_HEADER = "rhda-operation-type";
+  public static final String USER_AGENT_HEADER = "User-Agent";
 
   public static final MediaType MULTIPART_MIXED_TYPE = new MediaType("multipart", "mixed");
   public static final String MULTIPART_MIXED = MULTIPART_MIXED_TYPE.toString();

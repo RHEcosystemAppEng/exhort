@@ -41,13 +41,17 @@ import com.redhat.exhort.model.CvssParser;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+
+@ApplicationScoped
 @RegisterForReflection
 public class SnykResponseHandler extends ProviderResponseHandler {
 
   private static final String SNYK_PRIVATE_VULNERABILITY_ID = "SNYK-PRIVATE-VULNERABILITY";
   private static final String SNYK_PRIVATE_VULNERABILITY_TITLE =
       "Sign up for a Snyk account to learn aboutn the vulnerabilities found";
-  private final ObjectMapper mapper = ObjectMapperProducer.newInstance();
+  @Inject ObjectMapper mapper = ObjectMapperProducer.newInstance();
 
   public Map<String, List<Issue>> responseToIssues(
       @Body byte[] providerResponse,

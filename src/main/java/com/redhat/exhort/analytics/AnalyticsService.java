@@ -18,6 +18,11 @@
 
 package com.redhat.exhort.analytics;
 
+import static com.redhat.exhort.integration.Constants.RHDA_OPERATION_TYPE_HEADER;
+import static com.redhat.exhort.integration.Constants.RHDA_SOURCE_HEADER;
+import static com.redhat.exhort.integration.Constants.RHDA_TOKEN_HEADER;
+import static com.redhat.exhort.integration.Constants.USER_AGENT_HEADER;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,11 +53,6 @@ import jakarta.ws.rs.core.Response;
 public class AnalyticsService {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(AnalyticsService.class);
-
-  private static final String RHDA_TOKEN_HEADER = "rhda-token";
-  private static final String RHDA_SOURCE_HEADER = "rhda-source";
-  private static final String RHDA_OPERATION_TYPE_HEADER = "rhda-operation-type";
-  private static final String USER_AGENT_HEADER = "User-Agent";
 
   private static final String ANONYMOUS_ID = "telemetry-anonymous-id";
   private static final String ANALYSIS_EVENT = "rhda.exhort.analysis";

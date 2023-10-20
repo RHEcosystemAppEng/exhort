@@ -31,7 +31,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.apache.camel.Body;
+import org.apache.camel.Exchange;
 import org.apache.camel.ExchangeProperty;
+import org.apache.camel.http.base.HttpOperationFailedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.redhat.exhort.api.PackageRef;
 import com.redhat.exhort.api.v4.DependencyReport;
@@ -45,13 +49,21 @@ import com.redhat.exhort.integration.Constants;
 import com.redhat.exhort.model.CvssScoreComparable.DependencyScoreComparator;
 import com.redhat.exhort.model.CvssScoreComparable.TransitiveScoreComparator;
 import com.redhat.exhort.model.DependencyTree;
+import com.redhat.exhort.monitoring.MonitoringProcessor;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 
 @RegisterForReflection
+@ApplicationScoped
 public abstract class ProviderResponseHandler {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(ProviderResponseHandler.class);
+
+  @Inject MonitoringProcessor monitoringProcessor;
 
   protected abstract String getProviderName();
 
@@ -70,6 +82,73 @@ public abstract class ProviderResponseHandler {
             issues.stream()
                 .sorted(Comparator.comparing(Issue::getCvssScore).reversed())
                 .collect(Collectors.toList()));
+  }
+
+  public void processResponseError(Exchange exchange) {
+    ProviderStatus status = new ProviderStatus().ok(false).name(getProviderName());
+    Exception exception = (Exception) exchange.getProperty(Exchange.EXCEPTION_CAUGHT);
+    Throwable cause = exception.getCause();
+    monitoringProcessor.processProviderError(exchange, getProviderName());
+    if (cause != null) {
+      if (cause instanceof HttpOperationFailedException) {
+        HttpOperationFailedException httpException = (HttpOperationFailedException) cause;
+        String message = prettifyHttpError(httpException);
+        status.message(message).code(httpException.getStatusCode());
+        LOGGER.warn("Unable to process request: {}", message, cause);
+      } else {
+        status
+            .message(cause.getMessage())
+            .code(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
+        LOGGER.warn("Unable to process request to: {}", getProviderName(), cause);
+      }
+    } else {
+      status
+          .message(exception.getMessage())
+          .code(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
+      LOGGER.warn("Unable to process request to: {}", getProviderName(), exception);
+    }
+    ProviderReport report = new ProviderReport().status(status).sources(Collections.emptyMap());
+    exchange.getMessage().setBody(report);
+  }
+
+  public void processTokenFallBack(Exchange exchange) {
+    Exception exception = (Exception) exchange.getProperty(Exchange.EXCEPTION_CAUGHT);
+    Throwable cause = exception.getCause();
+    String body;
+    int code = Response.Status.INTERNAL_SERVER_ERROR.getStatusCode();
+
+    if (cause instanceof HttpOperationFailedException) {
+      HttpOperationFailedException httpException = (HttpOperationFailedException) cause;
+      code = httpException.getStatusCode();
+      if (code == Response.Status.UNAUTHORIZED.getStatusCode()) {
+        body = "Invalid token provided. Unauthorized";
+      } else {
+        body =
+            "Unable to validate " + getProviderName() + " Token: " + httpException.getStatusText();
+      }
+    } else {
+      body = "Unable to validate " + getProviderName() + " Token: " + cause.getMessage();
+    }
+    exchange.getMessage().setHeader(Exchange.HTTP_RESPONSE_CODE, code);
+    exchange.getMessage().setBody(body);
+  }
+
+  private static String prettifyHttpError(HttpOperationFailedException httpException) {
+    String text = httpException.getStatusText();
+    String defaultReason =
+        httpException.getResponseBody() != null
+            ? httpException.getResponseBody()
+            : httpException.getMessage();
+    switch (httpException.getStatusCode()) {
+      case 401:
+        return text + ": Verify the provided credentials are valid.";
+      case 403:
+        return text + ": The provided credentials don't have the required permissions.";
+      case 429:
+        return text + ": The rate limit has been exceeded.";
+      default:
+        return text + ": " + defaultReason;
+    }
   }
 
   public abstract Map<String, List<Issue>> responseToIssues(

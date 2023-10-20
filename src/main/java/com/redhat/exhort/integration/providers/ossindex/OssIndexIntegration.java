@@ -30,7 +30,6 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import com.redhat.exhort.integration.Constants;
 import com.redhat.exhort.integration.VulnerabilityProvider;
-import com.redhat.exhort.integration.backend.BackendUtils;
 import com.redhat.exhort.model.DependencyTree;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -47,6 +46,8 @@ public class OssIndexIntegration extends EndpointRouteBuilder {
 
   @Inject VulnerabilityProvider vulnerabilityProvider;
 
+  @Inject OssIndexResponseHandler responseHandler;
+
   @Override
   public void configure() {
     // fmt:off
@@ -59,7 +60,7 @@ public class OssIndexIntegration extends EndpointRouteBuilder {
           .end()
           .to(direct("ossSplitReq"))
         .onFallback()
-          .process(e -> BackendUtils.processResponseError(e, Constants.OSS_INDEX_PROVIDER));
+          .process(responseHandler::processResponseError);
 
     from(direct("ossSplitReq"))
         .routeId("ossSplitReq")
@@ -89,7 +90,7 @@ public class OssIndexIntegration extends EndpointRouteBuilder {
         .to(vertxHttp("{{api.ossindex.host}}"))
         .setBody(constant("Token validated successfully"))
       .onFallback()
-        .process(e -> BackendUtils.processTokenFallBack(e, Constants.OSS_INDEX_PROVIDER));
+        .process(responseHandler::processTokenFallBack);
     // fmt:on
   }
 
