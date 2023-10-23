@@ -1,18 +1,16 @@
-import {Table, TableVariant, Tbody, Th, Thead, Tr} from '@patternfly/react-table';
+import {Table, TableVariant, Tbody, Td, Th, Thead, Tr} from '@patternfly/react-table';
 import {Dependency, Vulnerability} from '../api/report';
 import {ConditionalTableBody} from './TableControls/ConditionalTableBody';
 import {Card} from '@patternfly/react-core';
-import {usePrivateIssueHelper} from '../hooks/usePrivateDataHelper';
 import {VulnerabilityRow} from "./VulnerabilityRow";
 
 export const VulnerabilitiesTable = ({ providerName, dependency, vulnerabilities }: { providerName: string; dependency: Dependency; vulnerabilities: Vulnerability[] }) => {
-  const privateIssueHelper = usePrivateIssueHelper();
   return (
-      <Card
-          style={{
-            backgroundColor: 'var(--pf-v5-global--BackgroundColor--100)',
-          }}
-      >
+    <Card
+      style={{
+        backgroundColor: 'var(--pf-v5-global--BackgroundColor--100)',
+      }}
+    >
       <Table variant={TableVariant.compact}>
         <Thead>
           <Tr>
@@ -34,18 +32,17 @@ export const VulnerabilitiesTable = ({ providerName, dependency, vulnerabilities
             }
             return (
               <Tbody key={rowIndex}>
-                  {ids.map((cve, cveIndex) => (
-                    <VulnerabilityRow
-                      key={`${rowIndex}-${cveIndex}`}
-                      item={{
-                        id: vuln.id,
-                        dependencyRef: dependency.ref,
-                        vulnerability: vuln,
-                      }}
-                      providerName={providerName}
-                      rowIndex={rowIndex}
-                    />
-                  ))}
+                {ids.map((cve, cveIndex) => (
+                  <VulnerabilityRow key={`${rowIndex}-${cveIndex}`}
+                    item={{
+                      id: vuln.id,
+                      dependencyRef: dependency.ref,
+                      vulnerability: vuln,
+                    }}
+                    providerName={providerName}
+                    rowIndex={rowIndex}
+                  />
+                ))}
               </Tbody>
             );
           })}

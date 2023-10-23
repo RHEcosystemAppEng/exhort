@@ -16,7 +16,7 @@ export const ChartCard = ({ summary }: { summary: Summary}) => {
   return (
     <div>
       {/* CardHeader */}
-      <CardHeader>
+      <CardHeader style={{paddingBlock: "5px"}}>
         <CardTitle>{`${summary.total} vulnerabilities in ${summary.dependencies} dependencies`}</CardTitle>
       </CardHeader>
       <Divider />

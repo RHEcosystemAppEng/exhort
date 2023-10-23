@@ -252,7 +252,6 @@ export const DepCompoundTable = ({ name, dependencies }: { name: string; depende
                                     // Content for transitive column
                                     <TransitiveDependenciesTable
                                         providerName={name}
-                                        dependency={item}
                                         transitiveDependencies={item.transitive}
                                     />
                                 ) : null}

@@ -2,15 +2,12 @@ import {Table, TableVariant, Tbody, Th, Thead, Tr} from '@patternfly/react-table
 import {buildVulnerabilityItems, Dependency, TransitiveDependency} from '../api/report';
 import {ConditionalTableBody} from './TableControls/ConditionalTableBody';
 import {Card,} from '@patternfly/react-core';
-import {usePrivateIssueHelper} from '../hooks/usePrivateDataHelper';
 import {VulnerabilityRow} from "./VulnerabilityRow";
 
 export const TransitiveDependenciesTable = ({
                                               providerName,
-                                              dependency,
                                               transitiveDependencies
-                                            }: { providerName: string; dependency: Dependency; transitiveDependencies: TransitiveDependency[] }) => {
-  const privateIssueHelper = usePrivateIssueHelper();
+                                            }: { providerName: string; transitiveDependencies: TransitiveDependency[] }) => {
   return (
     <Card
       style={{
