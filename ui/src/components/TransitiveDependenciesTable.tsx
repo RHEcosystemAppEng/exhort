@@ -1,5 +1,5 @@
 import {Table, TableVariant, Tbody, Th, Thead, Tr} from '@patternfly/react-table';
-import {buildVulnerabilityItems, Dependency, TransitiveDependency} from '../api/report';
+import {buildVulnerabilityItems, TransitiveDependency} from '../api/report';
 import {ConditionalTableBody} from './TableControls/ConditionalTableBody';
 import {Card,} from '@patternfly/react-core';
 import {VulnerabilityRow} from "./VulnerabilityRow";

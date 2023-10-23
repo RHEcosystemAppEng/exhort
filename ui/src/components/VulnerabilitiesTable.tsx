@@ -1,4 +1,4 @@
-import {Table, TableVariant, Tbody, Td, Th, Thead, Tr} from '@patternfly/react-table';
+import {Table, TableVariant, Tbody, Th, Thead, Tr} from '@patternfly/react-table';
 import {Dependency, Vulnerability} from '../api/report';
 import {ConditionalTableBody} from './TableControls/ConditionalTableBody';
 import {Card} from '@patternfly/react-core';
