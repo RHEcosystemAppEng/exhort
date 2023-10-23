@@ -55,6 +55,7 @@ public class CustomMetrics {
           return DistributionStatisticConfig.builder()
               .percentiles(0.90, 0.95, 0.99)
               .percentilesHistogram(Boolean.TRUE)
+              .serviceLevelObjectives()
               .build()
               .merge(config);
         }

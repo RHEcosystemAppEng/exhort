@@ -220,6 +220,34 @@ The connection can be configured with the following properties.
 - `telemetry.write-key`: Authentication key to connect to Segment
 - `quarkus.rest-client.segment-api.url`: Segment API endpoint
 
+## Monitoring
+
+We are using Sentry (GlitchTip) to report errors for troubleshooting. By default monitoring
+is disabled but you can enabled it with:
+
+```
+monitoring.enabled=true
+```
+
+To configure Sentry use the following properties:
+
+```
+# Get the DSN Url in your project settings
+monitoring.sentry.dsn=<your_dsn_url>
+# Server Name to use as a tag
+monitoring.sentry.servername=localhost
+# Environment to use as a tag. Defaults to production
+monitoring.sentry.environment=production
+```
+
+Three different error types can be reported:
+
+- Client Exceptions: Bad requests from clients
+- Server Errors: Unexpected errors
+- Provider Errors: Errors coming from the providers responses
+
+In all cases, the original request and headers are logged for the SRE Team to review.
+
 ## Deploy on OpenShift
 
 The required parameters can be injected as environment variables through a secret. Create the `exhort-secret` Secret before deploying the application.

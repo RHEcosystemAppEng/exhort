@@ -24,8 +24,8 @@ import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import com.redhat.exhort.integration.Constants;
-import com.redhat.exhort.integration.backend.BackendUtils;
 import com.redhat.exhort.integration.providers.VulnerabilityProvider;
+import com.redhat.exhort.monitoring.MonitoringProcessor;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -43,6 +43,10 @@ public class SnykIntegration extends EndpointRouteBuilder {
 
   @Inject VulnerabilityProvider vulnerabilityProvider;
 
+  @Inject SnykResponseHandler responseHandler;
+
+  @Inject MonitoringProcessor monitoringProcessor;
+
   @Override
   public void configure() {
 
@@ -50,19 +54,19 @@ public class SnykIntegration extends EndpointRouteBuilder {
     from(direct("snykDepGraph"))
         .routeId("snykDepGraph")
         .process(this::setAuthToken)
-          .circuitBreaker()
+        .transform().method(SnykRequestBuilder.class, "fromDiGraph")
+        .process(this::processDepGraphRequest)
+        .circuitBreaker()
           .faultToleranceConfiguration()
             .timeoutEnabled(true)
             .timeoutDuration(timeout)
           .end()
         .to(direct("snykRequest"))
         .onFallback()
-          .process(e -> BackendUtils.processResponseError(e, Constants.SNYK_PROVIDER));
+          .process(responseHandler::processResponseError);
 
     from(direct("snykRequest"))
         .routeId("snykRequest")
-        .transform().method(SnykRequestBuilder.class, "fromDiGraph")
-        .process(this::processDepGraphRequest)
         .to(vertxHttp("{{api.snyk.host}}"))
         .transform().method(SnykResponseHandler.class, "responseToIssues")
         .transform().method(SnykResponseHandler.class, "buildReport");
@@ -78,7 +82,7 @@ public class SnykIntegration extends EndpointRouteBuilder {
           .to(vertxHttp("{{api.snyk.host}}"))
           .setBody(constant("Token validated successfully"))
         .onFallback()
-          .process(e -> BackendUtils.processTokenFallBack(e, Constants.SNYK_PROVIDER));
+          .process(responseHandler::processTokenFallBack);
     // fmt:on
   }
 

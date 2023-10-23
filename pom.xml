@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.redhat.ecosystemappeng</groupId>
   <artifactId>exhort</artifactId>
-  <name>RHDA - Exhort</name>
   <version>1.1.0-SNAPSHOT</version>
-
+  <name>RHDA - Exhort</name>
   <licenses>
     <license>
       <name>Apache Software License, Version 2.0</name>
@@ -13,48 +13,45 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
-
   <scm>
-    <url>https://github.com/RHEcosystemAppEng/exhort</url>
     <connection>scm:git:git@github.com:RHEcosystemAppEng/exhort.git</connection>
     <developerConnection>scm:git:git@github.com:RHEcosystemAppEng/exhort.git</developerConnection>
     <tag>v1.0.0</tag>
+    <url>https://github.com/RHEcosystemAppEng/exhort</url>
   </scm>
-
   <issueManagement>
     <system>GitHub Issues</system>
     <url>https://github.com/RHEcosystemAppEng/exhort/issues</url>
   </issueManagement>
-
   <properties>
-    <timestamp>${maven.build.timestamp}</timestamp>
+    <build-helper-maven-plugin.version>3.4.0</build-helper-maven-plugin.version>
+    <compiler-plugin.version>3.11.0</compiler-plugin.version>
+    <cyclonedx.version>7.3.2</cyclonedx.version>
+    <flatten-maven-plugin.version>1.5.0</flatten-maven-plugin.version>
+    <frontend-maven-plugin.version>1.13.4</frontend-maven-plugin.version>
+    <google-java-format.version>1.17.0</google-java-format.version>
+    <htmlunit.version>2.70.0</htmlunit.version>
+    <sentry.version>1.7.27</sentry.version>
+    <maven-gpg-plugin.version>3.1.0</maven-gpg-plugin.version>
+    <maven-release-plugin.version>3.0.1</maven-release-plugin.version>
     <maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ss.SSS'Z'</maven.build.timestamp.format>
     <maven.compiler.release>17</maven.compiler.release>
+    <node.version>v20.5.1</node.version>
+    <openapi-generator-maven-plugin.version>7.0.1</openapi-generator-maven-plugin.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
     <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
     <quarkus.platform.version>3.2.2.Final</quarkus.platform.version>
-    <skipITs>true</skipITs>
-    <cyclonedx.version>7.3.2</cyclonedx.version>
-    <spdx.version>1.1.6</spdx.version>
-    <wiremock.version>3.0.0-beta-8</wiremock.version>
-    <compiler-plugin.version>3.11.0</compiler-plugin.version>
-    <surefire-plugin.version>3.0.0</surefire-plugin.version>
     <resources-plugin.version>3.3.1</resources-plugin.version>
-    <openapi-generator-maven-plugin.version>7.0.1</openapi-generator-maven-plugin.version>
-    <build-helper-maven-plugin.version>3.4.0</build-helper-maven-plugin.version>
+    <skipITs>true</skipITs>
+    <spdx.version>1.1.6</spdx.version>
     <spotless-maven-plugin.version>2.37.0</spotless-maven-plugin.version>
-    <maven-release-plugin.version>3.0.1</maven-release-plugin.version>
-    <maven-gpg-plugin.version>3.1.0</maven-gpg-plugin.version>
-    <flatten-maven-plugin.version>1.5.0</flatten-maven-plugin.version>
-    <google-java-format.version>1.17.0</google-java-format.version>
-    <htmlunit.version>2.70.0</htmlunit.version>
-    <frontend-maven-plugin.version>1.13.4</frontend-maven-plugin.version>
-    <node.version>v20.5.1</node.version>
+    <surefire-plugin.version>3.0.0</surefire-plugin.version>
+    <timestamp>${maven.build.timestamp}</timestamp>
+    <wiremock.version>3.0.0-beta-8</wiremock.version>
     <yarn.version>v1.22.19</yarn.version>
   </properties>
-
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -102,7 +99,6 @@
       <groupId>org.apache.camel.quarkus</groupId>
       <artifactId>camel-quarkus-microprofile-fault-tolerance</artifactId>
     </dependency>
-    <!-- For Camel metrics and custom metrics -->
     <dependency>
       <groupId>org.apache.camel.quarkus</groupId>
       <artifactId>camel-quarkus-micrometer</artifactId>
@@ -114,11 +110,11 @@
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-rest-client-reactive-jackson</artifactId>
-  </dependency>
-  <dependency>
-    <groupId>io.quarkus</groupId>
-    <artifactId>quarkus-smallrye-openapi</artifactId>
-  </dependency>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-smallrye-openapi</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.apache.camel.quarkus</groupId>
       <artifactId>camel-quarkus-direct</artifactId>
@@ -157,7 +153,11 @@
       <artifactId>spdx-jackson-store</artifactId>
       <version>${spdx.version}</version>
     </dependency>
-    <!-- Test -->
+    <dependency>
+      <groupId>io.sentry</groupId>
+      <artifactId>sentry</artifactId>
+      <version>${sentry.version}</version>
+    </dependency>
     <dependency>
       <groupId>org.apache.camel.quarkus</groupId>
       <artifactId>camel-quarkus-junit5</artifactId>
@@ -189,8 +189,8 @@
   <build>
     <resources>
       <resource>
-        <directory>src/main/resources</directory>
         <filtering>true</filtering>
+        <directory>src/main/resources</directory>
       </resource>
     </resources>
     <plugins>
@@ -234,9 +234,7 @@
           <installDirectory>target</installDirectory>
         </configuration>
       </plugin>
-    
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
         <version>${resources-plugin.version}</version>
         <executions>
@@ -317,6 +315,14 @@
         <groupId>com.diffplug.spotless</groupId>
         <artifactId>spotless-maven-plugin</artifactId>
         <version>${spotless-maven-plugin.version}</version>
+        <executions>
+          <execution>
+            <phase>compile</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
         <configuration>
           <formats>
             <format>
@@ -355,17 +361,7 @@
             </licenseHeader>
           </java>
         </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>check</goal>
-            </goals>
-            <phase>compile</phase>
-          </execution>
-        </executions>
       </plugin>
-      <!-- build-helper-maven-plugin:add-source is bound to the generate-sources phase and will
-      include generated files as sources -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
@@ -384,9 +380,6 @@
           </execution>
         </executions>
       </plugin>
-
-      <!-- openapi-generator-maven-plugin:generate is bound to the generate-sources phase and will
-      generate sources from api-spec/v3/openapi.yaml -->
       <plugin>
         <groupId>org.openapitools</groupId>
         <artifactId>openapi-generator-maven-plugin</artifactId>
@@ -459,16 +452,13 @@
         <version>${maven-release-plugin.version}</version>
         <configuration>
           <arguments>-Pprepare-deployment,sign-deployment</arguments>
-          <scmCommentPrefix>build(release): [skip ci] </scmCommentPrefix>
+          <scmCommentPrefix>build(release): [skip ci]</scmCommentPrefix>
         </configuration>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>flatten-maven-plugin</artifactId>
         <version>${flatten-maven-plugin.version}</version>
-        <configuration>
-          <flattenMode>ossrh</flattenMode>
-        </configuration>
         <executions>
           <execution>
             <id>flatten.clean</id>
@@ -478,6 +468,9 @@
             </goals>
           </execution>
         </executions>
+        <configuration>
+          <flattenMode>ossrh</flattenMode>
+        </configuration>
       </plugin>
     </plugins>
   </build>
@@ -520,41 +513,36 @@
         </plugins>
       </build>
     </profile>
-  <!-- use this profile manually for packaging of jars to deploy to artifact repository. -->
-  <profile>
-    <id>prepare-deployment</id>
-    <build>
-      <plugins>
-
-        <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>flatten-maven-plugin</artifactId>
-          <executions>
-            <execution>
-              <id>flatten</id>
-              <phase>process-resources</phase>
-              <goals>
-                <goal>flatten</goal>
-              </goals>
-            </execution>
-          </executions>
-        </plugin>
-
-        <plugin>
-          <artifactId>maven-source-plugin</artifactId>
-          <executions>
-            <execution>
-              <goals>
-                <goal>jar-no-fork</goal>
-              </goals>
-            </execution>
-          </executions>
-        </plugin>
-
-      </plugins>
-    </build>
-  </profile>
-    <!-- use this profile manually for signing the deployment files prior to deployment. -->
+    <profile>
+      <id>prepare-deployment</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>flatten-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>flatten</id>
+                <phase>process-resources</phase>
+                <goals>
+                  <goal>flatten</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <artifactId>maven-source-plugin</artifactId>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>jar-no-fork</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
     <profile>
       <id>sign-deployment</id>
       <build>

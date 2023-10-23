@@ -32,6 +32,7 @@ import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
 import org.apache.camel.component.micrometer.MicrometerConstants;
 import org.apache.camel.component.micrometer.routepolicy.MicrometerRoutePolicyFactory;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.redhat.exhort.analytics.AnalyticsService;
 import com.redhat.exhort.integration.Constants;
 import com.redhat.exhort.integration.VulnerabilityProvider;
@@ -39,6 +40,7 @@ import com.redhat.exhort.integration.backend.sbom.SbomParser;
 import com.redhat.exhort.integration.backend.sbom.SbomParserFactory;
 import com.redhat.exhort.integration.providers.ProviderAggregationStrategy;
 import com.redhat.exhort.model.DependencyTree;
+import com.redhat.exhort.monitoring.MonitoringProcessor;
 
 import io.micrometer.core.instrument.MeterRegistry;
 
@@ -59,6 +61,10 @@ public class ExhortIntegration extends EndpointRouteBuilder {
 
   @Inject AnalyticsService analytics;
 
+  @Inject ObjectMapper mapper;
+
+  @Inject MonitoringProcessor monitoringProcessor;
+
   ExhortIntegration(MeterRegistry registry) {
     this.registry = registry;
   }
@@ -70,35 +76,41 @@ public class ExhortIntegration extends EndpointRouteBuilder {
     getContext().addRoutePolicyFactory(new MicrometerRoutePolicyFactory());
     
     restConfiguration().contextPath("/api/")
-        .clientRequestValidation(true);
+      .clientRequestValidation(true);
+
+    errorHandler(deadLetterChannel("seda:processFailedRequests"));
 
     onException(IllegalArgumentException.class)
-        .routeId("onExhortIllegalArgumentException")
-        .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(422))
-        .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.TEXT_PLAIN))
-        .handled(true)
-        .setBody().simple("${exception.message}");
+      .routeId("onExhortIllegalArgumentException")
+      .useOriginalMessage()
+      .process(monitoringProcessor::processClientException)
+      .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(422))
+      .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.TEXT_PLAIN))
+      .handled(true)
+      .setBody().simple("${exception.message}");
 
     onException(ClientErrorException.class)
-        .routeId("onExhortClientErrorException")
-        .setHeader(Exchange.HTTP_RESPONSE_CODE, simple("${exception.getResponse().getStatus()}"))
-        .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.TEXT_PLAIN))
-        .handled(true)
-        .setBody().simple("${exception.message}");
+      .routeId("onExhortClientErrorException")
+      .useOriginalMessage()
+      .process(monitoringProcessor::processClientException)
+      .setHeader(Exchange.HTTP_RESPONSE_CODE, simple("${exception.getResponse().getStatus()}"))
+      .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.TEXT_PLAIN))
+      .handled(true)
+      .setBody().simple("${exception.message}");
 
     rest()
-        .post("/v3/analysis")
-            .routeId("v3restAnalysis")
-            .to("direct:v3analysis")
-        .post("/v4/analysis")
-            .routeId("restAnalysis")
-            .to("direct:v4analysis")
-        .get("/v3/token")
-            .routeId("v3restTokenValidation")
-            .to("direct:validateToken")
-        .get("/v4/token")
-            .routeId("restTokenValidation")
-            .to("direct:validateToken");
+      .post("/v3/analysis")
+        .routeId("v3restAnalysis")
+        .to("direct:v3analysis")
+      .post("/v4/analysis")
+        .routeId("restAnalysis")
+        .to("direct:v4analysis")
+      .get("/v3/token")
+        .routeId("v3restTokenValidation")
+        .to("direct:validateToken")
+      .get("/v4/token")
+        .routeId("restTokenValidation")
+        .to("direct:validateToken");
 
     from(direct("v3analysis"))
       .routeId("v3Analysis")
@@ -111,54 +123,58 @@ public class ExhortIntegration extends EndpointRouteBuilder {
       .to(direct("analysis"));     
 
     from(direct("analysis"))
-        .routeId("dependencyAnalysis")
-        .to(seda("analyticsIdentify"))
-        .setProperty(PROVIDERS_PARAM, method(vulnerabilityProvider, "getProvidersFromQueryParam"))
-        .setProperty(REQUEST_CONTENT_PROPERTY, method(BackendUtils.class, "getResponseMediaType"))
-        .setProperty(VERBOSE_MODE_HEADER, header(VERBOSE_MODE_HEADER))
-        .process(this::processAnalysisRequest)
-        .to(direct("findVulnerabilities"))
-        .transform().method(ProviderAggregationStrategy.class, "toReport")
-        .to(direct("report"))
-        .to(seda("analyticsTrackAnalysis"))
-        .process(this::cleanUpHeaders);
+      .routeId("dependencyAnalysis")
+      .to(seda("analyticsIdentify"))
+      .setProperty(PROVIDERS_PARAM, method(vulnerabilityProvider, "getProvidersFromQueryParam"))
+      .setProperty(REQUEST_CONTENT_PROPERTY, method(BackendUtils.class, "getResponseMediaType"))
+      .setProperty(VERBOSE_MODE_HEADER, header(VERBOSE_MODE_HEADER))
+      .process(this::processAnalysisRequest)
+      .to(direct("findVulnerabilities"))
+      .transform().method(ProviderAggregationStrategy.class, "toReport")
+      .to(direct("report"))
+      .to(seda("analyticsTrackAnalysis"))
+      .process(this::cleanUpHeaders);
 
     from(direct("findVulnerabilities"))
-        .routeId("findVulnerabilities")
-        .recipientList(method(vulnerabilityProvider, "getProviderEndpoints"))
-        .aggregationStrategy(AggregationStrategies.beanAllowNull(ProviderAggregationStrategy.class, "aggregate"))
-            .parallelProcessing();
+      .routeId("findVulnerabilities")
+      .recipientList(method(vulnerabilityProvider, "getProviderEndpoints"))
+      .aggregationStrategy(AggregationStrategies.beanAllowNull(ProviderAggregationStrategy.class, "aggregate"))
+        .parallelProcessing();
 
     from(direct("validateToken"))
-        .routeId("validateToken")
-        .to(seda("analyticsIdentify"))
-        .choice()
-            .when(header(Constants.SNYK_TOKEN_HEADER).isNotNull())
-                .setProperty(PROVIDERS_PARAM, constant(Arrays.asList(Constants.SNYK_PROVIDER)))
-                .to(direct("snykValidateToken"))
-            .when(header(Constants.OSS_INDEX_TOKEN_HEADER).isNotNull())
-            .setProperty(PROVIDERS_PARAM, constant(Arrays.asList(Constants.OSS_INDEX_PROVIDER)))
-                .to(direct("ossValidateCredentials"))
-            .otherwise()
-                .setProperty(PROVIDERS_PARAM, constant(Arrays.asList(Constants.UNKNOWN_PROVIDER)))
-                .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(Response.Status.BAD_REQUEST.getStatusCode()))
-                .setBody(constant("Missing provider authentication headers"))
-        .end()
-        .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.TEXT_PLAIN))
-        .to(seda("analyticsTrackToken"))
-        .process(this::cleanUpHeaders);
-    
+      .routeId("validateToken")
+      .to(seda("analyticsIdentify"))
+      .choice()
+        .when(header(Constants.SNYK_TOKEN_HEADER).isNotNull())
+          .setProperty(PROVIDERS_PARAM, constant(Arrays.asList(Constants.SNYK_PROVIDER)))
+          .to(direct("snykValidateToken"))
+        .when(header(Constants.OSS_INDEX_TOKEN_HEADER).isNotNull())
+        .setProperty(PROVIDERS_PARAM, constant(Arrays.asList(Constants.OSS_INDEX_PROVIDER)))
+          .to(direct("ossValidateCredentials"))
+        .otherwise()
+          .setProperty(PROVIDERS_PARAM, constant(Arrays.asList(Constants.UNKNOWN_PROVIDER)))
+          .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(Response.Status.BAD_REQUEST.getStatusCode()))
+          .setBody(constant("Missing provider authentication headers"))
+      .end()
+      .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.TEXT_PLAIN))
+      .to(seda("analyticsTrackToken"))
+      .process(this::cleanUpHeaders);
+
     from(seda("analyticsIdentify"))
       .routeId("analyticsIdentify")
+      .process(monitoringProcessor::processOriginalRequest)
       .process(analytics::identify);
 
     from(seda("analyticsTrackToken"))
       .routeId("analyticsTrackToken")
       .process(analytics::trackToken);
-    
+
     from(seda("analyticsTrackAnalysis"))
       .routeId("analyticsTrackAnalysis")
       .process(analytics::trackAnalysis);
+
+    from(seda("processFailedRequests"))
+      .process(monitoringProcessor::processServerError);
     //fmt:on
   }
 

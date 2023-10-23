@@ -1,13 +1,7 @@
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: exhort
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: exhort
-  namespace: exhort
   labels:
     app: exhort
 spec:
@@ -23,7 +17,7 @@ spec:
       containers:
       - name: exhort
         image: quay.io/ecosystem-appeng/exhort:latest
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         ports:
         - containerPort: 8080
         resources:
@@ -36,14 +30,28 @@ spec:
             secretKeyRef:
               name: exhort-secret
               key: api-snyk-token
+        - name: MONITORING_ENABLED
+          value: "true"
+        - name: MONITORING_SENTRY_DSN
+          valueFrom:
+            secretKeyRef:
+              name: exhort-secret
+              key: sentry-dsn
+        - name: MONITORING_SENTRY_SERVERNAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: MONITORING_SENTRY_ENVIRONMENT
+          value: development
+        - name: TELEMETRY_DISABLED
+          value: "true"
 ---
 apiVersion: v1
 kind: Service
 metadata:
+  name: exhort
   labels:
     app: exhort
-  name: exhort
-  namespace: exhort
 spec:
   ports:
   - name: web
@@ -59,7 +67,6 @@ metadata:
   labels:
     app: exhort
   name: dev
-  namespace: exhort
 spec:
   port:
     targetPort: 8080

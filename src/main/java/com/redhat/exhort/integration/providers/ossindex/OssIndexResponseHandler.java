@@ -41,12 +41,16 @@ import com.redhat.exhort.model.CvssParser;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+
+@ApplicationScoped
 @RegisterForReflection
 public class OssIndexResponseHandler extends ProviderResponseHandler {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(OssIndexRequestBuilder.class);
 
-  private final ObjectMapper mapper = ObjectMapperProducer.newInstance();
+  @Inject ObjectMapper mapper = ObjectMapperProducer.newInstance();
 
   public Map<String, List<Issue>> aggregateSplit(
       Map<String, List<Issue>> oldExchange, Map<String, List<Issue>> newExchange)
