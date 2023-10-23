@@ -39,7 +39,7 @@ export const SummaryCard = () => {
           <CardHeader>
             <CardTitle>
               <DescriptionListTerm style={{fontSize: "large"}}>
-                Below is a list of dependencies affected with CVE.
+                Vendor Issues
               </DescriptionListTerm>
             </CardTitle>
           </CardHeader>
@@ -52,12 +52,12 @@ export const SummaryCard = () => {
                 </DescriptionListTerm>
               </DescriptionListDescription>
             </DescriptionListGroup>
-            <DescriptionList isAutoFit>
+            <DescriptionList isAutoFit style={{paddingTop: "10px"}}>
               {
                 getSources(appContext.report).map((source, index) => {
                   return (
                     <DescriptionListGroup key={index}>
-                      <DescriptionListTerm>{getSourceName(source)}</DescriptionListTerm>
+                      <DescriptionListTerm style={{fontSize: "large"}}>{getSourceName(source)}</DescriptionListTerm>
                       <DescriptionListDescription>
                         <ChartCard summary={source.report.summary}/>
                       </DescriptionListDescription>

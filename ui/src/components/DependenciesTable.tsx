@@ -217,7 +217,6 @@ export const DependenciesTable = ({ name, source }: { name: string; source: Sour
                                 <StackItem>
                                   <TransitiveDependenciesTable
                                     providerName={name}
-                                    dependency={item}
                                     transitiveDependencies={item.transitive}
                                   />
                                 </StackItem>
