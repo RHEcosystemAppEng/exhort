@@ -25,6 +25,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import com.redhat.exhort.integration.Constants;
 import com.redhat.exhort.integration.providers.VulnerabilityProvider;
+import com.redhat.exhort.monitoring.MonitoringProcessor;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -44,6 +45,8 @@ public class SnykIntegration extends EndpointRouteBuilder {
 
   @Inject SnykResponseHandler responseHandler;
 
+  @Inject MonitoringProcessor monitoringProcessor;
+
   @Override
   public void configure() {
 
@@ -51,8 +54,9 @@ public class SnykIntegration extends EndpointRouteBuilder {
     from(direct("snykDepGraph"))
         .routeId("snykDepGraph")
         .process(this::setAuthToken)
-          .circuitBreaker()
-          // .inheritErrorHandler(true)
+        .transform().method(SnykRequestBuilder.class, "fromDiGraph")
+        .process(this::processDepGraphRequest)
+        .circuitBreaker()
           .faultToleranceConfiguration()
             .timeoutEnabled(true)
             .timeoutDuration(timeout)
@@ -63,8 +67,6 @@ public class SnykIntegration extends EndpointRouteBuilder {
 
     from(direct("snykRequest"))
         .routeId("snykRequest")
-        .transform().method(SnykRequestBuilder.class, "fromDiGraph")
-        .process(this::processDepGraphRequest)
         .to(vertxHttp("{{api.snyk.host}}"))
         .transform().method(SnykResponseHandler.class, "responseToIssues")
         .transform().method(SnykResponseHandler.class, "buildReport");

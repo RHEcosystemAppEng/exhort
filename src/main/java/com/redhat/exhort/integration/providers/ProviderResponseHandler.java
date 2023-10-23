@@ -88,7 +88,6 @@ public abstract class ProviderResponseHandler {
     ProviderStatus status = new ProviderStatus().ok(false).name(getProviderName());
     Exception exception = (Exception) exchange.getProperty(Exchange.EXCEPTION_CAUGHT);
     Throwable cause = exception.getCause();
-    monitoringProcessor.processProviderError(exchange, getProviderName());
     if (cause != null) {
       if (cause instanceof HttpOperationFailedException) {
         HttpOperationFailedException httpException = (HttpOperationFailedException) cause;
@@ -108,6 +107,7 @@ public abstract class ProviderResponseHandler {
       LOGGER.warn("Unable to process request to: {}", getProviderName(), exception);
     }
     ProviderReport report = new ProviderReport().status(status).sources(Collections.emptyMap());
+    monitoringProcessor.processProviderError(exchange, exception, getProviderName());
     exchange.getMessage().setBody(report);
   }
 
@@ -154,11 +154,9 @@ public abstract class ProviderResponseHandler {
   public abstract Map<String, List<Issue>> responseToIssues(
       byte[] response, String privateProviders) throws IOException;
 
-  public ProviderReport emptyResponse(
+  public Map<String, List<Issue>> emptyResponse(
       @ExchangeProperty(Constants.DEPENDENCY_TREE_PROPERTY) DependencyTree tree) {
-    return new ProviderReport()
-        .status(defaultOkStatus(getProviderName()))
-        .sources(Collections.emptyMap());
+    return Collections.emptyMap();
   }
 
   private Map<String, Map<String, List<Issue>>> splitIssuesBySource(

@@ -20,5 +20,5 @@ package com.redhat.exhort.monitoring;
 
 public interface MonitoringClient {
 
-  void reportException(Exception exception, MonitoringContext context);
+  void reportException(Throwable exception, MonitoringContext context);
 }

@@ -38,16 +38,21 @@ public class SentryMonitoringClient implements MonitoringClient {
   }
 
   @Override
-  public void reportException(Exception exception, MonitoringContext context) {
-
-    this.client
-        .getContext()
-        .recordBreadcrumb(new BreadcrumbBuilder().setMessage(context.originalRequest()).build());
+  public void reportException(Throwable exception, MonitoringContext context) {
+    if (!context.breadcrumbs().isEmpty()) {
+      context
+          .breadcrumbs()
+          .forEach(
+              b ->
+                  this.client
+                      .getContext()
+                      .recordBreadcrumb(
+                          new BreadcrumbBuilder().setMessage(b).setType(null).build()));
+    }
     if (context.userId() != null) {
       this.client.getContext().setUser(new UserBuilder().setId(context.userId()).build());
     }
     addAdditionalData(context.metadata(), context.tags());
-
     this.client.sendException(exception);
   }
 

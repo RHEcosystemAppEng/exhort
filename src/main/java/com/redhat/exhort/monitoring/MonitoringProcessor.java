@@ -33,10 +33,11 @@ import jakarta.inject.Inject;
 public class MonitoringProcessor {
 
   private static final String MONITORING_CONTEXT = "monitoringContext";
-  private static final String ERROR_TYPE = "error_type";
+  private static final String ERROR_TYPE_TAG = "error_type";
   private static final String SERVER_ERROR_TYPE = "server";
   private static final String CLIENT_ERROR_TYPE = "client";
   private static final String PROVIDER_ERROR_TYPE = "provider";
+  private static final String PROVIDER_TAG = "provider";
 
   private static final String[] LOGGED_REQUEST_HEADERS = {
     Exchange.CONTENT_TYPE,
@@ -57,17 +58,35 @@ public class MonitoringProcessor {
         Stream.of(LOGGED_REQUEST_HEADERS)
             .filter(e -> exchange.getIn().getHeaders().containsKey(e))
             .collect(Collectors.toMap(h -> h, h -> exchange.getIn().getHeader(h, String.class)));
-    MonitoringContext ctx =
-        new MonitoringContext(
-            exchange.getIn().getBody(String.class),
-            exchange.getIn().getHeader(Constants.RHDA_TOKEN_HEADER, String.class),
-            metadata,
-            null);
-    exchange.setProperty(MONITORING_CONTEXT, ctx);
+    MonitoringContext context = exchange.getProperty(MONITORING_CONTEXT, MonitoringContext.class);
+    if (context == null) {
+      context =
+          new MonitoringContext(
+              null,
+              exchange.getIn().getHeader(Constants.RHDA_TOKEN_HEADER, String.class),
+              metadata,
+              null);
+    }
+    context.breadcrumbs().add(exchange.getIn().getBody(String.class));
+    exchange.setProperty(MONITORING_CONTEXT, context);
   }
 
-  public void processProviderError(Exchange exchange, String provider) {
-    processError(exchange, PROVIDER_ERROR_TYPE);
+  public void processProviderError(Exchange exchange, Exception exception, String providerName) {
+    MonitoringContext context = exchange.getProperty(MONITORING_CONTEXT, MonitoringContext.class);
+    if (context == null) {
+      return;
+    }
+    MonitoringContext errorContext = MonitoringContext.copyOf(context);
+    errorContext.breadcrumbs().add(exchange.getIn().getBody(String.class));
+    errorContext.tags().put(PROVIDER_TAG, providerName);
+    errorContext.tags().put(ERROR_TYPE_TAG, PROVIDER_ERROR_TYPE);
+    Stream.of(LOGGED_PROPERTIES)
+        .forEach(p -> errorContext.metadata().put(p, exchange.getProperty(p, String.class)));
+    if (exception.getCause() != null) {
+      client.reportException(exception.getCause(), errorContext);
+    } else {
+      client.reportException(exception, errorContext);
+    }
   }
 
   public void processClientException(Exchange exchange) {
@@ -83,7 +102,7 @@ public class MonitoringProcessor {
     if (context == null) {
       return;
     }
-    context.tags().put(ERROR_TYPE, errorType);
+    context.tags().put(ERROR_TYPE_TAG, errorType);
     Stream.of(LOGGED_PROPERTIES)
         .forEach(p -> context.metadata().put(p, exchange.getProperty(p, String.class)));
     Exception exception = exchange.getProperty(Exchange.EXCEPTION_CAUGHT, Exception.class);

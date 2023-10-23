@@ -18,18 +18,35 @@
 
 package com.redhat.exhort.monitoring;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public record MonitoringContext(
-    String originalRequest, String userId, Map<String, String> metadata, Map<String, String> tags) {
+    List<String> breadcrumbs,
+    String userId,
+    Map<String, String> metadata,
+    Map<String, String> tags) {
 
   public MonitoringContext {
-    if (tags == null) {
-      tags = new HashMap<>();
+    if (breadcrumbs == null) {
+      breadcrumbs = new ArrayList<>();
     }
     if (metadata == null) {
       metadata = new HashMap<>();
     }
+    if (tags == null) {
+      tags = new HashMap<>();
+    }
+  }
+
+  public static MonitoringContext copyOf(MonitoringContext context) {
+
+    return new MonitoringContext(
+        new ArrayList<>(context.breadcrumbs),
+        context.userId,
+        new HashMap<String, String>(context.metadata),
+        new HashMap<String, String>(context.tags));
   }
 }

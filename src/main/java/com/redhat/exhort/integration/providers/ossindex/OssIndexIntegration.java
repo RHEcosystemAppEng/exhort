@@ -31,6 +31,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import com.redhat.exhort.integration.Constants;
 import com.redhat.exhort.integration.VulnerabilityProvider;
 import com.redhat.exhort.model.DependencyTree;
+import com.redhat.exhort.monitoring.MonitoringProcessor;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -48,34 +49,38 @@ public class OssIndexIntegration extends EndpointRouteBuilder {
 
   @Inject OssIndexResponseHandler responseHandler;
 
+  @Inject MonitoringProcessor monitoringProcessor;
+
   @Override
   public void configure() {
     // fmt:off
     from(direct("ossIndexScan"))
         .routeId("ossIndexScan")
-        .circuitBreaker()
-          .faultToleranceConfiguration()
-            .timeoutEnabled(true)
-            .timeoutDuration(timeout)
-          .end()
+        .transform(method(OssIndexRequestBuilder.class, "split"))
+        .choice()
+          .when(method(OssIndexRequestBuilder.class, "isEmpty"))
+            .setBody(method(OssIndexResponseHandler.class, "emptyResponse"))
+        .endChoice()
+        .otherwise()
           .to(direct("ossSplitReq"))
-        .onFallback()
-          .process(responseHandler::processResponseError);
+        .end()
+          .transform().method(OssIndexResponseHandler.class, "buildReport");
 
     from(direct("ossSplitReq"))
         .routeId("ossSplitReq")
-        .transform(method(OssIndexRequestBuilder.class, "split"))
-        .choice().when(method(OssIndexRequestBuilder.class, "isEmpty"))
-          .setBody(method(OssIndexResponseHandler.class, "emptyResponse")).endChoice()
-        .otherwise()
           .split(body(), AggregationStrategies.bean(OssIndexResponseHandler.class, "aggregateSplit"))
             .parallelProcessing()
-            .transform().method(OssIndexRequestBuilder.class, "buildRequest")
-            .process(this::processComponentRequest)
-            .to(vertxHttp("{{api.ossindex.host}}"))
-            .transform(method(OssIndexResponseHandler.class, "responseToIssues"))
-        .endChoice()
-          .transform().method(OssIndexResponseHandler.class, "buildReport");
+              .transform().method(OssIndexRequestBuilder.class, "buildRequest")
+              .process(this::processComponentRequest)
+              .circuitBreaker()
+                .faultToleranceConfiguration()
+                  .timeoutEnabled(true)
+                  .timeoutDuration(timeout)
+                .end()
+                  .to(vertxHttp("{{api.ossindex.host}}"))
+                  .transform(method(OssIndexResponseHandler.class, "responseToIssues"))
+              .onFallback()
+                .process(responseHandler::processResponseError);
     
     from(direct("ossValidateCredentials"))
       .routeId("ossValidateCredentials")

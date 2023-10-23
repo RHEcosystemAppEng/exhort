@@ -27,7 +27,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 public class NoopMonitoringClient implements MonitoringClient {
 
   @Override
-  public void reportException(Exception exception, MonitoringContext context) {
+  public void reportException(Throwable exception, MonitoringContext context) {
     return;
   }
 }
