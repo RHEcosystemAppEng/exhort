@@ -18,7 +18,7 @@ export const RemediationsCount: React.FC<RemediationsCountProps> = ({ dependency
   //   : 0;
 
   const directRemediationsCount = 0;
-  const transitiveRemediationsCount = 2;
+  const transitiveRemediationsCount = 0;
 
   return (
     <>
