@@ -7,7 +7,8 @@ metadata:
     build.appstudio.redhat.com/target_branch: '{{target_branch}}'
     pipelinesascode.tekton.dev/max-keep-runs: "3"
     pipelinesascode.tekton.dev/on-cel-expression: event == "push" && target_branch
-      == "main"
+      == "main" && ( "ui/*".pathChanged() || "src/*".pathChanged() || "api-spec/*".pathChanged()
+       || "pom.xml".pathChanged() )
   creationTimestamp: null
   labels:
     appstudio.openshift.io/application: exhort
@@ -221,9 +222,9 @@ spec:
       taskRef:
         params:
         - name: name
-          value: buildah
+          value: buildah-8gb
         - name: bundle
-          value: quay.io/redhat-appstudio-tekton-catalog/task-buildah:0.1@sha256:93c318074716173ac4f77ec873fc2ab58fc102c8c49d525e7f7d6a12c13338c1
+          value: quay.io/redhat-appstudio-tekton-catalog/task-buildah-8gb:0.1@sha256:37cc26d2a88efa48bbdf2b6468bba35fb8a2329066ce3cb0f4a8666b19be4a94
         - name: kind
           value: task
         resolver: bundles
