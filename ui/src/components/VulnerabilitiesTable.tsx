@@ -1,25 +1,16 @@
-import {Table, TableVariant, Tbody, Td, Th, Thead, Tr} from '@patternfly/react-table';
-
-import {Dependency, Vulnerability, hasRemediations} from '../api/report';
-
+import {Table, TableVariant, Tbody, Th, Thead, Tr} from '@patternfly/react-table';
+import {Dependency, Vulnerability} from '../api/report';
 import {ConditionalTableBody} from './TableControls/ConditionalTableBody';
 import {Card} from '@patternfly/react-core';
-import { usePrivateIssueHelper } from '../hooks/usePrivateDataHelper';
-import { VulnerabilitySeverityLabel } from './VulnerabilitySeverityLabel';
-import { VulnerabilityScore } from './VulnerabilityScore';
-import { DependencyLink } from './DependencyLink';
-import { RemediationLink } from './RemediationLink';
-import { VulnerabilityLink } from './VulnerabilityLink';
-import { SYNK_SIGNUP_URL } from '../utils/utils';
+import {VulnerabilityRow} from "./VulnerabilityRow";
 
 export const VulnerabilitiesTable = ({ providerName, dependency, vulnerabilities }: { providerName: string; dependency: Dependency; vulnerabilities: Vulnerability[] }) => {
-  const privateIssueHelper = usePrivateIssueHelper();
   return (
-      <Card
-          style={{
-            backgroundColor: 'var(--pf-v5-global--BackgroundColor--100)',
-          }}
-      >
+    <Card
+      style={{
+        backgroundColor: 'var(--pf-v5-global--BackgroundColor--100)',
+      }}
+    >
       <Table variant={TableVariant.compact}>
         <Thead>
           <Tr>
@@ -41,43 +32,17 @@ export const VulnerabilitiesTable = ({ providerName, dependency, vulnerabilities
             }
             return (
               <Tbody key={rowIndex}>
-                  {ids.map((cve, cveIndex) => (
-                  <Tr key={`${rowIndex}-${cveIndex}`}>
-                  {privateIssueHelper.hideIssue(providerName, vuln.unique) ? (
-                      <>
-                        <Td colSpan={3}>
-                          <a href={SYNK_SIGNUP_URL} target="_blank" rel="noreferrer">
-                            Sign up for a Snyk account
-                          </a>{' '}
-                          to learn about the vulnerabilities found
-                        </Td>
-                      </>
-                    ) : (
-                      <>
-                        <Td>
-                          <p>{cve}</p>
-                        </Td>
-                        <Td>{vuln.title}</Td>
-                        <Td noPadding>
-                          <VulnerabilitySeverityLabel vulnerability={vuln}/>
-                        </Td>
-                      </>
-                    )}
-                  <Td>
-                    <VulnerabilityScore vulnerability={vuln} />
-                  </Td>
-                  <Td> <DependencyLink name={dependency.ref} /></Td>
-                  <Td>
-                      {vuln.remediation?.trustedContent && 
-                          <RemediationLink key={cveIndex} cves={vuln.cves || []} packageName={dependency.ref} />
-                      }
-                      {vuln.remediation?.fixedIn && 
-                          <VulnerabilityLink sourceName={providerName} vulnerability={vuln} />
-                      }
-                      {!hasRemediations(vuln) && "N/A"}
-                  </Td>
-                </Tr>
-                  ))}
+                {ids.map((cve, cveIndex) => (
+                  <VulnerabilityRow key={`${rowIndex}-${cveIndex}`}
+                    item={{
+                      id: vuln.id,
+                      dependencyRef: dependency.ref,
+                      vulnerability: vuln,
+                    }}
+                    providerName={providerName}
+                    rowIndex={rowIndex}
+                  />
+                ))}
               </Tbody>
             );
           })}
