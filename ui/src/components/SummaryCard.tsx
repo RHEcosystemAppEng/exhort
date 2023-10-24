@@ -34,7 +34,8 @@ export const SummaryCard = () => {
         </Icon>&nbsp;Red Hat Overview of security Issues
       </Title>
       <Divider />
-      <GridItem md={6}>
+      {/*<GridItem md={6}>*/}
+      <GridItem>
         <Card isFlat isFullHeight>
           <CardHeader>
             <CardTitle>
@@ -70,74 +71,74 @@ export const SummaryCard = () => {
           <Divider/>
         </Card>
       </GridItem>
-      <GridItem md={6}>
-        <Card isFlat>
-          <DescriptionListGroup>
-            <CardTitle component="h4">
-              <DescriptionListTerm style={{fontSize: "large"}}>
-                <Icon isInline status="info">
-                  <RedhatIcon style={{fill: "#cc0000"}}/>
-                </Icon>&nbsp;
-                Red Hat Remediations
-              </DescriptionListTerm>
-            </CardTitle>
-            <CardBody>
-              <DescriptionListDescription>
-                <List isPlain>
-                  <ListItem>
-                    <Icon isInline status="success">
-                      <img src={SecurityCheckIcon} alt="Security Check Icon"/>
-                    </Icon>&nbsp;
-                    10+ vulnerable packages
-                  </ListItem>
-                </List>
-              </DescriptionListDescription>
-            </CardBody>
-          </DescriptionListGroup>
-        </Card>&nbsp;
-        <Card isFlat>
-          <DescriptionListGroup>
-            <CardTitle component="h4">
-              <DescriptionListTerm style={{fontSize: "large"}}>
-                Subscribe to stay updated
-              </DescriptionListTerm>
-            </CardTitle>
-            <CardBody>
-              <DescriptionListDescription>
-                <List isPlain>
-                  <ListItem>
-                    Do you want to subscribe for Red Hat Trusted Content Service to keep your
-                    projects risk profile updated?
-                  </ListItem>
-                  <ListItem>
-                    <Button variant="primary" size="sm">
-                      Sign up
-                    </Button>
-                  </ListItem>
-                </List>
-              </DescriptionListDescription>
-            </CardBody>
-          </DescriptionListGroup>
-        </Card>&nbsp;
-        <Card isFlat>
-          <DescriptionListGroup>
-            <CardTitle component="h4">
-              <DescriptionListTerm style={{fontSize: "large"}}>
-                Licenses
-              </DescriptionListTerm>
-            </CardTitle>
-            <CardBody>
-              <DescriptionListDescription>
-                <List isPlain>
-                  <ListItem>
-                    Some info here
-                  </ListItem>
-                </List>
-              </DescriptionListDescription>
-            </CardBody>
-          </DescriptionListGroup>
-        </Card>
-      </GridItem>
+      {/*<GridItem md={6}>*/}
+      {/*  <Card isFlat>*/}
+      {/*    <DescriptionListGroup>*/}
+      {/*      <CardTitle component="h4">*/}
+      {/*        <DescriptionListTerm style={{fontSize: "large"}}>*/}
+      {/*          <Icon isInline status="info">*/}
+      {/*            <RedhatIcon style={{fill: "#cc0000"}}/>*/}
+      {/*          </Icon>&nbsp;*/}
+      {/*          Red Hat Remediations*/}
+      {/*        </DescriptionListTerm>*/}
+      {/*      </CardTitle>*/}
+      {/*      <CardBody>*/}
+      {/*        <DescriptionListDescription>*/}
+      {/*          <List isPlain>*/}
+      {/*            <ListItem>*/}
+      {/*              <Icon isInline status="success">*/}
+      {/*                <img src={SecurityCheckIcon} alt="Security Check Icon"/>*/}
+      {/*              </Icon>&nbsp;*/}
+      {/*              10+ vulnerable packages*/}
+      {/*            </ListItem>*/}
+      {/*          </List>*/}
+      {/*        </DescriptionListDescription>*/}
+      {/*      </CardBody>*/}
+      {/*    </DescriptionListGroup>*/}
+      {/*  </Card>&nbsp;*/}
+      {/*  <Card isFlat>*/}
+      {/*    <DescriptionListGroup>*/}
+      {/*      <CardTitle component="h4">*/}
+      {/*        <DescriptionListTerm style={{fontSize: "large"}}>*/}
+      {/*          Subscribe to stay updated*/}
+      {/*        </DescriptionListTerm>*/}
+      {/*      </CardTitle>*/}
+      {/*      <CardBody>*/}
+      {/*        <DescriptionListDescription>*/}
+      {/*          <List isPlain>*/}
+      {/*            <ListItem>*/}
+      {/*              Do you want to subscribe for Red Hat Trusted Content Service to keep your*/}
+      {/*              projects risk profile updated?*/}
+      {/*            </ListItem>*/}
+      {/*            <ListItem>*/}
+      {/*              <Button variant="primary" size="sm">*/}
+      {/*                Sign up*/}
+      {/*              </Button>*/}
+      {/*            </ListItem>*/}
+      {/*          </List>*/}
+      {/*        </DescriptionListDescription>*/}
+      {/*      </CardBody>*/}
+      {/*    </DescriptionListGroup>*/}
+      {/*  </Card>&nbsp;*/}
+      {/*  <Card isFlat>*/}
+      {/*    <DescriptionListGroup>*/}
+      {/*      <CardTitle component="h4">*/}
+      {/*        <DescriptionListTerm style={{fontSize: "large"}}>*/}
+      {/*          Licenses*/}
+      {/*        </DescriptionListTerm>*/}
+      {/*      </CardTitle>*/}
+      {/*      <CardBody>*/}
+      {/*        <DescriptionListDescription>*/}
+      {/*          <List isPlain>*/}
+      {/*            <ListItem>*/}
+      {/*              Some info here*/}
+      {/*            </ListItem>*/}
+      {/*          </List>*/}
+      {/*        </DescriptionListDescription>*/}
+      {/*      </CardBody>*/}
+      {/*    </DescriptionListGroup>*/}
+      {/*  </Card>*/}
+      {/*</GridItem>*/}
     </Grid>
   );
 };

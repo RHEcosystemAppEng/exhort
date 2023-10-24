@@ -154,8 +154,7 @@ export const DepCompoundTable = ({ name, dependencies }: { name: string; depende
                 <Th>{columnNames.version}</Th>
                 <Th>{columnNames.direct}</Th>
                 <Th>{columnNames.transitive}</Th>
-                <Th>{columnNames.rhRemediation}</Th>
-                <Th />
+                {/*<Th>{columnNames.rhRemediation}</Th>*/}
               </Tr>
             </Thead>
             <ConditionalTableBody
@@ -224,17 +223,12 @@ export const DepCompoundTable = ({ name, dependencies }: { name: string; depende
                               <VulnerabilitiesCountBySeverity transitiveDependencies={item.transitive} />
                             </Flex>
                         ) : 0}
-
-                        {/*{item.transitive*/}
-                        {/*    .map((e) => e.issues.length)*/}
-                        {/*    .reduce((prev, current) =>*/}
-                        {/*        prev + current, 0)}*/}
                       </Td>
-                      <Td width={15}
-                          dataLabel={columnNames.rhRemediation}
-                      >
-                        <RemediationsCount dependency={item} />
-                      </Td>
+                      {/*<Td width={15}*/}
+                      {/*    dataLabel={columnNames.rhRemediation}*/}
+                      {/*>*/}
+                      {/*  <RemediationsCount dependency={item} />*/}
+                      {/*</Td>*/}
                     </Tr>
                     {isRowExpanded ? (
                         <Tr isExpanded={isRowExpanded}>
