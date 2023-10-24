@@ -48,8 +48,11 @@ spec:
               fieldPath: metadata.name
         - name: MONITORING_SENTRY_ENVIRONMENT
           value: development
-        - name: TELEMETRY_DISABLED
-          value: "true"
+        - name: TELEMETRY_WRITE_KEY
+          valueFrom:
+            secretKeyRef:
+              name: exhort-secret
+              key: telemetry-write-key
         livenessProbe:
           httpGet:
             path: /q/health/live
