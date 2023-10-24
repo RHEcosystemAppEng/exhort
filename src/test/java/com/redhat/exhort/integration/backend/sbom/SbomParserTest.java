@@ -36,7 +36,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import com.redhat.exhort.api.PackageRef;
 import com.redhat.exhort.integration.Constants;
 import com.redhat.exhort.integration.backend.sbom.cyclonedx.CycloneDxParser;
 import com.redhat.exhort.integration.backend.sbom.spdx.SpdxParser;
@@ -50,15 +49,6 @@ public class SbomParserTest {
 
   private static final Collection<String> MEDIA_TYPES =
       List.of(Constants.SPDX_MEDIATYPE_JSON, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON);
-  private static final PackageRef DEFAULT_MAVEN_ROOT =
-      DependencyTree.getDefaultRoot(Constants.MAVEN_PKG_MANAGER);
-  private static final PackageRef EXPECTED_ROOT =
-      PackageRef.builder()
-          .namespace("org.acme.dbaas")
-          .name("postgresql-orm-quarkus")
-          .version("1.0.0-SNAPSHOT")
-          .pkgManager(Constants.MAVEN_PKG_MANAGER)
-          .build();
 
   @Test
   void testInvalidContentType() {
@@ -132,7 +122,7 @@ public class SbomParserTest {
 
   @ParameterizedTest
   @MethodSource("getSbomUseCases")
-  void testSbom(String mediaType, String pkgManager, int direct, int transitive, PackageRef root) {
+  void testSbom(String mediaType, String pkgManager, int direct, int transitive) {
     SbomParser parser = SbomParserFactory.newInstance(mediaType);
     String fileName = String.format("%s/%s-sbom.json", getFolder(mediaType), pkgManager);
     InputStream file = getClass().getClassLoader().getResourceAsStream(fileName);
@@ -140,6 +130,18 @@ public class SbomParserTest {
     DependencyTree tree = parser.buildTree(file);
     assertEquals(direct, tree.dependencies().size());
     assertEquals(transitive, tree.transitiveCount());
+  }
+
+  @Test
+  void testSpdxReverseRelationships() {
+    String mediaType = Constants.SPDX_MEDIATYPE_JSON;
+    SbomParser parser = SbomParserFactory.newInstance(mediaType);
+    String fileName = "spdx/reverse-sbom.json";
+    InputStream file = getClass().getClassLoader().getResourceAsStream(fileName);
+
+    DependencyTree tree = parser.buildTree(file);
+    assertEquals(4, tree.dependencies().size());
+    assertEquals(120, tree.transitiveCount());
   }
 
   static Stream<String> getMediaTypes() {
@@ -150,31 +152,10 @@ public class SbomParserTest {
     return getMediaTypes()
         .mapMulti(
             (t, consumer) -> {
-              consumer.accept(arguments(t, Constants.MAVEN_PKG_MANAGER, 2, 7, EXPECTED_ROOT));
-              consumer.accept(
-                  arguments(
-                      t,
-                      Constants.GOLANG_PKG_MANAGER,
-                      2,
-                      3,
-                      PackageRef.builder()
-                          .namespace("github.com/fabric8-analytics")
-                          .name("cli-tools")
-                          .version("v0.2.6-0.20211007133944-2af417bfb988")
-                          .pkgManager(Constants.NPM_PKG_MANAGER)
-                          .build()));
-              consumer.accept(
-                  arguments(
-                      t,
-                      Constants.NPM_PKG_MANAGER,
-                      2,
-                      3,
-                      PackageRef.builder()
-                          .name("fabric8-analytics-lsp-server")
-                          .version("0.0.0-development")
-                          .pkgManager(Constants.NPM_PKG_MANAGER)
-                          .build()));
-              consumer.accept(arguments(t, Constants.PYPI_PKG_MANAGER, 2, 1, DEFAULT_MAVEN_ROOT));
+              consumer.accept(arguments(t, Constants.MAVEN_PKG_MANAGER, 2, 7));
+              consumer.accept(arguments(t, Constants.GOLANG_PKG_MANAGER, 2, 3));
+              consumer.accept(arguments(t, Constants.NPM_PKG_MANAGER, 2, 3));
+              consumer.accept(arguments(t, Constants.PYPI_PKG_MANAGER, 2, 1));
             });
   }
 
