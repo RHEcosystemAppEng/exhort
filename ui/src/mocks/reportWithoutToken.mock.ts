@@ -71,7 +71,7 @@ export const withoutTokenReport: AppData = {
                                         },
                                         {
                                             "id": "SNYK-PRIVATE-VULNERABILITY",
-                                            "title": "Sign up for a Snyk account to learn aboutn the vulnerabilities found",
+                                            "title": "Sign up for a Snyk account to learn about the vulnerabilities found",
                                             "source": "snyk",
                                             "cvssScore": 5.9,
                                             "severity": "MEDIUM",
@@ -208,7 +208,7 @@ export const withoutTokenReport: AppData = {
                                 },
                                 {
                                     "id": "SNYK-PRIVATE-VULNERABILITY",
-                                    "title": "Sign up for a Snyk account to learn aboutn the vulnerabilities found",
+                                    "title": "Sign up for a Snyk account to learn about the vulnerabilities found",
                                     "source": "snyk",
                                     "cvssScore": 5.9,
                                     "severity": "MEDIUM",
