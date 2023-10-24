@@ -44,7 +44,6 @@ public class SpdxWrapper {
   private MultiFormatStore inputStore;
   private SpdxDocument doc;
   private String uri;
-  private SpdxPackage root;
   private Collection<SpdxPackage> packages;
 
   public SpdxWrapper(MultiFormatStore inputStore, InputStream input)
@@ -58,29 +57,6 @@ public class SpdxWrapper {
       throw new SpdxProcessingException("Invalid " + SUPPORTED_VERSION + " document received");
     }
     this.packages = parsePackages();
-    this.root = findRoot();
-  }
-
-  public PackageRef getRootRef() {
-    if (root != null) {
-      return toPackageRef(root);
-    }
-    return null;
-  }
-
-  private SpdxPackage findRoot() throws InvalidSPDXAnalysisException {
-    if (doc.getName().isEmpty()) {
-      return null;
-    }
-    return packages.stream().filter(p -> hasRootName(p)).findFirst().orElse(null);
-  }
-
-  public boolean hasRootName(SpdxPackage p) {
-    try {
-      return p.getName().isPresent() && p.getName().get().equals(doc.getName().get());
-    } catch (InvalidSPDXAnalysisException e) {
-      throw new SpdxProcessingException("Unable to retrieve name for package", e);
-    }
   }
 
   public PackageRef toPackageRef(SpdxPackage spdxPackage) {
@@ -107,6 +83,25 @@ public class SpdxWrapper {
     }
   }
 
+  public boolean hasPurl(SpdxPackage pkg) {
+    try {
+      if (pkg.getExternalRefs() == null || pkg.getExternalRefs().isEmpty()) {
+        return false;
+      }
+      return pkg.getExternalRefs().stream()
+          .anyMatch(
+              ref -> {
+                try {
+                  return PURL_REFERENCE.equals(ref.getReferenceType().getIndividualURI());
+                } catch (InvalidSPDXAnalysisException e) {
+                  return false;
+                }
+              });
+    } catch (InvalidSPDXAnalysisException e) {
+      return false;
+    }
+  }
+
   public Collection<SpdxPackage> getPackages() {
     return this.packages;
   }
@@ -120,11 +115,26 @@ public class SpdxWrapper {
   }
 
   private Collection<SpdxPackage> parsePackages() throws InvalidSPDXAnalysisException {
+    Optional<String> docName = doc.getName();
     return inputStore
         .getAllItems(uri, SpdxConstants.CLASS_SPDX_PACKAGE)
-        .filter(p -> root == null || !p.getId().equals(root.getId()))
         .map(TypedValue::getId)
         .map(this::getPackageById)
+        .filter(this::hasPurl)
+        .filter(p -> !packageHasName(p, docName))
         .collect(Collectors.toList());
+  }
+
+  private boolean packageHasName(SpdxPackage pkg, Optional<String> expected) {
+    Optional<String> name;
+    try {
+      name = pkg.getName();
+      if (name.isPresent()) {
+        return name.get().equals(expected.orElse(null));
+      }
+      return expected.isEmpty();
+    } catch (InvalidSPDXAnalysisException e) {
+      throw new SpdxProcessingException("Unable to retrieve package name", e);
+    }
   }
 }

@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 
 import org.apache.camel.Exchange;
+import org.apache.camel.LoggingLevel;
 import org.apache.camel.Message;
 import org.apache.camel.builder.AggregationStrategies;
 import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
@@ -51,6 +52,7 @@ import jakarta.mail.internet.ParseException;
 import jakarta.ws.rs.ClientErrorException;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 
 @ApplicationScoped
 public class ExhortIntegration extends EndpointRouteBuilder {
@@ -78,7 +80,7 @@ public class ExhortIntegration extends EndpointRouteBuilder {
     restConfiguration().contextPath("/api/")
       .clientRequestValidation(true);
 
-    errorHandler(deadLetterChannel("seda:processFailedRequests"));
+    errorHandler(deadLetterChannel("direct:processInternalError"));
 
     onException(IllegalArgumentException.class)
       .routeId("onExhortIllegalArgumentException")
@@ -174,7 +176,17 @@ public class ExhortIntegration extends EndpointRouteBuilder {
       .process(analytics::trackAnalysis);
 
     from(seda("processFailedRequests"))
+      .routeId("processFailedRequests")
       .process(monitoringProcessor::processServerError);
+
+    from(direct("processInternalError"))
+      .routeId("processInternalError")
+      .log(LoggingLevel.ERROR, "${exception.stacktrace}")
+      .to(seda("processFailedRequests"))
+      .setBody().simple("${exception.message}")
+      .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+      .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.TEXT_PLAIN))
+      ;
     //fmt:on
   }
 
