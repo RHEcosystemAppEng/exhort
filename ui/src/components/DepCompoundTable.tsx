@@ -1,5 +1,4 @@
 import React, {useState} from 'react';
-
 import {
   Card,
   CardBody,
@@ -20,20 +19,17 @@ import {
 } from '@patternfly/react-core';
 import {ExpandableRowContent, Table, TableVariant, Tbody, Td, TdProps, Th, Thead, Tr} from '@patternfly/react-table';
 import FilterIcon from '@patternfly/react-icons/dist/esm/icons/filter-icon';
-
 import {Dependency} from '../api/report';
 import {useTable} from '../hooks/useTable';
 import {useTableControls} from '../hooks/useTableControls';
 import {SimplePagination} from './TableControls/SimplePagination';
 import {DependencyLink} from './DependencyLink';
-import {RemediationsCount} from './RemediationsCount';
 import {TransitiveDependenciesTable} from './TransitiveDependenciesTable';
 import {VulnerabilitiesTable} from './VulnerabilitiesTable';
 import {VulnerabilitiesCountBySeverity} from './VulnerabilitiesCountBySeverity'
 import {extractDependencyVersion} from '../utils/utils';
 import SearchIcon from '@patternfly/react-icons/dist/esm/icons/search-icon';
-
-import { ConditionalTableBody } from './TableControls/ConditionalTableBody';
+import {ConditionalTableBody} from './TableControls/ConditionalTableBody';
 
 export const DepCompoundTable = ({ name, dependencies }: { name: string; dependencies: Dependency[] }) => {
   // Filters

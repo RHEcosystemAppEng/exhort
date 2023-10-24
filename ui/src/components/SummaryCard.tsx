@@ -1,5 +1,4 @@
 import {
-  Button,
   Card,
   CardBody,
   CardHeader,
@@ -12,16 +11,12 @@ import {
   Grid,
   GridItem,
   Icon,
-  List,
-  ListItem,
   Title,
   TitleSizes,
 } from '@patternfly/react-core';
 import ExclamationTriangleIcon from '@patternfly/react-icons/dist/esm/icons/exclamation-triangle-icon';
-import RedhatIcon from '@patternfly/react-icons/dist/esm/icons/redhat-icon';
 import {useAppContext} from '../App';
 import {ChartCard} from './ChartCard';
-import SecurityCheckIcon from '../images/security-check.svg';
 import {getSourceName, getSources} from '../api/report';
 
 export const SummaryCard = () => {
