@@ -6,12 +6,11 @@ metadata:
     build.appstudio.redhat.com/commit_sha: '{{revision}}'
     build.appstudio.redhat.com/target_branch: '{{target_branch}}'
     pipelinesascode.tekton.dev/max-keep-runs: "3"
-    pipelinesascode.tekton.dev/on-event: '[push]'
-    pipelinesascode.tekton.dev/on-cel-expression: |
-      event == "push" && target_branch == "main" && ("pom.xml".pathChanged() || "api-spec/*".pathChanged() || "src/*".pathChanged() || "ui/*".pathChanged())
+    pipelinesascode.tekton.dev/on-cel-expression: event == "push" && target_branch
+      == "main"
   creationTimestamp: null
   labels:
-    appstudio.openshift.io/application: exhort-alpha
+    appstudio.openshift.io/application: exhort
     appstudio.openshift.io/component: exhort
     pipelines.appstudio.openshift.io/type: build
   name: exhort-on-push
@@ -23,7 +22,7 @@ spec:
   - name: git-url
     value: '{{repo_url}}'
   - name: output-image
-    value: quay.io/redhat-user-workloads/trusted-content-tenant/exhort-alpha/exhort:{{revision}}
+    value: quay.io/redhat-user-workloads/trusted-content-tenant/exhort/exhort:{{revision}}
   - name: path-context
     value: .
   - name: revision
@@ -74,11 +73,13 @@ spec:
       name: output-image
       type: string
     - default: .
-      description: The path to your source code
+      description: Path to the source code of an application's component from where
+        to build image.
       name: path-context
       type: string
     - default: Dockerfile
-      description: Path to the Dockerfile
+      description: Path to the Dockerfile inside the context specified by parameter
+        path-context
       name: dockerfile
       type: string
     - default: "false"
@@ -220,9 +221,9 @@ spec:
       taskRef:
         params:
         - name: name
-          value: buildah-10gb
+          value: buildah
         - name: bundle
-          value: quay.io/redhat-appstudio-tekton-catalog/task-buildah-10gb:0.1
+          value: quay.io/redhat-appstudio-tekton-catalog/task-buildah:0.1@sha256:93c318074716173ac4f77ec873fc2ab58fc102c8c49d525e7f7d6a12c13338c1
         - name: kind
           value: task
         resolver: bundles

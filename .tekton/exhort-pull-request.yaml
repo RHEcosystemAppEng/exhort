@@ -7,12 +7,12 @@ metadata:
     build.appstudio.redhat.com/pull_request_number: '{{pull_request_number}}'
     build.appstudio.redhat.com/target_branch: '{{target_branch}}'
     pipelinesascode.tekton.dev/max-keep-runs: "3"
-    pipelinesascode.tekton.dev/on-event: '[pull_request]'
-    pipelinesascode.tekton.dev/on-cel-expression: |
-      event == "pull_request" && target_branch == "main" && ("pom.xml".pathChanged() || "api-spec/*".pathChanged() || "src/*".pathChanged() || "ui/*".pathChanged())
+    pipelinesascode.tekton.dev/on-cel-expression: event == "pull_request" && target_branch
+      == "main" && ( "./***".pathChanged() || ".tekton/exhort-pull-request.yaml".pathChanged()
+      || "src/main/docker/Dockerfile.multi-stage".pathChanged() )
   creationTimestamp: null
   labels:
-    appstudio.openshift.io/application: exhort-alpha
+    appstudio.openshift.io/application: exhort
     appstudio.openshift.io/component: exhort
     pipelines.appstudio.openshift.io/type: build
   name: exhort-on-pull-request
@@ -26,7 +26,7 @@ spec:
   - name: image-expires-after
     value: 5d
   - name: output-image
-    value: quay.io/redhat-user-workloads/trusted-content-tenant/exhort-alpha/exhort:on-pr-{{revision}}
+    value: quay.io/redhat-user-workloads/trusted-content-tenant/exhort/exhort:on-pr-{{revision}}
   - name: path-context
     value: .
   - name: revision
@@ -77,11 +77,13 @@ spec:
       name: output-image
       type: string
     - default: .
-      description: The path to your source code
+      description: Path to the source code of an application's component from where
+        to build image.
       name: path-context
       type: string
     - default: Dockerfile
-      description: Path to the Dockerfile
+      description: Path to the Dockerfile inside the context specified by parameter
+        path-context
       name: dockerfile
       type: string
     - default: "false"
@@ -223,9 +225,9 @@ spec:
       taskRef:
         params:
         - name: name
-          value: buildah-8gb
+          value: buildah
         - name: bundle
-          value: quay.io/redhat-appstudio-tekton-catalog/task-buildah-8gb:0.1@sha256:1d1935316290512a383a1ab55a388d0c91877c4245e6c1ce5d6cce04a8ef1090
+          value: quay.io/redhat-appstudio-tekton-catalog/task-buildah:0.1@sha256:93c318074716173ac4f77ec873fc2ab58fc102c8c49d525e7f7d6a12c13338c1
         - name: kind
           value: task
         resolver: bundles
