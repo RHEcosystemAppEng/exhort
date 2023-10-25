@@ -37,6 +37,6 @@ export const forbiddenReport: AppData = {
   },
   sbomPath: 'https://tc-storage-mvp.s3.amazonaws.com/sboms/sbom.json',
   snykSignup:
-    'https://app.snyk.io/login?utm_campaign=Code-Ready-Analytics-2020&utm_source=code_ready&code_ready=FF1B53D9-57BE-4613-96D7-1D06066C38C9',
+    'https://app.snyk.io/login',
   dependencyHelper: {},
 };

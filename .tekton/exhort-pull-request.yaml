@@ -10,7 +10,8 @@ metadata:
     pipelinesascode.tekton.dev/on-cel-expression: event == "pull_request" && target_branch
       == "main" && ( ".tekton/exhort-pull-request.yaml".pathChanged() 
        || "ui/*".pathChanged() || "src/*".pathChanged() || "api-spec/*".pathChanged()
-       || "pom.xml".pathChanged() ) && !( event_title.startsWith("[skip ci]") || event_title.startsWith("[ci skip]") )
+       || "pom.xml".pathChanged() ) 
+       && !( event_title.startsWith("[skip ci]") || event_title.startsWith("[ci skip]") )
   creationTimestamp: null
   labels:
     appstudio.openshift.io/application: exhort
@@ -228,7 +229,7 @@ spec:
         - name: name
           value: buildah-8gb
         - name: bundle
-          value: quay.io/redhat-appstudio-tekton-catalog/task-buildah-8gb:0.1
+          value: quay.io/redhat-appstudio-tekton-catalog/task-buildah-8gb:0.1@sha256:1d1935316290512a383a1ab55a388d0c91877c4245e6c1ce5d6cce04a8ef1090
         - name: kind
           value: task
         resolver: bundles
