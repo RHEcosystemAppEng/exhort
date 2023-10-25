@@ -15,6 +15,14 @@ RUN ./mvnw package -Pnative -Dmaven.test.skip=true -Dquarkus.native.native-image
 
 ## Stage 2 : create the docker final image
 FROM registry.access.redhat.com/ubi9/ubi-minimal:9.2
+
+LABEL description="Red Hat Trusted Profile Analyzer - Exhort Backend Service"
+LABEL io.k8s.description="Red Hat Trusted Profile Analyzer - Exhort Backend Service"
+LABEL io.k8s.display-name="RHTPA Exhort"
+LABEL io.openshift.tags="rhtpa exhort"
+LABEL summary="The RHTPA Exhort backend exposes an API for allowing multiple clients \
+to submit an SPDX or CycloneDX SBOM of their project and get a vulnerability report"
+
 WORKDIR /work/
 COPY --from=build /code/target/*-runner /work/application
 
