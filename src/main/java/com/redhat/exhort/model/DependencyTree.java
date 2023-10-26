@@ -69,7 +69,7 @@ public record DependencyTree(Map<PackageRef, DirectDependency> dependencies) {
   }
 
   public Set<PackageRef> getAll() {
-    Set<PackageRef> result = new HashSet<>(dependencies.keySet());
+    var result = new HashSet<>(dependencies.keySet());
     dependencies
         .values()
         .forEach(

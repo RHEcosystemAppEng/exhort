@@ -27,8 +27,7 @@ public class PackageRefTest {
 
   @Test
   public void testNamespace() {
-    PackageRef ref =
-        new PackageRef("pkg:golang/google.golang.org/genproto#googleapis/api/annotations");
+    var ref = new PackageRef("pkg:golang/google.golang.org/genproto#googleapis/api/annotations");
     assertEquals("google.golang.org/genproto", ref.name());
 
     ref = new PackageRef("pkg:golang/go.opencensus.io@v0.21.0");
@@ -46,8 +45,7 @@ public class PackageRefTest {
 
   @Test
   public void testVersion() {
-    PackageRef ref =
-        new PackageRef("pkg:golang/google.golang.org/genproto#googleapis/api/annotations");
+    var ref = new PackageRef("pkg:golang/google.golang.org/genproto#googleapis/api/annotations");
     assertNull(ref.version());
 
     ref = new PackageRef("pkg:golang/go.opencensus.io@v0.21.0");

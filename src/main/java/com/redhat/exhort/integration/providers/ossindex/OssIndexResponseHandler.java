@@ -62,7 +62,7 @@ public class OssIndexResponseHandler extends ProviderResponseHandler {
         .entrySet()
         .forEach(
             e -> {
-              List<Issue> issues = newExchange.get(e.getKey());
+              var issues = newExchange.get(e.getKey());
               if (issues != null) {
                 e.getValue().addAll(issues);
               }
@@ -78,7 +78,7 @@ public class OssIndexResponseHandler extends ProviderResponseHandler {
 
   public Map<String, List<Issue>> responseToIssues(byte[] response, String privateProviders)
       throws IOException {
-    ArrayNode json = (ArrayNode) mapper.readTree(response);
+    var json = (ArrayNode) mapper.readTree(response);
     return getIssues(json);
   }
 
@@ -86,11 +86,11 @@ public class OssIndexResponseHandler extends ProviderResponseHandler {
     Map<String, List<Issue>> reports = new HashMap<>();
     response.forEach(
         n -> {
-          String pkgRef = n.get("coordinates").asText();
+          var pkgRef = n.get("coordinates").asText();
           try {
-            PackageRef ref = PackageRef.builder().purl(pkgRef).build();
+            var ref = PackageRef.builder().purl(pkgRef).build();
             List<Issue> issues = new ArrayList<>();
-            ArrayNode vulnerabilities = (ArrayNode) n.get("vulnerabilities");
+            var vulnerabilities = (ArrayNode) n.get("vulnerabilities");
             vulnerabilities.forEach(v -> issues.add(toIssue(v)));
             if (!issues.isEmpty()) {
               reports.put(ref.name(), issues);
@@ -104,7 +104,7 @@ public class OssIndexResponseHandler extends ProviderResponseHandler {
   }
 
   private Issue toIssue(JsonNode data) {
-    float score = data.get("cvssScore").floatValue();
+    var score = data.get("cvssScore").floatValue();
     return new Issue()
         .id(data.get("id").asText())
         .title(data.get("title").asText())

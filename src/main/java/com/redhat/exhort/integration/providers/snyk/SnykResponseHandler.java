@@ -57,9 +57,9 @@ public class SnykResponseHandler extends ProviderResponseHandler {
       @Body byte[] providerResponse,
       @ExchangeProperty(Constants.PROVIDER_PRIVATE_DATA_PROPERTY) String privateProviders)
       throws IOException {
-    boolean filterUnique = privateProviders != null && privateProviders.contains(SNYK_PROVIDER);
+    var filterUnique = privateProviders != null && privateProviders.contains(SNYK_PROVIDER);
 
-    JsonNode snykResponse = mapper.readTree((byte[]) providerResponse);
+    var snykResponse = mapper.readTree((byte[]) providerResponse);
     return getIssues(snykResponse, filterUnique);
   }
 
@@ -70,10 +70,10 @@ public class SnykResponseHandler extends ProviderResponseHandler {
         .elements()
         .forEachRemaining(
             n -> {
-              String pkgName = n.get("pkgName").asText();
-              String issueId = n.get("issueId").asText();
-              JsonNode issueData = snykResponse.get("issuesData").get(issueId);
-              List<Issue> issues = reports.get(pkgName);
+              var pkgName = n.get("pkgName").asText();
+              var issueId = n.get("issueId").asText();
+              var issueData = snykResponse.get("issuesData").get(issueId);
+              var issues = reports.get(pkgName);
               if (issues == null) {
                 issues = new ArrayList<>();
                 reports.put(pkgName, issues);
@@ -86,9 +86,9 @@ public class SnykResponseHandler extends ProviderResponseHandler {
   private Issue toIssue(String id, JsonNode data, boolean filterUnique) {
     List<String> cves = new ArrayList<>();
     data.withArray("/identifiers/CVE").elements().forEachRemaining(cve -> cves.add(cve.asText()));
-    String cvssV3 = data.get("CVSSv3").asText();
+    var cvssV3 = data.get("CVSSv3").asText();
 
-    Remediation remediation = new Remediation();
+    var remediation = new Remediation();
     data.withArray("/fixedIn")
         .elements()
         .forEachRemaining(f -> remediation.addFixedInItem(f.asText()));

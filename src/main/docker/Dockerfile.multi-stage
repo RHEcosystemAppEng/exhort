@@ -9,7 +9,7 @@ COPY --chown=quarkus:quarkus ui /code/ui
 
 USER quarkus
 WORKDIR /code
-RUN ./mvnw -B org.apache.maven.plugins:maven-dependency-plugin:3.1.2:go-offline
+RUN ./mvnw -B org.apache.maven.plugins:maven-dependency-plugin:3.6.1:go-offline
 COPY --chown=quarkus:quarkus src /code/src
 RUN ./mvnw package -Pnative -Dmaven.test.skip=true -Dquarkus.native.native-image-xmx=8g
 

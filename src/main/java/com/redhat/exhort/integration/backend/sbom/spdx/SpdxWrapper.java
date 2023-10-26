@@ -21,7 +21,6 @@ package com.redhat.exhort.integration.backend.sbom.spdx;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -52,7 +51,7 @@ public class SpdxWrapper {
     this.inputStore.deSerialize(input, false);
     this.uri = inputStore.getDocumentUris().get(0);
     this.doc = new SpdxDocument(inputStore, uri, null, false);
-    List<String> verify = doc.verify(Version.TWO_POINT_THREE_VERSION);
+    var verify = doc.verify(Version.TWO_POINT_THREE_VERSION);
     if (!verify.isEmpty()) {
       throw new SpdxProcessingException("Invalid " + SUPPORTED_VERSION + " document received");
     }
@@ -115,7 +114,7 @@ public class SpdxWrapper {
   }
 
   private Collection<SpdxPackage> parsePackages() throws InvalidSPDXAnalysisException {
-    Optional<String> docName = doc.getName();
+    var docName = doc.getName();
     return inputStore
         .getAllItems(uri, SpdxConstants.CLASS_SPDX_PACKAGE)
         .map(TypedValue::getId)

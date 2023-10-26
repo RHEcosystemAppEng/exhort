@@ -55,12 +55,16 @@ public class PackageRef {
     if (purl.getNamespace() == null) {
       return purl.getName();
     }
-    switch (purl.getType()) {
-      case Constants.MAVEN_PKG_MANAGER:
-        return new StringBuilder(purl.getNamespace()).append(":").append(purl.getName()).toString();
-      default:
-        return new StringBuffer(purl.getNamespace()).append("/").append(purl.getName()).toString();
-    }
+    return switch (purl.getType()) {
+      case Constants.MAVEN_PKG_MANAGER -> new StringBuilder(purl.getNamespace())
+          .append(":")
+          .append(purl.getName())
+          .toString();
+      default -> new StringBuffer(purl.getNamespace())
+          .append("/")
+          .append(purl.getName())
+          .toString();
+    };
   }
 
   public String version() {
@@ -84,7 +88,7 @@ public class PackageRef {
   }
 
   public static PackageRef parse(String gav, String pkgManager) {
-    String[] parts = gav.split(":");
+    var parts = gav.split(":");
     if (parts.length < 4 || parts.length > 6) {
       throw new IllegalArgumentException("Unexpected GAV format. " + gav);
     }

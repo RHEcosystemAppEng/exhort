@@ -52,10 +52,10 @@ public class SpdxParser extends SbomParser {
   @Override
   protected DependencyTree buildTree(InputStream input) {
     try {
-      MultiFormatStore inputStore = new MultiFormatStore(new InMemSpdxStore(), Format.JSON_PRETTY);
-      SpdxWrapper wrapper = new SpdxWrapper(inputStore, input);
-      Map<PackageRef, DirectDependency> deps = buildDeps(wrapper);
-      DependencyTree tree = new DependencyTree(deps);
+      var inputStore = new MultiFormatStore(new InMemSpdxStore(), Format.JSON_PRETTY);
+      var wrapper = new SpdxWrapper(inputStore, input);
+      var deps = buildDeps(wrapper);
+      var tree = new DependencyTree(deps);
       return tree;
     } catch (SpdxProcessingException | InvalidSPDXAnalysisException | IOException e) {
       LOGGER.error("Unable to parse the SPDX SBOM file", e);
@@ -66,11 +66,11 @@ public class SpdxParser extends SbomParser {
   }
 
   private Map<PackageRef, DirectDependency> buildDeps(SpdxWrapper wrapper) {
-    Collection<SpdxPackage> packages = wrapper.getPackages();
+    var packages = wrapper.getPackages();
     Map<String, Set<String>> links = new HashMap<>();
     packages.stream().forEach(p -> createPackageLinks(p, packages, links));
 
-    Set<String> directDeps =
+    var directDeps =
         links.keySet().stream()
             .filter(
                 k ->
@@ -109,7 +109,7 @@ public class SpdxParser extends SbomParser {
   private void createPackageLinks(
       SpdxPackage p, Collection<SpdxPackage> packages, Map<String, Set<String>> links) {
     try {
-      String pkgId = p.getId();
+      var pkgId = p.getId();
       if (packages.stream().noneMatch(pkg -> pkg.getId().equals(pkgId))) {
         return;
       }
@@ -160,31 +160,25 @@ public class SpdxParser extends SbomParser {
     IGNORED;
 
     static RelationshipDirection fromRelationshipType(RelationshipType type) {
-      switch (type) {
-        case DEPENDS_ON:
-        case CONTAINS:
-        case BUILD_DEPENDENCY_OF:
-        case OPTIONAL_COMPONENT_OF:
-        case OPTIONAL_DEPENDENCY_OF:
-        case PROVIDED_DEPENDENCY_OF:
-        case TEST_DEPENDENCY_OF:
-        case RUNTIME_DEPENDENCY_OF:
-        case DEV_DEPENDENCY_OF:
-        case ANCESTOR_OF:
-          return FORWARD;
-        case DEPENDENCY_OF:
-        case DESCENDANT_OF:
-        case PACKAGE_OF:
-        case CONTAINED_BY:
-          return BACKWARDS;
-        default:
-          return IGNORED;
-      }
+      return switch (type) {
+        case DEPENDS_ON,
+            CONTAINS,
+            BUILD_DEPENDENCY_OF,
+            OPTIONAL_COMPONENT_OF,
+            OPTIONAL_DEPENDENCY_OF,
+            PROVIDED_DEPENDENCY_OF,
+            TEST_DEPENDENCY_OF,
+            RUNTIME_DEPENDENCY_OF,
+            DEV_DEPENDENCY_OF,
+            ANCESTOR_OF -> FORWARD;
+        case DEPENDENCY_OF, DESCENDANT_OF, PACKAGE_OF, CONTAINED_BY -> BACKWARDS;
+        default -> IGNORED;
+      };
     }
   }
 
   private void addLink(Map<String, Set<String>> links, String fromId, String toId) {
-    Set<String> toRefs = links.get(fromId);
+    var toRefs = links.get(fromId);
     if (toRefs == null) {
       toRefs = new HashSet<>();
       links.put(fromId, toRefs);
@@ -195,11 +189,11 @@ public class SpdxParser extends SbomParser {
   }
 
   private Set<String> addAllTransitive(String depKey, Map<String, Set<String>> links) {
-    Set<String> deps = links.get(depKey);
+    var deps = links.get(depKey);
     if (deps == null) {
       return Collections.emptySet();
     }
-    Set<String> result = new HashSet<>(deps);
+    var result = new HashSet<>(deps);
     deps.stream()
         .forEach(
             d -> {

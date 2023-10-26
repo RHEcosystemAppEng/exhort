@@ -27,7 +27,6 @@ import java.util.Arrays;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
-import org.apache.camel.Message;
 import org.apache.camel.builder.AggregationStrategies;
 import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
 import org.apache.camel.component.micrometer.MicrometerConstants;
@@ -37,10 +36,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.redhat.exhort.analytics.AnalyticsService;
 import com.redhat.exhort.integration.Constants;
 import com.redhat.exhort.integration.VulnerabilityProvider;
-import com.redhat.exhort.integration.backend.sbom.SbomParser;
 import com.redhat.exhort.integration.backend.sbom.SbomParserFactory;
 import com.redhat.exhort.integration.providers.ProviderAggregationStrategy;
-import com.redhat.exhort.model.DependencyTree;
 import com.redhat.exhort.monitoring.MonitoringProcessor;
 
 import io.micrometer.core.instrument.MeterRegistry;
@@ -199,15 +196,15 @@ public class ExhortIntegration extends EndpointRouteBuilder {
     } catch (ParseException e) {
       throw new ClientErrorException(Response.Status.UNSUPPORTED_MEDIA_TYPE, e);
     }
-    SbomParser parser = SbomParserFactory.newInstance(ct.getBaseType());
+    var parser = SbomParserFactory.newInstance(ct.getBaseType());
     exchange.setProperty(Constants.SBOM_TYPE_PARAM, ct.getBaseType());
-    DependencyTree tree = parser.parse(exchange.getIn().getBody(InputStream.class));
+    var tree = parser.parse(exchange.getIn().getBody(InputStream.class));
     exchange.setProperty(Constants.DEPENDENCY_TREE_PROPERTY, tree);
     exchange.getIn().setBody(tree);
   }
 
   private void cleanUpHeaders(Exchange exchange) {
-    Message msg = exchange.getIn();
+    var msg = exchange.getIn();
     msg.removeHeader(VERBOSE_MODE_HEADER);
     msg.removeHeaders("ex-.*-user");
     msg.removeHeaders("ex-.*-token");

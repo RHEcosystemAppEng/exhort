@@ -25,8 +25,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -139,16 +137,13 @@ public abstract class ProviderResponseHandler {
         httpException.getResponseBody() != null
             ? httpException.getResponseBody()
             : httpException.getMessage();
-    switch (httpException.getStatusCode()) {
-      case 401:
-        return text + ": Verify the provided credentials are valid.";
-      case 403:
-        return text + ": The provided credentials don't have the required permissions.";
-      case 429:
-        return text + ": The rate limit has been exceeded.";
-      default:
-        return text + ": " + defaultReason;
-    }
+    return text
+        + switch (httpException.getStatusCode()) {
+          case 401 -> ": Verify the provided credentials are valid.";
+          case 403 -> ": The provided credentials don't have the required permissions.";
+          case 429 -> ": The rate limit has been exceeded.";
+          default -> ": " + defaultReason;
+        };
   }
 
   public abstract Map<String, List<Issue>> responseToIssues(
@@ -172,12 +167,12 @@ public abstract class ProviderResponseHandler {
               e.getValue()
                   .forEach(
                       i -> {
-                        Map<String, List<Issue>> issues = sourcesIssues.get(i.getSource());
+                        var issues = sourcesIssues.get(i.getSource());
                         if (issues == null) {
                           issues = new HashMap<>();
                           sourcesIssues.put(i.getSource(), issues);
                         }
-                        List<Issue> depIssues = issues.get(e.getKey());
+                        var depIssues = issues.get(e.getKey());
                         if (depIssues == null) {
                           depIssues = new ArrayList<>();
                           issues.put(e.getKey(), depIssues);
@@ -193,14 +188,13 @@ public abstract class ProviderResponseHandler {
       @ExchangeProperty(Constants.DEPENDENCY_TREE_PROPERTY) DependencyTree tree,
       @ExchangeProperty(Constants.PROVIDER_PRIVATE_DATA_PROPERTY) String privateProviders)
       throws IOException {
-    Map<String, Map<String, List<Issue>>> sourcesIssues = splitIssuesBySource(issuesData);
+    var sourcesIssues = splitIssuesBySource(issuesData);
     Map<String, Source> reports = new HashMap<>();
     sourcesIssues
         .keySet()
         .forEach(
-            k -> {
-              reports.put(k, buildReportForSource(sourcesIssues.get(k), tree, privateProviders));
-            });
+            k ->
+                reports.put(k, buildReportForSource(sourcesIssues.get(k), tree, privateProviders)));
     return new ProviderReport().status(defaultOkStatus(getProviderName())).sources(reports);
   }
 
@@ -210,9 +204,9 @@ public abstract class ProviderResponseHandler {
     tree.dependencies().entrySet().stream()
         .forEach(
             e -> {
-              String ref = e.getKey().name();
-              List<Issue> issues = issuesData.get(ref);
-              DependencyReport directReport = new DependencyReport().ref(e.getKey());
+              var ref = e.getKey().name();
+              var issues = issuesData.get(ref);
+              var directReport = new DependencyReport().ref(e.getKey());
               if (issues == null) {
                 issues = Collections.emptyList();
               }
@@ -226,15 +220,14 @@ public abstract class ProviderResponseHandler {
                       .map(
                           t -> {
                             List<Issue> transitiveIssues = Collections.emptyList();
-                            String tRef = t.name();
+                            var tRef = t.name();
                             if (issuesData.get(tRef) != null) {
                               transitiveIssues =
                                   issuesData.get(tRef).stream()
                                       .sorted(Comparator.comparing(Issue::getCvssScore).reversed())
                                       .collect(Collectors.toList());
                             }
-                            Optional<Issue> highestTransitive =
-                                transitiveIssues.stream().findFirst();
+                            var highestTransitive = transitiveIssues.stream().findFirst();
                             if (highestTransitive.isPresent()) {
                               if (directReport.getHighestVulnerability() == null
                                   || directReport.getHighestVulnerability().getCvssScore()
@@ -261,15 +254,12 @@ public abstract class ProviderResponseHandler {
   }
 
   private SourceSummary buildSummary(Map<String, List<Issue>> issuesData, DependencyTree tree) {
-    VulnerabilityCounter counter = new VulnerabilityCounter();
-    Set<String> directRefs =
+    var counter = new VulnerabilityCounter();
+    var directRefs =
         tree.dependencies().keySet().stream().map(PackageRef::name).collect(Collectors.toSet());
     issuesData
         .entrySet()
-        .forEach(
-            e -> {
-              incrementCounter(e.getValue(), counter, directRefs.contains(e.getKey()));
-            });
+        .forEach(e -> incrementCounter(e.getValue(), counter, directRefs.contains(e.getKey())));
     return counter.getSummary();
   }
 
@@ -280,20 +270,12 @@ public abstract class ProviderResponseHandler {
     }
     issues.forEach(
         i -> {
-          int vulnerabilities = countVulnerabilities(i);
+          var vulnerabilities = countVulnerabilities(i);
           switch (i.getSeverity()) {
-            case CRITICAL:
-              counter.critical.addAndGet(vulnerabilities);
-              break;
-            case HIGH:
-              counter.high.addAndGet(vulnerabilities);
-              break;
-            case MEDIUM:
-              counter.medium.addAndGet(vulnerabilities);
-              break;
-            case LOW:
-              counter.low.addAndGet(vulnerabilities);
-              break;
+            case CRITICAL -> counter.critical.addAndGet(vulnerabilities);
+            case HIGH -> counter.high.addAndGet(vulnerabilities);
+            case MEDIUM -> counter.medium.addAndGet(vulnerabilities);
+            case LOW -> counter.low.addAndGet(vulnerabilities);
           }
           counter.total.addAndGet(vulnerabilities);
           if (isDirect) {

@@ -19,13 +19,11 @@
 package com.redhat.exhort.integration.providers.snyk;
 
 import java.util.Collections;
-import java.util.Optional;
 import java.util.Set;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.redhat.exhort.api.PackageRef;
 import com.redhat.exhort.config.ObjectMapperProducer;
@@ -40,23 +38,23 @@ public class SnykRequestBuilder {
   private ObjectMapper mapper = ObjectMapperProducer.newInstance();
 
   public String fromDiGraph(DependencyTree req) throws JsonProcessingException {
-    PackageRef defaultRoot = DependencyTree.getDefaultRoot(getPkgManager(req));
-    ObjectNode depGraph = mapper.createObjectNode();
+    var defaultRoot = DependencyTree.getDefaultRoot(getPkgManager(req));
+    var depGraph = mapper.createObjectNode();
     depGraph.put("schemaVersion", "1.2.0");
     depGraph.set(
         "pkgManager",
         mapper.createObjectNode().put("name", toSnykPackageManager(defaultRoot.purl().getType())));
 
     depGraph.set("pkgs", addPackages(depGraph, req, defaultRoot));
-    ObjectNode root = mapper.createObjectNode().set("depGraph", depGraph);
+    var root = mapper.createObjectNode().set("depGraph", depGraph);
     return mapper.writeValueAsString(root);
   }
 
   private JsonNode addPackages(ObjectNode depGraph, DependencyTree tree, PackageRef root) {
-    Set<PackageRef> allDeps = tree.getAll();
-    ObjectNode rootNode = createNode(root, allDeps);
-    ArrayNode nodes = mapper.createArrayNode().add(rootNode);
-    ArrayNode pkgs = mapper.createArrayNode().add(createPkg(root));
+    var allDeps = tree.getAll();
+    var rootNode = createNode(root, allDeps);
+    var nodes = mapper.createArrayNode().add(rootNode);
+    var pkgs = mapper.createArrayNode().add(createPkg(root));
 
     allDeps.stream()
         .forEach(
@@ -80,7 +78,7 @@ public class SnykRequestBuilder {
   }
 
   private ObjectNode createNode(PackageRef source, Set<PackageRef> deps) {
-    ArrayNode depsNode = mapper.createArrayNode();
+    var depsNode = mapper.createArrayNode();
     deps.forEach(e -> depsNode.add(mapper.createObjectNode().put("nodeId", getId(e))));
     return mapper
         .createObjectNode()
@@ -94,7 +92,7 @@ public class SnykRequestBuilder {
   }
 
   private String getPkgManager(DependencyTree tree) {
-    Optional<PackageRef> first = tree.dependencies().keySet().stream().findFirst();
+    var first = tree.dependencies().keySet().stream().findFirst();
     if (first.isEmpty()) {
       return Constants.MAVEN_PKG_MANAGER;
     }
@@ -102,13 +100,10 @@ public class SnykRequestBuilder {
   }
 
   private String toSnykPackageManager(String pkgManager) {
-    switch (pkgManager) {
-      case Constants.GOLANG_PKG_MANAGER:
-        return "gomodules";
-      case Constants.PYPI_PKG_MANAGER:
-        return "pip";
-      default:
-        return pkgManager;
-    }
+    return switch (pkgManager) {
+      case Constants.GOLANG_PKG_MANAGER -> "gomodules";
+      case Constants.PYPI_PKG_MANAGER -> "pip";
+      default -> pkgManager;
+    };
   }
 }

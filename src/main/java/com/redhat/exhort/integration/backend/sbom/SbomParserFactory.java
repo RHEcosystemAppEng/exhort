@@ -30,15 +30,11 @@ import jakarta.ws.rs.core.Response;
 public class SbomParserFactory {
 
   public static final SbomParser newInstance(String mediaType) {
-    switch (mediaType) {
-      case CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON:
-        return new CycloneDxParser();
-      case Constants.SPDX_MEDIATYPE_JSON:
-        return new SpdxParser();
-      default:
-        throw new ClientErrorException(
-            "Unsupported Content-Type header: " + mediaType,
-            Response.Status.UNSUPPORTED_MEDIA_TYPE);
-    }
+    return switch (mediaType) {
+      case CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON -> new CycloneDxParser();
+      case Constants.SPDX_MEDIATYPE_JSON -> new SpdxParser();
+      default -> throw new ClientErrorException(
+          "Unsupported Content-Type header: " + mediaType, Response.Status.UNSUPPORTED_MEDIA_TYPE);
+    };
   }
 }

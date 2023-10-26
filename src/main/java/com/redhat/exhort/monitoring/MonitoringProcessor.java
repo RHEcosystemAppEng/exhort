@@ -18,7 +18,6 @@
 
 package com.redhat.exhort.monitoring;
 
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -54,11 +53,11 @@ public class MonitoringProcessor {
   @Inject MonitoringClient client;
 
   public void processOriginalRequest(Exchange exchange) {
-    Map<String, String> metadata =
+    var metadata =
         Stream.of(LOGGED_REQUEST_HEADERS)
             .filter(e -> exchange.getIn().getHeaders().containsKey(e))
             .collect(Collectors.toMap(h -> h, h -> exchange.getIn().getHeader(h, String.class)));
-    MonitoringContext context = exchange.getProperty(MONITORING_CONTEXT, MonitoringContext.class);
+    var context = exchange.getProperty(MONITORING_CONTEXT, MonitoringContext.class);
     if (context == null) {
       context =
           new MonitoringContext(
@@ -72,11 +71,11 @@ public class MonitoringProcessor {
   }
 
   public void processProviderError(Exchange exchange, Exception exception, String providerName) {
-    MonitoringContext context = exchange.getProperty(MONITORING_CONTEXT, MonitoringContext.class);
+    var context = exchange.getProperty(MONITORING_CONTEXT, MonitoringContext.class);
     if (context == null) {
       return;
     }
-    MonitoringContext errorContext = MonitoringContext.copyOf(context);
+    var errorContext = MonitoringContext.copyOf(context);
     errorContext.breadcrumbs().add(exchange.getIn().getBody(String.class));
     errorContext.tags().put(PROVIDER_TAG, providerName);
     errorContext.tags().put(ERROR_TYPE_TAG, PROVIDER_ERROR_TYPE);
@@ -105,7 +104,7 @@ public class MonitoringProcessor {
     context.tags().put(ERROR_TYPE_TAG, errorType);
     Stream.of(LOGGED_PROPERTIES)
         .forEach(p -> context.metadata().put(p, exchange.getProperty(p, String.class)));
-    Exception exception = exchange.getProperty(Exchange.EXCEPTION_CAUGHT, Exception.class);
+    var exception = exchange.getProperty(Exchange.EXCEPTION_CAUGHT, Exception.class);
     client.reportException(exception, context);
   }
 }

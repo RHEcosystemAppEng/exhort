@@ -26,8 +26,6 @@ import org.apache.camel.Body;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.redhat.exhort.api.PackageRef;
 import com.redhat.exhort.config.ObjectMapperProducer;
 import com.redhat.exhort.model.DependencyTree;
@@ -49,7 +47,7 @@ public class OssIndexRequestBuilder {
               if (bulks.isEmpty()) {
                 bulks.add(new ArrayList<>());
               }
-              List<PackageRef> bulk = bulks.get(bulks.size() - 1);
+              var bulk = bulks.get(bulks.size() - 1);
               if (bulk.size() == BULK_SIZE) {
                 bulk = new ArrayList<>();
                 bulks.add(bulk);
@@ -64,13 +62,13 @@ public class OssIndexRequestBuilder {
   }
 
   public String buildRequest(List<PackageRef> packages) throws JsonProcessingException {
-    ArrayNode coordinates = mapper.createArrayNode();
+    var coordinates = mapper.createArrayNode();
     packages.stream()
         .map(PackageRef::purl)
         .filter(Objects::nonNull)
         .forEach(purl -> coordinates.add(purl.getCoordinates()));
 
-    ObjectNode root = mapper.createObjectNode().set("coordinates", coordinates);
+    var root = mapper.createObjectNode().set("coordinates", coordinates);
     return mapper.writeValueAsString(root);
   }
 }

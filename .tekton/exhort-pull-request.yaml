@@ -11,7 +11,7 @@ metadata:
       == "main" && ( ".tekton/exhort-pull-request.yaml".pathChanged() 
        || "ui/*".pathChanged() || "src/*".pathChanged() || "api-spec/*".pathChanged()
        || "pom.xml".pathChanged() ) 
-       && !( event_title.startsWith("[skip ci]") || event_title.startsWith("[ci skip]") )
+       && !( event_title.contains("[skip ci]") || event_title.contains("[ci skip]") )
   creationTimestamp: null
   labels:
     appstudio.openshift.io/application: exhort
