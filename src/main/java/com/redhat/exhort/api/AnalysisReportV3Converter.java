@@ -34,13 +34,12 @@ import com.redhat.exhort.api.v3.Severity;
 import com.redhat.exhort.api.v3.Summary;
 import com.redhat.exhort.api.v3.TransitiveDependencyReport;
 import com.redhat.exhort.api.v4.ProviderReport;
-import com.redhat.exhort.api.v4.RemediationTrustedContent;
 import com.redhat.exhort.api.v4.Source;
 
 public class AnalysisReportV3Converter {
 
   public static AnalysisReport convert(com.redhat.exhort.api.v4.AnalysisReport report) {
-    AnalysisReport v3 = new AnalysisReport();
+    var v3 = new AnalysisReport();
     v3.summary(getSummary(report));
     report.getProviders().values().stream()
         .map(ProviderReport::getSources)
@@ -53,7 +52,7 @@ public class AnalysisReportV3Converter {
   }
 
   private static Summary getSummary(com.redhat.exhort.api.v4.AnalysisReport report) {
-    Summary summary =
+    var summary =
         new Summary()
             .dependencies(
                 new DependenciesSummary()
@@ -62,7 +61,7 @@ public class AnalysisReportV3Converter {
     report.getProviders().values().stream()
         .forEach(
             p -> {
-              com.redhat.exhort.api.v4.ProviderStatus status = p.getStatus();
+              var status = p.getStatus();
               summary.addProviderStatusesItem(
                   new ProviderStatus()
                       .ok(status.getOk())
@@ -74,7 +73,7 @@ public class AnalysisReportV3Converter {
   }
 
   private static DependencyReport getReport(com.redhat.exhort.api.v4.DependencyReport d) {
-    DependencyReport dep =
+    var dep =
         new DependencyReport()
             .ref(d.getRef())
             .highestVulnerability(getIssue(d.getHighestVulnerability()))
@@ -87,7 +86,7 @@ public class AnalysisReportV3Converter {
 
   private static TransitiveDependencyReport getTransitive(
       com.redhat.exhort.api.v4.TransitiveDependencyReport t) {
-    TransitiveDependencyReport transitive =
+    var transitive =
         new TransitiveDependencyReport()
             .ref(t.getRef())
             .highestVulnerability(getIssue(t.getHighestVulnerability()))
@@ -114,8 +113,8 @@ public class AnalysisReportV3Converter {
     issues.forEach(
         i -> {
           if (i.getRemediation() != null && i.getRemediation().getTrustedContent() != null) {
-            RemediationTrustedContent tc = i.getRemediation().getTrustedContent();
-            Remediation r =
+            var tc = i.getRemediation().getTrustedContent();
+            var r =
                 new Remediation()
                     .issueRef(i.getId())
                     .mavenPackage(tc.getMavenPackage())

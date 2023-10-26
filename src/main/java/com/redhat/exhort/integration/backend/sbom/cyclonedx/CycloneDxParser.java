@@ -53,8 +53,8 @@ public class CycloneDxParser extends SbomParser {
   @Override
   protected DependencyTree buildTree(InputStream input) {
     try {
-      DependencyTree.Builder treeBuilder = DependencyTree.builder();
-      Bom bom = mapper.readValue(input, Bom.class);
+      var treeBuilder = DependencyTree.builder();
+      var bom = mapper.readValue(input, Bom.class);
       Map<String, PackageRef> componentPurls = new HashMap<>();
       if (bom.getComponents() != null) {
         componentPurls.putAll(
@@ -70,7 +70,7 @@ public class CycloneDxParser extends SbomParser {
         throw new ClientErrorException(
             "Unable to parse CycloneDX SBOM. Missing metadata.", Response.Status.BAD_REQUEST);
       }
-      Optional<Component> rootComponent = Optional.ofNullable(bom.getMetadata().getComponent());
+      var rootComponent = Optional.ofNullable(bom.getMetadata().getComponent());
       String rootRef = null;
       if (rootComponent.isPresent()) {
         rootRef = rootComponent.get().getBomRef();
@@ -91,7 +91,7 @@ public class CycloneDxParser extends SbomParser {
     }
     Map<PackageRef, DirectDependency.Builder> direct = new HashMap<>();
     if (rootRef == null) {
-      List<String> transitive =
+      var transitive =
           bom.getDependencies().stream()
               .map(Dependency::getDependencies)
               .filter(Objects::nonNull)
@@ -114,13 +114,13 @@ public class CycloneDxParser extends SbomParser {
                 d.getDependencies()
                     .forEach(
                         rootDep -> {
-                          PackageRef ref = componentPurls.get(rootDep.getRef());
+                          var ref = componentPurls.get(rootDep.getRef());
                           direct.put(
                               ref, DirectDependency.builder().ref(ref).transitive(new HashSet<>()));
                         });
               } else if (d.getDependencies() != null) {
-                PackageRef source = componentPurls.get(d.getRef());
-                DirectDependency.Builder directBuilder = direct.get(source);
+                var source = componentPurls.get(d.getRef());
+                var directBuilder = direct.get(source);
                 if (directBuilder == null) {
                   direct.values().stream()
                       .filter(v -> v.transitive.contains(source))

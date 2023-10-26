@@ -146,15 +146,11 @@ public abstract class AbstractAnalysisTest {
   }
 
   protected String getContentType(String sbomType) {
-    switch (sbomType) {
-      case "cyclonedx":
-        return CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON;
-      case "spdx":
-        return Constants.SPDX_MEDIATYPE_JSON;
-      default:
-        fail("Sbom Type not implemented: " + sbomType);
-    }
-    return null;
+    return switch (sbomType) {
+      case "cyclonedx" -> CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON;
+      case "spdx" -> Constants.SPDX_MEDIATYPE_JSON;
+      default -> fail("Sbom Type not implemented: " + sbomType);
+    };
   }
 
   protected File loadSBOMFile(String sbomType) {
@@ -176,14 +172,11 @@ public abstract class AbstractAnalysisTest {
 
   protected void verifyRequest(String provider, Map<String, String> headers, boolean isEmpty) {
     switch (provider) {
-      case Constants.SNYK_PROVIDER:
-        verifySnykRequest(headers.get(Constants.SNYK_TOKEN_HEADER));
-        break;
-      case Constants.OSS_INDEX_PROVIDER:
-        verifyOssRequest(
-            headers.get(Constants.OSS_INDEX_USER_HEADER),
-            headers.get(Constants.OSS_INDEX_TOKEN_HEADER),
-            isEmpty);
+      case Constants.SNYK_PROVIDER -> verifySnykRequest(headers.get(Constants.SNYK_TOKEN_HEADER));
+      case Constants.OSS_INDEX_PROVIDER -> verifyOssRequest(
+          headers.get(Constants.OSS_INDEX_USER_HEADER),
+          headers.get(Constants.OSS_INDEX_TOKEN_HEADER),
+          isEmpty);
     }
   }
 
@@ -200,14 +193,12 @@ public abstract class AbstractAnalysisTest {
 
   protected void verifyTokenRequest(String provider, Map<String, String> headers) {
     switch (provider) {
-      case Constants.SNYK_PROVIDER:
-        verifySnykTokenRequest(headers.get(Constants.SNYK_TOKEN_HEADER));
-        break;
-      case Constants.OSS_INDEX_PROVIDER:
-        verifyOssRequest(
-            headers.get(Constants.OSS_INDEX_USER_HEADER),
-            headers.get(Constants.OSS_INDEX_TOKEN_HEADER),
-            false);
+      case Constants.SNYK_PROVIDER -> verifySnykTokenRequest(
+          headers.get(Constants.SNYK_TOKEN_HEADER));
+      case Constants.OSS_INDEX_PROVIDER -> verifyOssRequest(
+          headers.get(Constants.OSS_INDEX_USER_HEADER),
+          headers.get(Constants.OSS_INDEX_TOKEN_HEADER),
+          false);
     }
   }
 
@@ -233,15 +224,12 @@ public abstract class AbstractAnalysisTest {
         .forEach(
             p -> {
               switch (p) {
-                case Constants.SNYK_PROVIDER:
-                  verifySnykRequest(credentials.get(Constants.SNYK_TOKEN_HEADER));
-                  break;
-                case Constants.OSS_INDEX_PROVIDER:
-                  verifyOssRequest(
-                      credentials.get(Constants.OSS_INDEX_USER_HEADER),
-                      credentials.get(Constants.OSS_INDEX_TOKEN_HEADER),
-                      isEmpty);
-                  break;
+                case Constants.SNYK_PROVIDER -> verifySnykRequest(
+                    credentials.get(Constants.SNYK_TOKEN_HEADER));
+                case Constants.OSS_INDEX_PROVIDER -> verifyOssRequest(
+                    credentials.get(Constants.OSS_INDEX_USER_HEADER),
+                    credentials.get(Constants.OSS_INDEX_TOKEN_HEADER),
+                    isEmpty);
               }
             });
   }

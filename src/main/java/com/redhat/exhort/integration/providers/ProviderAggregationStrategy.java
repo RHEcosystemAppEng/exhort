@@ -47,7 +47,7 @@ public class ProviderAggregationStrategy {
   public AnalysisReport toReport(
       @Body Map<String, ProviderReport> reports,
       @ExchangeProperty(Constants.DEPENDENCY_TREE_PROPERTY) DependencyTree tree) {
-    Scanned scanned = new Scanned().direct(tree.directCount()).transitive(tree.transitiveCount());
+    var scanned = new Scanned().direct(tree.directCount()).transitive(tree.transitiveCount());
     scanned.total(scanned.getDirect() + scanned.getTransitive());
     return new AnalysisReport().providers(reports).scanned(scanned);
   }

@@ -87,8 +87,8 @@ public class SnykIntegration extends EndpointRouteBuilder {
   }
 
   private void setAuthToken(Exchange exchange) {
-    Message message = exchange.getMessage();
-    String token = message.getHeader(Constants.SNYK_TOKEN_HEADER, String.class);
+    var message = exchange.getMessage();
+    var token = message.getHeader(Constants.SNYK_TOKEN_HEADER, String.class);
     if (token == null) {
       token = defaultToken;
       vulnerabilityProvider.addProviderPrivateData(exchange, Constants.SNYK_PROVIDER);
@@ -97,7 +97,7 @@ public class SnykIntegration extends EndpointRouteBuilder {
   }
 
   private void processDepGraphRequest(Exchange exchange) {
-    Message message = exchange.getMessage();
+    var message = exchange.getMessage();
     processRequestHeaders(message);
     message.setHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON);
     message.setHeader(Exchange.HTTP_PATH, Constants.SNYK_DEP_GRAPH_API_PATH);
@@ -105,7 +105,7 @@ public class SnykIntegration extends EndpointRouteBuilder {
   }
 
   private void processTokenRequest(Exchange exchange) {
-    Message message = exchange.getMessage();
+    var message = exchange.getMessage();
     message.setHeader("Authorization", "token " + message.getHeader(Constants.SNYK_TOKEN_HEADER));
     processRequestHeaders(message);
     message.setHeader(Exchange.HTTP_PATH, Constants.SNYK_TOKEN_API_PATH);

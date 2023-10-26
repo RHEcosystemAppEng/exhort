@@ -25,7 +25,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
-import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
@@ -39,7 +38,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import com.redhat.exhort.integration.Constants;
 import com.redhat.exhort.integration.backend.sbom.cyclonedx.CycloneDxParser;
 import com.redhat.exhort.integration.backend.sbom.spdx.SpdxParser;
-import com.redhat.exhort.model.DependencyTree;
 
 import jakarta.ws.rs.ClientErrorException;
 import jakarta.ws.rs.core.MediaType;
@@ -52,7 +50,7 @@ public class SbomParserTest {
 
   @Test
   void testInvalidContentType() {
-    ClientErrorException ex =
+    var ex =
         assertThrows(
             ClientErrorException.class, () -> SbomParserFactory.newInstance(MediaType.TEXT_PLAIN));
     assertEquals("Unsupported Content-Type header: " + MediaType.TEXT_PLAIN, ex.getMessage());
@@ -62,15 +60,14 @@ public class SbomParserTest {
 
   @Test
   void testCycloneDxContentType() {
-    SbomParser parser =
-        SbomParserFactory.newInstance(CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON);
+    var parser = SbomParserFactory.newInstance(CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON);
     assertNotNull(parser);
     assertTrue(parser instanceof CycloneDxParser);
   }
 
   @Test
   void testSpdxContentType() {
-    SbomParser parser = SbomParserFactory.newInstance(Constants.SPDX_MEDIATYPE_JSON);
+    var parser = SbomParserFactory.newInstance(Constants.SPDX_MEDIATYPE_JSON);
     assertNotNull(parser);
     assertTrue(parser instanceof SpdxParser);
   }
@@ -78,32 +75,31 @@ public class SbomParserTest {
   @ParameterizedTest
   @MethodSource("getMediaTypes")
   void testParseEmptySBOM(String mediaType) {
-    SbomParser parser = SbomParserFactory.newInstance(mediaType);
-    String fileName = String.format("%s/empty-sbom.json", getFolder(mediaType));
-    InputStream file = getClass().getClassLoader().getResourceAsStream(fileName);
+    var parser = SbomParserFactory.newInstance(mediaType);
+    var fileName = String.format("%s/empty-sbom.json", getFolder(mediaType));
+    var file = getClass().getClassLoader().getResourceAsStream(fileName);
 
-    DependencyTree tree = parser.buildTree(file);
+    var tree = parser.buildTree(file);
     assertEquals(0, tree.dependencies().size());
   }
 
   @ParameterizedTest
   @MethodSource("getMediaTypes")
   void testSBOMWithoutDependencies(String mediaType) {
-    SbomParser parser = SbomParserFactory.newInstance(mediaType);
-    String fileName = String.format("%s/no-deps-sbom.json", getFolder(mediaType));
-    InputStream file = getClass().getClassLoader().getResourceAsStream(fileName);
+    var parser = SbomParserFactory.newInstance(mediaType);
+    var fileName = String.format("%s/no-deps-sbom.json", getFolder(mediaType));
+    var file = getClass().getClassLoader().getResourceAsStream(fileName);
 
-    DependencyTree tree = parser.buildTree(file);
+    var tree = parser.buildTree(file);
     assertEquals(0, tree.dependencies().size());
   }
 
   @ParameterizedTest
   @MethodSource("getMediaTypes")
   void testParseInvalidSBOM(String mediaType) {
-    SbomParser parser = SbomParserFactory.newInstance(mediaType);
-    InputStream file = getClass().getClassLoader().getResourceAsStream("invalid_deps_file.txt");
-    ClientErrorException ex =
-        assertThrows(ClientErrorException.class, () -> parser.buildTree(file));
+    var parser = SbomParserFactory.newInstance(mediaType);
+    var file = getClass().getClassLoader().getResourceAsStream("invalid_deps_file.txt");
+    var ex = assertThrows(ClientErrorException.class, () -> parser.buildTree(file));
     assertNotNull(ex);
     assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), ex.getResponse().getStatus());
   }
@@ -111,11 +107,11 @@ public class SbomParserTest {
   @ParameterizedTest
   @MethodSource("getMediaTypes")
   void testMinimalSbom(String mediaType) {
-    SbomParser parser = SbomParserFactory.newInstance(mediaType);
-    String fileName = String.format("%s/minimal-sbom.json", getFolder(mediaType));
-    InputStream file = getClass().getClassLoader().getResourceAsStream(fileName);
+    var parser = SbomParserFactory.newInstance(mediaType);
+    var fileName = String.format("%s/minimal-sbom.json", getFolder(mediaType));
+    var file = getClass().getClassLoader().getResourceAsStream(fileName);
 
-    DependencyTree tree = parser.buildTree(file);
+    var tree = parser.buildTree(file);
     assertEquals(2, tree.dependencies().size());
     assertEquals(7, tree.transitiveCount());
   }
@@ -123,23 +119,23 @@ public class SbomParserTest {
   @ParameterizedTest
   @MethodSource("getSbomUseCases")
   void testSbom(String mediaType, String pkgManager, int direct, int transitive) {
-    SbomParser parser = SbomParserFactory.newInstance(mediaType);
-    String fileName = String.format("%s/%s-sbom.json", getFolder(mediaType), pkgManager);
-    InputStream file = getClass().getClassLoader().getResourceAsStream(fileName);
+    var parser = SbomParserFactory.newInstance(mediaType);
+    var fileName = String.format("%s/%s-sbom.json", getFolder(mediaType), pkgManager);
+    var file = getClass().getClassLoader().getResourceAsStream(fileName);
 
-    DependencyTree tree = parser.buildTree(file);
+    var tree = parser.buildTree(file);
     assertEquals(direct, tree.dependencies().size());
     assertEquals(transitive, tree.transitiveCount());
   }
 
   @Test
   void testSpdxReverseRelationships() {
-    String mediaType = Constants.SPDX_MEDIATYPE_JSON;
-    SbomParser parser = SbomParserFactory.newInstance(mediaType);
-    String fileName = "spdx/reverse-sbom.json";
-    InputStream file = getClass().getClassLoader().getResourceAsStream(fileName);
+    var mediaType = Constants.SPDX_MEDIATYPE_JSON;
+    var parser = SbomParserFactory.newInstance(mediaType);
+    var fileName = "spdx/reverse-sbom.json";
+    var file = getClass().getClassLoader().getResourceAsStream(fileName);
 
-    DependencyTree tree = parser.buildTree(file);
+    var tree = parser.buildTree(file);
     assertEquals(4, tree.dependencies().size());
     assertEquals(120, tree.transitiveCount());
   }
@@ -160,14 +156,10 @@ public class SbomParserTest {
   }
 
   private String getFolder(String mediaType) {
-    switch (mediaType) {
-      case CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON:
-        return "cyclonedx";
-      case Constants.SPDX_MEDIATYPE_JSON:
-        return "spdx";
-      default:
-        fail("Not implemented: " + mediaType);
-    }
-    return null;
+    return switch (mediaType) {
+      case CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON -> "cyclonedx";
+      case Constants.SPDX_MEDIATYPE_JSON -> "spdx";
+      default -> fail("Not implemented: " + mediaType);
+    };
   }
 }

@@ -39,7 +39,7 @@ public class TokenValidationTest extends AbstractAnalysisTest {
 
   @Test
   public void testMissingToken() {
-    String msg =
+    var msg =
         given()
             .when()
             .get("/api/v4/token")
@@ -61,7 +61,7 @@ public class TokenValidationTest extends AbstractAnalysisTest {
     stubOssToken();
     stubSnykTokenRequests();
 
-    String msg =
+    var msg =
         given()
             .when()
             .headers(headers)
@@ -96,7 +96,7 @@ public class TokenValidationTest extends AbstractAnalysisTest {
     stubOssToken();
     stubSnykTokenRequests();
 
-    String msg =
+    var msg =
         given()
             .when()
             .headers(headers)
@@ -131,7 +131,7 @@ public class TokenValidationTest extends AbstractAnalysisTest {
     stubOssToken();
     stubSnykTokenRequests();
 
-    String msg =
+    var msg =
         given()
             .when()
             .headers(headers)
@@ -166,7 +166,7 @@ public class TokenValidationTest extends AbstractAnalysisTest {
     stubOssToken();
     stubSnykTokenRequests();
 
-    String msg =
+    var msg =
         given()
             .when()
             .headers(headers)

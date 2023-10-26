@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Objects;
 
 import org.apache.camel.Exchange;
-import org.apache.camel.Message;
 import org.apache.camel.builder.AggregationStrategies;
 import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -100,7 +99,7 @@ public class OssIndexIntegration extends EndpointRouteBuilder {
   }
 
   private void processComponentRequest(Exchange exchange) {
-    Message message = exchange.getMessage();
+    var message = exchange.getMessage();
     message.removeHeader(Exchange.HTTP_PATH);
     message.removeHeader(Exchange.HTTP_QUERY);
     message.removeHeader(Exchange.HTTP_URI);
@@ -108,11 +107,11 @@ public class OssIndexIntegration extends EndpointRouteBuilder {
     message.setHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON);
     message.setHeader(Exchange.HTTP_METHOD, HttpMethod.POST);
 
-    String username = message.getHeader(Constants.OSS_INDEX_USER_HEADER, String.class);
-    String token = message.getHeader(Constants.OSS_INDEX_TOKEN_HEADER, String.class);
+    var username = message.getHeader(Constants.OSS_INDEX_USER_HEADER, String.class);
+    var token = message.getHeader(Constants.OSS_INDEX_TOKEN_HEADER, String.class);
     if (Objects.nonNull(username) && Objects.nonNull(token)) {
       message.setHeader(Exchange.HTTP_PATH, Constants.OSS_INDEX_AUTH_COMPONENT_API_PATH);
-      StringBuilder auth = new StringBuilder().append(username).append(":").append(token);
+      var auth = new StringBuilder().append(username).append(":").append(token);
       message.setHeader(
           "Authorization",
           "Basic " + Base64.getEncoder().encodeToString(auth.toString().getBytes()));

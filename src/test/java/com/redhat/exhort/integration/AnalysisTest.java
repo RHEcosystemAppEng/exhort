@@ -38,7 +38,6 @@ import java.net.http.HttpResponse;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.cyclonedx.CycloneDxMediaType;
@@ -61,12 +60,8 @@ import com.gargoylesoftware.htmlunit.html.HtmlTableRow;
 import com.redhat.exhort.api.PackageRef;
 import com.redhat.exhort.api.v4.AnalysisReport;
 import com.redhat.exhort.api.v4.DependencyReport;
-import com.redhat.exhort.api.v4.ProviderReport;
-import com.redhat.exhort.api.v4.ProviderStatus;
 import com.redhat.exhort.api.v4.Scanned;
-import com.redhat.exhort.api.v4.Source;
 import com.redhat.exhort.api.v4.SourceSummary;
-import com.redhat.exhort.api.v4.TransitiveDependencyReport;
 
 import io.quarkus.test.junit.QuarkusTest;
 
@@ -141,7 +136,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
       List<String> providers, Map<String, String> authHeaders, String pkgManager) {
     stubAllProviders();
 
-    AnalysisReport report =
+    var report =
         given()
             .header(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
             .headers(authHeaders)
@@ -158,7 +153,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
 
     providers.forEach(
         p -> {
-          Optional<ProviderReport> provider =
+          var provider =
               report.getProviders().values().stream()
                   .filter(s -> s.getStatus().getName().equals(p))
                   .findFirst();
@@ -224,7 +219,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
   public void testAllWithToken() {
     stubAllProviders();
 
-    String body =
+    var body =
         given()
             .header(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
             .header("Accept", MediaType.APPLICATION_JSON)
@@ -251,7 +246,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
   public void testSnykWithNoToken() {
     stubAllProviders();
 
-    String body =
+    var body =
         given()
             .header(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
             .header("Accept", MediaType.APPLICATION_JSON)
@@ -275,7 +270,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
   public void testUnauthorizedRequest() {
     stubAllProviders();
 
-    AnalysisReport report =
+    var report =
         given()
             .header(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
             .body(loadFileAsString(String.format("%s/empty-sbom.json", CYCLONEDX)))
@@ -293,7 +288,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
 
     assertEquals(1, report.getProviders().size());
     assertTrue(report.getProviders().get(Constants.SNYK_PROVIDER).getSources().isEmpty());
-    ProviderStatus status = report.getProviders().get(Constants.SNYK_PROVIDER).getStatus();
+    var status = report.getProviders().get(Constants.SNYK_PROVIDER).getStatus();
     assertFalse(status.getOk());
     assertEquals(Constants.SNYK_PROVIDER, status.getName());
     assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), status.getCode());
@@ -305,7 +300,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
   public void testForbiddenRequest() {
     stubAllProviders();
 
-    AnalysisReport report =
+    var report =
         given()
             .header(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
             .body(loadFileAsString(String.format("%s/empty-sbom.json", CYCLONEDX)))
@@ -323,7 +318,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
 
     assertEquals(1, report.getProviders().size());
     assertTrue(report.getProviders().get(Constants.SNYK_PROVIDER).getSources().isEmpty());
-    ProviderStatus status = report.getProviders().get(Constants.SNYK_PROVIDER).getStatus();
+    var status = report.getProviders().get(Constants.SNYK_PROVIDER).getStatus();
     assertFalse(status.getOk());
     assertEquals(Constants.SNYK_PROVIDER, status.getName());
     assertEquals(Response.Status.FORBIDDEN.getStatusCode(), status.getCode());
@@ -335,7 +330,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
   public void testSBOMJsonWithToken() {
     stubAllProviders();
 
-    AnalysisReport report =
+    var report =
         given()
             .header(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
             .body(loadSBOMFile(CYCLONEDX))
@@ -352,7 +347,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .as(AnalysisReport.class);
 
     assertScanned(report.getScanned());
-    Source snykSource =
+    var snykSource =
         report
             .getProviders()
             .get(Constants.SNYK_PROVIDER)
@@ -368,7 +363,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
   public void testNonVerboseJson() {
     stubAllProviders();
 
-    AnalysisReport report =
+    var report =
         given()
             .header(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
             .body(loadSBOMFile(CYCLONEDX))
@@ -385,7 +380,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .as(AnalysisReport.class);
 
     assertScanned(report.getScanned());
-    Source snykSource =
+    var snykSource =
         report
             .getProviders()
             .get(Constants.SNYK_PROVIDER)
@@ -401,7 +396,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
   public void testNonVerboseWithToken() {
     stubAllProviders();
 
-    AnalysisReport report =
+    var report =
         given()
             .header(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
             .header("Accept", MediaType.APPLICATION_JSON)
@@ -419,7 +414,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .as(AnalysisReport.class);
 
     assertScanned(report.getScanned());
-    Source snykSource =
+    var snykSource =
         report
             .getProviders()
             .get(Constants.SNYK_PROVIDER)
@@ -457,19 +452,19 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .body()
             .asString();
 
-    HtmlPage page = extractPage(body);
+    var page = extractPage(body);
     DomNodeList<DomElement> tables = page.getElementsByTagName("table");
     assertEquals(1, tables.size());
-    DomElement snykTable = tables.get(0);
-    HtmlTableBody tbody = getTableBodyForDependency("io.quarkus:quarkus-hibernate-orm", snykTable);
+    var snykTable = tables.get(0);
+    var tbody = getTableBodyForDependency("io.quarkus:quarkus-hibernate-orm", snykTable);
     assertNotNull(tbody);
     page = expandTransitiveTableDataCell(tbody);
     snykTable = page.getElementsByTagName("table").get(0);
     tbody = getTableBodyForDependency("io.quarkus:quarkus-hibernate-orm", snykTable);
 
-    HtmlTable issuesTable = getIssuesTable(tbody);
+    var issuesTable = getIssuesTable(tbody);
     List<HtmlTableBody> tbodies = issuesTable.getByXPath(".//table//tbody");
-    HtmlTableBody privateIssueTbody =
+    var privateIssueTbody =
         tbodies.stream()
             .filter(
                 issuesTbody -> {
@@ -498,7 +493,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
   public void testHtmlWithToken() throws IOException {
     stubAllProviders();
 
-    String body =
+    var body =
         given()
             .header(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
             .body(loadSBOMFile(CYCLONEDX))
@@ -516,7 +511,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .body()
             .asString();
 
-    HtmlPage page = extractPage(body);
+    var page = extractPage(body);
     // Select the Snyk Source
     HtmlButton snykSourceBtn = page.getFirstByXPath("//button[@aria-label='snyk source']");
     assertNotNull(snykSourceBtn);
@@ -525,8 +520,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
     DomNodeList<DomElement> tables = page.getElementsByTagName("table");
     assertEquals(2, tables.size());
 
-    HtmlTableBody tbody =
-        getTableBodyForDependency("io.quarkus:quarkus-hibernate-orm", tables.get(1));
+    var tbody = getTableBodyForDependency("io.quarkus:quarkus-hibernate-orm", tables.get(1));
     assertNotNull(tbody);
     page = expandTransitiveTableDataCell(tbody);
     tables = page.getElementsByTagName("table");
@@ -552,8 +546,8 @@ public class AnalysisTest extends AbstractAnalysisTest {
   public void testMultipart_HttpVersions(String version) throws IOException, InterruptedException {
     stubAllProviders();
 
-    HttpClient client = HttpClient.newHttpClient();
-    HttpRequest request =
+    var client = HttpClient.newHttpClient();
+    var request =
         HttpRequest.newBuilder(URI.create("http://localhost:8081/api/v4/analysis"))
             .setHeader(Constants.RHDA_TOKEN_HEADER, DEFAULT_RHDA_TOKEN)
             .setHeader(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
@@ -565,7 +559,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .POST(HttpRequest.BodyPublishers.ofFile(loadSBOMFile(CYCLONEDX).toPath()))
             .build();
 
-    HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+    var response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
     assertEquals(Response.Status.OK.getStatusCode(), response.statusCode());
 
@@ -577,7 +571,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
   public void testHtmlUnauthorized() {
     stubAllProviders();
 
-    String body =
+    var body =
         given()
             .header(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
             .body(loadSBOMFile(CYCLONEDX))
@@ -593,7 +587,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .body()
             .asString();
 
-    HtmlPage page = extractPage(body);
+    var page = extractPage(body);
     HtmlHeading4 heading = page.getFirstByXPath("//div[@class='pf-v5-c-alert pf-m-warning']/h4");
     assertEquals(
         "Warning alert:Snyk: Unauthorized: Verify the provided credentials are valid.",
@@ -608,7 +602,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
   public void testHtmlForbidden() {
     stubAllProviders();
 
-    String body =
+    var body =
         given()
             .header(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
             .body(loadSBOMFile(CYCLONEDX))
@@ -624,7 +618,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .body()
             .asString();
 
-    HtmlPage page = extractPage(body);
+    var page = extractPage(body);
     HtmlHeading4 heading = page.getFirstByXPath("//div[@class='pf-v5-c-alert pf-m-warning']/h4");
     assertEquals(
         "Warning alert:Snyk: Forbidden: The provided credentials don't have the required"
@@ -640,7 +634,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
   public void testHtmlError() {
     stubAllProviders();
 
-    String body =
+    var body =
         given()
             .header(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
             .body(loadSBOMFile(CYCLONEDX))
@@ -656,7 +650,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .body()
             .asString();
 
-    HtmlPage page = extractPage(body);
+    var page = extractPage(body);
     HtmlHeading4 heading = page.getFirstByXPath("//div[@class='pf-v5-c-alert pf-m-danger']/h4");
     assertEquals(
         "Danger alert:Snyk: Server Error: This is an example error", heading.getTextContent());
@@ -702,21 +696,21 @@ public class AnalysisTest extends AbstractAnalysisTest {
   private void assertDependenciesReport(List<DependencyReport> dependencies) {
     assertEquals(2, dependencies.size());
 
-    PackageRef hibernate =
+    var hibernate =
         PackageRef.builder()
             .pkgManager(Constants.MAVEN_PKG_MANAGER)
             .namespace("io.quarkus")
             .name("quarkus-hibernate-orm")
             .version("2.13.5.Final")
             .build();
-    DependencyReport report = getReport(hibernate.name(), dependencies);
+    var report = getReport(hibernate.name(), dependencies);
     assertNotNull(report);
     assertEquals(hibernate, report.getRef());
     assertNull(report.getIssues());
 
     assertEquals(1, report.getTransitive().size());
-    TransitiveDependencyReport tReport = report.getTransitive().get(0);
-    PackageRef jackson =
+    var tReport = report.getTransitive().get(0);
+    var jackson =
         PackageRef.builder()
             .pkgManager(Constants.MAVEN_PKG_MANAGER)
             .namespace("com.fasterxml.jackson.core")
@@ -730,7 +724,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
   }
 
   private DependencyReport getReport(String pkgName, List<DependencyReport> dependencies) {
-    DependencyReport dep =
+    var dep =
         dependencies.stream()
             .filter(d -> d.getRef().name().equals(pkgName))
             .findFirst()

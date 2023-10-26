@@ -15,7 +15,7 @@
   <scm>
     <connection>scm:git:git@github.com:RHEcosystemAppEng/exhort.git</connection>
     <developerConnection>scm:git:git@github.com:RHEcosystemAppEng/exhort.git</developerConnection>
-    <tag>v1.0.0</tag>
+    <tag>v1.1.0</tag>
     <url>https://github.com/RHEcosystemAppEng/exhort</url>
   </scm>
   <issueManagement>
@@ -23,32 +23,39 @@
     <url>https://github.com/RHEcosystemAppEng/exhort/issues</url>
   </issueManagement>
   <properties>
+    <!-- Build properties -->
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <maven.compiler.release>17</maven.compiler.release>
+    <maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ss.SSS'Z'</maven.build.timestamp.format>
+    <timestamp>${maven.build.timestamp}</timestamp>
+    <skipITs>true</skipITs>
+
+    <!-- Plugins -->
+    <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
+    <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
+    <quarkus.platform.version>3.5.0</quarkus.platform.version>
+    <openapi-generator-maven-plugin.version>7.0.1</openapi-generator-maven-plugin.version>
+    <resources-plugin.version>3.3.1</resources-plugin.version>
     <build-helper-maven-plugin.version>3.4.0</build-helper-maven-plugin.version>
     <compiler-plugin.version>3.11.0</compiler-plugin.version>
-    <cyclonedx.version>7.3.2</cyclonedx.version>
     <flatten-maven-plugin.version>1.5.0</flatten-maven-plugin.version>
     <frontend-maven-plugin.version>1.13.4</frontend-maven-plugin.version>
     <google-java-format.version>1.17.0</google-java-format.version>
-    <htmlunit.version>2.70.0</htmlunit.version>
-    <sentry.version>1.7.27</sentry.version>
     <maven-gpg-plugin.version>3.1.0</maven-gpg-plugin.version>
     <maven-release-plugin.version>3.0.1</maven-release-plugin.version>
-    <maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ss.SSS'Z'</maven.build.timestamp.format>
-    <maven.compiler.release>17</maven.compiler.release>
-    <node.version>v20.5.1</node.version>
-    <openapi-generator-maven-plugin.version>7.0.1</openapi-generator-maven-plugin.version>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
-    <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-    <quarkus.platform.version>3.2.2.Final</quarkus.platform.version>
-    <resources-plugin.version>3.3.1</resources-plugin.version>
-    <skipITs>true</skipITs>
-    <spdx.version>1.1.6</spdx.version>
     <spotless-maven-plugin.version>2.37.0</spotless-maven-plugin.version>
     <surefire-plugin.version>3.0.0</surefire-plugin.version>
-    <timestamp>${maven.build.timestamp}</timestamp>
-    <wiremock.version>3.0.0-beta-8</wiremock.version>
+
+    <!-- Dependencies -->
+    <sentry.version>1.7.27</sentry.version>
+    <cyclonedx.version>8.0.3</cyclonedx.version>
+    <spdx.version>1.1.7</spdx.version>
+    <htmlunit.version>2.70.0</htmlunit.version>
+    <wiremock.version>3.2.0</wiremock.version>
+
+    <!-- Node and Yarn -->
+    <node.version>v20.9.0</node.version>
     <yarn.version>v1.22.19</yarn.version>
   </properties>
   <dependencyManagement>
@@ -174,7 +181,7 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>com.github.tomakehurst</groupId>
+      <groupId>org.wiremock</groupId>
       <artifactId>wiremock</artifactId>
       <version>${wiremock.version}</version>
       <scope>test</scope>

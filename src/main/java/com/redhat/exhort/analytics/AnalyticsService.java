@@ -46,7 +46,6 @@ import com.redhat.exhort.integration.Constants;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.ws.rs.core.Response;
 
 @ApplicationScoped
 @RegisterForReflection
@@ -80,20 +79,20 @@ public class AnalyticsService {
       return;
     }
 
-    String userId = exchange.getIn().getHeader(RHDA_TOKEN_HEADER, String.class);
+    var userId = exchange.getIn().getHeader(RHDA_TOKEN_HEADER, String.class);
     Map<String, String> traits = new HashMap<>();
     traits.put("serverName", projectName);
     traits.put("serverVersion", projectVersion);
     traits.put("serverBuild", projectBuild);
 
-    IdentifyEvent.Builder builder =
+    var builder =
         new IdentifyEvent.Builder()
             .context(
                 new Context(new Library(projectId, projectVersion), getSource(exchange.getIn())))
             .traits(traits);
 
     if (userId == null) {
-      String anonymousId = UUID.randomUUID().toString();
+      var anonymousId = UUID.randomUUID().toString();
       builder.anonymousId(anonymousId);
       exchange.setProperty(ANONYMOUS_ID, anonymousId);
     } else {
@@ -101,7 +100,7 @@ public class AnalyticsService {
       exchange.setProperty(RHDA_TOKEN_HEADER, userId);
     }
     try {
-      Response response = segmentService.identify(builder.build());
+      var response = segmentService.identify(builder.build());
       if (response.getStatus() >= 400) {
         LOGGER.warn(
             String.format(
@@ -117,8 +116,8 @@ public class AnalyticsService {
     if (disabled) {
       return;
     }
-    TrackEvent.Builder builder = prepareTrackEvent(exchange, ANALYSIS_EVENT);
-    AnalysisReport report = exchange.getProperty(Constants.REPORT_PROPERTY, AnalysisReport.class);
+    var builder = prepareTrackEvent(exchange, ANALYSIS_EVENT);
+    var report = exchange.getProperty(Constants.REPORT_PROPERTY, AnalysisReport.class);
     Map<String, Object> properties = new HashMap<>();
     if (report != null) {
       Map<String, Object> providers = new HashMap<>();
@@ -144,13 +143,13 @@ public class AnalyticsService {
           "requestType", exchange.getProperty(Constants.REQUEST_CONTENT_PROPERTY, String.class));
       properties.put("sbom", exchange.getProperty(Constants.SBOM_TYPE_PARAM, String.class));
       properties.put("scanned", report.getScanned());
-      String operationType = exchange.getIn().getHeader(RHDA_OPERATION_TYPE_HEADER, String.class);
+      var operationType = exchange.getIn().getHeader(RHDA_OPERATION_TYPE_HEADER, String.class);
       if (operationType != null) {
         properties.put("operationType", operationType);
       }
     }
     try {
-      Response response = segmentService.track(builder.properties(properties).build());
+      var response = segmentService.track(builder.properties(properties).build());
       if (response.getStatus() >= 400) {
         LOGGER.warn(
             String.format(
@@ -166,13 +165,13 @@ public class AnalyticsService {
     if (disabled) {
       return;
     }
-    TrackEvent.Builder builder = prepareTrackEvent(exchange, TOKEN_EVENT);
+    var builder = prepareTrackEvent(exchange, TOKEN_EVENT);
     Map<String, Object> properties = new HashMap<>();
     properties.put("providers", exchange.getProperty(Constants.PROVIDERS_PARAM, List.class));
     properties.put(
         "statusCode", exchange.getIn().getHeader(Exchange.HTTP_RESPONSE_CODE, String.class));
     try {
-      Response response = segmentService.track(builder.properties(properties).build());
+      var response = segmentService.track(builder.properties(properties).build());
       if (response.getStatus() >= 400) {
         LOGGER.warn(
             String.format(
@@ -185,11 +184,11 @@ public class AnalyticsService {
   }
 
   private String getSource(Message message) {
-    String customSource = message.getHeader(RHDA_SOURCE_HEADER, String.class);
+    var customSource = message.getHeader(RHDA_SOURCE_HEADER, String.class);
     if (customSource != null) {
       return customSource;
     }
-    String userAgent = message.getHeader(USER_AGENT_HEADER, String.class);
+    var userAgent = message.getHeader(USER_AGENT_HEADER, String.class);
     if (userAgent != null) {
       return userAgent;
     }
@@ -197,15 +196,15 @@ public class AnalyticsService {
   }
 
   private TrackEvent.Builder prepareTrackEvent(Exchange exchange, String eventName) {
-    TrackEvent.Builder builder =
+    var builder =
         new TrackEvent.Builder(eventName)
             .context(
                 new Context(new Library(projectId, projectVersion), getSource(exchange.getIn())));
-    String userId = exchange.getProperty(RHDA_TOKEN_HEADER, String.class);
+    var userId = exchange.getProperty(RHDA_TOKEN_HEADER, String.class);
     if (userId != null) {
       builder.userId(userId);
     } else {
-      String anonymousId = exchange.getProperty(ANONYMOUS_ID, String.class);
+      var anonymousId = exchange.getProperty(ANONYMOUS_ID, String.class);
       builder.anonymousId(anonymousId);
     }
     return builder;

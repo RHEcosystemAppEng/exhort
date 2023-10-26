@@ -20,7 +20,6 @@ package com.redhat.exhort.integration.backend.sbom;
 
 import java.io.InputStream;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 
@@ -30,7 +29,7 @@ import com.redhat.exhort.model.DependencyTree;
 public abstract class SbomParser {
 
   public DependencyTree parse(InputStream input) {
-    DependencyTree tree = buildTree(input);
+    var tree = buildTree(input);
     validate(tree);
     return tree;
   }
@@ -47,7 +46,7 @@ public abstract class SbomParser {
               d.transitive().forEach(t -> types.add(t.purl().getType()));
             });
 
-    List<String> invalidTypes =
+    var invalidTypes =
         types.stream().filter(Predicate.not(Constants.PKG_MANAGERS::contains)).toList();
     if (!invalidTypes.isEmpty()) {
       throw new IllegalArgumentException("Unsupported package types received: " + invalidTypes);

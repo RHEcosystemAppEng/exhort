@@ -18,8 +18,6 @@
 
 package com.redhat.exhort.integration.backend;
 
-import java.util.List;
-
 import org.apache.camel.Header;
 import org.jboss.resteasy.reactive.common.util.MediaTypeHelper;
 
@@ -28,7 +26,6 @@ import com.redhat.exhort.integration.Constants;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import jakarta.ws.rs.ClientErrorException;
-import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response.Status;
 
 @RegisterForReflection
@@ -38,8 +35,8 @@ public class BackendUtils {
     if (acceptHeader == null || acceptHeader.isBlank()) {
       return Constants.DEFAULT_ACCEPT_MEDIA_TYPE;
     }
-    List<MediaType> requested = MediaTypeHelper.parseHeader(acceptHeader);
-    MediaType match = MediaTypeHelper.getBestMatch(Constants.VALID_RESPONSE_MEDIA_TYPES, requested);
+    var requested = MediaTypeHelper.parseHeader(acceptHeader);
+    var match = MediaTypeHelper.getBestMatch(Constants.VALID_RESPONSE_MEDIA_TYPES, requested);
     if (match == null) {
       throw new ClientErrorException(
           "Unexpected Accept header "

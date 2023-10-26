@@ -99,13 +99,13 @@ public class CvssParser {
 
   public static CvssVector fromVectorString(String vector) {
     Objects.requireNonNull(vector);
-    CvssVector result = new CvssVector();
-    String[] parts = vector.split("/");
+    var result = new CvssVector();
+    var parts = vector.split("/");
     for (int i = 0; i < parts.length; i++) {
-      String[] metrics = parts[i].split(":");
+      var metrics = parts[i].split(":");
       if (metrics.length == 2 && INDEX.containsKey(metrics[0])) {
-        IndexItem item = INDEX.get(metrics[0]);
-        String value = item.parameters().get(metrics[1]);
+        var item = INDEX.get(metrics[0]);
+        var value = item.parameters().get(metrics[1]);
         item.setter().accept(value, result);
       }
     }
