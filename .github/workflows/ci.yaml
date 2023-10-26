@@ -35,7 +35,10 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-      - run: npx @redocly/cli lint api-spec/v3/openapi.yaml
+      - name: v3 Lint
+        run: npx @redocly/cli lint api-spec/v3/openapi.yaml
+      - name: v4 Lint
+        run: npx @redocly/cli lint api-spec/v4/openapi.yaml
   openapi-validation:
     runs-on: ubuntu-latest
     name: Validate OpenAPI Spec
