@@ -51,7 +51,7 @@ public class SpdxWrapper {
     this.inputStore.deSerialize(input, false);
     this.uri = inputStore.getDocumentUris().get(0);
     this.doc = new SpdxDocument(inputStore, uri, null, false);
-    var verify = doc.verify(Version.TWO_POINT_THREE_VERSION);
+    var verify = doc.verify(SUPPORTED_VERSION);
     if (!verify.isEmpty()) {
       throw new SpdxProcessingException("Invalid " + SUPPORTED_VERSION + " document received");
     }

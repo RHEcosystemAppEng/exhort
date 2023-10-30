@@ -51,6 +51,10 @@ public class PackageRef {
     return purl;
   }
 
+  public String ref() {
+    return purl.getCoordinates();
+  }
+
   public String name() {
     if (purl.getNamespace() == null) {
       return purl.getName();
@@ -73,7 +77,7 @@ public class PackageRef {
 
   @Override
   public int hashCode() {
-    return name().hashCode();
+    return purl.hashCode();
   }
 
   @Override
@@ -84,7 +88,7 @@ public class PackageRef {
     if (!(other instanceof PackageRef)) {
       return false;
     }
-    return Objects.equals(name(), ((PackageRef) other).name());
+    return purl.isCoordinatesEquals(((PackageRef) other).purl());
   }
 
   public static PackageRef parse(String gav, String pkgManager) {

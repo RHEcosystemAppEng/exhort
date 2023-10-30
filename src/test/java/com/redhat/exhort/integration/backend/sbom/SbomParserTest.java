@@ -140,6 +140,32 @@ public class SbomParserTest {
     assertEquals(120, tree.transitiveCount());
   }
 
+  @ParameterizedTest
+  @MethodSource("getMediaTypes")
+  void testSharedDependencies(String mediaType) {
+    var parser = SbomParserFactory.newInstance(mediaType);
+    var fileName = String.format("%s/shared-deps-sbom.json", getFolder(mediaType));
+    var file = getClass().getClassLoader().getResourceAsStream(fileName);
+
+    var tree = parser.buildTree(file);
+
+    assertEquals(3, tree.dependencies().size());
+    assertEquals(5, tree.transitiveCount());
+  }
+
+  @Test
+  void testComplexGolangCycloneDX() {
+    var mediaType = CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON;
+    var parser = SbomParserFactory.newInstance(mediaType);
+    var fileName = String.format("%s/golang-complex.json", getFolder(mediaType));
+    var file = getClass().getClassLoader().getResourceAsStream(fileName);
+
+    var tree = parser.buildTree(file);
+
+    assertEquals(40, tree.dependencies().size());
+    assertEquals(191, tree.transitiveCount());
+  }
+
   static Stream<String> getMediaTypes() {
     return MEDIA_TYPES.stream();
   }
