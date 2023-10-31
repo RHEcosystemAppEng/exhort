@@ -27,7 +27,7 @@ export const VulnerabilitiesCountBySeverity = ({
             }
         });
     } else {
-        transitiveDependencies.forEach((dependency) => {
+        transitiveDependencies?.forEach((dependency) => {
             dependency.issues?.forEach((issue) => {
                 const severity = issue.severity;
                 // Increment the corresponding severity count

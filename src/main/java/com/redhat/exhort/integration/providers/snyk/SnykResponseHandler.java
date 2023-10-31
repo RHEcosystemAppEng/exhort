@@ -67,7 +67,8 @@ public class SnykResponseHandler extends ProviderResponseHandler {
     return getIssues(snykResponse, filterUnique, tree);
   }
 
-  private Map<String, List<Issue>> getIssues(JsonNode snykResponse, boolean filterUnique, DependencyTree tree) {
+  private Map<String, List<Issue>> getIssues(
+      JsonNode snykResponse, boolean filterUnique, DependencyTree tree) {
     Map<String, List<Issue>> reports = new HashMap<>();
     snykResponse
         .withArray("issues")
@@ -90,8 +91,11 @@ public class SnykResponseHandler extends ProviderResponseHandler {
   }
 
   private String getDependencyRef(String pkgName, String pkgVersion, DependencyTree tree) {
-    Optional<PackageRef> match = tree.getAll().stream().filter(ref -> ref.name().equals(pkgName) && ref.version().equals(pkgVersion)).findFirst();
-    if(match.isPresent()) {
+    Optional<PackageRef> match =
+        tree.getAll().stream()
+            .filter(ref -> ref.name().equals(pkgName) && ref.version().equals(pkgVersion))
+            .findFirst();
+    if (match.isPresent()) {
       return match.get().ref();
     }
     return null;

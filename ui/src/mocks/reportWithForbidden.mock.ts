@@ -1,10 +1,7 @@
 import { AppData } from '@app/api/report';
 
 export const forbiddenReport: AppData = {
-  packagePath: 'https://central.sonatype.com/artifact/',
-  remediationPath: 'https://maven.repository.redhat.com/ga/',
   providerPrivateData: null,
-  vexPath: 'https://tc-storage-mvp.s3.amazonaws.com/vexes/',
   report: {
     "scanned": {
       "total": 9,
@@ -30,13 +27,7 @@ export const forbiddenReport: AppData = {
       }
     }
   },
-  ossIndexIssueLinkFormatter: { issuePathRegex: 'http://ossindex.sonatype.org/vulnerability/%s' },
-  snykIssueLinkFormatter: {
-    issuePathRegex:
-      'https://security.snyk.io/vuln/%s?utm_medium=Partner&utm_source=RedHat&utm_campaign=Code-Ready-Analytics-2020&utm_content=vuln/%s',
-  },
-  sbomPath: 'https://tc-storage-mvp.s3.amazonaws.com/sboms/sbom.json',
-  snykSignup:
-    'https://app.snyk.io/login',
-  dependencyHelper: {},
+  ossIssueTemplate: 'http://ossindex.sonatype.org/vulnerability/%s',
+  snykIssueTemplate: 'https://security.snyk.io/vuln/%s?utm_medium=Partner&utm_source=RedHat&utm_campaign=Code-Ready-Analytics-2020&utm_content=vuln/%s',
+  snykSignup: 'https://app.snyk.io/login',
 };

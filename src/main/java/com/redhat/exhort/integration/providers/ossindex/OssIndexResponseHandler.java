@@ -78,8 +78,8 @@ public class OssIndexResponseHandler extends ProviderResponseHandler {
     return oldExchange;
   }
 
-  public Map<String, List<Issue>> responseToIssues(@Body byte[] response, String privateProviders, DependencyTree tree)
-      throws IOException {
+  public Map<String, List<Issue>> responseToIssues(
+      @Body byte[] response, String privateProviders, DependencyTree tree) throws IOException {
     var json = (ArrayNode) mapper.readTree(response);
     return getIssues(json);
   }

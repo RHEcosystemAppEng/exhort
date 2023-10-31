@@ -42,20 +42,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class ReportTemplate {
 
-  @ConfigProperty(name = "report.trustedContent.link")
-  String remediationPath;
-
-  @ConfigProperty(name = "report.snyk.link")
-  String packagePath;
-
   @ConfigProperty(name = "report.snyk.issue.regex")
   String snykIssuePathRegex;
-
-  @ConfigProperty(name = "report.vex.link")
-  String vexPath;
-
-  @ConfigProperty(name = "report.sbom.link")
-  String sbomPath;
 
   @ConfigProperty(name = "report.snyk.signup.link")
   String snykSignup;
@@ -70,15 +58,10 @@ public class ReportTemplate {
 
     Map<String, Object> params = new HashMap<>();
     params.put("report", report);
-    params.put("remediationPath", remediationPath);
-    params.put("packagePath", packagePath);
-    params.put("snykIssueLinkFormatter", new IssueLinkFormatter(snykIssuePathRegex));
-    params.put("ossIndexIssueLinkFormatter", new IssueLinkFormatter(ossIssuePathRegex));
+    params.put("snykIssueTemplate", snykIssuePathRegex);
+    params.put("ossIssueTemplate", ossIssuePathRegex);
     params.put("providerPrivateData", providerPrivateData);
-    params.put("vexPath", vexPath);
-    params.put("sbomPath", sbomPath);
     params.put("snykSignup", snykSignup);
-    params.put("dependencyHelper", new DependencyReportHelper());
 
     ObjectWriter objectWriter = new ObjectMapper().writer();
     String appData = objectWriter.writeValueAsString(params);

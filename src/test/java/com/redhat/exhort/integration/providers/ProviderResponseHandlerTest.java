@@ -78,14 +78,14 @@ public class ProviderResponseHandlerTest {
   private static Stream<Arguments> getSummaryValues() {
     return Stream.of(
         Arguments.of(
-            Map.of("aa", List.of(buildIssue(1, 5f))),
+            Map.of("pkg:npm/aa@1", List.of(buildIssue(1, 5f))),
             buildTree(),
             new SourceSummary().direct(1).total(1).medium(1).dependencies(1)),
         Arguments.of(
             Map.of(
-                "aa", List.of(buildIssue(1, 3f)),
-                "aaa", List.of(buildIssue(2, 4f)),
-                "aba", List.of(buildIssue(3, 8f))),
+                "pkg:npm/aa@1", List.of(buildIssue(1, 3f)),
+                "pkg:npm/aaa@1", List.of(buildIssue(2, 4f)),
+                "pkg:npm/aba@1", List.of(buildIssue(3, 8f))),
             buildTree(),
             new SourceSummary()
                 .total(3)
@@ -97,15 +97,15 @@ public class ProviderResponseHandlerTest {
                 .dependencies(3)),
         Arguments.of(
             Map.of(
-                "aa", List.of(buildIssue(1, 5f)),
-                "aaa", List.of(buildIssue(2, 5f))),
+                "pkg:npm/aa@1", List.of(buildIssue(1, 5f)),
+                "pkg:npm/aaa@1", List.of(buildIssue(2, 5f))),
             buildTreeWithDuplicates(),
             new SourceSummary().total(2).direct(1).transitive(1).medium(2).dependencies(2)));
   }
 
   @Test
   public void testFilterDepsWithoutIssues() throws IOException {
-    Map<String, List<Issue>> issues = Map.of("aa", List.of(buildIssue(1, 5f)));
+    Map<String, List<Issue>> issues = Map.of("pkg:npm/aa@1", List.of(buildIssue(1, 5f)));
     ProviderResponseHandler handler = new TestResponseHandler();
     DependencyTree tree = buildTree();
     ProviderReport response = handler.buildReport(issues, tree, null);
@@ -122,9 +122,9 @@ public class ProviderResponseHandlerTest {
 
     Map<String, List<Issue>> issues =
         Map.of(
-            "aa", List.of(buildIssue(1, 3f)),
-            "aaa", List.of(buildIssue(2, 4f)),
-            "aba", List.of(buildIssue(3, 8f)));
+            "pkg:npm/aa@1", List.of(buildIssue(1, 3f)),
+            "pkg:npm/aaa@1", List.of(buildIssue(2, 4f)),
+            "pkg:npm/aba@1", List.of(buildIssue(3, 8f)));
     ProviderResponseHandler handler = new TestResponseHandler();
 
     ProviderReport response = handler.buildReport(issues, buildTree(), null);
@@ -169,13 +169,13 @@ public class ProviderResponseHandlerTest {
   public void testSorted() throws IOException {
     Map<String, List<Issue>> issues =
         Map.of(
-            "aa", List.of(buildIssue(1, 4f)),
-            "aaa", List.of(buildIssue(2, 3f)),
-            "aab", List.of(buildIssue(3, 1f)),
-            "ab", List.of(buildIssue(4, 2f)),
-            "aba", List.of(buildIssue(5, 3f)),
-            "abb", List.of(buildIssue(6, 9f)),
-            "abc", List.of(buildIssue(7, 6f)));
+            "pkg:npm/aa@1", List.of(buildIssue(1, 4f)),
+            "pkg:npm/aaa@1", List.of(buildIssue(2, 3f)),
+            "pkg:npm/aab@1", List.of(buildIssue(3, 1f)),
+            "pkg:npm/ab@1", List.of(buildIssue(4, 2f)),
+            "pkg:npm/aba@1", List.of(buildIssue(5, 3f)),
+            "pkg:npm/abb@1", List.of(buildIssue(6, 9f)),
+            "pkg:npm/abc@1", List.of(buildIssue(7, 6f)));
     ProviderResponseHandler handler = new TestResponseHandler();
 
     ProviderReport response = handler.buildReport(issues, buildTree(), null);
@@ -347,8 +347,8 @@ public class ProviderResponseHandlerTest {
     }
 
     @Override
-    public Map<String, List<Issue>> responseToIssues(byte[] response, String privateProviders)
-        throws IOException {
+    public Map<String, List<Issue>> responseToIssues(
+        byte[] response, String privateProviders, DependencyTree tree) throws IOException {
       throw new IllegalArgumentException("not implemented");
     }
   }

@@ -29,7 +29,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.redhat.exhort.extensions.WiremockV3Extension.SNYK_TOKEN;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -45,9 +44,6 @@ import org.junit.jupiter.api.AfterEach;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gargoylesoftware.htmlunit.BrowserVersion;
-import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.github.jknack.handlebars.internal.Files;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.BasicCredentials;
@@ -126,23 +122,6 @@ public abstract class AbstractAnalysisTest {
 
   protected void assertReportDoesNotContains(String expectedText, String currentBody) {
     assertFalse(currentBody.contains(expectedText));
-  }
-
-  protected HtmlPage extractPage(String html) {
-    try (WebClient webClient = new WebClient(BrowserVersion.BEST_SUPPORTED)) {
-      HtmlPage page = webClient.loadHtmlCodeIntoCurrentWindow(html);
-      webClient.waitForBackgroundJavaScript(50000);
-      assertTrue(page.isHtmlPage(), "The string is valid HTML.");
-      assertEquals("Dependency Analysis", page.getTitleText());
-      assertNotNull(page.getElementsById("root"));
-      assertNotNull(
-          page.getFirstByXPath(
-              "//section[contains(@class, 'pf-v5-c-page__main-section pf-m-light')]"));
-      return page;
-    } catch (IOException e) {
-      fail("The string is not valid HTML.", e);
-      return null;
-    }
   }
 
   protected String getContentType(String sbomType) {
