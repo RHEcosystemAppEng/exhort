@@ -25,8 +25,6 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import FilterIcon from '@patternfly/react-icons/dist/esm/icons/filter-icon';
 import SearchIcon from '@patternfly/react-icons/dist/esm/icons/search-icon';
 
-
-import { useAppContext } from '../App';
 import {Dependency, SourceReport} from '../api/report';
 import { useSelectionState } from '../hooks/useSelectionState';
 import { useTable } from '../hooks/useTable';
@@ -42,11 +40,6 @@ import { TransitiveDependenciesTable } from './TransitiveDependenciesTable';
 import { VulnerabilitiesTable } from './VulnerabilitiesTable';
 
 export const DependenciesTable = ({ name, source }: { name: string; source: SourceReport }) => {
-  const appContext = useAppContext();
-
-  // const providerName = 'snyk';
-  // const synkReport = appContext.report[providerName];
-  // const tableData = synkReport.dependencies;
 
   // Filters
   const [filterText, setFilterText] = useState('');
@@ -173,7 +166,7 @@ export const DependenciesTable = ({ name, source }: { name: string; source: Sour
                         }}
                       />
                       <Td>
-                        <DependencyLink name={item.ref} />
+                        <DependencyLink name={item.ref}/>
                       </Td>
                       <Td>{item.issues?.length || 0}</Td>
                       <Td>

@@ -1,18 +1,9 @@
 export interface AppData {
-  packagePath: string;
-  remediationPath: string;
   providerPrivateData?: string[] | null;
-  vexPath: string;
   report: Report;
-  ossIndexIssueLinkFormatter: {
-    issuePathRegex: string;
-  };
-  snykIssueLinkFormatter: {
-    issuePathRegex: string;
-  };
-  sbomPath: string;
+  ossIssueTemplate: string;
+  snykIssueTemplate: string;
   snykSignup: string;
-  dependencyHelper: {};
 }
 
 export interface Report {
@@ -162,7 +153,7 @@ export function buildVulnerabilityItems(transitiveDependencies: TransitiveDepend
       vulnerabilities: transitive.issues || []
     
   }}).forEach(item => {
-    item.vulnerabilities.forEach(v => {
+    item.vulnerabilities?.forEach(v => {
       if(v.cves) {
         v.cves.forEach(cve => {
           rows.push({

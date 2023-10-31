@@ -31,6 +31,8 @@ import java.util.List;
 import org.cyclonedx.CycloneDxMediaType;
 import org.junit.jupiter.api.Test;
 
+import com.gargoylesoftware.htmlunit.BrowserVersion;
+import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.DomNodeList;
 import com.gargoylesoftware.htmlunit.html.HtmlButton;
@@ -304,5 +306,22 @@ public class HtmlReportTest extends AbstractAnalysisTest {
               + rows.size());
     }
     return rows.get(1).getFirstByXPath("//table");
+  }
+
+  private HtmlPage extractPage(String html) {
+    try (WebClient webClient = new WebClient(BrowserVersion.BEST_SUPPORTED)) {
+      HtmlPage page = webClient.loadHtmlCodeIntoCurrentWindow(html);
+      webClient.waitForBackgroundJavaScript(50000);
+      assertTrue(page.isHtmlPage(), "The string is valid HTML.");
+      assertEquals("Dependency Analysis", page.getTitleText());
+      assertNotNull(page.getElementsById("root"));
+      assertNotNull(
+          page.getFirstByXPath(
+              "//section[contains(@class, 'pf-v5-c-page__main-section pf-m-light')]"));
+      return page;
+    } catch (IOException e) {
+      fail("The string is not valid HTML.", e);
+      return null;
+    }
   }
 }

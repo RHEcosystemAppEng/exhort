@@ -2,7 +2,6 @@ import React, {useReducer} from 'react';
 import {Button, ButtonVariant, Icon, Modal, ModalVariant} from '@patternfly/react-core';
 
 import {extractDependencyVersion} from '../utils/utils';
-import {useAppContext} from '../App';
 import SecurityCheckIcon from '../images/security-check.svg';
 
 interface RemediationLinkProps {
@@ -11,7 +10,7 @@ interface RemediationLinkProps {
 }
 
 export const RemediationLink: React.FC<RemediationLinkProps> = ({ packageName, cves }) => {
-  const appContext = useAppContext();
+  // const appContext = useAppContext();
 
   const [isModalOpen, toggleModal] = useReducer((state) => !state, false);
 
@@ -37,7 +36,7 @@ export const RemediationLink: React.FC<RemediationLinkProps> = ({ packageName, c
               target="_blank"
               rel="noreferrer"
               variant={ButtonVariant.secondary}
-              href={`${appContext.vexPath}${cve}-Quarkus.json`}
+              // href={`${appContext.vexPath}${cve}-Quarkus.json`}
             >
               VEX
             </Button>
@@ -48,7 +47,7 @@ export const RemediationLink: React.FC<RemediationLinkProps> = ({ packageName, c
             target="_blank"
             rel="noreferrer"
             variant={ButtonVariant.secondary}
-            href={appContext.sbomPath}
+            // href={appContext.sbomPath}
           >
             SBOM
           </Button>,

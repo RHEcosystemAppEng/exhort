@@ -65,6 +65,9 @@ public abstract class ProviderResponseHandler {
 
   protected abstract String getProviderName();
 
+  public abstract Map<String, List<Issue>> responseToIssues(
+      byte[] response, String privateProviders, DependencyTree tree) throws IOException;
+
   protected ProviderStatus defaultOkStatus(String provider) {
     return new ProviderStatus()
         .name(provider)
@@ -146,9 +149,6 @@ public abstract class ProviderResponseHandler {
         };
   }
 
-  public abstract Map<String, List<Issue>> responseToIssues(
-      byte[] response, String privateProviders) throws IOException;
-
   public Map<String, List<Issue>> emptyResponse(
       @ExchangeProperty(Constants.DEPENDENCY_TREE_PROPERTY) DependencyTree tree) {
     return Collections.emptyMap();
@@ -204,7 +204,7 @@ public abstract class ProviderResponseHandler {
     tree.dependencies().entrySet().stream()
         .forEach(
             e -> {
-              var ref = e.getKey().name();
+              var ref = e.getKey().ref();
               var issues = issuesData.get(ref);
               var directReport = new DependencyReport().ref(e.getKey());
               if (issues == null) {
@@ -220,7 +220,7 @@ public abstract class ProviderResponseHandler {
                       .map(
                           t -> {
                             List<Issue> transitiveIssues = Collections.emptyList();
-                            var tRef = t.name();
+                            var tRef = t.ref();
                             if (issuesData.get(tRef) != null) {
                               transitiveIssues =
                                   issuesData.get(tRef).stream()
@@ -256,7 +256,7 @@ public abstract class ProviderResponseHandler {
   private SourceSummary buildSummary(Map<String, List<Issue>> issuesData, DependencyTree tree) {
     var counter = new VulnerabilityCounter();
     var directRefs =
-        tree.dependencies().keySet().stream().map(PackageRef::name).collect(Collectors.toSet());
+        tree.dependencies().keySet().stream().map(PackageRef::ref).collect(Collectors.toSet());
     issuesData
         .entrySet()
         .forEach(e -> incrementCounter(e.getValue(), counter, directRefs.contains(e.getKey())));

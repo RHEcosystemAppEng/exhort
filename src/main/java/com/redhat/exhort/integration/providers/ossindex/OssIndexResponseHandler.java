@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.camel.Body;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,6 +39,7 @@ import com.redhat.exhort.api.v4.Issue;
 import com.redhat.exhort.config.ObjectMapperProducer;
 import com.redhat.exhort.integration.providers.ProviderResponseHandler;
 import com.redhat.exhort.model.CvssParser;
+import com.redhat.exhort.model.DependencyTree;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -76,8 +78,8 @@ public class OssIndexResponseHandler extends ProviderResponseHandler {
     return oldExchange;
   }
 
-  public Map<String, List<Issue>> responseToIssues(byte[] response, String privateProviders)
-      throws IOException {
+  public Map<String, List<Issue>> responseToIssues(
+      @Body byte[] response, String privateProviders, DependencyTree tree) throws IOException {
     var json = (ArrayNode) mapper.readTree(response);
     return getIssues(json);
   }
@@ -88,12 +90,12 @@ public class OssIndexResponseHandler extends ProviderResponseHandler {
         n -> {
           var pkgRef = n.get("coordinates").asText();
           try {
-            var ref = PackageRef.builder().purl(pkgRef).build();
+            var key = PackageRef.builder().purl(pkgRef).build();
             List<Issue> issues = new ArrayList<>();
             var vulnerabilities = (ArrayNode) n.get("vulnerabilities");
             vulnerabilities.forEach(v -> issues.add(toIssue(v)));
             if (!issues.isEmpty()) {
-              reports.put(ref.name(), issues);
+              reports.put(key.ref(), issues);
             }
           } catch (IllegalArgumentException e) {
             LOGGER.warn("Unable to parse PackageURL: " + pkgRef, e);

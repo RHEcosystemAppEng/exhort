@@ -87,8 +87,8 @@ public class SnykRequestBuilder {
         .set("deps", depsNode);
   }
 
-  private String getId(PackageRef ref) {
-    return new StringBuilder(ref.name()).append("@").append(ref.version()).toString();
+  private String getId(PackageRef pkg) {
+    return new StringBuilder(pkg.name()).append("@").append(pkg.version()).toString();
   }
 
   private String getPkgManager(DependencyTree tree) {

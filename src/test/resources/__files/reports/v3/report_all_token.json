@@ -1,9 +1,17 @@
 {
 	"summary": {
 		"dependencies": {
-			"scanned": 9,
+			"scanned": 2,
 			"transitive": 7
 		},
+        "vulnerabilities": {
+            "direct": 0,
+            "total": 7,
+            "critical": 0,
+            "high": 4,
+            "medium": 3,
+            "low": 0
+        },
 		"providerStatuses": [
 			{
 				"ok": true,
