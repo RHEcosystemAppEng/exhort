@@ -102,8 +102,8 @@ objects:
                 - name: MONITORING_SENTRY_DSN
                   valueFrom:
                     secretKeyRef:
-                      name: exhort-secret
-                      key: sentry-dsn
+                      name: '${PROJECT_NAME}-dsn'
+                      key: dsn
                 - name: MONITORING_SENTRY_SERVERNAME
                   valueFrom:
                     fieldRef:
@@ -192,3 +192,7 @@ parameters:
     value: stage
     displayName: Environment (default -- stage)
     description: 'Application environment'
+  - name: PROJECT_NAME
+    value: trusted-content-exhort-stage
+    displayName: Project name (default -- trusted-content-exhort-stage)
+    description: 'Project name'
