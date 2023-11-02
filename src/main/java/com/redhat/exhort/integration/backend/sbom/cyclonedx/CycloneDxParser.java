@@ -89,7 +89,7 @@ public class CycloneDxParser extends SbomParser {
     if (bom.getDependencies() == null || bom.getDependencies().isEmpty()) {
       return buildUnknownDependencies(componentPurls);
     }
-    Map<PackageRef, DirectDependency.Builder> direct = new HashMap<>();
+    Map<PackageRef, DirectDependency.Builder> directDepBuilders = new HashMap<>();
     if (rootRef == null) {
       var transitive =
           bom.getDependencies().stream()
@@ -104,36 +104,39 @@ public class CycloneDxParser extends SbomParser {
           .forEach(
               dref -> {
                 PackageRef r = componentPurls.get(dref);
-                direct.put(r, DirectDependency.builder().ref(r).transitive(new HashSet<>()));
+                directDepBuilders.put(
+                    r, DirectDependency.builder().ref(r).transitive(new HashSet<>()));
               });
     }
     bom.getDependencies().stream()
         .forEach(
-            d -> {
-              if (d.getRef().equals(rootRef)) {
-                d.getDependencies()
+            bomDep -> {
+              if (bomDep.getRef().equals(rootRef)) {
+                bomDep
+                    .getDependencies()
                     .forEach(
                         rootDep -> {
                           var ref = componentPurls.get(rootDep.getRef());
-                          direct.put(
+                          directDepBuilders.put(
                               ref, DirectDependency.builder().ref(ref).transitive(new HashSet<>()));
                         });
-              } else if (d.getDependencies() != null) {
-                var source = componentPurls.get(d.getRef());
-                var directBuilder = direct.get(source);
+              } else if (bomDep.getDependencies() != null) {
+                var source = componentPurls.get(bomDep.getRef());
+                var directBuilder = directDepBuilders.get(source);
                 if (directBuilder == null) {
-                  direct.values().stream()
-                      .filter(v -> v.transitive.contains(source))
+                  directDepBuilders.values().stream()
                       .forEach(
-                          v ->
-                              d.getDependencies()
+                          builder ->
+                              bomDep
+                                  .getDependencies()
                                   .forEach(
                                       t -> {
                                         PackageRef target = componentPurls.get(t.getRef());
-                                        v.transitive.add(target);
+                                        builder.transitive.add(target);
                                       }));
                 } else {
-                  d.getDependencies()
+                  bomDep
+                      .getDependencies()
                       .forEach(
                           t -> {
                             PackageRef target = componentPurls.get(t.getRef());
@@ -142,7 +145,7 @@ public class CycloneDxParser extends SbomParser {
                 }
               }
             });
-    return direct.entrySet().stream()
+    return directDepBuilders.entrySet().stream()
         .map(e -> Map.entry(e.getKey(), e.getValue().build()))
         .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
   }

@@ -203,10 +203,10 @@ public abstract class ProviderResponseHandler {
     List<DependencyReport> sourceReport = new ArrayList<>();
     tree.dependencies().entrySet().stream()
         .forEach(
-            e -> {
-              var ref = e.getKey().ref();
+            depEntry -> {
+              var ref = depEntry.getKey().ref();
               var issues = issuesData.get(ref);
-              var directReport = new DependencyReport().ref(e.getKey());
+              var directReport = new DependencyReport().ref(depEntry.getKey());
               if (issues == null) {
                 issues = Collections.emptyList();
               }
@@ -216,7 +216,7 @@ public abstract class ProviderResponseHandler {
                       .collect(Collectors.toList()));
               directReport.setHighestVulnerability(issues.stream().findFirst().orElse(null));
               List<TransitiveDependencyReport> transitiveReports =
-                  e.getValue().transitive().stream()
+                  depEntry.getValue().transitive().stream()
                       .map(
                           t -> {
                             List<Issue> transitiveIssues = Collections.emptyList();
@@ -240,7 +240,7 @@ public abstract class ProviderResponseHandler {
                                 .issues(transitiveIssues)
                                 .highestVulnerability(highestTransitive.orElse(null));
                           })
-                      .filter(d -> !d.getIssues().isEmpty())
+                      .filter(transitiveReport -> !transitiveReport.getIssues().isEmpty())
                       .collect(Collectors.toList());
               transitiveReports.sort(Collections.reverseOrder(new TransitiveScoreComparator()));
               directReport.setTransitive(transitiveReports);
