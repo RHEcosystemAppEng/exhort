@@ -33,7 +33,6 @@ import java.net.http.HttpResponse;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.cyclonedx.CycloneDxMediaType;
@@ -44,7 +43,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import com.redhat.exhort.api.v3.AnalysisReport;
-import com.redhat.exhort.api.v3.ProviderStatus;
 
 import io.quarkus.test.junit.QuarkusTest;
 
@@ -63,7 +61,7 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
       List<String> providers, Map<String, String> authHeaders, String pkgManager) {
     stubAllProviders();
 
-    AnalysisReport report =
+    var report =
         given()
             .header(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
             .headers(authHeaders)
@@ -80,7 +78,7 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
 
     providers.forEach(
         p -> {
-          Optional<ProviderStatus> provider =
+          var provider =
               report.getSummary().getProviderStatuses().stream()
                   .filter(s -> s.getProvider().equals(p))
                   .findFirst();
@@ -144,7 +142,7 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
   public void testAllWithToken() {
     stubAllProviders();
 
-    String body =
+    var body =
         given()
             .header(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
             .header("Accept", MediaType.APPLICATION_JSON)
@@ -171,7 +169,7 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
   public void testSnykWithNoToken() {
     stubAllProviders();
 
-    String body =
+    var body =
         given()
             .header(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
             .header("Accept", MediaType.APPLICATION_JSON)
@@ -195,7 +193,7 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
   public void testUnauthorizedRequest() {
     stubAllProviders();
 
-    AnalysisReport report =
+    var report =
         given()
             .header(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
             .body(loadFileAsString(String.format("%s/empty-sbom.json", CYCLONEDX)))
@@ -212,7 +210,7 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
             .as(AnalysisReport.class);
 
     assertEquals(1, report.getSummary().getProviderStatuses().size());
-    ProviderStatus status = report.getSummary().getProviderStatuses().get(0);
+    var status = report.getSummary().getProviderStatuses().get(0);
     assertFalse(status.getOk());
     assertEquals(Constants.SNYK_PROVIDER, status.getProvider());
     assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), status.getStatus());
@@ -224,7 +222,7 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
   public void testForbiddenRequest() {
     stubAllProviders();
 
-    AnalysisReport report =
+    var report =
         given()
             .header(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
             .body(loadFileAsString(String.format("%s/empty-sbom.json", CYCLONEDX)))
@@ -241,7 +239,7 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
             .as(AnalysisReport.class);
 
     assertEquals(1, report.getSummary().getProviderStatuses().size());
-    ProviderStatus status = report.getSummary().getProviderStatuses().get(0);
+    var status = report.getSummary().getProviderStatuses().get(0);
     assertFalse(status.getOk());
     assertEquals(Constants.SNYK_PROVIDER, status.getProvider());
     assertEquals(Response.Status.FORBIDDEN.getStatusCode(), status.getStatus());
@@ -254,8 +252,8 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
   public void testMultipart_HttpVersions(String version) throws IOException, InterruptedException {
     stubAllProviders();
 
-    HttpClient client = HttpClient.newHttpClient();
-    HttpRequest request =
+    var client = HttpClient.newHttpClient();
+    var request =
         HttpRequest.newBuilder(URI.create("http://localhost:8081/api/v3/analysis"))
             .setHeader(Constants.RHDA_TOKEN_HEADER, DEFAULT_RHDA_TOKEN)
             .setHeader(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
@@ -267,7 +265,7 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
             .POST(HttpRequest.BodyPublishers.ofFile(loadSBOMFile(CYCLONEDX).toPath()))
             .build();
 
-    HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+    var response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
     assertEquals(Response.Status.OK.getStatusCode(), response.statusCode());
 

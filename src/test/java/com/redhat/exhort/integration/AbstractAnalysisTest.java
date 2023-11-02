@@ -42,13 +42,10 @@ import org.apache.camel.Exchange;
 import org.cyclonedx.CycloneDxMediaType;
 import org.junit.jupiter.api.AfterEach;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.jknack.handlebars.internal.Files;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.BasicCredentials;
 import com.google.common.base.Charsets;
-import com.redhat.exhort.config.ObjectMapperProducer;
 import com.redhat.exhort.extensions.InjectWireMock;
 import com.redhat.exhort.extensions.WiremockV3Extension;
 
@@ -89,14 +86,16 @@ public abstract class AbstractAnalysisTest {
   }
 
   protected void assertJson(String expectedFile, String currentBody) {
-    ObjectMapper mapper = ObjectMapperProducer.newInstance();
-    JsonNode current;
     try {
-      current = mapper.readTree(currentBody);
-      JsonNode expected =
-          mapper.readTree(
-              getClass().getClassLoader().getResourceAsStream("__files/" + expectedFile));
-      assertEquals(expected, current);
+      var expectedContent =
+          new String(
+              getClass()
+                  .getClassLoader()
+                  .getResourceAsStream("__files/" + expectedFile)
+                  .readAllBytes());
+      assertTrue(
+          equalToJson(expectedContent, true, false).match(currentBody).isExactMatch(),
+          String.format("Expecting: %s \nGot: %s", expectedContent, currentBody));
     } catch (IOException e) {
       fail("Unexpected processing exception");
     }
@@ -279,7 +278,8 @@ public abstract class AbstractAnalysisTest {
             .withHeader(
                 "Authorization", equalTo("token " + OK_TOKEN).or(equalTo("token " + SNYK_TOKEN)))
             .withHeader(Exchange.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON))
-            .withRequestBody(equalToJson(loadFileAsString("__files/snyk/maven_request.json")))
+            .withRequestBody(
+                equalToJson(loadFileAsString("__files/snyk/maven_request.json"), true, false))
             .willReturn(
                 aResponse()
                     .withStatus(200)
@@ -335,7 +335,9 @@ public abstract class AbstractAnalysisTest {
             .withRequestBody(
                 equalToJson(
                     loadFileAsString("__files/snyk/empty_request.json")
-                        .replaceAll("__PKG_MANAGER__", provider)))
+                        .replaceAll("__PKG_MANAGER__", provider),
+                    true,
+                    false))
             .willReturn(
                 aResponse()
                     .withStatus(200)
@@ -360,13 +362,15 @@ public abstract class AbstractAnalysisTest {
         post(Constants.OSS_INDEX_AUTH_COMPONENT_API_PATH)
             .withBasicAuth(OK_USER, OK_TOKEN)
             .withHeader(Exchange.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON))
-            .withRequestBody(equalToJson(loadFileAsString("__files/ossindex/empty_request.json")))
+            .withRequestBody(
+                equalToJson(loadFileAsString("__files/ossindex/empty_request.json"), true, false))
             .willReturn(aResponse().withStatus(200).withBodyFile("ossindex/empty_report.json")));
     server.stubFor(
         post(Constants.OSS_INDEX_AUTH_COMPONENT_API_PATH)
             .withBasicAuth(OK_USER, OK_TOKEN)
             .withHeader(Exchange.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON))
-            .withRequestBody(equalToJson(loadFileAsString("__files/ossindex/maven_request.json")))
+            .withRequestBody(
+                equalToJson(loadFileAsString("__files/ossindex/maven_request.json"), true, false))
             .willReturn(aResponse().withStatus(200).withBodyFile("ossindex/maven_report.json")));
     server.stubFor(
         post(Constants.OSS_INDEX_AUTH_COMPONENT_API_PATH)

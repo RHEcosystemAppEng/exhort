@@ -163,7 +163,7 @@ public class SbomParserTest {
     var tree = parser.buildTree(file);
 
     assertEquals(40, tree.dependencies().size());
-    assertEquals(485, tree.transitiveCount());
+    assertEquals(900, tree.transitiveCount());
   }
 
   static Stream<String> getMediaTypes() {

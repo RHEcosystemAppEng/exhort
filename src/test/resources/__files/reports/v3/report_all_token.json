@@ -4,14 +4,14 @@
 			"scanned": 2,
 			"transitive": 7
 		},
-        "vulnerabilities": {
-            "direct": 0,
-            "total": 7,
-            "critical": 0,
-            "high": 4,
-            "medium": 3,
-            "low": 0
-        },
+		"vulnerabilities": {
+			"direct": 0,
+			"total": 7,
+			"critical": 0,
+			"high": 4,
+			"medium": 3,
+			"low": 0
+		},
 		"providerStatuses": [
 			{
 				"ok": true,
@@ -28,6 +28,126 @@
 		]
 	},
 	"dependencies": [
+		{
+			"ref": "pkg:maven/io.quarkus/quarkus-jdbc-postgresql@2.13.5.Final",
+			"transitive": [
+				{
+					"ref": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.1",
+					"issues": [
+						{
+							"id": "CVE-2020-36518",
+							"title": "[CVE-2020-36518] CWE-787: Out-of-bounds Write",
+							"source": "oss-index",
+							"cvss": {
+								"attackVector": "Network",
+								"attackComplexity": "Low",
+								"privilegesRequired": "None",
+								"userInteraction": "None",
+								"scope": "Unchanged",
+								"confidentialityImpact": "None",
+								"integrityImpact": "None",
+								"availabilityImpact": "High",
+								"cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+							},
+							"cvssScore": 7.5,
+							"severity": "HIGH",
+							"cves": [
+								"CVE-2020-36518"
+							],
+							"unique": false
+						},
+						{
+							"id": "CVE-2022-42003",
+							"title": "[CVE-2022-42003] CWE-502: Deserialization of Untrusted Data",
+							"source": "oss-index",
+							"cvss": {
+								"attackVector": "Network",
+								"attackComplexity": "Low",
+								"privilegesRequired": "None",
+								"userInteraction": "None",
+								"scope": "Unchanged",
+								"confidentialityImpact": "None",
+								"integrityImpact": "None",
+								"availabilityImpact": "High",
+								"cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+							},
+							"cvssScore": 7.5,
+							"severity": "HIGH",
+							"cves": [
+								"CVE-2022-42003"
+							],
+							"unique": false
+						},
+						{
+							"id": "CVE-2022-42004",
+							"title": "[CVE-2022-42004] CWE-502: Deserialization of Untrusted Data",
+							"source": "oss-index",
+							"cvss": {
+								"attackVector": "Network",
+								"attackComplexity": "Low",
+								"privilegesRequired": "None",
+								"userInteraction": "None",
+								"scope": "Unchanged",
+								"confidentialityImpact": "None",
+								"integrityImpact": "None",
+								"availabilityImpact": "High",
+								"cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+							},
+							"cvssScore": 7.5,
+							"severity": "HIGH",
+							"cves": [
+								"CVE-2022-42004"
+							],
+							"unique": false
+						}
+					],
+					"highestVulnerability": {
+						"id": "CVE-2020-36518",
+						"title": "[CVE-2020-36518] CWE-787: Out-of-bounds Write",
+						"source": "oss-index",
+						"cvss": {
+							"attackVector": "Network",
+							"attackComplexity": "Low",
+							"privilegesRequired": "None",
+							"userInteraction": "None",
+							"scope": "Unchanged",
+							"confidentialityImpact": "None",
+							"integrityImpact": "None",
+							"availabilityImpact": "High",
+							"cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+						},
+						"cvssScore": 7.5,
+						"severity": "HIGH",
+						"cves": [
+							"CVE-2020-36518"
+						],
+						"unique": false
+					}
+				}
+			],
+			"highestVulnerability": {
+				"id": "CVE-2020-36518",
+				"title": "[CVE-2020-36518] CWE-787: Out-of-bounds Write",
+				"source": "oss-index",
+				"cvss": {
+					"attackVector": "Network",
+					"attackComplexity": "Low",
+					"privilegesRequired": "None",
+					"userInteraction": "None",
+					"scope": "Unchanged",
+					"confidentialityImpact": "None",
+					"integrityImpact": "None",
+					"availabilityImpact": "High",
+					"cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+				},
+				"cvssScore": 7.5,
+				"severity": "HIGH",
+				"cves": [
+					"CVE-2020-36518"
+				],
+				"unique": false
+			}
+		},
 		{
 			"ref": "pkg:maven/io.quarkus/quarkus-hibernate-orm@2.13.5.Final",
 			"transitive": [
@@ -129,6 +249,174 @@
 				"id": "CVE-2020-36518",
 				"title": "[CVE-2020-36518] CWE-787: Out-of-bounds Write",
 				"source": "oss-index",
+				"cvss": {
+					"attackVector": "Network",
+					"attackComplexity": "Low",
+					"privilegesRequired": "None",
+					"userInteraction": "None",
+					"scope": "Unchanged",
+					"confidentialityImpact": "None",
+					"integrityImpact": "None",
+					"availabilityImpact": "High",
+					"cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+				},
+				"cvssScore": 7.5,
+				"severity": "HIGH",
+				"cves": [
+					"CVE-2020-36518"
+				],
+				"unique": false
+			}
+		},
+		{
+			"ref": "pkg:maven/io.quarkus/quarkus-jdbc-postgresql@2.13.5.Final",
+			"transitive": [
+				{
+					"ref": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.1",
+					"issues": [
+						{
+							"id": "SNYK-JAVA-COMFASTERXMLJACKSONCORE-2421244",
+							"title": "Denial of Service (DoS)",
+							"source": "snyk",
+							"cvss": {
+								"attackVector": "Network",
+								"attackComplexity": "Low",
+								"privilegesRequired": "None",
+								"userInteraction": "None",
+								"scope": "Unchanged",
+								"confidentialityImpact": "None",
+								"integrityImpact": "None",
+								"availabilityImpact": "High",
+								"cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+							},
+							"cvssScore": 7.5,
+							"severity": "HIGH",
+							"cves": [
+								"CVE-2020-36518"
+							],
+							"unique": false
+						},
+						{
+							"id": "SNYK-JAVA-COMFASTERXMLJACKSONCORE-3038424",
+							"title": "Denial of Service (DoS)",
+							"source": "snyk",
+							"cvss": {
+								"attackVector": "Network",
+								"attackComplexity": "High",
+								"privilegesRequired": "None",
+								"userInteraction": "None",
+								"scope": "Unchanged",
+								"confidentialityImpact": "None",
+								"integrityImpact": "None",
+								"availabilityImpact": "High",
+								"exploitCodeMaturity": "Proof of concept code",
+								"cvss": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H/E:P"
+							},
+							"cvssScore": 5.9,
+							"severity": "MEDIUM",
+							"unique": true
+						},
+						{
+							"id": "SNYK-JAVA-COMFASTERXMLJACKSONCORE-3038426",
+							"title": "Denial of Service (DoS)",
+							"source": "snyk",
+							"cvss": {
+								"attackVector": "Network",
+								"attackComplexity": "High",
+								"privilegesRequired": "None",
+								"userInteraction": "None",
+								"scope": "Unchanged",
+								"confidentialityImpact": "None",
+								"integrityImpact": "None",
+								"availabilityImpact": "High",
+								"exploitCodeMaturity": "Proof of concept code",
+								"cvss": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H/E:P"
+							},
+							"cvssScore": 5.9,
+							"severity": "MEDIUM",
+							"cves": [
+								"CVE-2022-42003"
+							],
+							"unique": false
+						}
+					],
+					"highestVulnerability": {
+						"id": "SNYK-JAVA-COMFASTERXMLJACKSONCORE-2421244",
+						"title": "Denial of Service (DoS)",
+						"source": "snyk",
+						"cvss": {
+							"attackVector": "Network",
+							"attackComplexity": "Low",
+							"privilegesRequired": "None",
+							"userInteraction": "None",
+							"scope": "Unchanged",
+							"confidentialityImpact": "None",
+							"integrityImpact": "None",
+							"availabilityImpact": "High",
+							"cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+						},
+						"cvssScore": 7.5,
+						"severity": "HIGH",
+						"cves": [
+							"CVE-2020-36518"
+						],
+						"unique": false
+					}
+				},
+				{
+					"ref": "pkg:maven/org.postgresql/postgresql@42.5.0",
+					"issues": [
+						{
+							"id": "SNYK-JAVA-ORGPOSTGRESQL-3146847",
+							"title": "Information Exposure",
+							"source": "snyk",
+							"cvss": {
+								"attackVector": "Local",
+								"attackComplexity": "High",
+								"privilegesRequired": "Low",
+								"userInteraction": "None",
+								"scope": "Unchanged",
+								"confidentialityImpact": "High",
+								"integrityImpact": "None",
+								"availabilityImpact": "None",
+								"cvss": "CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:H/I:N/A:N"
+							},
+							"cvssScore": 4.7,
+							"severity": "MEDIUM",
+							"cves": [
+								"CVE-2022-41946"
+							],
+							"unique": false
+						}
+					],
+					"highestVulnerability": {
+						"id": "SNYK-JAVA-ORGPOSTGRESQL-3146847",
+						"title": "Information Exposure",
+						"source": "snyk",
+						"cvss": {
+							"attackVector": "Local",
+							"attackComplexity": "High",
+							"privilegesRequired": "Low",
+							"userInteraction": "None",
+							"scope": "Unchanged",
+							"confidentialityImpact": "High",
+							"integrityImpact": "None",
+							"availabilityImpact": "None",
+							"cvss": "CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:H/I:N/A:N"
+						},
+						"cvssScore": 4.7,
+						"severity": "MEDIUM",
+						"cves": [
+							"CVE-2022-41946"
+						],
+						"unique": false
+					}
+				}
+			],
+			"highestVulnerability": {
+				"id": "SNYK-JAVA-COMFASTERXMLJACKSONCORE-2421244",
+				"title": "Denial of Service (DoS)",
+				"source": "snyk",
 				"cvss": {
 					"attackVector": "Network",
 					"attackComplexity": "Low",
@@ -263,82 +551,6 @@
 				"severity": "HIGH",
 				"cves": [
 					"CVE-2020-36518"
-				],
-				"unique": false
-			}
-		},
-		{
-			"ref": "pkg:maven/io.quarkus/quarkus-jdbc-postgresql@2.13.5.Final",
-			"transitive": [
-				{
-					"ref": "pkg:maven/org.postgresql/postgresql@42.5.0",
-					"issues": [
-						{
-							"id": "SNYK-JAVA-ORGPOSTGRESQL-3146847",
-							"title": "Information Exposure",
-							"source": "snyk",
-							"cvss": {
-								"attackVector": "Local",
-								"attackComplexity": "High",
-								"privilegesRequired": "Low",
-								"userInteraction": "None",
-								"scope": "Unchanged",
-								"confidentialityImpact": "High",
-								"integrityImpact": "None",
-								"availabilityImpact": "None",
-								"cvss": "CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:H/I:N/A:N"
-							},
-							"cvssScore": 4.7,
-							"severity": "MEDIUM",
-							"cves": [
-								"CVE-2022-41946"
-							],
-							"unique": false
-						}
-					],
-					"highestVulnerability": {
-						"id": "SNYK-JAVA-ORGPOSTGRESQL-3146847",
-						"title": "Information Exposure",
-						"source": "snyk",
-						"cvss": {
-							"attackVector": "Local",
-							"attackComplexity": "High",
-							"privilegesRequired": "Low",
-							"userInteraction": "None",
-							"scope": "Unchanged",
-							"confidentialityImpact": "High",
-							"integrityImpact": "None",
-							"availabilityImpact": "None",
-							"cvss": "CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:H/I:N/A:N"
-						},
-						"cvssScore": 4.7,
-						"severity": "MEDIUM",
-						"cves": [
-							"CVE-2022-41946"
-						],
-						"unique": false
-					}
-				}
-			],
-			"highestVulnerability": {
-				"id": "SNYK-JAVA-ORGPOSTGRESQL-3146847",
-				"title": "Information Exposure",
-				"source": "snyk",
-				"cvss": {
-					"attackVector": "Local",
-					"attackComplexity": "High",
-					"privilegesRequired": "Low",
-					"userInteraction": "None",
-					"scope": "Unchanged",
-					"confidentialityImpact": "High",
-					"integrityImpact": "None",
-					"availabilityImpact": "None",
-					"cvss": "CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:H/I:N/A:N"
-				},
-				"cvssScore": 4.7,
-				"severity": "MEDIUM",
-				"cves": [
-					"CVE-2022-41946"
 				],
 				"unique": false
 			}
