@@ -72,33 +72,33 @@ in order to retrieve just a Summary. Use the `verbose=false` Query parameter to 
 $ http :8080/api/v4/analysis Content-Type:"application/vnd.cyclonedx+json" Accept:"application/json" @'target/sbom.json' verbose==false
 
 {
-	"scanned": {
-		"total": 9,
-		"direct": 2,
-		"transitive": 7
-	},
-	"providers": {
-		"oss-index": {
-			"status": {
-				"ok": true,
-				"name": "oss-index",
-				"code": 200,
-				"message": "OK"
-			},
-			"sources": {
-				"oss-index": {
-					"summary": {
-						"direct": 0,
-						"transitive": 3,
-						"total": 3,
-						"dependencies": 1,
-						"critical": 0,
-						"high": 3,
-						"medium": 0,
-						"low": 0,
-						"remediations": 0,
-						"recommendations": 0
-					},
+    "scanned": {
+        "total": 9,
+        "direct": 2,
+        "transitive": 7
+    },
+    "providers": {
+        "oss-index": {
+            "status": {
+                "ok": true,
+                "name": "oss-index",
+                "code": 200,
+                "message": "OK"
+            },
+            "sources": {
+                "oss-index": {
+                    "summary": {
+                        "direct": 0,
+                        "transitive": 3,
+                        "total": 3,
+                        "dependencies": 1,
+                        "critical": 0,
+                        "high": 3,
+                        "medium": 0,
+                        "low": 0,
+                        "remediations": 0,
+                        "recommendations": 0
+                    },
                     "dependencies": []
                 }
             }
@@ -172,22 +172,22 @@ Content-Transfer-Encoding: binary
 
 {
 {
-	"scanned": {
-		"total": 9,
-		"direct": 2,
-		"transitive": 7
-	},
-	"providers": {
-		"oss-index": {
-			"status": {
-				"ok": true,
-				"name": "oss-index",
-				"code": 200,
-				"message": "OK"
-			},
+    "scanned": {
+        "total": 9,
+        "direct": 2,
+        "transitive": 7
+    },
+    "providers": {
+        "oss-index": {
+            "status": {
+                "ok": true,
+                "name": "oss-index",
+                "code": 200,
+                "message": "OK"
+            },
             sources": {
-				"oss-index": {
-					"summary": {
+                "oss-index": {
+                    "summary": {
                         ...
                     },
                     "dependencies": [
