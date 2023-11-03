@@ -77,17 +77,6 @@ public final class Constants {
   public static final String DEFAULT_ACCEPT_MEDIA_TYPE = MediaType.APPLICATION_JSON;
   public static final boolean DEFAULT_VERBOSE_MODE = false;
 
-  public static final List<String> PKG_MANAGERS =
-      Collections.unmodifiableList(
-          new ArrayList<>() {
-            {
-              add(MAVEN_PKG_MANAGER);
-              add(NPM_PKG_MANAGER);
-              add(PYPI_PKG_MANAGER);
-              add(GOLANG_PKG_MANAGER);
-            }
-          });
-
   public static final List<String> PROVIDERS =
       Collections.unmodifiableList(
           new ArrayList<>() {

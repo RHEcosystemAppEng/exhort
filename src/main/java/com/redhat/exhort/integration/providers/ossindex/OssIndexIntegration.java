@@ -25,6 +25,7 @@ import java.util.Objects;
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.AggregationStrategies;
 import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
+import org.apache.camel.http.base.HttpOperationFailedException;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import com.redhat.exhort.integration.Constants;
@@ -59,15 +60,16 @@ public class OssIndexIntegration extends EndpointRouteBuilder {
         .choice()
           .when(method(OssIndexRequestBuilder.class, "isEmpty"))
             .setBody(method(OssIndexResponseHandler.class, "emptyResponse"))
+            .transform().method(OssIndexResponseHandler.class, "buildReport")
         .endChoice()
         .otherwise()
-          .to(direct("ossSplitReq"))
-        .end()
-          .transform().method(OssIndexResponseHandler.class, "buildReport");
+          .to(direct("ossSplitReq"));
 
     from(direct("ossSplitReq"))
         .routeId("ossSplitReq")
+          .doTry()
           .split(body(), AggregationStrategies.bean(OssIndexResponseHandler.class, "aggregateSplit"))
+            .stopOnException()
             .parallelProcessing()
               .transform().method(OssIndexRequestBuilder.class, "buildRequest")
               .process(this::processComponentRequest)
@@ -78,8 +80,11 @@ public class OssIndexIntegration extends EndpointRouteBuilder {
                 .end()
                   .to(vertxHttp("{{api.ossindex.host}}"))
                   .transform(method(OssIndexResponseHandler.class, "responseToIssues"))
-              .onFallback()
-                .process(responseHandler::processResponseError);
+          .end()
+            .transform().method(OssIndexResponseHandler.class, "buildReport")
+          .endDoTry()
+          .doCatch(HttpOperationFailedException.class)
+            .process(responseHandler::processResponseError);
     
     from(direct("ossValidateCredentials"))
       .routeId("ossValidateCredentials")

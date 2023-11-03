@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 import org.apache.camel.Body;
 import org.apache.camel.Exchange;
 import org.apache.camel.ExchangeProperty;
+import org.apache.camel.RuntimeCamelException;
 import org.apache.camel.http.base.HttpOperationFailedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,23 +90,26 @@ public abstract class ProviderResponseHandler {
     ProviderStatus status = new ProviderStatus().ok(false).name(getProviderName());
     Exception exception = (Exception) exchange.getProperty(Exchange.EXCEPTION_CAUGHT);
     Throwable cause = exception.getCause();
-    if (cause != null) {
-      if (cause instanceof HttpOperationFailedException) {
-        HttpOperationFailedException httpException = (HttpOperationFailedException) cause;
-        String message = prettifyHttpError(httpException);
-        status.message(message).code(httpException.getStatusCode());
-        LOGGER.warn("Unable to process request: {}", message, cause);
-      } else {
-        status
-            .message(cause.getMessage())
-            .code(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
-        LOGGER.warn("Unable to process request to: {}", getProviderName(), cause);
-      }
+
+    while (cause instanceof RuntimeCamelException && cause != null) {
+      cause = cause.getCause();
+    }
+    if (cause == null) {
+      cause = exception;
+    }
+    if (cause instanceof HttpOperationFailedException) {
+      HttpOperationFailedException httpException = (HttpOperationFailedException) cause;
+      String message = prettifyHttpError(httpException);
+      status.message(message).code(httpException.getStatusCode());
+      LOGGER.warn("Unable to process request: {}", message, cause);
+    } else if (cause instanceof IllegalArgumentException) {
+      status.message(cause.getMessage()).code(422);
+      LOGGER.warn("Unable to process request to: {}", getProviderName(), exception);
     } else {
       status
-          .message(exception.getMessage())
+          .message(cause.getMessage())
           .code(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
-      LOGGER.warn("Unable to process request to: {}", getProviderName(), exception);
+      LOGGER.warn("Unable to process request to: {}", getProviderName(), cause);
     }
     ProviderReport report = new ProviderReport().status(status).sources(Collections.emptyMap());
     monitoringProcessor.processProviderError(exchange, exception, getProviderName());

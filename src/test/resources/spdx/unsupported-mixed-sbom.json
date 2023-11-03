@@ -32,27 +32,6 @@
     "primaryPackagePurpose" : "LIBRARY",
     "versionInfo" : "2.6.1"
   }, {
-    "SPDXID" : "SPDXRef-pkg-maven-org.acme.dbaas-postgresql-orm-quarkus-1.0.0-SNAPSHOT-type-jar",
-    "annotations" : [ {
-      "annotationDate" : "2023-07-26T09:11:22Z",
-      "annotationType" : "OTHER",
-      "annotator" : "Tool: CycloneToSpdx",
-      "comment" : "MISSING_CDX_PROPERTY:componentType=\"LIBRARY\""
-    } ],
-    "copyrightText" : "NOASSERTION",
-    "downloadLocation" : "NOASSERTION",
-    "externalRefs" : [ {
-      "referenceCategory" : "PACKAGE-MANAGER",
-      "referenceLocator" : "pkg:maven/org.acme.dbaas/postgresql-orm-quarkus@1.0.0-SNAPSHOT?type=jar",
-      "referenceType" : "purl"
-    } ],
-    "filesAnalyzed" : false,
-    "licenseConcluded" : "NOASSERTION",
-    "licenseDeclared" : "NOASSERTION",
-    "name" : "org.acme.dbaas:postgresql-orm-quarkus",
-    "primaryPackagePurpose" : "LIBRARY",
-    "versionInfo" : "1.0.0-SNAPSHOT"
-  }, {
     "SPDXID" : "SPDXRef--xml-tools-common-0.1.6",
     "annotations" : [ {
       "annotationDate" : "2023-07-26T09:11:22Z",
@@ -77,6 +56,10 @@
   "relationships" : [ {
     "spdxElementId" : "SPDXRef-DOCUMENT",
     "relationshipType" : "DESCRIBES",
-    "relatedSpdxElement" : "SPDXRef-pkg-maven-org.acme.dbaas-postgresql-orm-quarkus-1.0.0-SNAPSHOT-type-jar"
-  } ]
+    "relatedSpdxElement" : "SPDXRef--xml-tools-common-0.1.6"
+  }, {
+    "spdxElementId" : "SPDXRef-DOCUMENT",
+    "relationshipType" : "DESCRIBES",
+    "relatedSpdxElement" : "SPDXRef-d574b448-4022-4dd8-9612-e6296d717e7f"
+  }]
 }

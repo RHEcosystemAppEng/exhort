@@ -21,7 +21,6 @@ package com.redhat.exhort.integration;
 import static io.restassured.RestAssured.given;
 import static org.apache.camel.Exchange.CONTENT_TYPE;
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.hamcrest.core.StringStartsWith.startsWithIgnoringCase;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -86,43 +85,61 @@ public class AnalysisTest extends AbstractAnalysisTest {
   @ParameterizedTest
   @ValueSource(strings = {CYCLONEDX, SPDX})
   public void testWithInvalidPkgManagers(String sbom) {
-    given()
-        .header(CONTENT_TYPE, getContentType(sbom))
-        .body(loadFileAsString(String.format("%s/unsupported-invalid-sbom.json", sbom)))
-        .when()
-        .post("/api/v4/analysis")
-        .then()
-        .assertThat()
-        .statusCode(422)
-        .contentType(MediaType.TEXT_PLAIN)
-        .body(equalTo("Unsupported package types received: [foo]"));
+    var report =
+        given()
+            .header(CONTENT_TYPE, getContentType(sbom))
+            .body(loadFileAsString(String.format("%s/unsupported-invalid-sbom.json", sbom)))
+            .when()
+            .post("/api/v4/analysis")
+            .then()
+            .assertThat()
+            .statusCode(200)
+            .contentType(MediaType.APPLICATION_JSON)
+            .extract()
+            .body()
+            .as(AnalysisReport.class);
 
+    assertEquals(1, report.getProviders().size());
+    var status = report.getProviders().get(Constants.SNYK_PROVIDER).getStatus();
+    assertEquals(422, status.getCode());
+    assertEquals("Unsupported package types received: [foo]", status.getMessage());
+    assertEquals(Constants.SNYK_PROVIDER, status.getName());
+    assertFalse(status.getOk());
     verifyNoInteractions();
   }
 
   @ParameterizedTest
   @ValueSource(strings = {CYCLONEDX, SPDX})
   public void testWithMixedPkgManagers(String sbom) {
-    given()
-        .header(CONTENT_TYPE, getContentType(sbom))
-        .body(loadFileAsString(String.format("%s/unsupported-mixed-sbom.json", sbom)))
-        .when()
-        .post("/api/v4/analysis")
-        .then()
-        .assertThat()
-        .statusCode(422)
-        .contentType(MediaType.TEXT_PLAIN)
-        .body(
-            startsWithIgnoringCase(
-                "It is not supported to submit mixed Package Manager types. Found: ["));
+    var report =
+        given()
+            .header(CONTENT_TYPE, getContentType(sbom))
+            .body(loadFileAsString(String.format("%s/unsupported-mixed-sbom.json", sbom)))
+            .when()
+            .post("/api/v4/analysis")
+            .then()
+            .assertThat()
+            .statusCode(200)
+            .contentType(MediaType.APPLICATION_JSON)
+            .extract()
+            .body()
+            .as(AnalysisReport.class);
+
+    assertEquals(1, report.getProviders().size());
+    var status = report.getProviders().get(Constants.SNYK_PROVIDER).getStatus();
+    assertEquals(422, status.getCode());
+    assertEquals(
+        "It is not supported to submit mixed Package Manager types. Found: [pypi, npm]",
+        status.getMessage());
+    assertEquals(Constants.SNYK_PROVIDER, status.getName());
+    assertFalse(status.getOk());
 
     verifyNoInteractions();
   }
 
   @ParameterizedTest
   @MethodSource("emptySbomArguments")
-  public void testEmptySbom(
-      List<String> providers, Map<String, String> authHeaders, String pkgManager) {
+  public void testEmptySbom(List<String> providers, Map<String, String> authHeaders) {
     stubAllProviders();
 
     var report =
@@ -160,22 +177,17 @@ public class AnalysisTest extends AbstractAnalysisTest {
     return Stream.of(
         Arguments.of(
             List.of(Constants.SNYK_PROVIDER), Collections.emptyMap(), Constants.MAVEN_PKG_MANAGER),
-        Arguments.of(
-            List.of(Constants.OSS_INDEX_PROVIDER),
-            Collections.emptyMap(),
-            Constants.MAVEN_PKG_MANAGER),
+        Arguments.of(List.of(Constants.OSS_INDEX_PROVIDER), Collections.emptyMap()),
         Arguments.of(
             List.of(Constants.SNYK_PROVIDER, Constants.OSS_INDEX_PROVIDER),
-            Map.of(Constants.SNYK_TOKEN_HEADER, OK_TOKEN),
-            Constants.MAVEN_PKG_MANAGER),
+            Map.of(Constants.SNYK_TOKEN_HEADER, OK_TOKEN)),
         Arguments.of(
             List.of(Constants.SNYK_PROVIDER, Constants.OSS_INDEX_PROVIDER),
             Map.of(
                 Constants.OSS_INDEX_USER_HEADER,
                 OK_USER,
                 Constants.OSS_INDEX_TOKEN_HEADER,
-                OK_TOKEN),
-            Constants.MAVEN_PKG_MANAGER),
+                OK_TOKEN)),
         Arguments.of(
             List.of(Constants.SNYK_PROVIDER, Constants.OSS_INDEX_PROVIDER),
             Map.of(
@@ -184,24 +196,16 @@ public class AnalysisTest extends AbstractAnalysisTest {
                 Constants.OSS_INDEX_USER_HEADER,
                 OK_USER,
                 Constants.OSS_INDEX_TOKEN_HEADER,
-                OK_TOKEN),
-            Constants.MAVEN_PKG_MANAGER),
+                OK_TOKEN)),
+        Arguments.of(
+            List.of(Constants.SNYK_PROVIDER, Constants.OSS_INDEX_PROVIDER), Collections.emptyMap()),
+        Arguments.of(
+            List.of(Constants.SNYK_PROVIDER, Constants.OSS_INDEX_PROVIDER), Collections.emptyMap()),
+        Arguments.of(
+            List.of(Constants.SNYK_PROVIDER, Constants.OSS_INDEX_PROVIDER), Collections.emptyMap()),
         Arguments.of(
             List.of(Constants.SNYK_PROVIDER, Constants.OSS_INDEX_PROVIDER),
-            Collections.emptyMap(),
-            Constants.MAVEN_PKG_MANAGER),
-        Arguments.of(
-            List.of(Constants.SNYK_PROVIDER, Constants.OSS_INDEX_PROVIDER),
-            Collections.emptyMap(),
-            Constants.NPM_PKG_MANAGER),
-        Arguments.of(
-            List.of(Constants.SNYK_PROVIDER, Constants.OSS_INDEX_PROVIDER),
-            Collections.emptyMap(),
-            Constants.GOLANG_PKG_MANAGER),
-        Arguments.of(
-            List.of(Constants.SNYK_PROVIDER, Constants.OSS_INDEX_PROVIDER),
-            Collections.emptyMap(),
-            Constants.PYPI_PKG_MANAGER));
+            Collections.emptyMap()));
   }
 
   @Test
