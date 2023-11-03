@@ -38,7 +38,7 @@ The following Package Managers are currently supported:
 - Go Modules (`gomodules`)
 - Pip (`pip`)
 
-## Dependency Analysis `/api/v3/analysis`
+## Dependency Analysis `/api/v4/analysis`
 
 The expected input data format is a Software Bill of Materials (SBOM) containing the aggregate of all direct and transitive
 dependencies of a project.
@@ -60,7 +60,7 @@ The generated file will be located under `./target/bom.json`. Make sure the requ
 Then you can analyise the vulnerabilities with the following command:
 
 ```bash
-$ http :8080/api/v3/analysis Content-Type:"application/vnd.cyclonedx+json" Accept:"application/json" @'target/bom.json'
+$ http :8080/api/v4/analysis Content-Type:"application/vnd.cyclonedx+json" Accept:"application/json" @'target/bom.json'
 ```
 
 ### Verbose Mode
@@ -69,22 +69,39 @@ When the Dependency Graph Analysis returns a JSON report it contains all vulnera
 in order to retrieve just a Summary. Use the `verbose=false` Query parameter to disable it.
 
 ```bash
-$ http :8080/api/v3/analysis Content-Type:"application/vnd.cyclonedx+json" Accept:"application/json" @'target/sbom.json' verbose==false
+$ http :8080/api/v4/analysis Content-Type:"application/vnd.cyclonedx+json" Accept:"application/json" @'target/sbom.json' verbose==false
 
 {
-    "dependencies": [],
-    "summary": {
-        "dependencies": {
-            "scanned": 11,
-            "transitive": 217
-        },
-        "vulnerabilities": {
-            "critical": 1,
-            "direct": 6,
-            "high": 4,
-            "low": 5,
-            "medium": 10,
-            "total": 20
+	"scanned": {
+		"total": 9,
+		"direct": 2,
+		"transitive": 7
+	},
+	"providers": {
+		"oss-index": {
+			"status": {
+				"ok": true,
+				"name": "oss-index",
+				"code": 200,
+				"message": "OK"
+			},
+			"sources": {
+				"oss-index": {
+					"summary": {
+						"direct": 0,
+						"transitive": 3,
+						"total": 3,
+						"dependencies": 1,
+						"critical": 0,
+						"high": 3,
+						"medium": 0,
+						"low": 0,
+						"remediations": 0,
+						"recommendations": 0
+					},
+                    "dependencies": []
+                }
+            }
         }
     }
 }
@@ -98,14 +115,21 @@ that specific provider will not show all the details.
 To provide the client authentication tokens use HTTP Headers in the request. The format for the tokens Headers is `ex-provider-token`. e.g. `ex-snyk-token`:
 
 ```bash
-http :8080/api/v3/analysis Content-Type:"application/vnd.cyclonedx+json" Accept:"text/html" @'target/sbom.json' ex-snyk-token:the-client-token
+http :8080/api/v4/analysis Content-Type:"application/vnd.cyclonedx+json" Accept:"text/html" @'target/sbom.json' ex-snyk-token:the-client-token
 ```
 
 In case the vulnerability provider requires of Basic Authentication the headers will be `ex-provider-user` and `ex-provider-token`.
 
 ```bash
-http :8080/api/v3/analysis Content-Type:"application/vnd.cyclonedx+json" Accept:"text/html" @'target/sbom.json' ex-oss-index-user:the-client-username ex-oss-index-token:the-client-token
+http :8080/api/v4/analysis Content-Type:"application/vnd.cyclonedx+json" Accept:"text/html" @'target/sbom.json' ex-oss-index-user:the-client-username ex-oss-index-token:the-client-token
 ```
+
+### V3 Support
+
+As long as clients consume V3 we will keep backwards compatible responses. The main difference between V4 and V3 is the multisource data model where providers
+can report vulnerabilities from multiple sources. In V3, all vulnerabilities will be merged and counted together.
+
+The HTML report will always be multisource using V4 data.
 
 ### HTML Report
 
@@ -118,7 +142,7 @@ The HTML report will show limited information:
 - Private vulnerabilities (i.e. vulnerabilities reported by the provider) will not be displayed.
 
 ```bash
-$ http :8080/api/v3/analysis Content-Type:"application/vnd.cyclonedx+json" Accept:"text/html" @'target/sbom.json'
+$ http :8080/api/v4/analysis Content-Type:"application/vnd.cyclonedx+json" Accept:"text/html" @'target/sbom.json'
 
 <html>
 ...
@@ -132,7 +156,7 @@ For that, use the `Accept: multipart/mixed` request header.
 
 
 ```bash
-http :8080/api/v3/analysis Content-Type:"application/vnd.cyclonedx+json" Accept:"multipart/mixed" @'target/sbom.json'
+http :8080/api/v4/analysis Content-Type:"application/vnd.cyclonedx+json" Accept:"multipart/mixed" @'target/sbom.json'
 HTTP/1.1 200 OK
     boundary="----=_Part_2_2047647971.1682593849895"
 Content-Type: multipart/mixed;
@@ -147,23 +171,37 @@ Content-Type: application/json
 Content-Transfer-Encoding: binary
 
 {
-    "summary": {
-        "dependencies": {
-            ...
-        },
-        "vulnerabilities": {
-            ...
+{
+	"scanned": {
+		"total": 9,
+		"direct": 2,
+		"transitive": 7
+	},
+	"providers": {
+		"oss-index": {
+			"status": {
+				"ok": true,
+				"name": "oss-index",
+				"code": 200,
+				"message": "OK"
+			},
+            sources": {
+				"oss-index": {
+					"summary": {
+                        ...
+                    },
+                    "dependencies": [
+                        {
+                        "ref": {
+                            "name": "log4j:log4j",
+                            "version": "1.2.17"
+                        },
+                        ...
+                    }
+                }
+            }
         }
-    },
-    "dependencies": [
-        {
-        "ref": {
-            "name": "log4j:log4j",
-            "version": "1.2.17"
-        },
-        ...
-        }
-    ]
+    }
 }
 ------=_Part_2_2047647971.1682593849895
 Content-Type: text/html
@@ -192,7 +230,7 @@ The request will be a GET to the `/token` path containing the HTTP header with t
 other HTTP requests. i.e. `ex-<provider>-token`
 
 ```bash
-http -v :8080/api/v3/token ex-snyk-token==example-token
+http -v :8080/api/v4/token ex-snyk-token==example-token
 ```
 
 The possible responses are:
