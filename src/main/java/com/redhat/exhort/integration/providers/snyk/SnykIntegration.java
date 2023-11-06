@@ -52,37 +52,38 @@ public class SnykIntegration extends EndpointRouteBuilder {
 
     // fmt:off
     from(direct("snykDepGraph"))
-        .routeId("snykDepGraph")
-        .process(this::setAuthToken)
+      .routeId("snykDepGraph")
+      .process(this::setAuthToken)
+      .circuitBreaker()
+          .faultToleranceConfiguration()
+          .timeoutEnabled(true)
+          .timeoutDuration(timeout)
+        .end()
+        .process(SnykRequestBuilder::validate)
         .transform().method(SnykRequestBuilder.class, "fromDiGraph")
         .process(this::processDepGraphRequest)
-        .circuitBreaker()
-          .faultToleranceConfiguration()
-            .timeoutEnabled(true)
-            .timeoutDuration(timeout)
-          .end()
         .to(direct("snykRequest"))
-        .onFallback()
-          .process(responseHandler::processResponseError);
+      .onFallback()
+        .process(responseHandler::processResponseError);
 
     from(direct("snykRequest"))
-        .routeId("snykRequest")
-        .to(vertxHttp("{{api.snyk.host}}"))
-        .transform().method(SnykResponseHandler.class, "responseToIssues")
-        .transform().method(SnykResponseHandler.class, "buildReport");
+      .routeId("snykRequest")
+      .to(vertxHttp("{{api.snyk.host}}"))
+      .transform().method(SnykResponseHandler.class, "responseToIssues")
+      .transform().method(SnykResponseHandler.class, "buildReport");
 
     from(direct("snykValidateToken"))
-        .routeId("snykValidateToken")
-        .process(this::processTokenRequest)
-        .circuitBreaker()
-          .faultToleranceConfiguration()
-            .timeoutEnabled(true)
-            .timeoutDuration(timeout)
-          .end()
-          .to(vertxHttp("{{api.snyk.host}}"))
-          .setBody(constant("Token validated successfully"))
-        .onFallback()
-          .process(responseHandler::processTokenFallBack);
+      .routeId("snykValidateToken")
+      .process(this::processTokenRequest)
+      .circuitBreaker()
+        .faultToleranceConfiguration()
+          .timeoutEnabled(true)
+          .timeoutDuration(timeout)
+        .end()
+        .to(vertxHttp("{{api.snyk.host}}"))
+        .setBody(constant("Token validated successfully"))
+      .onFallback()
+        .process(responseHandler::processTokenFallBack);
     // fmt:on
   }
 

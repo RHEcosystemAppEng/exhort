@@ -70,6 +70,7 @@ public class ExhortIntegration extends EndpointRouteBuilder {
 
   @Override
   public void configure() {
+
     // fmt:off
     getContext().getRegistry().bind(MicrometerConstants.METRICS_REGISTRY_NAME, registry);
     getContext().addRoutePolicyFactory(new MicrometerRoutePolicyFactory());
@@ -78,7 +79,8 @@ public class ExhortIntegration extends EndpointRouteBuilder {
       .clientRequestValidation(true);
 
     errorHandler(deadLetterChannel("direct:processInternalError"));
-
+    onException(Exception.class)
+      .log("foo?level=ERROR");
     onException(IllegalArgumentException.class)
       .routeId("onExhortIllegalArgumentException")
       .useOriginalMessage()
@@ -182,8 +184,7 @@ public class ExhortIntegration extends EndpointRouteBuilder {
       .to(seda("processFailedRequests"))
       .setBody().simple("${exception.message}")
       .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(Status.INTERNAL_SERVER_ERROR.getStatusCode()))
-      .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.TEXT_PLAIN))
-      ;
+      .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.TEXT_PLAIN));
     //fmt:on
   }
 

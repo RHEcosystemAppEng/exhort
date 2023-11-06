@@ -18,8 +18,14 @@
 
 package com.redhat.exhort.integration.providers.snyk;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
+
+import org.apache.camel.Exchange;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -35,6 +41,17 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 @RegisterForReflection
 public class SnykRequestBuilder {
 
+  public static final List<String> SUPPORTED_PKG_MANAGERS =
+      Collections.unmodifiableList(
+          new ArrayList<>() {
+            {
+              add(Constants.MAVEN_PKG_MANAGER);
+              add(Constants.NPM_PKG_MANAGER);
+              add(Constants.PYPI_PKG_MANAGER);
+              add(Constants.GOLANG_PKG_MANAGER);
+            }
+          });
+
   private ObjectMapper mapper = ObjectMapperProducer.newInstance();
 
   public String fromDiGraph(DependencyTree req) throws JsonProcessingException {
@@ -48,6 +65,28 @@ public class SnykRequestBuilder {
     depGraph.set("pkgs", addPackages(depGraph, req, defaultRoot));
     var root = mapper.createObjectNode().set("depGraph", depGraph);
     return mapper.writeValueAsString(root);
+  }
+
+  public static void validate(Exchange exchange) {
+    var tree = exchange.getIn().getBody(DependencyTree.class);
+    Set<String> types = new HashSet<>();
+    tree.dependencies()
+        .values()
+        .forEach(
+            d -> {
+              types.add(d.ref().purl().getType());
+              d.transitive().forEach(t -> types.add(t.purl().getType()));
+            });
+
+    var invalidTypes =
+        types.stream().filter(Predicate.not(SUPPORTED_PKG_MANAGERS::contains)).toList();
+    if (!invalidTypes.isEmpty()) {
+      throw new IllegalArgumentException("Unsupported package types received: " + invalidTypes);
+    }
+    if (types.size() > 1) {
+      throw new IllegalArgumentException(
+          "It is not supported to submit mixed Package Manager types. Found: " + types);
+    }
   }
 
   private JsonNode addPackages(ObjectNode depGraph, DependencyTree tree, PackageRef root) {

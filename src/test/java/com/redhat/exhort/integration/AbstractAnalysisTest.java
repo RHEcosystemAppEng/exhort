@@ -48,6 +48,7 @@ import com.github.tomakehurst.wiremock.client.BasicCredentials;
 import com.google.common.base.Charsets;
 import com.redhat.exhort.extensions.InjectWireMock;
 import com.redhat.exhort.extensions.WiremockV3Extension;
+import com.redhat.exhort.integration.providers.snyk.SnykRequestBuilder;
 
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
@@ -271,7 +272,7 @@ public abstract class AbstractAnalysisTest {
                         "{\"code\": 401, \"error\": \"Not authorised\""
                             + ", \"message\": \"Not authorised\"}")));
     // Other requests
-    Constants.PKG_MANAGERS.forEach(this::stubSnykEmptyRequest);
+    SnykRequestBuilder.SUPPORTED_PKG_MANAGERS.forEach(this::stubSnykEmptyRequest);
     // Dependency request
     server.stubFor(
         post(Constants.SNYK_DEP_GRAPH_API_PATH)
