@@ -23,29 +23,29 @@ import static com.redhat.exhort.integration.Constants.TRUSTIFICATION_PROVIDER;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.redhat.exhort.api.SeverityUtils;
 import com.redhat.exhort.api.v4.Issue;
-import com.redhat.exhort.config.ObjectMapperProducer;
+import com.redhat.exhort.api.v4.Severity;
 import com.redhat.exhort.integration.providers.ProviderResponseHandler;
 import com.redhat.exhort.model.CvssParser;
 import com.redhat.exhort.model.DependencyTree;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+
+@ApplicationScoped
 @RegisterForReflection
 public class TrustificationResponseHandler extends ProviderResponseHandler {
 
-  private final ObjectMapper mapper = ObjectMapperProducer.newInstance();
-
-  private static final String CVSS3_VERSION = "cvss3";
+  @Inject ObjectMapper mapper;
 
   @Override
   protected String getProviderName() {
@@ -56,72 +56,99 @@ public class TrustificationResponseHandler extends ProviderResponseHandler {
   public Map<String, List<Issue>> responseToIssues(
       byte[] rawResponse, String privateProviders, DependencyTree tree) throws IOException {
     JsonNode response = mapper.readTree(rawResponse);
-    Map<String, List<String>> vulnerabilityIds = new HashMap<>();
+    Map<String, List<Issue>> issuesData = new HashMap<>();
+    Map<String, JsonNode> cvesJson = new HashMap<>();
     response
-        .get("affected")
+        .get("cves")
+        .elements()
+        .forEachRemaining(
+            cveJson -> {
+              String cve = cveJson.get("id").asText().toUpperCase();
+              cvesJson.put(cve, cveJson);
+            });
+    response
+        .get("analysis")
         .fields()
         .forEachRemaining(
             e -> {
-              String ref = e.getKey().toUpperCase();
-              if (!vulnerabilityIds.containsKey(ref)) {
-                vulnerabilityIds.put(e.getKey(), new ArrayList<>());
+              String ref = e.getKey();
+              if (!issuesData.containsKey(ref)) {
+                issuesData.put(ref, new ArrayList<>());
               }
-              List<String> ids = vulnerabilityIds.get(ref);
-              e.getValue().elements().forEachRemaining(id -> ids.add(id.asText()));
+              List<Issue> issues = issuesData.get(ref);
+              e.getValue()
+                  .forEach(
+                      analysis -> {
+                        String vendor = analysis.get("vendor").asText();
+                        analysis
+                            .get("vulnerable")
+                            .forEach(
+                                vulnerable -> {
+                                  String vulnId = vulnerable.get("id").asText().toUpperCase();
+                                  Issue issue = new Issue().id(vulnId).source(vendor);
+                                  vulnerable
+                                      .get("severity")
+                                      .forEach(
+                                          severity -> {
+                                            if (severity
+                                                .get("source")
+                                                .asText()
+                                                .toLowerCase()
+                                                .equals(vendor)) {
+                                              Double dscore = severity.get("score").asDouble(0);
+                                              issue.cvssScore(dscore.floatValue());
+                                            }
+                                          });
+
+                                  if (isCVE(vulnId)) {
+                                    issue.addCvesItem(vulnId);
+                                  }
+                                  vulnerable
+                                      .get("aliases")
+                                      .forEach(
+                                          a -> {
+                                            String alias = a.asText();
+                                            if (isCVE(alias)) {
+                                              issue.addCvesItem(alias.toUpperCase());
+                                            }
+                                            ;
+                                          });
+                                  completeIssueData(issue, cvesJson);
+                                  issues.add(issue);
+                                });
+                      });
             });
-    Map<String, List<Issue>> issuesData = new HashMap<>();
-    response
-        .get("vulnerabilities")
-        .elements()
-        .forEachRemaining(
-            n -> {
-              String vulnerabilityId = n.get("id").asText();
-              Optional<String> id =
-                  vulnerabilityIds.entrySet().stream()
-                      .filter(e -> e.getValue().contains(vulnerabilityId))
-                      .map(Entry::getKey)
-                      .findFirst();
-              if (id.isPresent()) {
-                List<Issue> issues = issuesData.get(id.get());
-                if (issues == null) {
-                  issues = new ArrayList<>();
-                  issuesData.put(id.get(), issues);
-                }
-                issues.add(toIssue(id.get(), n));
-              }
-            });
+
     return issuesData;
   }
 
-  private Issue toIssue(String id, JsonNode n) {
-    Issue i = new Issue().id(id).source(n.get("origin").asText()).title(n.get("summary").asText());
-    if (isCVE(id)) {
-      i.addCvesItem(id);
+  private void completeIssueData(Issue issue, Map<String, JsonNode> cvesJson) {
+    Optional<String> firstCve =
+        issue.getCves().stream().filter(cve -> cvesJson.keySet().contains(cve)).findFirst();
+    if (firstCve.isEmpty()) {
+      issue.severity(SeverityUtils.fromScore(issue.getCvssScore()));
+      issue.unique(Boolean.TRUE);
+      return;
     }
-    n.get("aliases")
-        .elements()
-        .forEachRemaining(
-            alias -> {
-              if (isCVE(alias.asText())) {
-                i.addCvesItem(alias.asText());
+    JsonNode cveJson = cvesJson.get(firstCve.get());
+    issue.title(cveJson.get("cisaVulnerabilityName").asText());
+
+    cveJson
+        .get("metrics")
+        .get("cvssMetricV31")
+        .forEach(
+            metric -> {
+              if ("Primary".equalsIgnoreCase(metric.get("type").asText())) {
+                issue.cvss(
+                    CvssParser.fromVectorString(
+                        metric.get("cvssData").get("vectorString").asText()));
+                issue.severity(
+                    Severity.fromValue(metric.get("cvssData").get("baseSeverity").asText()));
               }
             });
-    Iterator<JsonNode> severities = n.get("severities").elements();
-    while (severities.hasNext()) {
-      JsonNode sn = severities.next();
-      if (CVSS3_VERSION.equals(sn.get("type").asText())) {
-        i.cvssScore(sn.get("score").floatValue())
-            .cvss(CvssParser.fromVectorString(sn.get("additional").asText()));
-        i.severity(SeverityUtils.fromScore(i.getCvssScore()));
-      }
-    }
-    if (i.getCves().isEmpty()) {
-      i.unique(Boolean.TRUE);
-    }
-    return i;
   }
 
-  private boolean isCVE(String id) {
-    return id.toUpperCase().startsWith("CVE-");
+  private boolean isCVE(String vulnerabilityId) {
+    return vulnerabilityId != null && vulnerabilityId.toUpperCase().startsWith("CVE-");
   }
 }

@@ -33,7 +33,7 @@ import jakarta.ws.rs.core.MediaType;
 @ApplicationScoped
 public class TrustificationIntegration extends EndpointRouteBuilder {
 
-  @ConfigProperty(name = "api.trustification.timeout", defaultValue = "10s")
+  @ConfigProperty(name = "api.trustification.timeout", defaultValue = "30s")
   String timeout;
 
   @Inject TrustificationResponseHandler responseHandler;
@@ -57,7 +57,6 @@ public class TrustificationIntegration extends EndpointRouteBuilder {
         .routeId("trustificationRequest")
         .transform().method(TrustificationRequestBuilder.class, "build")
         .process(this::processRequest)
-        .to("log:foo?showHeaders=true")
         .to(vertxHttp("{{api.trustification.host}}"))
         .transform().method(TrustificationResponseHandler.class, "responseToIssues")
         .transform().method(TrustificationResponseHandler.class, "buildReport");

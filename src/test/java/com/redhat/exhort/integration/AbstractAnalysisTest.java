@@ -193,6 +193,7 @@ public abstract class AbstractAnalysisTest {
   }
 
   protected void stubAllProviders() {
+    stubTrustificationRequests();
     stubSnykRequests();
     stubOssToken();
   }
@@ -209,6 +210,7 @@ public abstract class AbstractAnalysisTest {
                     credentials.get(Constants.OSS_INDEX_USER_HEADER),
                     credentials.get(Constants.OSS_INDEX_TOKEN_HEADER),
                     isEmpty);
+                case Constants.TRUSTIFICATION_PROVIDER -> verifyTrustificationRequest();
               }
             });
   }
@@ -402,9 +404,35 @@ public abstract class AbstractAnalysisTest {
     }
   }
 
+  protected void stubTrustificationRequests() {
+
+    server.stubFor(
+        post(Constants.TRUSTIFICATION_ANALYZE_API_PATH)
+            .withHeader(Exchange.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON))
+            .withRequestBody(
+                equalToJson(
+                    loadFileAsString("__files/trustification/empty_request.json"), true, false))
+            .willReturn(
+                aResponse().withStatus(200).withBodyFile("trustification/empty_report.json")));
+
+    server.stubFor(
+        post(Constants.TRUSTIFICATION_ANALYZE_API_PATH)
+            .withHeader(Exchange.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON))
+            .withRequestBody(
+                equalToJson(
+                    loadFileAsString("__files/trustification/maven_request.json"), true, false))
+            .willReturn(
+                aResponse().withStatus(200).withBodyFile("trustification/maven_report.json")));
+  }
+
+  protected void verifyTrustificationRequest() {
+    server.verify(1, postRequestedFor(urlEqualTo(Constants.TRUSTIFICATION_ANALYZE_API_PATH)));
+  }
+
   protected void verifyNoInteractions() {
     verifyNoInteractionsWithSnyk();
     verifyNoInteractionsWithOSS();
+    verifyNoInteractionsWithTrustification();
   }
 
   protected void verifyNoInteractionsWithSnyk() {
@@ -414,5 +442,9 @@ public abstract class AbstractAnalysisTest {
 
   protected void verifyNoInteractionsWithOSS() {
     server.verify(0, postRequestedFor(urlEqualTo(Constants.OSS_INDEX_AUTH_COMPONENT_API_PATH)));
+  }
+
+  protected void verifyNoInteractionsWithTrustification() {
+    server.verify(0, postRequestedFor(urlEqualTo(Constants.TRUSTIFICATION_ANALYZE_API_PATH)));
   }
 }

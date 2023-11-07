@@ -1,0 +1,132 @@
+{
+  "analysis": {
+      "pkg:maven/org.postgresql/postgresql@42.5.0": [
+          {
+              "vendor": "snyk",
+              "vulnerable": [
+                  {
+                      "id": "snyk-java-orgpostgresql-3146847",
+                      "severity": [
+                          {
+                              "source": "Snyk",
+                              "type": "CVSSv31",
+                              "score": 4.699999809265137
+                          },
+                          {
+                              "source": "SUSE",
+                              "type": "CVSSv31",
+                              "score": 5.5
+                          },
+                          {
+                              "source": "NVD",
+                              "type": "CVSSv31",
+                              "score": 5.5
+                          },
+                          {
+                              "source": "Red Hat",
+                              "type": "CVSSv31",
+                              "score": 5.5
+                          }
+                      ],
+                      "aliases": [
+                          "cve-2022-41946",
+                          "cwe-200",
+                          "ghsa-562r-vg33-8x8h"
+                      ]
+                  }
+              ]
+          },
+          {
+              "vendor": "osv",
+              "vulnerable": [
+                  {
+                      "id": "ghsa-562r-vg33-8x8h",
+                      "severity": [
+                          {
+                              "source": "osv",
+                              "type": "CVSSv31",
+                              "score": 4.7
+                          }
+                      ],
+                      "aliases": [
+                          "cve-2022-41946"
+                      ]
+                  }
+              ]
+          }
+      ]
+  },
+  "cves": [
+    {
+      "id": "CVE-2022-41946",
+      "sourceIdentifier": "security@apache.org",
+      "published": "2021-12-14T19:15:07.733",
+      "lastModified": "2023-10-26T07:15:36.677",
+      "vulnStatus": "Modified",
+      "cisaExploitAdd": "2023-05-01",
+      "cisaActionDue": "2023-05-22",
+      "cisaRequiredAction": "Apply updates per vendor instructions.",
+      "cisaVulnerabilityName": "Apache Log4j2 Deserialization of Untrusted Data Vulnerability",
+      "descriptions": [
+        {
+          "lang": "en",
+          "value": "It was found that the fix to address CVE-2021-44228 in Apache Log4j 2.15.0 was incomplete in certain non-default configurations. This could allows attackers with control over Thread Context Map (MDC) input data when the logging configuration uses a non-default Pattern Layout with either a Context Lookup (for example, $${ctx:loginId}) or a Thread Context Map pattern (%X, %mdc, or %MDC) to craft malicious input data using a JNDI Lookup pattern resulting in an information leak and remote code execution in some environments and local code execution in all environments. Log4j 2.16.0 (Java 8) and 2.12.2 (Java 7) fix this issue by removing support for message lookup patterns and disabling JNDI functionality by default."
+        },
+        {
+          "lang": "es",
+          "value": "Se descubri\u00F3 que la correcci\u00F3n para abordar CVE-2021-44228 en Apache Log4j versiones 2.15.0 estaba incompleta en ciertas configuraciones no predeterminadas. Esto podr\u00EDa permitir a los atacantes con control sobre los datos de entrada de Thread Context Map (MDC) cuando la configuraci\u00F3n de registro utiliza un Pattern Layout no predeterminado con un Context Lookup (por ejemplo, $${ctx:loginId}) o un Thread Context Map pattern (%X, %mdc, o %MDC) para elaborar datos de entrada maliciosos utilizando un patr\u00F3n JNDI Lookup que resulta en una fuga de informaci\u00F3n y ejecuci\u00F3n de c\u00F3digo remoto en algunos entornos y ejecuci\u00F3n de c\u00F3digo local en todos los entornos. Log4j versiones 2.16.0 (Java 8) y 2.12.2 (Java 7) solucionan este problema eliminando el soporte para los patrones de b\u00FAsqueda de mensajes y deshabilitando la funcionalidad JNDI por defecto"
+        }
+      ],
+      "metrics": {
+        "cvssMetricV31": [
+          {
+            "source": "nvd@nist.gov",
+            "type": "Primary",
+            "cvssData": {
+              "version": "3.1",
+              "vectorString": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:N/A:N",
+              "attackVector": "NETWORK",
+              "attackComplexity": "HIGH",
+              "privilegesRequired": "NONE",
+              "userInteraction": "NONE",
+              "scope": "CHANGED",
+              "confidentialityImpact": "HIGH",
+              "integrityImpact": "NONE",
+              "availabilityImpact": "NONE",
+              "baseScore": 5.5,
+              "baseSeverity": "CRITICAL"
+            },
+            "exploitabilityScore": 2.2,
+            "impactScore": 6
+          }
+        ],
+        "cvssMetricV2": [
+          {
+            "source": "nvd@nist.gov",
+            "type": "Primary",
+            "cvssData": {
+              "version": "2.0",
+              "vectorString": "AV:N/AC:H/Au:N/C:P/I:P/A:P",
+              "accessVector": "NETWORK",
+              "accessComplexity": "HIGH",
+              "authentication": "NONE",
+              "confidentialityImpact": "PARTIAL",
+              "integrityImpact": "PARTIAL",
+              "availabilityImpact": "PARTIAL",
+              "baseScore": 5.1
+            },
+            "baseSeverity": "MEDIUM",
+            "exploitabilityScore": 4.9,
+            "impactScore": 6.4,
+            "acInsufInfo": false,
+            "obtainAllPrivilege": false,
+            "obtainUserPrivilege": false,
+            "obtainOtherPrivilege": false,
+            "userInteractionRequired": false
+          }
+        ]
+      }
+    }
+  ],
+  "errors": []
+}

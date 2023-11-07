@@ -35,11 +35,11 @@ public class WiremockV3Extension implements QuarkusTestResourceLifecycleManager 
   @Override
   public Map<String, String> start() {
     server.start();
-
     return Map.of(
         "api.snyk.host", server.baseUrl(),
         "api.snyk.token", SNYK_TOKEN,
-        "api.ossindex.host", server.baseUrl());
+        "api.ossindex.host", server.baseUrl(),
+        "api.trustification.host", server.baseUrl());
   }
 
   @Override

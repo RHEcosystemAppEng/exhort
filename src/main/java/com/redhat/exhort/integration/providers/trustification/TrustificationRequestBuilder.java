@@ -36,7 +36,7 @@ public class TrustificationRequestBuilder {
 
   public String build(@Body DependencyTree tree) throws JsonProcessingException {
     ArrayNode purls = mapper.createArrayNode();
-    tree.getAll().stream().map(p -> p.purl().canonicalize()).forEach(purl -> purls.add(purl));
+    tree.getAll().stream().map(p -> p.purl().getCoordinates()).forEach(purl -> purls.add(purl));
     ObjectNode obj = mapper.createObjectNode().set("purls", purls);
     return mapper.writeValueAsString(obj);
   }

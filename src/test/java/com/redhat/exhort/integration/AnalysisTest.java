@@ -88,6 +88,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
     var report =
         given()
             .header(CONTENT_TYPE, getContentType(sbom))
+            .queryParam(Constants.PROVIDERS_PARAM, Constants.SNYK_PROVIDER)
             .body(loadFileAsString(String.format("%s/unsupported-invalid-sbom.json", sbom)))
             .when()
             .post("/api/v4/analysis")
@@ -114,6 +115,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
     var report =
         given()
             .header(CONTENT_TYPE, getContentType(sbom))
+            .queryParam(Constants.PROVIDERS_PARAM, Constants.SNYK_PROVIDER)
             .body(loadFileAsString(String.format("%s/unsupported-mixed-sbom.json", sbom)))
             .when()
             .post("/api/v4/analysis")
@@ -141,7 +143,6 @@ public class AnalysisTest extends AbstractAnalysisTest {
   @MethodSource("emptySbomArguments")
   public void testEmptySbom(List<String> providers, Map<String, String> authHeaders) {
     stubAllProviders();
-
     var report =
         given()
             .header(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
@@ -175,8 +176,8 @@ public class AnalysisTest extends AbstractAnalysisTest {
 
   private static Stream<Arguments> emptySbomArguments() {
     return Stream.of(
-        Arguments.of(
-            List.of(Constants.SNYK_PROVIDER), Collections.emptyMap(), Constants.MAVEN_PKG_MANAGER),
+        Arguments.of(List.of(Constants.TRUSTIFICATION_PROVIDER), Collections.emptyMap()),
+        Arguments.of(List.of(Constants.SNYK_PROVIDER), Collections.emptyMap()),
         Arguments.of(List.of(Constants.OSS_INDEX_PROVIDER), Collections.emptyMap()),
         Arguments.of(
             List.of(Constants.SNYK_PROVIDER, Constants.OSS_INDEX_PROVIDER),
@@ -189,7 +190,10 @@ public class AnalysisTest extends AbstractAnalysisTest {
                 Constants.OSS_INDEX_TOKEN_HEADER,
                 OK_TOKEN)),
         Arguments.of(
-            List.of(Constants.SNYK_PROVIDER, Constants.OSS_INDEX_PROVIDER),
+            List.of(
+                Constants.SNYK_PROVIDER,
+                Constants.OSS_INDEX_PROVIDER,
+                Constants.TRUSTIFICATION_PROVIDER),
             Map.of(
                 Constants.SNYK_TOKEN_HEADER,
                 OK_TOKEN,
@@ -198,13 +202,10 @@ public class AnalysisTest extends AbstractAnalysisTest {
                 Constants.OSS_INDEX_TOKEN_HEADER,
                 OK_TOKEN)),
         Arguments.of(
-            List.of(Constants.SNYK_PROVIDER, Constants.OSS_INDEX_PROVIDER), Collections.emptyMap()),
-        Arguments.of(
-            List.of(Constants.SNYK_PROVIDER, Constants.OSS_INDEX_PROVIDER), Collections.emptyMap()),
-        Arguments.of(
-            List.of(Constants.SNYK_PROVIDER, Constants.OSS_INDEX_PROVIDER), Collections.emptyMap()),
-        Arguments.of(
-            List.of(Constants.SNYK_PROVIDER, Constants.OSS_INDEX_PROVIDER),
+            List.of(
+                Constants.SNYK_PROVIDER,
+                Constants.OSS_INDEX_PROVIDER,
+                Constants.TRUSTIFICATION_PROVIDER),
             Collections.emptyMap()));
   }
 
@@ -233,6 +234,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
     assertJson("reports/report_all_token.json", body);
     verifySnykRequest(OK_TOKEN);
     verifyOssRequest(OK_USER, OK_TOKEN, false);
+    verifyTrustificationRequest();
   }
 
   @Test
@@ -261,11 +263,12 @@ public class AnalysisTest extends AbstractAnalysisTest {
 
   @Test
   public void testUnauthorizedRequest() {
-    stubAllProviders();
+    stubSnykRequests();
 
     var report =
         given()
             .header(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
+            .queryParam(Constants.PROVIDERS_PARAM, Constants.SNYK_PROVIDER)
             .body(loadFileAsString(String.format("%s/empty-sbom.json", CYCLONEDX)))
             .header("Accept", MediaType.APPLICATION_JSON)
             .header(Constants.SNYK_TOKEN_HEADER, INVALID_TOKEN)
@@ -287,15 +290,17 @@ public class AnalysisTest extends AbstractAnalysisTest {
     assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), status.getCode());
 
     verifySnykRequest(INVALID_TOKEN);
+    verifyNoInteractionsWithTrustification();
   }
 
   @Test
   public void testForbiddenRequest() {
-    stubAllProviders();
+    stubSnykRequests();
 
     var report =
         given()
             .header(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
+            .queryParam(Constants.PROVIDERS_PARAM, Constants.SNYK_PROVIDER)
             .body(loadFileAsString(String.format("%s/empty-sbom.json", CYCLONEDX)))
             .header("Accept", MediaType.APPLICATION_JSON)
             .header(Constants.SNYK_TOKEN_HEADER, UNAUTH_TOKEN)
@@ -317,6 +322,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
     assertEquals(Response.Status.FORBIDDEN.getStatusCode(), status.getCode());
 
     verifySnykRequest(UNAUTH_TOKEN);
+    verifyNoInteractionsWithTrustification();
   }
 
   @Test
@@ -350,6 +356,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
     assertDependenciesReport(snykSource.getDependencies());
 
     verifySnykRequest(OK_TOKEN);
+    verifyTrustificationRequest();
   }
 
   @Test
@@ -383,6 +390,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
     assertNull(snykSource.getDependencies());
 
     verifySnykRequest(null);
+    verifyTrustificationRequest();
   }
 
   @Test
@@ -417,6 +425,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
     assertNull(snykSource.getDependencies());
 
     verifySnykRequest(OK_TOKEN);
+    verifyTrustificationRequest();
   }
 
   @ParameterizedTest
@@ -443,6 +452,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
 
     verifySnykRequest(OK_TOKEN);
     verifyOssRequest(OK_USER, OK_TOKEN, false);
+    verifyTrustificationRequest();
   }
 
   @Test
