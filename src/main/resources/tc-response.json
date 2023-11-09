@@ -1,280 +1,888 @@
 {
-  "analysis":  {
-    "pkg:maven/org.postgresql/postgresql@42.5.0?type=jar": [
-        {
-            "vendor": "snyk",
-            "vulnerable": [
-                {
-                    "id": "snyk-java-orgpostgresql-3146847",
-                    "severity": [
-                        {
-                            "source": "Snyk",
-                            "type": "CVSSv31",
-                            "score": 4.699999809265137
-                        },
-                        {
-                            "source": "SUSE",
-                            "type": "CVSSv31",
-                            "score": 5.5
-                        },
-                        {
-                            "source": "NVD",
-                            "type": "CVSSv31",
-                            "score": 5.5
-                        },
-                        {
-                            "source": "Red Hat",
-                            "type": "CVSSv31",
-                            "score": 5.5
-                        }
-                    ],
-                    "aliases": [
-                        "cve-2022-41946",
-                        "cwe-200",
-                        "ghsa-562r-vg33-8x8h"
-                    ]
-                }
-            ]
-        },
-        {
-            "vendor": "osv",
-            "vulnerable": [
-                {
-                    "id": "ghsa-562r-vg33-8x8h",
-                    "severity": [
-                        {
-                            "source": "osv",
-                            "type": "CVSSv31",
-                            "score": 4.7
-                        }
-                    ],
-                    "aliases": [
-                        "cve-2022-41946"
-                    ]
-                }
-            ]
-        }
-    ]
-},
-  "cves": [
-    {
-      "id": "CVE-2022-41946",
-      "sourceIdentifier": "security@apache.org",
-      "published": "2021-12-14T19:15:07.733",
-      "lastModified": "2023-10-26T07:15:36.677",
-      "vulnStatus": "Modified",
-      "cisaExploitAdd": "2023-05-01",
-      "cisaActionDue": "2023-05-22",
-      "cisaRequiredAction": "Apply updates per vendor instructions.",
-      "cisaVulnerabilityName": "Apache Log4j2 Deserialization of Untrusted Data Vulnerability",
-      "descriptions": [
-        {
-          "lang": "en",
-          "value": "It was found that the fix to address CVE-2021-44228 in Apache Log4j 2.15.0 was incomplete in certain non-default configurations. This could allows attackers with control over Thread Context Map (MDC) input data when the logging configuration uses a non-default Pattern Layout with either a Context Lookup (for example, $${ctx:loginId}) or a Thread Context Map pattern (%X, %mdc, or %MDC) to craft malicious input data using a JNDI Lookup pattern resulting in an information leak and remote code execution in some environments and local code execution in all environments. Log4j 2.16.0 (Java 8) and 2.12.2 (Java 7) fix this issue by removing support for message lookup patterns and disabling JNDI functionality by default."
-        },
-        {
-          "lang": "es",
-          "value": "Se descubri\u00F3 que la correcci\u00F3n para abordar CVE-2021-44228 en Apache Log4j versiones 2.15.0 estaba incompleta en ciertas configuraciones no predeterminadas. Esto podr\u00EDa permitir a los atacantes con control sobre los datos de entrada de Thread Context Map (MDC) cuando la configuraci\u00F3n de registro utiliza un Pattern Layout no predeterminado con un Context Lookup (por ejemplo, $${ctx:loginId}) o un Thread Context Map pattern (%X, %mdc, o %MDC) para elaborar datos de entrada maliciosos utilizando un patr\u00F3n JNDI Lookup que resulta en una fuga de informaci\u00F3n y ejecuci\u00F3n de c\u00F3digo remoto en algunos entornos y ejecuci\u00F3n de c\u00F3digo local en todos los entornos. Log4j versiones 2.16.0 (Java 8) y 2.12.2 (Java 7) solucionan este problema eliminando el soporte para los patrones de b\u00FAsqueda de mensajes y deshabilitando la funcionalidad JNDI por defecto"
-        }
+  "analysis": {
+      "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.1": [
+          {
+              "vendor": "osv",
+              "vulnerable": [
+                  {
+                      "id": "ghsa-57j2-w4cx-62h2",
+                      "severity": [
+                          {
+                              "source": "osv",
+                              "type": "CVSSv31",
+                              "score": 7.5
+                          },
+                          {
+                              "source": "osv",
+                              "type": "CVSSv31",
+                              "score": 7.5
+                          }
+                      ],
+                      "aliases": [
+                          "cve-2020-36518"
+                      ]
+                  },
+                  {
+                      "id": "ghsa-jjjh-jjxp-wpff",
+                      "severity": [
+                          {
+                              "source": "osv",
+                              "type": "CVSSv31",
+                              "score": 7.5
+                          },
+                          {
+                              "source": "osv",
+                              "type": "CVSSv31",
+                              "score": 7.5
+                          }
+                      ],
+                      "aliases": [
+                          "cve-2022-42003"
+                      ]
+                  },
+                  {
+                      "id": "ghsa-rgv9-q543-rqg4",
+                      "severity": [
+                          {
+                              "source": "osv",
+                              "type": "CVSSv31",
+                              "score": 7.5
+                          },
+                          {
+                              "source": "osv",
+                              "type": "CVSSv31",
+                              "score": 7.5
+                          }
+                      ],
+                      "aliases": [
+                          "cve-2022-42004"
+                      ]
+                  },
+                  {
+                      "id": "ghsa-57j2-w4cx-62h2",
+                      "severity": [],
+                      "aliases": []
+                  },
+                  {
+                      "id": "ghsa-jjjh-jjxp-wpff",
+                      "severity": [],
+                      "aliases": []
+                  },
+                  {
+                      "id": "ghsa-rgv9-q543-rqg4",
+                      "severity": [],
+                      "aliases": []
+                  }
+              ],
+              "recommendations": []
+          },
+          {
+              "vendor": "snyk",
+              "vulnerable": [
+                  {
+                      "id": "snyk-java-comfasterxmljacksoncore-3038424",
+                      "severity": [
+                          {
+                              "source": "Snyk",
+                              "type": "CVSSv31",
+                              "score": 5.900000095367432
+                          },
+                          {
+                              "source": "NVD",
+                              "type": "CVSSv31",
+                              "score": 7.5
+                          },
+                          {
+                              "source": "Red Hat",
+                              "type": "CVSSv31",
+                              "score": 7.5
+                          },
+                          {
+                              "source": "SUSE",
+                              "type": "CVSSv31",
+                              "score": 7.5
+                          },
+                          {
+                              "source": "Snyk",
+                              "type": "CVSSv31",
+                              "score": 5.900000095367432
+                          },
+                          {
+                              "source": "NVD",
+                              "type": "CVSSv31",
+                              "score": 7.5
+                          },
+                          {
+                              "source": "Red Hat",
+                              "type": "CVSSv31",
+                              "score": 7.5
+                          },
+                          {
+                              "source": "SUSE",
+                              "type": "CVSSv31",
+                              "score": 7.5
+                          }
+                      ],
+                      "aliases": [
+                          "cve-2022-42004",
+                          "cwe-400"
+                      ]
+                  },
+                  {
+                      "id": "snyk-java-comfasterxmljacksoncore-3038426",
+                      "severity": [
+                          {
+                              "source": "Snyk",
+                              "type": "CVSSv31",
+                              "score": 5.900000095367432
+                          },
+                          {
+                              "source": "NVD",
+                              "type": "CVSSv31",
+                              "score": 7.5
+                          },
+                          {
+                              "source": "Red Hat",
+                              "type": "CVSSv31",
+                              "score": 7.5
+                          },
+                          {
+                              "source": "SUSE",
+                              "type": "CVSSv31",
+                              "score": 7.5
+                          },
+                          {
+                              "source": "Snyk",
+                              "type": "CVSSv31",
+                              "score": 5.900000095367432
+                          },
+                          {
+                              "source": "NVD",
+                              "type": "CVSSv31",
+                              "score": 7.5
+                          },
+                          {
+                              "source": "Red Hat",
+                              "type": "CVSSv31",
+                              "score": 7.5
+                          },
+                          {
+                              "source": "SUSE",
+                              "type": "CVSSv31",
+                              "score": 7.5
+                          }
+                      ],
+                      "aliases": [
+                          "cve-2022-42003",
+                          "cwe-400"
+                      ]
+                  },
+                  {
+                      "id": "snyk-java-comfasterxmljacksoncore-2421244",
+                      "severity": [
+                          {
+                              "source": "Snyk",
+                              "type": "CVSSv31",
+                              "score": 7.5
+                          },
+                          {
+                              "source": "SUSE",
+                              "type": "CVSSv31",
+                              "score": 7.5
+                          },
+                          {
+                              "source": "Red Hat",
+                              "type": "CVSSv31",
+                              "score": 7.5
+                          },
+                          {
+                              "source": "NVD",
+                              "type": "CVSSv31",
+                              "score": 7.5
+                          },
+                          {
+                              "source": "Snyk",
+                              "type": "CVSSv31",
+                              "score": 7.5
+                          },
+                          {
+                              "source": "SUSE",
+                              "type": "CVSSv31",
+                              "score": 7.5
+                          },
+                          {
+                              "source": "Red Hat",
+                              "type": "CVSSv31",
+                              "score": 7.5
+                          },
+                          {
+                              "source": "NVD",
+                              "type": "CVSSv31",
+                              "score": 7.5
+                          }
+                      ],
+                      "aliases": [
+                          "cve-2020-36518",
+                          "cwe-400"
+                      ]
+                  },
+                  {
+                      "id": "snyk-java-comfasterxmljacksoncore-3038424",
+                      "severity": [],
+                      "aliases": []
+                  },
+                  {
+                      "id": "snyk-java-comfasterxmljacksoncore-3038426",
+                      "severity": [],
+                      "aliases": []
+                  },
+                  {
+                      "id": "snyk-java-comfasterxmljacksoncore-2421244",
+                      "severity": [],
+                      "aliases": []
+                  }
+              ],
+              "recommendations": []
+          }
       ],
-      "metrics": {
-        "cvssMetricV31": [
+      "pkg:maven/io.quarkus/quarkus-core@2.13.5.Final": [
           {
-            "source": "nvd@nist.gov",
-            "type": "Primary",
-            "cvssData": {
-              "version": "3.1",
-              "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:C/C:H/I:H/A:H",
-              "attackVector": "NETWORK",
-              "attackComplexity": "HIGH",
-              "privilegesRequired": "NONE",
-              "userInteraction": "NONE",
-              "scope": "CHANGED",
-              "confidentialityImpact": "HIGH",
-              "integrityImpact": "HIGH",
-              "availabilityImpact": "HIGH",
-              "baseScore": 9,
-              "baseSeverity": "CRITICAL"
-            },
-            "exploitabilityScore": 2.2,
-            "impactScore": 6
+              "vendor": "osv",
+              "vulnerable": [
+                  {
+                      "id": "ghsa-3fhx-3vvg-2j84",
+                      "severity": [
+                          {
+                              "source": "osv",
+                              "type": "CVSSv31",
+                              "score": 6.5
+                          },
+                          {
+                              "source": "osv",
+                              "type": "CVSSv31",
+                              "score": 6.5
+                          }
+                      ],
+                      "aliases": [
+                          "cve-2023-2974"
+                      ]
+                  },
+                  {
+                      "id": "ghsa-3fhx-3vvg-2j84",
+                      "severity": [],
+                      "aliases": []
+                  }
+              ],
+              "recommendations": []
           }
-        ],
-        "cvssMetricV2": [
+      ],
+      "pkg:maven/org.postgresql/postgresql@42.5.0": [
           {
-            "source": "nvd@nist.gov",
-            "type": "Primary",
-            "cvssData": {
-              "version": "2.0",
-              "vectorString": "AV:N/AC:H/Au:N/C:P/I:P/A:P",
-              "accessVector": "NETWORK",
-              "accessComplexity": "HIGH",
-              "authentication": "NONE",
-              "confidentialityImpact": "PARTIAL",
-              "integrityImpact": "PARTIAL",
-              "availabilityImpact": "PARTIAL",
-              "baseScore": 5.1
-            },
-            "baseSeverity": "MEDIUM",
-            "exploitabilityScore": 4.9,
-            "impactScore": 6.4,
-            "acInsufInfo": false,
-            "obtainAllPrivilege": false,
-            "obtainUserPrivilege": false,
-            "obtainOtherPrivilege": false,
-            "userInteractionRequired": false
+              "vendor": "osv",
+              "vulnerable": [
+                  {
+                      "id": "ghsa-562r-vg33-8x8h",
+                      "severity": [
+                          {
+                              "source": "osv",
+                              "type": "CVSSv31",
+                              "score": 4.7
+                          },
+                          {
+                              "source": "osv",
+                              "type": "CVSSv31",
+                              "score": 4.7
+                          }
+                      ],
+                      "aliases": [
+                          "cve-2022-41946"
+                      ]
+                  },
+                  {
+                      "id": "ghsa-562r-vg33-8x8h",
+                      "severity": [],
+                      "aliases": []
+                  }
+              ],
+              "recommendations": []
+          },
+          {
+              "vendor": "snyk",
+              "vulnerable": [
+                  {
+                      "id": "snyk-java-orgpostgresql-3146847",
+                      "severity": [
+                          {
+                              "source": "Snyk",
+                              "type": "CVSSv31",
+                              "score": 4.699999809265137
+                          },
+                          {
+                              "source": "SUSE",
+                              "type": "CVSSv31",
+                              "score": 5.5
+                          },
+                          {
+                              "source": "NVD",
+                              "type": "CVSSv31",
+                              "score": 5.5
+                          },
+                          {
+                              "source": "Red Hat",
+                              "type": "CVSSv31",
+                              "score": 5.5
+                          },
+                          {
+                              "source": "Snyk",
+                              "type": "CVSSv31",
+                              "score": 4.699999809265137
+                          },
+                          {
+                              "source": "SUSE",
+                              "type": "CVSSv31",
+                              "score": 5.5
+                          },
+                          {
+                              "source": "NVD",
+                              "type": "CVSSv31",
+                              "score": 5.5
+                          },
+                          {
+                              "source": "Red Hat",
+                              "type": "CVSSv31",
+                              "score": 5.5
+                          }
+                      ],
+                      "aliases": [
+                          "cve-2022-41946",
+                          "cwe-200",
+                          "ghsa-562r-vg33-8x8h"
+                      ]
+                  },
+                  {
+                      "id": "snyk-java-orgpostgresql-3146847",
+                      "severity": [],
+                      "aliases": []
+                  }
+              ],
+              "recommendations": []
           }
-        ]
-      },
-      "references": [
-        {
-          "url": "http://www.openwall.com/lists/oss-security/2021/12/14/4",
-          "source": "security@apache.org",
-          "tags": [
-            "Mailing List",
-            "Mitigation",
-            "Third Party Advisory"
-          ]
-        },
-        {
-          "url": "http://www.openwall.com/lists/oss-security/2021/12/15/3",
-          "source": "security@apache.org",
-          "tags": [
-            "Mailing List",
-            "Third Party Advisory"
-          ]
-        },
-        {
-          "url": "http://www.openwall.com/lists/oss-security/2021/12/18/1",
-          "source": "security@apache.org",
-          "tags": [
-            "Mailing List",
-            "Third Party Advisory"
-          ]
-        },
-        {
-          "url": "https://cert-portal.siemens.com/productcert/pdf/ssa-397453.pdf",
-          "source": "security@apache.org",
-          "tags": [
-            "Third Party Advisory"
-          ]
-        },
-        {
-          "url": "https://cert-portal.siemens.com/productcert/pdf/ssa-479842.pdf",
-          "source": "security@apache.org",
-          "tags": [
-            "Third Party Advisory"
-          ]
-        },
-        {
-          "url": "https://cert-portal.siemens.com/productcert/pdf/ssa-661247.pdf",
-          "source": "security@apache.org",
-          "tags": [
-            "Third Party Advisory"
-          ]
-        },
-        {
-          "url": "https://cert-portal.siemens.com/productcert/pdf/ssa-714170.pdf",
-          "source": "security@apache.org",
-          "tags": [
-            "Third Party Advisory"
-          ]
-        },
-        {
-          "url": "https://lists.fedoraproject.org/archives/list/package-announce%40lists.fedoraproject.org/message/EOKPQGV24RRBBI4TBZUDQMM4MEH7MXCY/",
-          "source": "security@apache.org"
-        },
-        {
-          "url": "https://lists.fedoraproject.org/archives/list/package-announce%40lists.fedoraproject.org/message/SIG7FZULMNK2XF6FZRU4VWYDQXNMUGAJ/",
-          "source": "security@apache.org"
-        },
-        {
-          "url": "https://logging.apache.org/log4j/2.x/security.html",
-          "source": "security@apache.org",
-          "tags": [
-            "Mitigation",
-            "Release Notes",
-            "Vendor Advisory"
-          ]
-        },
-        {
-          "url": "https://psirt.global.sonicwall.com/vuln-detail/SNWLID-2021-0032",
-          "source": "security@apache.org",
-          "tags": [
-            "Third Party Advisory"
-          ]
-        },
-        {
-          "url": "https://security.gentoo.org/glsa/202310-16",
-          "source": "security@apache.org"
-        },
-        {
-          "url": "https://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-apache-log4j-qRuKNEbd",
-          "source": "security@apache.org",
-          "tags": [
-            "Third Party Advisory"
-          ]
-        },
-        {
-          "url": "https://www.cve.org/CVERecord?id=CVE-2021-44228",
-          "source": "security@apache.org",
-          "tags": [
-            "Not Applicable"
-          ]
-        },
-        {
-          "url": "https://www.debian.org/security/2021/dsa-5022",
-          "source": "security@apache.org",
-          "tags": [
-            "Third Party Advisory"
-          ]
-        },
-        {
-          "url": "https://www.intel.com/content/www/us/en/security-center/advisory/intel-sa-00646.html",
-          "source": "security@apache.org",
-          "tags": [
-            "Third Party Advisory"
-          ]
-        },
-        {
-          "url": "https://www.kb.cert.org/vuls/id/930724",
-          "source": "security@apache.org",
-          "tags": [
-            "Third Party Advisory",
-            "US Government Resource"
-          ]
-        },
-        {
-          "url": "https://www.oracle.com/security-alerts/alert-cve-2021-44228.html",
-          "source": "security@apache.org",
-          "tags": [
-            "Third Party Advisory"
-          ]
-        },
-        {
-          "url": "https://www.oracle.com/security-alerts/cpuapr2022.html",
-          "source": "security@apache.org",
-          "tags": [
-            "Third Party Advisory"
-          ]
-        },
-        {
-          "url": "https://www.oracle.com/security-alerts/cpujan2022.html",
-          "source": "security@apache.org",
-          "tags": [
-            "Patch",
-            "Third Party Advisory"
-          ]
-        },
-        {
-          "url": "https://www.oracle.com/security-alerts/cpujul2022.html",
-          "source": "security@apache.org",
-          "tags": [
-            "Third Party Advisory"
-          ]
-        }
       ]
-    }
+  },
+  "cves": [
+      {
+          "dataType": "CVE_RECORD",
+          "dataVersion": "5.0",
+          "cveMetadata": {
+              "state": "PUBLISHED",
+              "cveId": "CVE-2020-36518",
+              "assignerOrgId": "8254265b-2729-46b6-b9e3-3dfca2d5bfca",
+              "assignerShortName": "mitre",
+              "dateUpdated": "2022-11-27T00:00:00",
+              "dateReserved": "2022-03-11T00:00:00",
+              "datePublished": "2022-03-11T00:00:00"
+          },
+          "containers": {
+              "cna": {
+                  "providerMetadata": {
+                      "orgId": "8254265b-2729-46b6-b9e3-3dfca2d5bfca",
+                      "shortName": "mitre",
+                      "dateUpdated": "2022-11-27T00:00:00"
+                  },
+                  "descriptions": [
+                      {
+                          "lang": "en",
+                          "value": "jackson-databind before 2.13.0 allows a Java StackOverflow exception and denial of service via a large depth of nested objects."
+                      }
+                  ],
+                  "affected": [
+                      {
+                          "vendor": "n/a",
+                          "product": "n/a",
+                          "versions": [
+                              {
+                                  "version": "n/a",
+                                  "status": "affected"
+                              }
+                          ]
+                      }
+                  ],
+                  "references": [
+                      {
+                          "url": "https://github.com/FasterXML/jackson-databind/issues/2816"
+                      },
+                      {
+                          "url": "https://www.oracle.com/security-alerts/cpuapr2022.html"
+                      },
+                      {
+                          "name": "[debian-lts-announce] 20220502 [SECURITY] [DLA 2990-1] jackson-databind security update",
+                          "tags": [
+                              "mailing-list"
+                          ],
+                          "url": "https://lists.debian.org/debian-lts-announce/2022/05/msg00001.html"
+                      },
+                      {
+                          "url": "https://www.oracle.com/security-alerts/cpujul2022.html"
+                      },
+                      {
+                          "url": "https://security.netapp.com/advisory/ntap-20220506-0004/"
+                      },
+                      {
+                          "name": "DSA-5283",
+                          "tags": [
+                              "vendor-advisory"
+                          ],
+                          "url": "https://www.debian.org/security/2022/dsa-5283"
+                      },
+                      {
+                          "name": "[debian-lts-announce] 20221127 [SECURITY] [DLA 3207-1] jackson-databind security update",
+                          "tags": [
+                              "mailing-list"
+                          ],
+                          "url": "https://lists.debian.org/debian-lts-announce/2022/11/msg00035.html"
+                      }
+                  ],
+                  "problemTypes": [
+                      {
+                          "descriptions": [
+                              {
+                                  "type": "text",
+                                  "lang": "en",
+                                  "description": "n/a"
+                              }
+                          ]
+                      }
+                  ]
+              }
+          }
+      },
+      {
+          "dataType": "CVE_RECORD",
+          "dataVersion": "5.0",
+          "cveMetadata": {
+              "state": "PUBLISHED",
+              "cveId": "CVE-2022-42004",
+              "assignerOrgId": "8254265b-2729-46b6-b9e3-3dfca2d5bfca",
+              "assignerShortName": "mitre",
+              "dateUpdated": "2022-11-27T00:00:00",
+              "dateReserved": "2022-10-02T00:00:00",
+              "datePublished": "2022-10-02T00:00:00"
+          },
+          "containers": {
+              "cna": {
+                  "providerMetadata": {
+                      "orgId": "8254265b-2729-46b6-b9e3-3dfca2d5bfca",
+                      "shortName": "mitre",
+                      "dateUpdated": "2022-11-27T00:00:00"
+                  },
+                  "descriptions": [
+                      {
+                          "lang": "en",
+                          "value": "In FasterXML jackson-databind before 2.13.4, resource exhaustion can occur because of a lack of a check in BeanDeserializer._deserializeFromArray to prevent use of deeply nested arrays. An application is vulnerable only with certain customized choices for deserialization."
+                      }
+                  ],
+                  "affected": [
+                      {
+                          "vendor": "n/a",
+                          "product": "n/a",
+                          "versions": [
+                              {
+                                  "version": "n/a",
+                                  "status": "affected"
+                              }
+                          ]
+                      }
+                  ],
+                  "references": [
+                      {
+                          "url": "https://github.com/FasterXML/jackson-databind/issues/3582"
+                      },
+                      {
+                          "url": "https://github.com/FasterXML/jackson-databind/commit/063183589218fec19a9293ed2f17ec53ea80ba88"
+                      },
+                      {
+                          "url": "https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=50490"
+                      },
+                      {
+                          "name": "GLSA-202210-21",
+                          "tags": [
+                              "vendor-advisory"
+                          ],
+                          "url": "https://security.gentoo.org/glsa/202210-21"
+                      },
+                      {
+                          "name": "DSA-5283",
+                          "tags": [
+                              "vendor-advisory"
+                          ],
+                          "url": "https://www.debian.org/security/2022/dsa-5283"
+                      },
+                      {
+                          "url": "https://security.netapp.com/advisory/ntap-20221118-0008/"
+                      },
+                      {
+                          "name": "[debian-lts-announce] 20221127 [SECURITY] [DLA 3207-1] jackson-databind security update",
+                          "tags": [
+                              "mailing-list"
+                          ],
+                          "url": "https://lists.debian.org/debian-lts-announce/2022/11/msg00035.html"
+                      }
+                  ],
+                  "problemTypes": [
+                      {
+                          "descriptions": [
+                              {
+                                  "type": "text",
+                                  "lang": "en",
+                                  "description": "n/a"
+                              }
+                          ]
+                      }
+                  ]
+              }
+          }
+      },
+      {
+          "dataType": "CVE_RECORD",
+          "dataVersion": "5.0",
+          "cveMetadata": {
+              "state": "PUBLISHED",
+              "cveId": "CVE-2022-41946",
+              "assignerOrgId": "a0819718-46f1-4df5-94e2-005712e83aaa",
+              "assignerShortName": "GitHub_M",
+              "dateUpdated": "2023-01-13T00:00:00",
+              "dateReserved": "2022-09-30T00:00:00",
+              "datePublished": "2022-11-23T00:00:00"
+          },
+          "containers": {
+              "cna": {
+                  "title": "TemporaryFolder on unix-like systems does not limit access to created files in pgjdbc",
+                  "providerMetadata": {
+                      "orgId": "a0819718-46f1-4df5-94e2-005712e83aaa",
+                      "shortName": "GitHub_M",
+                      "dateUpdated": "2023-01-13T00:00:00"
+                  },
+                  "descriptions": [
+                      {
+                          "lang": "en",
+                          "value": "pgjdbc is an open source postgresql JDBC Driver. In affected versions a prepared statement using either `PreparedStatement.setText(int, InputStream)` or `PreparedStatemet.setBytea(int, InputStream)` will create a temporary file if the InputStream is larger than 2k. This will create a temporary file which is readable by other users on Unix like systems, but not MacOS. On Unix like systems, the system's temporary directory is shared between all users on that system. Because of this, when files and directories are written into this directory they are, by default, readable by other users on that same system. This vulnerability does not allow other users to overwrite the contents of these directories or files. This is purely an information disclosure vulnerability. Because certain JDK file system APIs were only added in JDK 1.7, this this fix is dependent upon the version of the JDK you are using. Java 1.7 and higher users: this vulnerability is fixed in 4.5.0. Java 1.6 and lower users: no patch is available. If you are unable to patch, or are stuck running on Java 1.6, specifying the java.io.tmpdir system environment variable to a directory that is exclusively owned by the executing user will mitigate this vulnerability."
+                      }
+                  ],
+                  "affected": [
+                      {
+                          "vendor": "pgjdbc",
+                          "product": "pgjdbc",
+                          "versions": [
+                              {
+                                  "version": ">= 42.2.0, < 42.2.27",
+                                  "status": "affected"
+                              },
+                              {
+                                  "version": "> 42.3.0, < 42.3.8",
+                                  "status": "affected"
+                              },
+                              {
+                                  "version": ">= 42.4.0, < 42.4.3",
+                                  "status": "affected"
+                              },
+                              {
+                                  "version": ">= 42.5.0, < 42.5.1",
+                                  "status": "affected"
+                              }
+                          ]
+                      }
+                  ],
+                  "references": [
+                      {
+                          "url": "https://github.com/pgjdbc/pgjdbc/security/advisories/GHSA-562r-vg33-8x8h"
+                      },
+                      {
+                          "url": "https://github.com/pgjdbc/pgjdbc/commit/9008dc9aade6dbfe4efafcd6872ebc55f4699cf5"
+                      },
+                      {
+                          "name": "[debian-lts-announce] 20221202 [SECURITY] [DLA 3218-1] libpgjava security update",
+                          "tags": [
+                              "mailing-list"
+                          ],
+                          "url": "https://lists.debian.org/debian-lts-announce/2022/12/msg00003.html"
+                      },
+                      {
+                          "name": "FEDORA-2023-42d6ba9bd6",
+                          "tags": [
+                              "vendor-advisory"
+                          ],
+                          "url": "https://lists.fedoraproject.org/archives/list/package-announce%40lists.fedoraproject.org/message/25TY2L3RMVNOC7VAHJEAO7PTT6M6JJAD/"
+                      }
+                  ],
+                  "metrics": [
+                      {
+                          "cvssV3_1": {
+                              "version": "3.1",
+                              "vectorString": "CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:H/I:N/A:N",
+                              "attackVector": "LOCAL",
+                              "attackComplexity": "HIGH",
+                              "privilegesRequired": "LOW",
+                              "userInteraction": "NONE",
+                              "scope": "UNCHANGED",
+                              "confidentialityImpact": "HIGH",
+                              "integrityImpact": "NONE",
+                              "availabilityImpact": "NONE",
+                              "baseScore": 4.7,
+                              "baseSeverity": "MEDIUM"
+                          }
+                      }
+                  ],
+                  "problemTypes": [
+                      {
+                          "descriptions": [
+                              {
+                                  "type": "CWE",
+                                  "lang": "en",
+                                  "description": "CWE-200: Exposure of Sensitive Information to an Unauthorized Actor",
+                                  "cweId": "CWE-200"
+                              }
+                          ]
+                      },
+                      {
+                          "descriptions": [
+                              {
+                                  "type": "CWE",
+                                  "lang": "en",
+                                  "description": "CWE-377: Insecure Temporary File",
+                                  "cweId": "CWE-377"
+                              }
+                          ]
+                      }
+                  ],
+                  "source": {
+                      "advisory": "GHSA-562r-vg33-8x8h",
+                      "discovery": "UNKNOWN"
+                  }
+              }
+          }
+      },
+      {
+          "dataType": "CVE_RECORD",
+          "dataVersion": "5.0",
+          "cveMetadata": {
+              "cveId": "CVE-2023-2974",
+              "assignerOrgId": "53f830b8-0a3f-465b-8143-3b8a9948e749",
+              "state": "PUBLISHED",
+              "assignerShortName": "redhat",
+              "dateReserved": "2023-05-30T10:06:53.993Z",
+              "datePublished": "2023-07-04T13:24:29.648Z",
+              "dateUpdated": "2023-07-04T13:24:29.648Z"
+          },
+          "containers": {
+              "cna": {
+                  "title": "Tls protocol configured with quarkus.http.ssl.protocols is not enforced, client can enforce weaker supported tls protocol",
+                  "metrics": [
+                      {
+                          "other": {
+                              "content": {
+                                  "value": "Moderate",
+                                  "namespace": "https://access.redhat.com/security/updates/classification/"
+                              },
+                              "type": "Red Hat severity rating"
+                          }
+                      },
+                      {
+                          "cvssV3_1": {
+                              "attackComplexity": "LOW",
+                              "attackVector": "NETWORK",
+                              "availabilityImpact": "NONE",
+                              "baseScore": 6.5,
+                              "baseSeverity": "MEDIUM",
+                              "confidentialityImpact": "HIGH",
+                              "integrityImpact": "HIGH",
+                              "privilegesRequired": "HIGH",
+                              "scope": "UNCHANGED",
+                              "userInteraction": "NONE",
+                              "vectorString": "CVSS:3.1/AV:N/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:N",
+                              "version": "3.1"
+                          },
+                          "format": "CVSS"
+                      }
+                  ],
+                  "descriptions": [
+                      {
+                          "lang": "en",
+                          "value": "A vulnerability was found in quarkus-core. This vulnerability occurs because the TLS protocol configured with quarkus.http.ssl.protocols is not enforced, and the client can force the selection of the weaker supported TLS protocol."
+                      }
+                  ],
+                  "affected": [
+                      {
+                          "product": "Quarkus",
+                          "vendor": "n/a",
+                          "versions": [
+                              {
+                                  "version": "2.13.8",
+                                  "status": "unaffected"
+                              }
+                          ]
+                      },
+                      {
+                          "vendor": "Red Hat",
+                          "product": "Red Hat build of Quarkus",
+                          "collectionURL": "https://access.redhat.com/downloads/content/package-browser/",
+                          "defaultStatus": "unaffected",
+                          "packageName": "quarkus-core",
+                          "cpe": [
+                              "cpe:/a:redhat:quarkus:2.13"
+                          ]
+                      }
+                  ],
+                  "references": [
+                      {
+                          "url": "https://access.redhat.com/errata/RHSA-2023:3809",
+                          "name": "RHSA-2023:3809",
+                          "tags": [
+                              "vendor-advisory",
+                              "x_refsource_REDHAT"
+                          ]
+                      },
+                      {
+                          "url": "https://access.redhat.com/security/cve/CVE-2023-2974",
+                          "tags": [
+                              "vdb-entry",
+                              "x_refsource_REDHAT"
+                          ]
+                      },
+                      {
+                          "url": "https://bugzilla.redhat.com/show_bug.cgi?id=2211026",
+                          "name": "RHBZ#2211026",
+                          "tags": [
+                              "issue-tracking",
+                              "x_refsource_REDHAT"
+                          ]
+                      }
+                  ],
+                  "datePublic": "2023-06-29T00:00:00Z",
+                  "problemTypes": [
+                      {
+                          "descriptions": [
+                              {
+                                  "cweId": "CWE-757",
+                                  "description": "Selection of Less-Secure Algorithm During Negotiation ('Algorithm Downgrade')",
+                                  "lang": "en",
+                                  "type": "CWE"
+                              }
+                          ]
+                      }
+                  ],
+                  "x_redhatCweChain": "CWE-757: Selection of Less-Secure Algorithm During Negotiation ('Algorithm Downgrade')",
+                  "timeline": [
+                      {
+                          "lang": "en",
+                          "time": "2023-05-30T00:00:00Z",
+                          "value": "Reported to Red Hat."
+                      },
+                      {
+                          "lang": "en",
+                          "time": "2023-06-29T00:00:00Z",
+                          "value": "Made public."
+                      }
+                  ],
+                  "credits": [
+                      {
+                          "lang": "en",
+                          "value": "This issue was discovered by Alexander Schwartz (Red Hat)."
+                      }
+                  ],
+                  "providerMetadata": {
+                      "orgId": "53f830b8-0a3f-465b-8143-3b8a9948e749",
+                      "shortName": "redhat",
+                      "dateUpdated": "2023-07-04T13:24:29.648Z"
+                  }
+              }
+          }
+      },
+      {
+          "dataType": "CVE_RECORD",
+          "dataVersion": "5.0",
+          "cveMetadata": {
+              "state": "PUBLISHED",
+              "cveId": "CVE-2022-42003",
+              "assignerOrgId": "8254265b-2729-46b6-b9e3-3dfca2d5bfca",
+              "assignerShortName": "mitre",
+              "dateUpdated": "2022-11-27T00:00:00",
+              "dateReserved": "2022-10-02T00:00:00",
+              "datePublished": "2022-10-02T00:00:00"
+          },
+          "containers": {
+              "cna": {
+                  "providerMetadata": {
+                      "orgId": "8254265b-2729-46b6-b9e3-3dfca2d5bfca",
+                      "shortName": "mitre",
+                      "dateUpdated": "2022-11-27T00:00:00"
+                  },
+                  "descriptions": [
+                      {
+                          "lang": "en",
+                          "value": "In FasterXML jackson-databind before 2.14.0-rc1, resource exhaustion can occur because of a lack of a check in primitive value deserializers to avoid deep wrapper array nesting, when the UNWRAP_SINGLE_VALUE_ARRAYS feature is enabled. Additional fix version in 2.13.4.1 and 2.12.17.1"
+                      }
+                  ],
+                  "affected": [
+                      {
+                          "vendor": "n/a",
+                          "product": "n/a",
+                          "versions": [
+                              {
+                                  "version": "n/a",
+                                  "status": "affected"
+                              }
+                          ]
+                      }
+                  ],
+                  "references": [
+                      {
+                          "url": "https://github.com/FasterXML/jackson-databind/issues/3590"
+                      },
+                      {
+                          "url": "https://github.com/FasterXML/jackson-databind/commit/d78d00ee7b5245b93103fef3187f70543d67ca33"
+                      },
+                      {
+                          "url": "https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=51020"
+                      },
+                      {
+                          "name": "GLSA-202210-21",
+                          "tags": [
+                              "vendor-advisory"
+                          ],
+                          "url": "https://security.gentoo.org/glsa/202210-21"
+                      },
+                      {
+                          "name": "DSA-5283",
+                          "tags": [
+                              "vendor-advisory"
+                          ],
+                          "url": "https://www.debian.org/security/2022/dsa-5283"
+                      },
+                      {
+                          "url": "https://security.netapp.com/advisory/ntap-20221124-0004/"
+                      },
+                      {
+                          "name": "[debian-lts-announce] 20221127 [SECURITY] [DLA 3207-1] jackson-databind security update",
+                          "tags": [
+                              "mailing-list"
+                          ],
+                          "url": "https://lists.debian.org/debian-lts-announce/2022/11/msg00035.html"
+                      }
+                  ],
+                  "problemTypes": [
+                      {
+                          "descriptions": [
+                              {
+                                  "type": "text",
+                                  "lang": "en",
+                                  "description": "n/a"
+                              }
+                          ]
+                      }
+                  ]
+              }
+          }
+      }
   ],
   "errors": []
 }

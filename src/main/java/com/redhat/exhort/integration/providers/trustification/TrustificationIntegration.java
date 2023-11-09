@@ -33,7 +33,7 @@ import jakarta.ws.rs.core.MediaType;
 @ApplicationScoped
 public class TrustificationIntegration extends EndpointRouteBuilder {
 
-  @ConfigProperty(name = "api.trustification.timeout", defaultValue = "30s")
+  @ConfigProperty(name = "api.trustification.timeout", defaultValue = "60s")
   String timeout;
 
   @Inject TrustificationResponseHandler responseHandler;

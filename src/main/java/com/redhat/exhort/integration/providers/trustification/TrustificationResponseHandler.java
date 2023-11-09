@@ -31,7 +31,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.redhat.exhort.api.SeverityUtils;
 import com.redhat.exhort.api.v4.Issue;
-import com.redhat.exhort.api.v4.Severity;
 import com.redhat.exhort.integration.providers.ProviderResponseHandler;
 import com.redhat.exhort.model.CvssParser;
 import com.redhat.exhort.model.DependencyTree;
@@ -63,20 +62,21 @@ public class TrustificationResponseHandler extends ProviderResponseHandler {
         .elements()
         .forEachRemaining(
             cveJson -> {
-              String cve = cveJson.get("id").asText().toUpperCase();
+              String cve = cveJson.get("cveMetadata").get("cveId").asText().toUpperCase();
               cvesJson.put(cve, cveJson);
             });
     response
         .get("analysis")
         .fields()
         .forEachRemaining(
-            e -> {
-              String ref = e.getKey();
+            analysisEntry -> {
+              String ref = analysisEntry.getKey();
               if (!issuesData.containsKey(ref)) {
                 issuesData.put(ref, new ArrayList<>());
               }
               List<Issue> issues = issuesData.get(ref);
-              e.getValue()
+              analysisEntry
+                  .getValue()
                   .forEach(
                       analysis -> {
                         String vendor = analysis.get("vendor").asText();
@@ -84,37 +84,11 @@ public class TrustificationResponseHandler extends ProviderResponseHandler {
                             .get("vulnerable")
                             .forEach(
                                 vulnerable -> {
-                                  String vulnId = vulnerable.get("id").asText().toUpperCase();
-                                  Issue issue = new Issue().id(vulnId).source(vendor);
-                                  vulnerable
-                                      .get("severity")
-                                      .forEach(
-                                          severity -> {
-                                            if (severity
-                                                .get("source")
-                                                .asText()
-                                                .toLowerCase()
-                                                .equals(vendor)) {
-                                              Double dscore = severity.get("score").asDouble(0);
-                                              issue.cvssScore(dscore.floatValue());
-                                            }
-                                          });
-
-                                  if (isCVE(vulnId)) {
-                                    issue.addCvesItem(vulnId);
+                                  var issue = newIssueFromVulnerability(vulnerable, vendor);
+                                  if (issue.getCves() != null && !issue.getCves().isEmpty()) {
+                                    completeIssueData(issue, cvesJson);
+                                    issues.add(issue);
                                   }
-                                  vulnerable
-                                      .get("aliases")
-                                      .forEach(
-                                          a -> {
-                                            String alias = a.asText();
-                                            if (isCVE(alias)) {
-                                              issue.addCvesItem(alias.toUpperCase());
-                                            }
-                                            ;
-                                          });
-                                  completeIssueData(issue, cvesJson);
-                                  issues.add(issue);
                                 });
                       });
             });
@@ -122,30 +96,59 @@ public class TrustificationResponseHandler extends ProviderResponseHandler {
     return issuesData;
   }
 
+  private Issue newIssueFromVulnerability(JsonNode vulnerable, String vendor) {
+    var vulnId = vulnerable.get("id").asText().toUpperCase();
+    var issue = new Issue().id(vulnId).source(vendor);
+    vulnerable
+        .get("severity")
+        .forEach(
+            severity -> {
+              if (severity.get("source").asText().toLowerCase().equals(vendor)) {
+                Double dscore = severity.get("score").asDouble(0);
+                issue.cvssScore(dscore.floatValue());
+              }
+            });
+
+    if (isCVE(vulnId)) {
+      issue.addCvesItem(vulnId);
+    }
+    vulnerable
+        .get("aliases")
+        .forEach(
+            a -> {
+              String alias = a.asText();
+              if (isCVE(alias)) {
+                issue.addCvesItem(alias.toUpperCase());
+              }
+              ;
+            });
+    return issue;
+  }
+
   private void completeIssueData(Issue issue, Map<String, JsonNode> cvesJson) {
     Optional<String> firstCve =
         issue.getCves().stream().filter(cve -> cvesJson.keySet().contains(cve)).findFirst();
     if (firstCve.isEmpty()) {
-      issue.severity(SeverityUtils.fromScore(issue.getCvssScore()));
       issue.unique(Boolean.TRUE);
       return;
     }
-    JsonNode cveJson = cvesJson.get(firstCve.get());
-    issue.title(cveJson.get("cisaVulnerabilityName").asText());
-
-    cveJson
-        .get("metrics")
-        .get("cvssMetricV31")
-        .forEach(
-            metric -> {
-              if ("Primary".equalsIgnoreCase(metric.get("type").asText())) {
-                issue.cvss(
-                    CvssParser.fromVectorString(
-                        metric.get("cvssData").get("vectorString").asText()));
-                issue.severity(
-                    Severity.fromValue(metric.get("cvssData").get("baseSeverity").asText()));
-              }
-            });
+    issue.severity(SeverityUtils.fromScore(issue.getCvssScore()));
+    var cveJson = cvesJson.get(firstCve.get());
+    var cnaContainer = cveJson.get("containers").get("cna");
+    var title = cnaContainer.get("title");
+    if (title != null) {
+      issue.title(title.asText());
+    }
+    var metrics = cnaContainer.get("metrics");
+    if (metrics != null) {
+      metrics.forEach(
+          metric -> {
+            if (metric.has("cvssV3_1")) {
+              issue.cvss(
+                  CvssParser.fromVectorString(metric.get("cvssV3_1").get("vectorString").asText()));
+            }
+          });
+    }
   }
 
   private boolean isCVE(String vulnerabilityId) {
