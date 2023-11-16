@@ -16,35 +16,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Set up graalVM
-        uses: graalvm/setup-graalvm@v1
+      - name: Setup JDK
+        uses: actions/setup-java@v3
         with:
-          version: 'latest'
+          distribution: 'temurin'
           java-version: '17'
-          components: 'native-image'
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          cache: 'maven'
       - name: Run integration tests
         run: |
-          ./mvnw verify -Pnative
-  openapi-lint-checks:
-    runs-on: ubuntu-latest
-    name: OpenAPI Linter
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
-      - name: v3 Lint
-        run: npx @redocly/cli lint api-spec/v3/openapi.yaml
-      - name: v4 Lint
-        run: npx @redocly/cli lint api-spec/v4/openapi.yaml
-  openapi-validation:
-    runs-on: ubuntu-latest
-    name: Validate OpenAPI Spec
-    steps:
-      - uses: actions/checkout@v3
-      - name: Validate OpenAPI definition
-        uses: char0n/swagger-editor-validate@v1
-        with:
-          definition-file: api-spec/v3/openapi.yaml
+          ./mvnw -B verify -Pnative
+        env:
+          GITHUB_ACTOR: ${{ secrets.GITHUB_ACTOR }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -102,7 +102,11 @@ jobs:
           cache: 'maven'
 
       - name: Build Package with Maven
-        run: mvn verify -Pnative
+        run: |
+          ./mvnw -B verify -Pnative
+        env:
+          GITHUB_ACTOR: ${{ secrets.GITHUB_ACTOR }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build Image With buildah
         id: build-image
