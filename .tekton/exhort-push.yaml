@@ -200,6 +200,22 @@ spec:
       workspaces:
       - name: source
         workspace: workspace
+    - name: copy-settings
+      runAfter:
+      - clone-repository
+      taskSpec:
+        steps:
+        - name: copy
+          image: alpine
+          script: |
+            #!/bin/sh
+            set -x
+            cp $(workspaces.settings.path)/settings.xml $(workspaces.workspace.path)/source/settings.xml
+      workspaces:
+      - name: settings
+        workspace: mvn-settings
+      - name: workspace
+        workspace: workspace
     - name: build-container
       params:
       - name: IMAGE
@@ -218,6 +234,7 @@ spec:
         value: $(tasks.clone-repository.results.commit)
       runAfter:
       - prefetch-dependencies
+      - copy-settings
       taskRef:
         params:
         - name: name
@@ -368,6 +385,7 @@ spec:
     - name: workspace
     - name: git-auth
       optional: true
+    - name: mvn-settings
   workspaces:
   - name: workspace
     volumeClaimTemplate:
@@ -383,4 +401,7 @@ spec:
   - name: git-auth
     secret:
       secretName: '{{ git_auth_secret }}'
+  - name: mvn-settings
+    secret:
+      secretName: exhort-mvn-settings
 status: {}
