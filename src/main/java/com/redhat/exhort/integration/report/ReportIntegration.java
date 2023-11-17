@@ -22,7 +22,7 @@ import org.apache.camel.Exchange;
 import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
 
-import com.redhat.exhort.api.AnalysisReportV3Converter;
+import com.redhat.exhort.api.converter.AnalysisReportV3Converter;
 import com.redhat.exhort.api.v4.AnalysisReport;
 import com.redhat.exhort.integration.Constants;
 

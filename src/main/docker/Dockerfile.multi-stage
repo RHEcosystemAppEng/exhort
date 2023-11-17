@@ -4,17 +4,18 @@ FROM registry.redhat.io/quarkus/mandrel-23-rhel8:23.0 AS build
 COPY --chown=quarkus:quarkus mvnw /code/mvnw
 COPY --chown=quarkus:quarkus .mvn /code/.mvn
 COPY --chown=quarkus:quarkus pom.xml /code/
-COPY --chown=quarkus:quarkus api-spec /code/api-spec
 COPY --chown=quarkus:quarkus ui /code/ui
+## Maven Settings with the auth token for Github Maven Repository
+COPY --chown=quarkus:quarkus settings.xml /code/settings.xml
 
 USER quarkus
 WORKDIR /code
-RUN ./mvnw -B org.apache.maven.plugins:maven-dependency-plugin:3.6.1:go-offline
+RUN ./mvnw -B --settings /code/settings.xml org.apache.maven.plugins:maven-dependency-plugin:3.6.1:go-offline
 COPY --chown=quarkus:quarkus src /code/src
-RUN ./mvnw package -Pnative -Dmaven.test.skip=true -Dquarkus.native.native-image-xmx=8g
+RUN ./mvnw verify -B -Pnative -Dmaven.test.skip=true -Dquarkus.native.native-image-xmx=8g
 
 ## Stage 2 : create the docker final image
-FROM registry.access.redhat.com/ubi9/ubi-minimal:9.2
+FROM registry.access.redhat.com/ubi9/ubi-minimal:9.3
 
 LABEL description="Red Hat Trusted Profile Analyzer - Exhort Backend Service"
 LABEL io.k8s.description="Red Hat Trusted Profile Analyzer - Exhort Backend Service"

@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.redhat.exhort.api;
+package com.redhat.exhort.api.converter;
 
 import java.util.Collection;
 import java.util.Collections;

@@ -34,10 +34,10 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import com.redhat.exhort.api.PackageRef;
-import com.redhat.exhort.api.SeverityUtils;
 import com.redhat.exhort.api.v4.DependencyReport;
 import com.redhat.exhort.api.v4.Issue;
 import com.redhat.exhort.api.v4.ProviderReport;
+import com.redhat.exhort.api.v4.SeverityUtils;
 import com.redhat.exhort.api.v4.Source;
 import com.redhat.exhort.api.v4.SourceSummary;
 import com.redhat.exhort.api.v4.TransitiveDependencyReport;

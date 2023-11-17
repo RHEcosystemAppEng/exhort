@@ -3,11 +3,6 @@
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![CI](https://github.com/RHEcosystemAppEng/exhort/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/RHEcosystemAppEng/exhort/actions/workflows/ci.yaml)
 
-### Third party dependencies
-
-- Snyk API
-- OSS Index
-
 ## Required parameters
 
 - `api.snyk.token` Snyk API token for default authentication
@@ -37,6 +32,11 @@ The following Package Managers are currently supported:
 - NPM (`npm`)
 - Go Modules (`gomodules`)
 - Pip (`pip`)
+
+## Exhort API
+
+Here you can find the [Exhort API Specification](https://github.com/RHEcosystemAppEng/exhort-api-spec) together with
+the Java and Javascript generated data model.
 
 ## Dependency Analysis `/api/v4/analysis`
 
