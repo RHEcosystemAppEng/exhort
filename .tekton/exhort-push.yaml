@@ -206,7 +206,7 @@ spec:
       taskSpec:
         steps:
         - name: copy
-          image: alpine
+          image: registry.access.redhat.com/ubi9/ubi-minimal:9.2
           script: |
             #!/bin/sh
             set -x
