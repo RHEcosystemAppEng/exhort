@@ -79,8 +79,7 @@ public class ExhortIntegration extends EndpointRouteBuilder {
       .clientRequestValidation(true);
 
     errorHandler(deadLetterChannel("direct:processInternalError"));
-    onException(Exception.class)
-      .log("foo?level=ERROR");
+
     onException(IllegalArgumentException.class)
       .routeId("onExhortIllegalArgumentException")
       .useOriginalMessage()

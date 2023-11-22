@@ -53,6 +53,7 @@ public class OssIndexIntegration extends EndpointRouteBuilder {
 
   @Override
   public void configure() {
+
     // fmt:off
     from(direct("ossIndexScan"))
         .routeId("ossIndexScan")
@@ -63,13 +64,13 @@ public class OssIndexIntegration extends EndpointRouteBuilder {
             .transform().method(OssIndexResponseHandler.class, "buildReport")
         .endChoice()
         .otherwise()
-          .to(direct("ossSplitReq"));
+          .to(direct("ossSplitReq"))
+          .transform().method(OssIndexResponseHandler.class, "buildReport");
 
     from(direct("ossSplitReq"))
         .routeId("ossSplitReq")
-          .doTry()
-          .split(body(), AggregationStrategies.bean(OssIndexResponseHandler.class, "aggregateSplit"))
-            .stopOnException()
+        .doTry()
+          .split(body(), AggregationStrategies.beanAllowNull(OssIndexResponseHandler.class, "aggregateSplit"))
             .parallelProcessing()
               .transform().method(OssIndexRequestBuilder.class, "buildRequest")
               .process(this::processComponentRequest)
@@ -80,10 +81,9 @@ public class OssIndexIntegration extends EndpointRouteBuilder {
                 .end()
                   .to(vertxHttp("{{api.ossindex.host}}"))
                   .transform(method(OssIndexResponseHandler.class, "responseToIssues"))
-          .end()
-            .transform().method(OssIndexResponseHandler.class, "buildReport")
-          .endDoTry()
-          .doCatch(HttpOperationFailedException.class)
+                .end()
+        .endDoTry()
+        .doCatch(HttpOperationFailedException.class)
             .process(responseHandler::processResponseError);
     
     from(direct("ossValidateCredentials"))
