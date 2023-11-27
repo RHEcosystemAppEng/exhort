@@ -35,6 +35,8 @@ public class CustomMetrics {
   private static final String CAMEL_ROUTES_METRIC = "camel.route.policy";
   private static final String ROUTE_ID_TAG = "routeId";
 
+  private static final double SECOND = 1000000000.0;
+
   private static final Collection<String> MONITORED_ROUTES =
       List.of(
           "snykValidateToken",
@@ -54,8 +56,18 @@ public class CustomMetrics {
         if (requiresHistogram(id)) {
           return DistributionStatisticConfig.builder()
               .percentiles(0.90, 0.95, 0.99)
-              .percentilesHistogram(Boolean.TRUE)
-              .serviceLevelObjectives()
+              .percentilesHistogram(Boolean.FALSE)
+              .serviceLevelObjectives(
+                  0.01 * SECOND,
+                  0.025 * SECOND,
+                  0.05 * SECOND,
+                  0.1 * SECOND,
+                  0.25 * SECOND,
+                  0.5 * SECOND,
+                  1 * SECOND,
+                  2.5 * SECOND,
+                  5 * SECOND,
+                  10 * SECOND)
               .build()
               .merge(config);
         }
