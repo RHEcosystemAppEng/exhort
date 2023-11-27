@@ -9,7 +9,7 @@
 
 ## OpenAPI and SwaggerUI
 
-- OpenAPI Spec: There is an [openapi.yaml](./api-spec/v3/openapi.yaml) or publiehsed in the endpoint http://localhost:8080/q/openapi?format=json
+- OpenAPI Spec: There is an [openapi.yaml](./api-spec/v3/openapi.yaml) or published in the endpoint http://localhost:8080/q/openapi?format=json
 - Swagger UI: Available at http://localhost:8080/q/swagger-ui for development or when enabled with the property `quarkus.swagger-ui.always-include=true`
 
 ## Providers
@@ -57,7 +57,7 @@ mvn org.cyclonedx:cyclonedx-maven-plugin:2.7.6:makeBom -DoutputFormat=json -Dexc
 ```
 
 The generated file will be located under `./target/bom.json`. Make sure the request `Content-Type` is set to `application/vnd.cyclonedx+json`.
-Then you can analyise the vulnerabilities with the following command:
+Then you can analyze the vulnerabilities with the following command:
 
 ```bash
 $ http :8080/api/v4/analysis Content-Type:"application/vnd.cyclonedx+json" Accept:"application/json" @'target/bom.json'
@@ -316,16 +316,16 @@ The application can be packaged using:
 ./mvnw package
 ```
 It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
+Be aware that it’s not an _uber-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
 
 The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
 
-If you want to build an _über-jar_, execute the following command:
+If you want to build an _uber-jar_, execute the following command:
 ```shell script
 ./mvnw package -Dquarkus.package.type=uber-jar
 ```
 
-The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
+The application, packaged as an _uber-jar_, is now runnable using `java -jar target/*-runner.jar`.
 
 To disable frontend production bundle files creation and copying into the freemarker/generated directory execute the following command:
 ```shell script
