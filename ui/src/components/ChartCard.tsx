@@ -33,7 +33,7 @@ export const ChartCard = ({ summary }: { summary: Summary}) => {
                 { x: 'Medium', y: summary.medium },
                 { x: 'Low', y: summary.low },
               ]}
-              labels={({ datum }) => `${datum.x}: ${datum.y}%`}
+              labels={({ datum }) => `${datum.x}: ${datum.y}`}
               legendData={legendData}
               legendOrientation="vertical"
               legendPosition="right"
