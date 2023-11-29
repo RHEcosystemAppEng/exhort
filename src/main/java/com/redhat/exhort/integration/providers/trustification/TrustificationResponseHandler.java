@@ -29,8 +29,8 @@ import java.util.Optional;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.redhat.exhort.api.SeverityUtils;
 import com.redhat.exhort.api.v4.Issue;
+import com.redhat.exhort.api.v4.SeverityUtils;
 import com.redhat.exhort.integration.providers.ProviderResponseHandler;
 import com.redhat.exhort.model.CvssParser;
 import com.redhat.exhort.model.DependencyTree;
