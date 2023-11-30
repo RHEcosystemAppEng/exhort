@@ -40,6 +40,7 @@ import com.redhat.exhort.config.ObjectMapperProducer;
 import com.redhat.exhort.integration.providers.ProviderResponseHandler;
 import com.redhat.exhort.model.CvssParser;
 import com.redhat.exhort.model.DependencyTree;
+import com.redhat.exhort.model.ProviderResponse;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -54,34 +55,37 @@ public class OssIndexResponseHandler extends ProviderResponseHandler {
 
   @Inject ObjectMapper mapper = ObjectMapperProducer.newInstance();
 
-  public Map<String, List<Issue>> aggregateSplit(
-      Map<String, List<Issue>> oldExchange, Map<String, List<Issue>> newExchange)
+  public ProviderResponse aggregateSplit(ProviderResponse oldExchange, ProviderResponse newExchange)
       throws IOException {
     if (oldExchange == null) {
       return newExchange;
     }
+    if (oldExchange.status() != null && !Boolean.TRUE.equals(oldExchange.status().getOk())) {
+      return oldExchange;
+    }
     oldExchange
+        .issues()
         .entrySet()
         .forEach(
             e -> {
-              var issues = newExchange.get(e.getKey());
+              var issues = newExchange.issues().get(e.getKey());
               if (issues != null) {
                 e.getValue().addAll(issues);
               }
             });
-    newExchange.keySet().stream()
-        .filter(k -> !oldExchange.keySet().contains(k))
+    newExchange.issues().keySet().stream()
+        .filter(k -> !oldExchange.issues().keySet().contains(k))
         .forEach(
             k -> {
-              oldExchange.put(k, newExchange.get(k));
+              oldExchange.issues().put(k, newExchange.issues().get(k));
             });
     return oldExchange;
   }
 
-  public Map<String, List<Issue>> responseToIssues(
+  public ProviderResponse responseToIssues(
       @Body byte[] response, String privateProviders, DependencyTree tree) throws IOException {
     var json = (ArrayNode) mapper.readTree(response);
-    return getIssues(json);
+    return new ProviderResponse(getIssues(json), null);
   }
 
   private Map<String, List<Issue>> getIssues(ArrayNode response) {

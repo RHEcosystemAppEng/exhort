@@ -48,6 +48,7 @@ import com.redhat.exhort.integration.Constants;
 import com.redhat.exhort.model.CvssScoreComparable.DependencyScoreComparator;
 import com.redhat.exhort.model.CvssScoreComparable.TransitiveScoreComparator;
 import com.redhat.exhort.model.DependencyTree;
+import com.redhat.exhort.model.ProviderResponse;
 import com.redhat.exhort.monitoring.MonitoringProcessor;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
@@ -66,7 +67,7 @@ public abstract class ProviderResponseHandler {
 
   protected abstract String getProviderName();
 
-  public abstract Map<String, List<Issue>> responseToIssues(
+  public abstract ProviderResponse responseToIssues(
       byte[] response, String privateProviders, DependencyTree tree) throws IOException;
 
   protected ProviderStatus defaultOkStatus(String provider) {
@@ -111,9 +112,9 @@ public abstract class ProviderResponseHandler {
           .code(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
       LOGGER.warn("Unable to process request to: {}", getProviderName(), cause);
     }
-    ProviderReport report = new ProviderReport().status(status).sources(Collections.emptyMap());
+    ProviderResponse response = new ProviderResponse(null, status);
     monitoringProcessor.processProviderError(exchange, exception, getProviderName());
-    exchange.getMessage().setBody(report);
+    exchange.getMessage().setBody(response);
   }
 
   public void processTokenFallBack(Exchange exchange) {
@@ -153,9 +154,9 @@ public abstract class ProviderResponseHandler {
         };
   }
 
-  public Map<String, List<Issue>> emptyResponse(
+  public ProviderResponse emptyResponse(
       @ExchangeProperty(Constants.DEPENDENCY_TREE_PROPERTY) DependencyTree tree) {
-    return Collections.emptyMap();
+    return new ProviderResponse(Collections.emptyMap(), null);
   }
 
   private Map<String, Map<String, List<Issue>>> splitIssuesBySource(
@@ -188,11 +189,14 @@ public abstract class ProviderResponseHandler {
   }
 
   public ProviderReport buildReport(
-      @Body Map<String, List<Issue>> issuesData,
+      @Body ProviderResponse response,
       @ExchangeProperty(Constants.DEPENDENCY_TREE_PROPERTY) DependencyTree tree,
       @ExchangeProperty(Constants.PROVIDER_PRIVATE_DATA_PROPERTY) String privateProviders)
       throws IOException {
-    var sourcesIssues = splitIssuesBySource(issuesData);
+    if (response.status() != null) {
+      return new ProviderReport().status(response.status()).sources(Collections.emptyMap());
+    }
+    var sourcesIssues = splitIssuesBySource(response.issues());
     Map<String, Source> reports = new HashMap<>();
     sourcesIssues
         .keySet()

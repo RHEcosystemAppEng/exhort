@@ -25,7 +25,6 @@ import java.util.Objects;
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.AggregationStrategies;
 import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
-import org.apache.camel.http.base.HttpOperationFailedException;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import com.redhat.exhort.integration.Constants;
@@ -69,7 +68,6 @@ public class OssIndexIntegration extends EndpointRouteBuilder {
 
     from(direct("ossSplitReq"))
         .routeId("ossSplitReq")
-        .doTry()
           .split(body(), AggregationStrategies.beanAllowNull(OssIndexResponseHandler.class, "aggregateSplit"))
             .parallelProcessing()
               .transform().method(OssIndexRequestBuilder.class, "buildRequest")
@@ -81,10 +79,8 @@ public class OssIndexIntegration extends EndpointRouteBuilder {
                 .end()
                   .to(vertxHttp("{{api.ossindex.host}}"))
                   .transform(method(OssIndexResponseHandler.class, "responseToIssues"))
-                .end()
-        .endDoTry()
-        .doCatch(HttpOperationFailedException.class)
-            .process(responseHandler::processResponseError);
+                .onFallback()
+                  .process(responseHandler::processResponseError);
     
     from(direct("ossValidateCredentials"))
       .routeId("ossValidateCredentials")
