@@ -41,6 +41,7 @@ import com.redhat.exhort.integration.Constants;
 import com.redhat.exhort.integration.providers.ProviderResponseHandler;
 import com.redhat.exhort.model.CvssParser;
 import com.redhat.exhort.model.DependencyTree;
+import com.redhat.exhort.model.ProviderResponse;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -56,7 +57,7 @@ public class SnykResponseHandler extends ProviderResponseHandler {
       "Sign up for a Snyk account to learn aboutn the vulnerabilities found";
   @Inject ObjectMapper mapper = ObjectMapperProducer.newInstance();
 
-  public Map<String, List<Issue>> responseToIssues(
+  public ProviderResponse responseToIssues(
       @Body byte[] providerResponse,
       @ExchangeProperty(Constants.PROVIDER_PRIVATE_DATA_PROPERTY) String privateProviders,
       @ExchangeProperty(Constants.DEPENDENCY_TREE_PROPERTY) DependencyTree tree)
@@ -64,7 +65,7 @@ public class SnykResponseHandler extends ProviderResponseHandler {
     var filterUnique = privateProviders != null && privateProviders.contains(SNYK_PROVIDER);
 
     var snykResponse = mapper.readTree((byte[]) providerResponse);
-    return getIssues(snykResponse, filterUnique, tree);
+    return new ProviderResponse(getIssues(snykResponse, filterUnique, tree), null);
   }
 
   private Map<String, List<Issue>> getIssues(

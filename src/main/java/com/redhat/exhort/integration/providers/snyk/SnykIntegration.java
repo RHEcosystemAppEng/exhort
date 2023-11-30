@@ -64,13 +64,14 @@ public class SnykIntegration extends EndpointRouteBuilder {
         .process(this::processDepGraphRequest)
         .to(direct("snykRequest"))
       .onFallback()
-        .process(responseHandler::processResponseError);
+        .process(responseHandler::processResponseError)
+      .end()
+        .transform().method(SnykResponseHandler.class, "buildReport");
 
     from(direct("snykRequest"))
       .routeId("snykRequest")
       .to(vertxHttp("{{api.snyk.host}}"))
-      .transform().method(SnykResponseHandler.class, "responseToIssues")
-      .transform().method(SnykResponseHandler.class, "buildReport");
+      .transform().method(SnykResponseHandler.class, "responseToIssues");
 
     from(direct("snykValidateToken"))
       .routeId("snykValidateToken")

@@ -44,6 +44,7 @@ import com.redhat.exhort.api.v4.TransitiveDependencyReport;
 import com.redhat.exhort.integration.Constants;
 import com.redhat.exhort.model.DependencyTree;
 import com.redhat.exhort.model.DirectDependency;
+import com.redhat.exhort.model.ProviderResponse;
 
 import jakarta.ws.rs.core.Response;
 
@@ -59,7 +60,8 @@ public class ProviderResponseHandlerTest {
       throws IOException {
 
     ProviderResponseHandler handler = new TestResponseHandler();
-    ProviderReport response = handler.buildReport(issuesData, tree, null);
+    ProviderReport response =
+        handler.buildReport(new ProviderResponse(issuesData, null), tree, null);
     assertOkStatus(response);
     SourceSummary summary = getValidSource(response).getSummary();
 
@@ -108,7 +110,7 @@ public class ProviderResponseHandlerTest {
     Map<String, List<Issue>> issues = Map.of("pkg:npm/aa@1", List.of(buildIssue(1, 5f)));
     ProviderResponseHandler handler = new TestResponseHandler();
     DependencyTree tree = buildTree();
-    ProviderReport response = handler.buildReport(issues, tree, null);
+    ProviderReport response = handler.buildReport(new ProviderResponse(issues, null), tree, null);
     assertOkStatus(response);
     assertEquals(1, response.getSources().size());
     Source report = response.getSources().get(TEST_SOURCE);
@@ -127,7 +129,8 @@ public class ProviderResponseHandlerTest {
             "pkg:npm/aba@1", List.of(buildIssue(3, 8f)));
     ProviderResponseHandler handler = new TestResponseHandler();
 
-    ProviderReport response = handler.buildReport(issues, buildTree(), null);
+    ProviderReport response =
+        handler.buildReport(new ProviderResponse(issues, null), buildTree(), null);
 
     assertOkStatus(response);
 
@@ -178,7 +181,8 @@ public class ProviderResponseHandlerTest {
             "pkg:npm/abc@1", List.of(buildIssue(7, 6f)));
     ProviderResponseHandler handler = new TestResponseHandler();
 
-    ProviderReport response = handler.buildReport(issues, buildTree(), null);
+    ProviderReport response =
+        handler.buildReport(new ProviderResponse(issues, null), buildTree(), null);
 
     assertOkStatus(response);
     DependencyReport reportHighest = getValidSource(response).getDependencies().get(0);
@@ -347,7 +351,7 @@ public class ProviderResponseHandlerTest {
     }
 
     @Override
-    public Map<String, List<Issue>> responseToIssues(
+    public ProviderResponse responseToIssues(
         byte[] response, String privateProviders, DependencyTree tree) throws IOException {
       throw new IllegalArgumentException("not implemented");
     }
