@@ -99,7 +99,9 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .body()
             .as(AnalysisReport.class);
 
-    assertEquals(1, report.getProviders().size());
+    assertEquals(2, report.getProviders().size());
+    assertEquals(
+        401, report.getProviders().get(Constants.OSS_INDEX_PROVIDER).getStatus().getCode());
     var status = report.getProviders().get(Constants.SNYK_PROVIDER).getStatus();
     assertEquals(422, status.getCode());
     assertEquals("Unsupported package types received: [foo]", status.getMessage());
@@ -125,7 +127,9 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .body()
             .as(AnalysisReport.class);
 
-    assertEquals(1, report.getProviders().size());
+    assertEquals(2, report.getProviders().size());
+    assertEquals(
+        401, report.getProviders().get(Constants.OSS_INDEX_PROVIDER).getStatus().getCode());
     var status = report.getProviders().get(Constants.SNYK_PROVIDER).getStatus();
     assertEquals(422, status.getCode());
     assertEquals(
@@ -139,14 +143,14 @@ public class AnalysisTest extends AbstractAnalysisTest {
 
   @ParameterizedTest
   @MethodSource("emptySbomArguments")
-  public void testEmptySbom(List<String> providers, Map<String, String> authHeaders) {
+  public void testEmptySbom(Map<String, Integer> providers, Map<String, String> authHeaders) {
     stubAllProviders();
 
     var report =
         given()
             .header(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
             .headers(authHeaders)
-            .queryParam(Constants.PROVIDERS_PARAM, providers)
+            .queryParam(Constants.PROVIDERS_PARAM, providers.keySet())
             .body(loadFileAsString(String.format("%s/empty-sbom.json", CYCLONEDX)))
             .when()
             .post("/api/v4/analysis")
@@ -157,55 +161,48 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .body()
             .as(AnalysisReport.class);
 
-    providers.forEach(
-        p -> {
-          var provider =
-              report.getProviders().values().stream()
-                  .filter(s -> s.getStatus().getName().equals(p))
-                  .findFirst();
-          assertEquals(Response.Status.OK.getStatusCode(), provider.get().getStatus().getCode());
-          assertTrue(provider.get().getStatus().getOk());
-          assertEquals(
-              Response.Status.OK.getReasonPhrase(), provider.get().getStatus().getMessage());
-          assertTrue(provider.get().getSources().isEmpty());
-        });
+    providers
+        .entrySet()
+        .forEach(
+            p -> {
+              var provider =
+                  report.getProviders().values().stream()
+                      .filter(s -> s.getStatus().getName().equals(p.getKey()))
+                      .findFirst();
+              assertEquals(p.getValue(), provider.get().getStatus().getCode());
+              assertEquals(p.getValue().equals(200), provider.get().getStatus().getOk());
+              assertTrue(provider.get().getSources().isEmpty());
+            });
 
-    verifyProviders(providers, authHeaders, true);
+    verifyProviders(providers.keySet(), authHeaders, true);
   }
 
   private static Stream<Arguments> emptySbomArguments() {
     return Stream.of(
+        Arguments.of(Map.of(Constants.SNYK_PROVIDER, 200), Collections.emptyMap()),
+        Arguments.of(Map.of(Constants.OSS_INDEX_PROVIDER, 401), Collections.emptyMap()),
         Arguments.of(
-            List.of(Constants.SNYK_PROVIDER), Collections.emptyMap(), Constants.MAVEN_PKG_MANAGER),
-        Arguments.of(List.of(Constants.OSS_INDEX_PROVIDER), Collections.emptyMap()),
+            Map.of(Constants.SNYK_PROVIDER, 200, Constants.OSS_INDEX_PROVIDER, 401),
+            Collections.emptyMap()),
         Arguments.of(
-            List.of(Constants.SNYK_PROVIDER, Constants.OSS_INDEX_PROVIDER),
+            Map.of(Constants.SNYK_PROVIDER, 200, Constants.OSS_INDEX_PROVIDER, 401),
             Map.of(Constants.SNYK_TOKEN_HEADER, OK_TOKEN)),
         Arguments.of(
-            List.of(Constants.SNYK_PROVIDER, Constants.OSS_INDEX_PROVIDER),
+            Map.of(Constants.SNYK_PROVIDER, 200, Constants.OSS_INDEX_PROVIDER, 200),
             Map.of(
                 Constants.OSS_INDEX_USER_HEADER,
                 OK_USER,
                 Constants.OSS_INDEX_TOKEN_HEADER,
                 OK_TOKEN)),
         Arguments.of(
-            List.of(Constants.SNYK_PROVIDER, Constants.OSS_INDEX_PROVIDER),
+            Map.of(Constants.SNYK_PROVIDER, 200, Constants.OSS_INDEX_PROVIDER, 200),
             Map.of(
                 Constants.SNYK_TOKEN_HEADER,
                 OK_TOKEN,
                 Constants.OSS_INDEX_USER_HEADER,
                 OK_USER,
                 Constants.OSS_INDEX_TOKEN_HEADER,
-                OK_TOKEN)),
-        Arguments.of(
-            List.of(Constants.SNYK_PROVIDER, Constants.OSS_INDEX_PROVIDER), Collections.emptyMap()),
-        Arguments.of(
-            List.of(Constants.SNYK_PROVIDER, Constants.OSS_INDEX_PROVIDER), Collections.emptyMap()),
-        Arguments.of(
-            List.of(Constants.SNYK_PROVIDER, Constants.OSS_INDEX_PROVIDER), Collections.emptyMap()),
-        Arguments.of(
-            List.of(Constants.SNYK_PROVIDER, Constants.OSS_INDEX_PROVIDER),
-            Collections.emptyMap()));
+                OK_TOKEN)));
   }
 
   @Test
@@ -279,7 +276,9 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .body()
             .as(AnalysisReport.class);
 
-    assertEquals(1, report.getProviders().size());
+    assertEquals(2, report.getProviders().size());
+    assertEquals(
+        401, report.getProviders().get(Constants.OSS_INDEX_PROVIDER).getStatus().getCode());
     assertTrue(report.getProviders().get(Constants.SNYK_PROVIDER).getSources().isEmpty());
     var status = report.getProviders().get(Constants.SNYK_PROVIDER).getStatus();
     assertFalse(status.getOk());
@@ -309,7 +308,9 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .body()
             .as(AnalysisReport.class);
 
-    assertEquals(1, report.getProviders().size());
+    assertEquals(2, report.getProviders().size());
+    assertEquals(
+        401, report.getProviders().get(Constants.OSS_INDEX_PROVIDER).getStatus().getCode());
     assertTrue(report.getProviders().get(Constants.SNYK_PROVIDER).getSources().isEmpty());
     var status = report.getProviders().get(Constants.SNYK_PROVIDER).getStatus();
     assertFalse(status.getOk());
