@@ -25,15 +25,15 @@ export const VulnerabilitiesTable = ({ providerName, dependency, vulnerabilities
         <ConditionalTableBody isNoData={vulnerabilities.length === 0} numRenderedColumns={6}>
           {vulnerabilities?.map((vuln, rowIndex) => {
             let ids = [];
-            if(vuln.cves) {
-              vuln.cves?.forEach(cve => ids.push(cve));
+            if(vuln.cves && vuln.cves.length > 0) {
+              vuln.cves.forEach(cve => ids.push(cve));
             } else if(vuln.unique) {
               ids.push(vuln.id);
             }
             return (
               <Tbody key={rowIndex}>
-                {ids.map((cve, cveIndex) => (
-                  <VulnerabilityRow key={`${rowIndex}-${cveIndex}`}
+                {ids.map((_, index) => (
+                  <VulnerabilityRow key={`${rowIndex}-${index}`}
                     item={{
                       id: vuln.id,
                       dependencyRef: dependency.ref,

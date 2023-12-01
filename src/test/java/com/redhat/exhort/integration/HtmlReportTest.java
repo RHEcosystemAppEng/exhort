@@ -86,11 +86,10 @@ public class HtmlReportTest extends AbstractAnalysisTest {
     HtmlTableBody tbody = getTableBodyForDependency("io.quarkus:quarkus-hibernate-orm", snykTable);
     assertNotNull(tbody);
     page = expandTransitiveTableDataCell(tbody);
-    snykTable = page.getElementsByTagName("table").get(0);
-    tbody = getTableBodyForDependency("io.quarkus:quarkus-hibernate-orm", snykTable);
-
-    HtmlTable issuesTable = getIssuesTable(tbody);
-    List<HtmlTableBody> tbodies = issuesTable.getByXPath(".//table//tbody");
+    tables = page.getElementsByTagName("table");
+    assertEquals(2, tables.size());
+    snykTable = tables.get(1);
+    List<HtmlTableBody> tbodies = snykTable.getByXPath(".//tbody");
     HtmlTableBody privateIssueTbody =
         tbodies.stream()
             .filter(
