@@ -154,7 +154,7 @@ export function buildVulnerabilityItems(transitiveDependencies: TransitiveDepend
     
   }}).forEach(item => {
     item.vulnerabilities?.forEach(v => {
-      if(v.cves) {
+      if(v.cves && v.cves.length > 0) {
         v.cves.forEach(cve => {
           rows.push({
             id: cve, 

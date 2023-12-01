@@ -434,7 +434,7 @@ export const withTokenReport: AppData = {
       }
     }
   },
-  ossIssueTemplate: 'http://ossindex.sonatype.org/vulnerability/%s',
-  snykIssueTemplate: 'https://security.snyk.io/vuln/%s?utm_medium=Partner&utm_source=RedHat&utm_campaign=Code-Ready-Analytics-2020&utm_content=vuln/%s',
+  ossIssueTemplate: 'http://ossindex.sonatype.org/vulnerability/__ISSUE_ID__',
+  snykIssueTemplate: 'https://security.snyk.io/vuln/__ISSUE_ID__',
   snykSignup: 'https://app.snyk.io/login',
 };
