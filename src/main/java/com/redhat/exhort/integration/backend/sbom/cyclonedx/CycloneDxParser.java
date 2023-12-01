@@ -20,18 +20,17 @@ package com.redhat.exhort.integration.backend.sbom.cyclonedx;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Predicate;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.cyclonedx.model.Bom;
 import org.cyclonedx.model.Component;
-import org.cyclonedx.model.Dependency;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,9 +70,15 @@ public class CycloneDxParser extends SbomParser {
             "Unable to parse CycloneDX SBOM. Missing metadata.", Response.Status.BAD_REQUEST);
       }
       var rootComponent = Optional.ofNullable(bom.getMetadata().getComponent());
-      String rootRef = null;
+      PackageRef rootRef = null;
       if (rootComponent.isPresent()) {
-        rootRef = rootComponent.get().getBomRef();
+        if (rootComponent.get().getPurl() != null) {
+          rootRef = new PackageRef(rootComponent.get().getPurl());
+        } else if (componentPurls.containsKey(rootComponent.get().getBomRef())) {
+          rootRef = componentPurls.get(rootComponent.get().getBomRef());
+        } else {
+          throw new IllegalStateException("Cannot retrieve the purl for the root component");
+        }
       }
       return treeBuilder.dependencies(buildDependencies(bom, componentPurls, rootRef)).build();
     } catch (IOException | IllegalStateException e) {
@@ -85,69 +90,42 @@ public class CycloneDxParser extends SbomParser {
   }
 
   private Map<PackageRef, DirectDependency> buildDependencies(
-      Bom bom, Map<String, PackageRef> componentPurls, String rootRef) {
+      Bom bom, Map<String, PackageRef> componentPurls, PackageRef rootRef) {
     if (bom.getDependencies() == null || bom.getDependencies().isEmpty()) {
       return buildUnknownDependencies(componentPurls);
     }
-    Map<PackageRef, DirectDependency.Builder> directDepBuilders = new HashMap<>();
-    if (rootRef == null) {
-      var transitive =
-          bom.getDependencies().stream()
-              .map(Dependency::getDependencies)
-              .filter(Objects::nonNull)
-              .flatMap(List::stream)
-              .map(Dependency::getRef)
+
+    Map<PackageRef, List<PackageRef>> dependencies =
+        bom.getDependencies().stream()
+            .collect(
+                Collectors.toMap(
+                    d -> {
+                      if (componentPurls.get(d.getRef()) == null) {
+                        return rootRef;
+                      }
+                      return componentPurls.get(d.getRef());
+                    },
+                    d -> {
+                      if (d.getDependencies() == null) {
+                        return Collections.emptyList();
+                      }
+                      return d.getDependencies().stream()
+                          .map(dep -> componentPurls.get(dep.getRef()))
+                          .toList();
+                    }));
+    List<PackageRef> directDeps;
+    if (rootRef != null && dependencies.get(rootRef) != null) {
+      directDeps = dependencies.get(rootRef);
+    } else {
+      directDeps =
+          dependencies.keySet().stream()
+              .filter(depRef -> dependencies.values().stream().noneMatch(d -> d.contains(depRef)))
               .toList();
-      bom.getDependencies().stream()
-          .map(Dependency::getRef)
-          .filter(Predicate.not(transitive::contains))
-          .forEach(
-              dref -> {
-                PackageRef r = componentPurls.get(dref);
-                directDepBuilders.put(
-                    r, DirectDependency.builder().ref(r).transitive(new HashSet<>()));
-              });
     }
-    bom.getDependencies().stream()
-        .forEach(
-            bomDep -> {
-              if (bomDep.getRef().equals(rootRef)) {
-                bomDep
-                    .getDependencies()
-                    .forEach(
-                        rootDep -> {
-                          var ref = componentPurls.get(rootDep.getRef());
-                          directDepBuilders.put(
-                              ref, DirectDependency.builder().ref(ref).transitive(new HashSet<>()));
-                        });
-              } else if (bomDep.getDependencies() != null) {
-                var source = componentPurls.get(bomDep.getRef());
-                var directBuilder = directDepBuilders.get(source);
-                if (directBuilder == null) {
-                  directDepBuilders.values().stream()
-                      .forEach(
-                          builder ->
-                              bomDep
-                                  .getDependencies()
-                                  .forEach(
-                                      t -> {
-                                        PackageRef target = componentPurls.get(t.getRef());
-                                        builder.transitive.add(target);
-                                      }));
-                } else {
-                  bomDep
-                      .getDependencies()
-                      .forEach(
-                          t -> {
-                            PackageRef target = componentPurls.get(t.getRef());
-                            directBuilder.transitive.add(target);
-                          });
-                }
-              }
-            });
-    return directDepBuilders.entrySet().stream()
-        .map(e -> Map.entry(e.getKey(), e.getValue().build()))
-        .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
+
+    return directDeps.stream()
+        .map(directRef -> toDirectDependency(directRef, dependencies))
+        .collect(Collectors.toMap(DirectDependency::ref, d -> d));
   }
 
   // The SBOM generator does not have info about the dependency hierarchy
@@ -164,5 +142,28 @@ public class CycloneDxParser extends SbomParser {
               deps.put(v, DirectDependency.builder().ref(v).build());
             });
     return deps;
+  }
+
+  private DirectDependency toDirectDependency(
+      PackageRef directRef, Map<PackageRef, List<PackageRef>> dependencies) {
+    var transitiveRefs = new HashSet<PackageRef>();
+    findTransitive(directRef, dependencies, transitiveRefs);
+    var transitive = new HashSet<>(transitiveRefs.stream().toList());
+    return DirectDependency.builder().ref(directRef).transitive(transitive).build();
+  }
+
+  private void findTransitive(
+      PackageRef ref, Map<PackageRef, List<PackageRef>> dependencies, Set<PackageRef> acc) {
+    var deps = dependencies.get(ref);
+    if (deps == null || deps.isEmpty()) {
+      return;
+    }
+    deps.stream()
+        .filter(d -> !acc.contains(d))
+        .forEach(
+            d -> {
+              acc.add(d);
+              findTransitive(d, dependencies, acc);
+            });
   }
 }
