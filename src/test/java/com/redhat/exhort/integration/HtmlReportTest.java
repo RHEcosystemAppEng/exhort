@@ -36,6 +36,7 @@ import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.DomNodeList;
 import com.gargoylesoftware.htmlunit.html.HtmlButton;
+import com.gargoylesoftware.htmlunit.html.HtmlHeading2;
 import com.gargoylesoftware.htmlunit.html.HtmlHeading4;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlTable;
@@ -61,7 +62,7 @@ public class HtmlReportTest extends AbstractAnalysisTest {
    * the <td>
    */
   @Test
-  public void testHtmlWithoutToken() {
+  public void testHtmlWithoutToken() throws IOException {
     stubAllProviders();
 
     String body =
@@ -80,6 +81,11 @@ public class HtmlReportTest extends AbstractAnalysisTest {
             .asString();
 
     HtmlPage page = extractPage(body);
+    // Select the Snyk Source
+    HtmlButton snykSourceBtn = page.getFirstByXPath("//button[@aria-label='snyk source']");
+    assertNotNull(snykSourceBtn);
+    page = snykSourceBtn.click();
+
     DomNodeList<DomElement> tables = page.getElementsByTagName("table");
     assertEquals(1, tables.size());
     DomElement snykTable = tables.get(0);
@@ -104,6 +110,14 @@ public class HtmlReportTest extends AbstractAnalysisTest {
     assertEquals(
         "Sign up for a Snyk account to learn about the vulnerabilities found",
         td.asNormalizedText());
+
+    // Select the Oss-Index Source
+    HtmlButton ossIndexSourceBtn = page.getFirstByXPath("//button[@aria-label='oss-index source']");
+    assertNotNull(ossIndexSourceBtn);
+    page = ossIndexSourceBtn.click();
+
+    HtmlHeading2 heading = page.getFirstByXPath("//div[@class='pf-v5-c-empty-state__title']/h2");
+    assertEquals("Oss-Index Set up", heading.getTextContent());
 
     verifySnykRequest(null);
   }
@@ -169,7 +183,7 @@ public class HtmlReportTest extends AbstractAnalysisTest {
   }
 
   @Test
-  public void testHtmlUnauthorized() {
+  public void testHtmlUnauthorized() throws IOException {
     stubAllProviders();
 
     String body =
@@ -189,18 +203,34 @@ public class HtmlReportTest extends AbstractAnalysisTest {
             .asString();
 
     HtmlPage page = extractPage(body);
-    HtmlHeading4 heading = page.getFirstByXPath("//div[@class='pf-v5-c-alert pf-m-warning']/h4");
-    assertEquals(
-        "Warning alert:Snyk: Unauthorized: Verify the provided credentials are valid.",
-        heading.getTextContent());
-    assertTrue(page.getElementsByTagName("table").isEmpty());
+    List<HtmlHeading4> headings = page.getByXPath("//div[@class='pf-v5-c-alert pf-m-warning']/h4");
+
+    boolean foundHeading = false;
+    for (HtmlHeading4 heading : headings) {
+      String headingText = heading.getTextContent();
+      if (headingText.contains("Snyk")) {
+        foundHeading = true;
+        assertEquals(
+            "Warning alert:Snyk: Unauthorized: Verify the provided credentials are valid.",
+            headingText);
+        break;
+      }
+    }
+
+    assertTrue(foundHeading, "No heading with 'Snyk' found for unauthorized html");
+    // Select the Snyk Source
+    HtmlButton snykSourceBtn = page.getFirstByXPath("//button[@aria-label='snyk source']");
+    assertNotNull(snykSourceBtn);
+    page = snykSourceBtn.click();
+    final String pageAsText = page.asNormalizedText();
+    assertTrue(pageAsText.contains("No results found"));
 
     verifySnykRequest(INVALID_TOKEN);
     verifyNoInteractionsWithOSS();
   }
 
   @Test
-  public void testHtmlForbidden() {
+  public void testHtmlForbidden() throws IOException {
     stubAllProviders();
 
     String body =
@@ -220,19 +250,35 @@ public class HtmlReportTest extends AbstractAnalysisTest {
             .asString();
 
     HtmlPage page = extractPage(body);
-    HtmlHeading4 heading = page.getFirstByXPath("//div[@class='pf-v5-c-alert pf-m-warning']/h4");
-    assertEquals(
-        "Warning alert:Snyk: Forbidden: The provided credentials don't have the required"
-            + " permissions.",
-        heading.getTextContent());
-    assertTrue(page.getElementsByTagName("table").isEmpty());
+    List<HtmlHeading4> headings = page.getByXPath("//div[@class='pf-v5-c-alert pf-m-warning']/h4");
+
+    boolean foundHeading = false;
+    for (HtmlHeading4 heading : headings) {
+      String headingText = heading.getTextContent();
+      if (headingText.contains("Snyk")) {
+        foundHeading = true;
+        assertEquals(
+            "Warning alert:Snyk: Forbidden: The provided credentials don't have the required"
+                + " permissions.",
+            headingText);
+        break;
+      }
+    }
+
+    assertTrue(foundHeading, "No heading with 'Snyk' found");
+    // Select the Snyk Source
+    HtmlButton snykSourceBtn = page.getFirstByXPath("//button[@aria-label='snyk source']");
+    assertNotNull(snykSourceBtn);
+    page = snykSourceBtn.click();
+    final String pageAsText = page.asNormalizedText();
+    assertTrue(pageAsText.contains("No results found"));
 
     verifySnykRequest(UNAUTH_TOKEN);
     verifyNoInteractionsWithOSS();
   }
 
   @Test
-  public void testHtmlError() {
+  public void testHtmlError() throws IOException {
     stubAllProviders();
 
     String body =
@@ -252,10 +298,23 @@ public class HtmlReportTest extends AbstractAnalysisTest {
             .asString();
 
     HtmlPage page = extractPage(body);
-    HtmlHeading4 heading = page.getFirstByXPath("//div[@class='pf-v5-c-alert pf-m-danger']/h4");
-    assertEquals(
-        "Danger alert:Snyk: Server Error: This is an example error", heading.getTextContent());
-    assertTrue(page.getElementsByTagName("table").isEmpty());
+    List<HtmlHeading4> headings = page.getByXPath("//div[@class='pf-v5-c-alert pf-m-danger']/h4");
+    boolean foundHeading = false;
+    for (HtmlHeading4 heading : headings) {
+      String headingText = heading.getTextContent();
+      if (headingText.contains("Snyk")) {
+        foundHeading = true;
+        assertEquals("Danger alert:Snyk: Server Error: This is an example error", headingText);
+        break;
+      }
+    }
+    assertTrue(foundHeading, "No heading with 'Snyk' found for hmtl error");
+    // Select the Snyk Source
+    HtmlButton snykSourceBtn = page.getFirstByXPath("//button[@aria-label='snyk source']");
+    assertNotNull(snykSourceBtn);
+    page = snykSourceBtn.click();
+    final String pageAsText = page.asNormalizedText();
+    assertTrue(pageAsText.contains("No results found"));
 
     verifySnykRequest(ERROR_TOKEN);
     verifyNoInteractionsWithOSS();

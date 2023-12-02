@@ -1,4 +1,5 @@
 import {
+  Button,
   Card,
   CardBody,
   CardHeader,
@@ -10,7 +11,7 @@ import {
   Divider,
   Grid,
   GridItem,
-  Icon,
+  Icon, List, ListItem,
   Title,
   TitleSizes,
 } from '@patternfly/react-core';
@@ -18,6 +19,8 @@ import ExclamationTriangleIcon from '@patternfly/react-icons/dist/esm/icons/excl
 import {useAppContext} from '../App';
 import {ChartCard} from './ChartCard';
 import {getSourceName, getSources} from '../api/report';
+import RedhatIcon from "@patternfly/react-icons/dist/esm/icons/redhat-icon";
+import SecurityCheckIcon from '../images/security-check.svg';
 
 export const SummaryCard = () => {
   const appContext = useAppContext();
@@ -29,7 +32,6 @@ export const SummaryCard = () => {
         </Icon>&nbsp;Red Hat Overview of security Issues
       </Title>
       <Divider />
-      {/*<GridItem md={6}>*/}
       <GridItem>
         <Card isFlat isFullHeight>
           <CardHeader>
@@ -39,7 +41,6 @@ export const SummaryCard = () => {
               </DescriptionListTerm>
             </CardTitle>
           </CardHeader>
-          {/*<Divider/>*/}
           <CardBody>
             <DescriptionListGroup>
               <DescriptionListDescription>
@@ -51,6 +52,7 @@ export const SummaryCard = () => {
             <DescriptionList isAutoFit style={{paddingTop: "10px"}}>
               {
                 getSources(appContext.report).map((source, index) => {
+                  if(Object.keys(source.report).length > 0){
                   return (
                     <DescriptionListGroup key={index}>
                       <DescriptionListTerm style={{fontSize: "large"}}>{getSourceName(source)}</DescriptionListTerm>
@@ -59,6 +61,7 @@ export const SummaryCard = () => {
                       </DescriptionListDescription>
                     </DescriptionListGroup>
                   )
+                  }
                 })
               }
             </DescriptionList>
@@ -66,74 +69,59 @@ export const SummaryCard = () => {
           <Divider/>
         </Card>
       </GridItem>
-      {/*<GridItem md={6}>*/}
-      {/*  <Card isFlat>*/}
-      {/*    <DescriptionListGroup>*/}
-      {/*      <CardTitle component="h4">*/}
-      {/*        <DescriptionListTerm style={{fontSize: "large"}}>*/}
-      {/*          <Icon isInline status="info">*/}
-      {/*            <RedhatIcon style={{fill: "#cc0000"}}/>*/}
-      {/*          </Icon>&nbsp;*/}
-      {/*          Red Hat Remediations*/}
-      {/*        </DescriptionListTerm>*/}
-      {/*      </CardTitle>*/}
-      {/*      <CardBody>*/}
-      {/*        <DescriptionListDescription>*/}
-      {/*          <List isPlain>*/}
-      {/*            <ListItem>*/}
-      {/*              <Icon isInline status="success">*/}
-      {/*                <img src={SecurityCheckIcon} alt="Security Check Icon"/>*/}
-      {/*              </Icon>&nbsp;*/}
-      {/*              10+ vulnerable packages*/}
-      {/*            </ListItem>*/}
-      {/*          </List>*/}
-      {/*        </DescriptionListDescription>*/}
-      {/*      </CardBody>*/}
-      {/*    </DescriptionListGroup>*/}
-      {/*  </Card>&nbsp;*/}
-      {/*  <Card isFlat>*/}
-      {/*    <DescriptionListGroup>*/}
-      {/*      <CardTitle component="h4">*/}
-      {/*        <DescriptionListTerm style={{fontSize: "large"}}>*/}
-      {/*          Subscribe to stay updated*/}
-      {/*        </DescriptionListTerm>*/}
-      {/*      </CardTitle>*/}
-      {/*      <CardBody>*/}
-      {/*        <DescriptionListDescription>*/}
-      {/*          <List isPlain>*/}
-      {/*            <ListItem>*/}
-      {/*              Do you want to subscribe for Red Hat Trusted Content Service to keep your*/}
-      {/*              projects risk profile updated?*/}
-      {/*            </ListItem>*/}
-      {/*            <ListItem>*/}
-      {/*              <Button variant="primary" size="sm">*/}
-      {/*                Sign up*/}
-      {/*              </Button>*/}
-      {/*            </ListItem>*/}
-      {/*          </List>*/}
-      {/*        </DescriptionListDescription>*/}
-      {/*      </CardBody>*/}
-      {/*    </DescriptionListGroup>*/}
-      {/*  </Card>&nbsp;*/}
-      {/*  <Card isFlat>*/}
-      {/*    <DescriptionListGroup>*/}
-      {/*      <CardTitle component="h4">*/}
-      {/*        <DescriptionListTerm style={{fontSize: "large"}}>*/}
-      {/*          Licenses*/}
-      {/*        </DescriptionListTerm>*/}
-      {/*      </CardTitle>*/}
-      {/*      <CardBody>*/}
-      {/*        <DescriptionListDescription>*/}
-      {/*          <List isPlain>*/}
-      {/*            <ListItem>*/}
-      {/*              Some info here*/}
-      {/*            </ListItem>*/}
-      {/*          </List>*/}
-      {/*        </DescriptionListDescription>*/}
-      {/*      </CardBody>*/}
-      {/*    </DescriptionListGroup>*/}
-      {/*  </Card>*/}
-      {/*</GridItem>*/}
+      <GridItem md={6}>
+        <Card isFlat>
+          <DescriptionListGroup>
+            <CardTitle component="h4">
+              <DescriptionListTerm style={{fontSize: "large"}}>
+                <Icon isInline status="info">
+                  <RedhatIcon style={{fill: "#cc0000"}}/>
+                </Icon>&nbsp;
+                Red Hat Remediations
+              </DescriptionListTerm>
+            </CardTitle>
+            <CardBody>
+              <DescriptionListDescription>
+                <List isPlain>
+                  <ListItem>
+                    <Icon isInline status="success">
+                      <img src={SecurityCheckIcon} alt="Security Check Icon"/>
+                    </Icon>&nbsp;
+                    There are no available Red Hat remediations for your SBOM at this time
+                  </ListItem>
+                </List>
+              </DescriptionListDescription>
+            </CardBody>
+          </DescriptionListGroup>
+        </Card>&nbsp;
+      </GridItem>
+        <GridItem md={6}>
+        <Card isFlat>
+          <DescriptionListGroup>
+            <CardTitle component="h4">
+              <DescriptionListTerm style={{fontSize: "large"}}>
+                Subscribe to stay updated
+              </DescriptionListTerm>
+            </CardTitle>
+            <CardBody>
+              <DescriptionListDescription>
+                <List isPlain>
+                  <ListItem>
+                    Check out our new Trusted Profile Analyzer to get visibility and insight into your software risk profile, for instance by exploring vulnerabilites or analyzing SBOMs.
+                  </ListItem>
+                  <ListItem>
+                    <a href="https://console.redhat.com/application-services/trusted-content" target="_blank" rel="noopener noreferrer">
+                      <Button variant="primary" size="sm">
+                        Sign up
+                      </Button>
+                    </a>
+                  </ListItem>
+                </List>
+              </DescriptionListDescription>
+            </CardBody>
+          </DescriptionListGroup>
+        </Card>&nbsp;
+      </GridItem>
     </Grid>
   );
 };

@@ -64,24 +64,30 @@ export function getSources(report: Report): SourceItem[] {
   var result: SourceItem[] = [];
   Object.keys(report.providers).forEach(provider => {
     const sources = report.providers[provider].sources;
-    if(sources !== undefined) {
+    if (sources !== undefined && Object.keys(sources).length > 0) {
       Object.keys(sources).forEach(source => {
         result.push({
           provider: provider,
           source: source,
           report: sources[source]
-        } as SourceItem)
-      })
+        } as SourceItem);
+      });
+    } else {
+      result.push({
+        provider: provider,
+        source: provider,
+        report: {} as SourceReport
+      } as SourceItem);
     }
-  })
+  });
   return result;
 }
 
 export function getSourceName(item: SourceItem): string {
-  if(item === undefined) {
+  if (item === undefined) {
     return "unknown";
   }
-  if(item.provider !== item.source) {
+  if (item.provider !== item.source) {
     return `$item.provider/$item.source`
   }
   return item.provider;
@@ -138,8 +144,8 @@ export interface Cvss {
 }
 
 export function hasRemediations(vulnerability: Vulnerability): boolean {
-  if(vulnerability.remediation 
-      && (vulnerability.remediation.fixedIn || vulnerability.remediation?.trustedContent)) {
+  if (vulnerability.remediation
+    && (vulnerability.remediation.fixedIn || vulnerability.remediation?.trustedContent)) {
     return true;
   }
   return false;
@@ -151,13 +157,14 @@ export function buildVulnerabilityItems(transitiveDependencies: TransitiveDepend
     return {
       dependencyRef: transitive.ref,
       vulnerabilities: transitive.issues || []
-    
-  }}).forEach(item => {
+
+    }
+  }).forEach(item => {
     item.vulnerabilities?.forEach(v => {
-      if(v.cves && v.cves.length > 0) {
+      if (v.cves && v.cves.length > 0) {
         v.cves.forEach(cve => {
           rows.push({
-            id: cve, 
+            id: cve,
             dependencyRef: item.dependencyRef,
             vulnerability: v
           });
