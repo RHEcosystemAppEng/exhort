@@ -71,6 +71,7 @@ public final class Constants {
   public static final String API_VERSION_V3 = "v3";
 
   public static final String SNYK_DEP_GRAPH_API_PATH = "/test/dep-graph";
+  public static final String TRUSTED_CONTENT_PATH = "/recommend";
   public static final String SNYK_TOKEN_API_PATH = "/user/me";
   public static final String OSS_INDEX_AUTH_COMPONENT_API_PATH = "/authorized/component-report";
 

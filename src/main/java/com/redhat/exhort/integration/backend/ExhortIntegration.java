@@ -25,6 +25,8 @@ import static com.redhat.exhort.integration.Constants.VERBOSE_MODE_HEADER;
 import java.io.InputStream;
 import java.util.Arrays;
 
+import com.redhat.exhort.integration.trustedcontent.TcResponseHandler;
+import org.apache.camel.AggregationStrategy;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.AggregationStrategies;
@@ -131,6 +133,7 @@ public class ExhortIntegration extends EndpointRouteBuilder {
       .process(this::processAnalysisRequest)
       .to(direct("findVulnerabilities"))
       .transform().method(ProviderAggregationStrategy.class, "toReport")
+      .enrich(direct("recommendationsTrustedContent"), AggregationStrategies.beanAllowNull(TcResponseHandler.class,"aggregate"))
       .to(direct("report"))
       .to(seda("analyticsTrackAnalysis"))
       .process(this::cleanUpHeaders);
