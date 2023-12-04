@@ -1,56 +1,51 @@
-package com.redhat.exhort.integration.trustedcontent;
+/*
+ * Copyright 2023 Red Hat, Inc. and/or its affiliates
+ * and other contributors as indicated by the @author tags.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.redhat.exhort.api.PackageRef;
-import com.redhat.exhort.api.v4.AnalysisReport;
-import com.redhat.exhort.config.ObjectMapperProducer;
-import io.quarkus.runtime.annotations.RegisterForReflection;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-import org.apache.camel.AggregationStrategy;
-import org.apache.camel.Body;
-import org.apache.camel.Exchange;
+package com.redhat.exhort.integration.trustedcontent;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
+
+import org.apache.camel.Body;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.redhat.exhort.config.ObjectMapperProducer;
+
+import io.quarkus.runtime.annotations.RegisterForReflection;
+
+import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 @RegisterForReflection
-public class TcResponseHandler implements AggregationStrategy {
+public class TcResponseHandler {
 
-    ObjectMapper mapper = ObjectMapperProducer.newInstance();
-    public Map<String,String> responseToMap(@Body byte[] tcResponse) throws IOException {
-        HashMap<String, String> recommendations = new HashMap<>();
-        Map recMap = mapper.readValue(tcResponse, Map.class);
-        Map <String, List<String>> rec = (Map<String, List<String>>) recMap.get("recommendations");
-        rec.entrySet().stream().forEach( (entry) -> {
-            recommendations.put(entry.getKey(),entry.getValue().get(0));
-        });
+  ObjectMapper mapper = ObjectMapperProducer.newInstance();
 
-     return recommendations;
+  public Map<String, String> responseToMap(@Body Map<String, Map> tcResponse) throws IOException {
+    HashMap<String, String> recommendations = new HashMap<>();
 
-    }
-
-    @Override
-    public Exchange aggregate(Exchange oldExchange, Exchange newExchange) {
-        Map<String,String> recommendations = (Map<String,String>)newExchange.getMessage().getBody();
-        List<String> keys = recommendations.entrySet().stream().map((entry) -> entry.getKey()).collect(Collectors.toList());
-        oldExchange.getIn(AnalysisReport.class).getProviders().forEach( (providerName,providerReport) -> {
-            providerReport.getSources().forEach((sourceName, source) -> {
-                source.getDependencies().forEach(dependencyReport -> {
-                if(keys.contains(dependencyReport.getRef().toString()))
-                {
-                    String recommendation = recommendations.get(dependencyReport.getRef().toString());
-                    dependencyReport.setRecommendation(PackageRef.builder().purl(recommendation).build());
-                }
-
+    Map<String, List<String>> rec = (Map<String, List<String>>) tcResponse.get("recommendations");
+    rec.entrySet().stream()
+        .forEach(
+            (entry) -> {
+              recommendations.put(entry.getKey(), entry.getValue().stream().findFirst().get());
             });
-             Long numOfRecommendations= source.getDependencies().stream().filter( dep -> Objects.nonNull(dep.getRecommendation())).count();
-             source.getSummary().setRecommendations(Integer.parseInt(numOfRecommendations.toString()));
-            });
-        });
 
-        return oldExchange;
-    }
+    return recommendations;
+  }
 }
