@@ -9,8 +9,6 @@ import {
   EmptyStateHeader,
   EmptyStateIcon,
   EmptyStateVariant,
-  Flex,
-  FlexItem,
   SearchInput,
   Toolbar,
   ToolbarContent,
@@ -31,7 +29,7 @@ import {VulnerabilitiesCountBySeverity} from './VulnerabilitiesCountBySeverity'
 import {extractDependencyVersion} from '../utils/utils';
 import CubesIcon from "@patternfly/react-icons/dist/esm/icons/cubes-icon";
 import SearchIcon from "@patternfly/react-icons/dist/esm/icons/search-icon";
-import { ConditionalTableBody } from './TableControls/ConditionalTableBody';
+import {ConditionalTableBody} from './TableControls/ConditionalTableBody';
 import {RemediationsAvailability} from "./RemediationsAvailability";
 
 export const DepCompoundTable = ({name, dependencies}: { name: string; dependencies: Dependency[] }) => {
@@ -215,17 +213,16 @@ export const DepCompoundTable = ({name, dependencies}: { name: string; dependenc
                           compoundExpand={compoundExpandParams(item, 'direct', rowIndex, 2)}
                         >
                           {(item.issues?.length) ? (
-                            <Flex>
-                              <FlexItem>{item.issues?.length}</FlexItem>
+                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                              <div style={{ width: '25px' }}>{item.issues?.length}</div>
                               <Divider
                                 orientation={{
                                   default: 'vertical'
                                 }}
                               />
                               <VulnerabilitiesCountBySeverity vulnerabilities={item.issues}/>
-                            </Flex>
+                            </div>
                           ) : 0}
-                          {/*{item.issues?.length || 0}*/}
                         </Td>
                         <Td
                           width={15}
@@ -233,18 +230,19 @@ export const DepCompoundTable = ({name, dependencies}: { name: string; dependenc
                           compoundExpand={compoundExpandParams(item, 'transitive', rowIndex, 3)}
                         >
                           {(item.transitive.length) ? (
-                            <Flex>
-                              <FlexItem>{item.transitive
-                                .map(e => e.issues?.length)
-                                .reduce((prev = 0, current = 0) =>
-                                  prev + current)}</FlexItem>
+                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                              <div style={{ width: '25px' }}>
+                                {item.transitive
+                                  .map(e => e.issues?.length)
+                                  .reduce((prev = 0, current = 0) => prev + current)}
+                              </div>
                               <Divider
                                 orientation={{
-                                  default: 'vertical'
-                                }}
+                                  default: 'vertical',
+                                }} style={{paddingRight: '10px'}}
                               />
-                              <VulnerabilitiesCountBySeverity transitiveDependencies={item.transitive}/>
-                            </Flex>
+                              <VulnerabilitiesCountBySeverity transitiveDependencies={item.transitive} />
+                            </div>
                           ) : 0}
                         </Td>
                         <Td width={15}
