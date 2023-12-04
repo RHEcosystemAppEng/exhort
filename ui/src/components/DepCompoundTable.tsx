@@ -32,6 +32,7 @@ import {extractDependencyVersion} from '../utils/utils';
 import CubesIcon from "@patternfly/react-icons/dist/esm/icons/cubes-icon";
 import SearchIcon from "@patternfly/react-icons/dist/esm/icons/search-icon";
 import { ConditionalTableBody } from './TableControls/ConditionalTableBody';
+import {RemediationsAvailability} from "./RemediationsAvailability";
 
 export const DepCompoundTable = ({name, dependencies}: { name: string; dependencies: Dependency[] }) => {
   // Filters
@@ -73,7 +74,7 @@ export const DepCompoundTable = ({name, dependencies}: { name: string; dependenc
     version: 'Current Version',
     direct: 'Direct Vulnerabilities',
     transitive: 'Transitive Vulnerabilities',
-    rhRemediation: 'Red Hat Remediation available'
+    rhRemediation: 'Remediation available'
   };
   type ColumnKey = keyof typeof columnNames;
 
@@ -176,7 +177,7 @@ export const DepCompoundTable = ({name, dependencies}: { name: string; dependenc
                     <Th>{columnNames.version}</Th>
                     <Th>{columnNames.direct}</Th>
                     <Th>{columnNames.transitive}</Th>
-                    {/*<Th>{columnNames.rhRemediation}</Th>*/}
+                    <Th>{columnNames.rhRemediation}</Th>
                   </Tr>
                 </Thead>
                 <ConditionalTableBody
@@ -246,11 +247,11 @@ export const DepCompoundTable = ({name, dependencies}: { name: string; dependenc
                             </Flex>
                           ) : 0}
                         </Td>
-                        {/*<Td width={15}*/}
-                        {/*    dataLabel={columnNames.rhRemediation}*/}
-                        {/*>*/}
-                        {/*  <RemediationsCount dependency={item} />*/}
-                        {/*</Td>*/}
+                        <Td width={15}
+                            dataLabel={columnNames.rhRemediation}
+                        >
+                          <RemediationsAvailability dependency={item} />
+                        </Td>
                       </Tr>
                       {isRowExpanded ? (
                         <Tr isExpanded={isRowExpanded}>
