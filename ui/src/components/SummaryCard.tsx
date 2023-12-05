@@ -53,15 +53,16 @@ export const SummaryCard = () => {
               {
                 getSources(appContext.report).map((source, index) => {
                   if(Object.keys(source.report).length > 0){
-                  return (
-                    <DescriptionListGroup key={index}>
-                      <DescriptionListTerm style={{fontSize: "large"}}>{getSourceName(source)}</DescriptionListTerm>
-                      <DescriptionListDescription>
-                        <ChartCard summary={source.report.summary}/>
-                      </DescriptionListDescription>
-                    </DescriptionListGroup>
-                  )
+                    return (
+                      <DescriptionListGroup key={index}>
+                        <DescriptionListTerm style={{fontSize: "large"}}>{getSourceName(source)}</DescriptionListTerm>
+                        <DescriptionListDescription>
+                          <ChartCard summary={source.report.summary}/>
+                        </DescriptionListDescription>
+                      </DescriptionListGroup>
+                    )
                   }
+                  return <p/>
                 })
               }
             </DescriptionList>
