@@ -23,9 +23,6 @@ import java.util.*;
 
 import org.apache.camel.Body;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.redhat.exhort.config.ObjectMapperProducer;
-
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -34,7 +31,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 @RegisterForReflection
 public class TcResponseHandler {
 
-  ObjectMapper mapper = ObjectMapperProducer.newInstance();
+  //  ObjectMapper mapper = ObjectMapperProducer.newInstance();
 
   public Map<String, String> responseToMap(@Body Map<String, Map> tcResponse) throws IOException {
     HashMap<String, String> recommendations = new HashMap<>();

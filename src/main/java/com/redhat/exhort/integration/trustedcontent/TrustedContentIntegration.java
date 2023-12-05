@@ -20,15 +20,14 @@ package com.redhat.exhort.integration.trustedcontent;
 
 import java.util.*;
 
-import jakarta.enterprise.context.ApplicationScoped;
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
-import org.apache.camel.model.dataformat.JsonLibrary;
 
 import com.redhat.exhort.api.PackageRef;
 import com.redhat.exhort.integration.Constants;
 import com.redhat.exhort.model.DependencyTree;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.core.MediaType;
 
 @ApplicationScoped
@@ -52,9 +51,16 @@ public class TrustedContentIntegration extends EndpointRouteBuilder {
         .setHeader(Exchange.HTTP_PATH, constant(Constants.TRUSTED_CONTENT_PATH))
         .setHeader(Exchange.HTTP_METHOD, constant("POST"))
         .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.APPLICATION_JSON))
+        .circuitBreaker()
+        .faultToleranceConfiguration()
+        .timeoutEnabled(true)
+        .timeoutDuration(10)
+        .end()
         .to(vertxHttp("{{api.trustedcontent.host}}"))
-        .unmarshal()
-        .json(JsonLibrary.Jackson, Map.class);
+        .onFallback()
+        .transform()
+        .constant(Map.of("recommendations", Map.of()))
+        .end();
   }
 
   private void handleHeaders(Exchange exchange) {
