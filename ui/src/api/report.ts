@@ -56,7 +56,7 @@ export interface TransitiveDependency {
 export interface Dependency {
   ref: string;
   issues?: Vulnerability[];
-  transitive: TransitiveDependency[];
+  transitive?: TransitiveDependency[];
   highestVulnerability: Vulnerability | null;
 }
 

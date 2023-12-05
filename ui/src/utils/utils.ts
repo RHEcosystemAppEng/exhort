@@ -16,9 +16,8 @@ const ISSUE_PLACEHOLDER = '__ISSUE_ID__';
 
 const PURL_PKG_PREFIX = 'pkg:';
 
-export const extractDependencyName = (name: string, showVersion: boolean) => {
-  const pkgUrl = PackageURL.fromString(name);
-  let result;
+const extractName = (pkgUrl: PackageURL): string => {
+  let result = '';
   if(pkgUrl.namespace) {
     if(pkgUrl.type === MAVEN_TYPE) {
       result = `${pkgUrl.namespace}:`;
@@ -27,6 +26,12 @@ export const extractDependencyName = (name: string, showVersion: boolean) => {
     }
   }
   result += `${pkgUrl.name}`;
+  return result;
+}
+
+export const extractDependencyName = (name: string, showVersion: boolean) => {
+  const pkgUrl = PackageURL.fromString(name);
+  let result = extractName(pkgUrl);
   if(showVersion) {
     return result + `@${pkgUrl.version}`;
   }
@@ -46,14 +51,14 @@ export const extractDependencyUrl = (name: string) => {
       return `${GOLANG_URL}${pkgUrl.namespace}/${pkgUrl.name}@${pkgUrl.version}`;
     case NPM_TYPE:
       if(pkgUrl.namespace) {
-        return `${NPM_URL}/${pkgUrl.namespace}/${pkgUrl.name}/v/${pkgUrl.version}`
+        return `${NPM_URL}${pkgUrl.namespace}/${pkgUrl.name}/v/${pkgUrl.version}`
       }
-      return `${NPM_URL}/${pkgUrl.name}/v/${pkgUrl.version}`
+      return `${NPM_URL}${pkgUrl.name}/v/${pkgUrl.version}`
     case PYPI_TYPE:
       if(pkgUrl.namespace) {
-        return `${PYPI_URL}/${pkgUrl.namespace}/${pkgUrl.name}/${pkgUrl.version}`
+        return `${PYPI_URL}${pkgUrl.namespace}/${pkgUrl.name}/${pkgUrl.version}`
       }
-      return `${PYPI_URL}/${pkgUrl.name}/${pkgUrl.version}`
+      return `${PYPI_URL}${pkgUrl.name}/${pkgUrl.version}`
     default: return pkgUrl.toString();
   }
 };

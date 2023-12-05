@@ -229,7 +229,7 @@ export const DepCompoundTable = ({name, dependencies}: { name: string; dependenc
                           dataLabel={columnNames.transitive}
                           compoundExpand={compoundExpandParams(item, 'transitive', rowIndex, 3)}
                         >
-                          {(item.transitive.length) ? (
+                          {(item.transitive?.length) ? (
                             <div style={{ display: 'flex', alignItems: 'center' }}>
                               <div style={{ width: '25px' }}>
                                 {item.transitive
