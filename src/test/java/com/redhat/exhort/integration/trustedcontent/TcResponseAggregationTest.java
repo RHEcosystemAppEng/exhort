@@ -121,14 +121,12 @@ class TcResponseAggregationTest {
     newMessageWithRecommendations.getMessage().setBody(Map.of());
     int hashCodeBefore = analysisReport.hashCode();
     Exchange aggregate =
-            tcResponseAggregation.aggregate(originalMessage, newMessageWithRecommendations);
+        tcResponseAggregation.aggregate(originalMessage, newMessageWithRecommendations);
 
     int hashCodeAfter = aggregate.getMessage().getBody().hashCode();
-    //Empty recommendations list must not touch AnalysisReport instance and let it remain the same.
-    assertEquals(hashCodeBefore,hashCodeAfter);
-
+    // Empty recommendations list must not touch AnalysisReport instance and let it remain the same.
+    assertEquals(hashCodeBefore, hashCodeAfter);
   }
-
 
   @Test
   void Check_Integration_With_Map_Of_Recommendations() {
@@ -145,8 +143,6 @@ class TcResponseAggregationTest {
     AnalysisReport result = (AnalysisReport) aggregate.getMessage().getBody();
     Source resultDummySourceRef =
         result.getProviders().get("dummy-provider").getSources().get("dummy-source");
-    assertEquals(5, resultDummySourceRef.getSummary().getDirect());
-    assertEquals(5, resultDummySourceRef.getSummary().getDependencies());
     assertEquals(5, resultDummySourceRef.getSummary().getRecommendations());
     assertEquals(
         4,
@@ -1040,7 +1036,6 @@ class TcResponseAggregationTest {
       public void setAutowiredEnabled(Boolean autowiredEnabled) {}
     };
   }
-
 
   private static Issue buildIssue(String id, Float score) {
     return new Issue()

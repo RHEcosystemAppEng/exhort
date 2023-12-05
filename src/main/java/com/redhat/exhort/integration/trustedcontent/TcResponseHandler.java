@@ -33,14 +33,17 @@ public class TcResponseHandler {
 
   //  ObjectMapper mapper = ObjectMapperProducer.newInstance();
 
-  public Map<String, String> responseToMap(@Body Map<String, Map<String,List>> tcResponse) throws IOException {
+  public Map<String, String> responseToMap(@Body Map<String, Map<String, List>> tcResponse)
+      throws IOException {
     HashMap<String, String> recommendations = new HashMap<>();
 
     Map<String, List> rec = (Map<String, List>) tcResponse.get("recommendations");
     rec.entrySet().stream()
         .forEach(
             (entry) -> {
-              recommendations.put(entry.getKey(), (String)((Map)entry.getValue().stream().findFirst().get()).get("package"));
+              recommendations.put(
+                  entry.getKey(),
+                  (String) ((Map) entry.getValue().stream().findFirst().get()).get("package"));
             });
 
     return recommendations;

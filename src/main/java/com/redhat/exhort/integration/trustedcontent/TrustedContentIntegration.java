@@ -21,17 +21,21 @@ package com.redhat.exhort.integration.trustedcontent;
 import java.util.*;
 
 import org.apache.camel.Exchange;
+import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
+import org.apache.camel.model.dataformat.JsonLibrary;
 
 import com.redhat.exhort.api.PackageRef;
 import com.redhat.exhort.integration.Constants;
 import com.redhat.exhort.model.DependencyTree;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.core.MediaType;
-import org.apache.camel.model.dataformat.JsonLibrary;
 
 @ApplicationScoped
+@RegisterForReflection
 public class TrustedContentIntegration extends EndpointRouteBuilder {
 
   @Override
@@ -59,6 +63,10 @@ public class TrustedContentIntegration extends EndpointRouteBuilder {
         .endCircuitBreaker()
         .onFallback()
         .setBody(constant(Map.of("recommendations", Map.of())))
+        .log(
+            LoggingLevel.WARN,
+            "Failed to retrieve recommendations from Trusted content service' /recommend endpoint,"
+                + " error message => ${exception.message}")
         .end();
   }
 

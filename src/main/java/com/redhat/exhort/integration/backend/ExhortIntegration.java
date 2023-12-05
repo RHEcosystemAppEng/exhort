@@ -25,8 +25,6 @@ import static com.redhat.exhort.integration.Constants.VERBOSE_MODE_HEADER;
 import java.io.InputStream;
 import java.util.Arrays;
 
-import com.redhat.exhort.integration.trustedcontent.TcResponseHandler;
-import org.apache.camel.AggregationStrategy;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.AggregationStrategies;
@@ -34,10 +32,8 @@ import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
 import org.apache.camel.component.micrometer.MicrometerConstants;
 import org.apache.camel.component.micrometer.routepolicy.MicrometerRoutePolicyFactory;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.redhat.exhort.analytics.AnalyticsService;
 import com.redhat.exhort.integration.Constants;
-import com.redhat.exhort.integration.VulnerabilityProvider;
 import com.redhat.exhort.integration.backend.sbom.SbomParserFactory;
 import com.redhat.exhort.integration.providers.ProviderAggregationStrategy;
 import com.redhat.exhort.integration.providers.VulnerabilityProvider;
@@ -64,7 +60,7 @@ public class ExhortIntegration extends EndpointRouteBuilder {
 
   @Inject AnalyticsService analytics;
 
-  @Inject ObjectMapper mapper;
+  //  @Inject ObjectMapper mapper;
 
   @Inject MonitoringProcessor monitoringProcessor;
 
