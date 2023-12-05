@@ -1,4 +1,4 @@
-import { AppData } from "../api/report";
+import { AppData, ProviderStatus } from "../api/report";
 
 const MAVEN_TYPE = 'maven';
 const MAVEN_URL = 'https://central.sonatype.com/artifact/';
@@ -15,6 +15,24 @@ const PYPI_URL = 'https://pypi.org/project/';
 const ISSUE_PLACEHOLDER = '__ISSUE_ID__';
 
 const PURL_PKG_PREFIX = 'pkg:';
+
+const SIGN_UP_TAB_PROVIDERS = ['oss-index'];
+
+const OSS_SIGN_UP_LINK = 'https://ossindex.sonatype.org/user/register';
+
+export const getSignUpLink = (provider: string): string => {
+  switch(provider) {
+    case 'oss-index': return OSS_SIGN_UP_LINK;
+  }
+  return '';
+}
+
+export const hasSignUpTab = (provider: ProviderStatus): boolean => {
+  if(!provider.ok && provider.code === 401) {
+    return SIGN_UP_TAB_PROVIDERS.includes(provider.name);
+  }
+  return false;
+}
 
 const extractName = (pkgUrl: PackageURL): string => {
   let result = '';

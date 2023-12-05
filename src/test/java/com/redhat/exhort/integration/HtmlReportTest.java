@@ -117,7 +117,7 @@ public class HtmlReportTest extends AbstractAnalysisTest {
     page = ossIndexSourceBtn.click();
 
     HtmlHeading2 heading = page.getFirstByXPath("//div[@class='pf-v5-c-empty-state__title']/h2");
-    assertEquals("Oss-Index Set up", heading.getTextContent());
+    assertEquals("Set up oss-index", heading.getTextContent());
 
     verifySnykRequest(null);
   }
@@ -203,21 +203,11 @@ public class HtmlReportTest extends AbstractAnalysisTest {
             .asString();
 
     HtmlPage page = extractPage(body);
-    List<HtmlHeading4> headings = page.getByXPath("//div[@class='pf-v5-c-alert pf-m-warning']/h4");
+    HtmlHeading4 heading = page.getFirstByXPath("//div[@class='pf-v5-c-alert pf-m-warning']/h4");
+    assertEquals(
+        "Warning alert:Snyk: Unauthorized: Verify the provided credentials are valid.",
+        heading.getTextContent());
 
-    boolean foundHeading = false;
-    for (HtmlHeading4 heading : headings) {
-      String headingText = heading.getTextContent();
-      if (headingText.contains("Snyk")) {
-        foundHeading = true;
-        assertEquals(
-            "Warning alert:Snyk: Unauthorized: Verify the provided credentials are valid.",
-            headingText);
-        break;
-      }
-    }
-
-    assertTrue(foundHeading, "No heading with 'Snyk' found for unauthorized html");
     // Select the Snyk Source
     HtmlButton snykSourceBtn = page.getFirstByXPath("//button[@aria-label='snyk source']");
     assertNotNull(snykSourceBtn);
@@ -250,22 +240,12 @@ public class HtmlReportTest extends AbstractAnalysisTest {
             .asString();
 
     HtmlPage page = extractPage(body);
-    List<HtmlHeading4> headings = page.getByXPath("//div[@class='pf-v5-c-alert pf-m-warning']/h4");
+    HtmlHeading4 heading = page.getFirstByXPath("//div[@class='pf-v5-c-alert pf-m-warning']/h4");
+    assertEquals(
+        "Warning alert:Snyk: Forbidden: The provided credentials don't have the required"
+            + " permissions.",
+        heading.getTextContent());
 
-    boolean foundHeading = false;
-    for (HtmlHeading4 heading : headings) {
-      String headingText = heading.getTextContent();
-      if (headingText.contains("Snyk")) {
-        foundHeading = true;
-        assertEquals(
-            "Warning alert:Snyk: Forbidden: The provided credentials don't have the required"
-                + " permissions.",
-            headingText);
-        break;
-      }
-    }
-
-    assertTrue(foundHeading, "No heading with 'Snyk' found");
     // Select the Snyk Source
     HtmlButton snykSourceBtn = page.getFirstByXPath("//button[@aria-label='snyk source']");
     assertNotNull(snykSourceBtn);

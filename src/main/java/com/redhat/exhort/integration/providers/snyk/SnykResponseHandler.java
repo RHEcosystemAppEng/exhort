@@ -54,7 +54,7 @@ public class SnykResponseHandler extends ProviderResponseHandler {
 
   private static final String SNYK_PRIVATE_VULNERABILITY_ID = "SNYK-PRIVATE-VULNERABILITY";
   private static final String SNYK_PRIVATE_VULNERABILITY_TITLE =
-      "Sign up for a Snyk account to learn aboutn the vulnerabilities found";
+      "Sign up for a Snyk account to learn about the vulnerabilities found";
   @Inject ObjectMapper mapper = ObjectMapperProducer.newInstance();
 
   public ProviderResponse responseToIssues(

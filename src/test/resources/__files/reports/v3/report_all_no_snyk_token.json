@@ -52,7 +52,7 @@
                         },
                         {
                             "id": "SNYK-PRIVATE-VULNERABILITY",
-                            "title": "Sign up for a Snyk account to learn aboutn the vulnerabilities found",
+                            "title": "Sign up for a Snyk account to learn about the vulnerabilities found",
                             "source": "snyk",
                             "cvssScore": 5.9,
                             "severity": "MEDIUM",
@@ -73,7 +73,6 @@
                                 "availabilityImpact": "High",
                                 "exploitCodeMaturity": "Proof of concept code",
                                 "cvss": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H/E:P"
-
                             },
                             "cvssScore": 5.9,
                             "severity": "MEDIUM",
