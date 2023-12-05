@@ -23,11 +23,13 @@ import java.util.List;
 import java.util.Objects;
 
 import org.apache.camel.Body;
+import org.apache.camel.Header;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.redhat.exhort.api.PackageRef;
 import com.redhat.exhort.config.ObjectMapperProducer;
+import com.redhat.exhort.integration.Constants;
 import com.redhat.exhort.model.DependencyTree;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
@@ -59,6 +61,12 @@ public class OssIndexRequestBuilder {
 
   public boolean isEmpty(@Body List<List<PackageRef>> body) {
     return body == null || body.isEmpty();
+  }
+
+  public boolean missingAuthHeaders(
+      @Header(Constants.OSS_INDEX_USER_HEADER) String user,
+      @Header(Constants.OSS_INDEX_TOKEN_HEADER) String token) {
+    return user == null || token == null;
   }
 
   public String buildRequest(List<PackageRef> packages) throws JsonProcessingException {

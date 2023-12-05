@@ -4,6 +4,7 @@ import { errorReport } from './reportWithError.mock';
 import { forbiddenReport } from './reportWithForbidden.mock';
 import { unauthorizedReport } from './reportWithUnauthorized.mock';
 import { reportMixed } from './reportMixed.mock';
+import { unauthenticatedReport } from './reportWithUnauthenticated.mock';
 
 export const MOCK_REPORT = {
   mixed: reportMixed,
@@ -11,5 +12,6 @@ export const MOCK_REPORT = {
   withoutToken: withoutTokenReport,
   error: errorReport,
   forbidden: forbiddenReport,
-  unauthorizedReport: unauthorizedReport
+  unauthorizedReport: unauthorizedReport,
+  unauthenticatedReport: unauthenticatedReport,
 };

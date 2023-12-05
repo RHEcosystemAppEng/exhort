@@ -22,7 +22,6 @@ import static io.restassured.RestAssured.given;
 import static org.apache.camel.Exchange.CONTENT_TYPE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.net.URI;
@@ -31,7 +30,6 @@ import java.net.http.HttpClient.Version;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -58,14 +56,14 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
   @ParameterizedTest
   @MethodSource("emptySbomArguments")
   public void testEmptySbom(
-      List<String> providers, Map<String, String> authHeaders, String pkgManager) {
+      Map<String, Integer> providers, Map<String, String> authHeaders, String pkgManager) {
     stubAllProviders();
 
     var report =
         given()
             .header(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
             .headers(authHeaders)
-            .queryParam(Constants.PROVIDERS_PARAM, providers)
+            .queryParam(Constants.PROVIDERS_PARAM, providers.keySet())
             .body(loadFileAsString(String.format("%s/empty-sbom.json", CYCLONEDX)))
             .when()
             .post("/api/v3/analysis")
@@ -76,34 +74,37 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
             .body()
             .as(AnalysisReport.class);
 
-    providers.forEach(
-        p -> {
-          var provider =
-              report.getSummary().getProviderStatuses().stream()
-                  .filter(s -> s.getProvider().equals(p))
-                  .findFirst();
-          assertEquals(Response.Status.OK.getStatusCode(), provider.get().getStatus());
-          assertTrue(provider.get().getOk());
-          assertEquals(Response.Status.OK.getReasonPhrase(), provider.get().getMessage());
-        });
+    providers
+        .entrySet()
+        .forEach(
+            p -> {
+              var provider =
+                  report.getSummary().getProviderStatuses().stream()
+                      .filter(s -> s.getProvider().equals(p.getKey()))
+                      .findFirst();
+              assertEquals(p.getValue(), provider.get().getStatus());
+              assertEquals(p.getValue().equals(200), provider.get().getOk());
+            });
 
-    verifyProviders(providers, authHeaders, true);
+    verifyProviders(providers.keySet(), authHeaders, true);
   }
 
   private static Stream<Arguments> emptySbomArguments() {
     return Stream.of(
         Arguments.of(
-            List.of(Constants.SNYK_PROVIDER), Collections.emptyMap(), Constants.MAVEN_PKG_MANAGER),
-        Arguments.of(
-            List.of(Constants.OSS_INDEX_PROVIDER),
+            Map.of(Constants.SNYK_PROVIDER, 200),
             Collections.emptyMap(),
             Constants.MAVEN_PKG_MANAGER),
         Arguments.of(
-            List.of(Constants.SNYK_PROVIDER, Constants.OSS_INDEX_PROVIDER),
+            Map.of(Constants.OSS_INDEX_PROVIDER, 401),
+            Collections.emptyMap(),
+            Constants.MAVEN_PKG_MANAGER),
+        Arguments.of(
+            Map.of(Constants.SNYK_PROVIDER, 200, Constants.OSS_INDEX_PROVIDER, 401),
             Map.of(Constants.SNYK_TOKEN_HEADER, OK_TOKEN),
             Constants.MAVEN_PKG_MANAGER),
         Arguments.of(
-            List.of(Constants.SNYK_PROVIDER, Constants.OSS_INDEX_PROVIDER),
+            Map.of(Constants.SNYK_PROVIDER, 200, Constants.OSS_INDEX_PROVIDER, 200),
             Map.of(
                 Constants.OSS_INDEX_USER_HEADER,
                 OK_USER,
@@ -111,7 +112,7 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
                 OK_TOKEN),
             Constants.MAVEN_PKG_MANAGER),
         Arguments.of(
-            List.of(Constants.SNYK_PROVIDER, Constants.OSS_INDEX_PROVIDER),
+            Map.of(Constants.SNYK_PROVIDER, 200, Constants.OSS_INDEX_PROVIDER, 200),
             Map.of(
                 Constants.SNYK_TOKEN_HEADER,
                 OK_TOKEN,
@@ -121,19 +122,19 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
                 OK_TOKEN),
             Constants.MAVEN_PKG_MANAGER),
         Arguments.of(
-            List.of(Constants.SNYK_PROVIDER, Constants.OSS_INDEX_PROVIDER),
+            Map.of(Constants.SNYK_PROVIDER, 200, Constants.OSS_INDEX_PROVIDER, 401),
             Collections.emptyMap(),
             Constants.MAVEN_PKG_MANAGER),
         Arguments.of(
-            List.of(Constants.SNYK_PROVIDER, Constants.OSS_INDEX_PROVIDER),
+            Map.of(Constants.SNYK_PROVIDER, 200, Constants.OSS_INDEX_PROVIDER, 401),
             Collections.emptyMap(),
             Constants.NPM_PKG_MANAGER),
         Arguments.of(
-            List.of(Constants.SNYK_PROVIDER, Constants.OSS_INDEX_PROVIDER),
+            Map.of(Constants.SNYK_PROVIDER, 200, Constants.OSS_INDEX_PROVIDER, 401),
             Collections.emptyMap(),
             Constants.GOLANG_PKG_MANAGER),
         Arguments.of(
-            List.of(Constants.SNYK_PROVIDER, Constants.OSS_INDEX_PROVIDER),
+            Map.of(Constants.SNYK_PROVIDER, 200, Constants.OSS_INDEX_PROVIDER, 401),
             Collections.emptyMap(),
             Constants.PYPI_PKG_MANAGER));
   }
@@ -209,10 +210,21 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
             .body()
             .as(AnalysisReport.class);
 
-    assertEquals(1, report.getSummary().getProviderStatuses().size());
-    var status = report.getSummary().getProviderStatuses().get(0);
+    assertEquals(2, report.getSummary().getProviderStatuses().size());
+    var status =
+        report.getSummary().getProviderStatuses().stream()
+            .filter(ps -> ps.getProvider().equals(Constants.SNYK_PROVIDER))
+            .findFirst()
+            .get();
     assertFalse(status.getOk());
-    assertEquals(Constants.SNYK_PROVIDER, status.getProvider());
+    assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), status.getStatus());
+
+    status =
+        report.getSummary().getProviderStatuses().stream()
+            .filter(ps -> ps.getProvider().equals(Constants.OSS_INDEX_PROVIDER))
+            .findFirst()
+            .get();
+    assertFalse(status.getOk());
     assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), status.getStatus());
 
     verifySnykRequest(INVALID_TOKEN);
@@ -238,12 +250,22 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
             .body()
             .as(AnalysisReport.class);
 
-    assertEquals(1, report.getSummary().getProviderStatuses().size());
-    var status = report.getSummary().getProviderStatuses().get(0);
+    assertEquals(2, report.getSummary().getProviderStatuses().size());
+    var status =
+        report.getSummary().getProviderStatuses().stream()
+            .filter(ps -> ps.getProvider().equals(Constants.SNYK_PROVIDER))
+            .findFirst()
+            .get();
     assertFalse(status.getOk());
-    assertEquals(Constants.SNYK_PROVIDER, status.getProvider());
     assertEquals(Response.Status.FORBIDDEN.getStatusCode(), status.getStatus());
 
+    status =
+        report.getSummary().getProviderStatuses().stream()
+            .filter(ps -> ps.getProvider().equals(Constants.OSS_INDEX_PROVIDER))
+            .findFirst()
+            .get();
+    assertFalse(status.getOk());
+    assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), status.getStatus());
     verifySnykRequest(UNAUTH_TOKEN);
   }
 

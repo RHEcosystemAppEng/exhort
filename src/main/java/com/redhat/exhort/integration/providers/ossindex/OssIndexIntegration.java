@@ -28,7 +28,7 @@ import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import com.redhat.exhort.integration.Constants;
-import com.redhat.exhort.integration.VulnerabilityProvider;
+import com.redhat.exhort.integration.providers.VulnerabilityProvider;
 import com.redhat.exhort.model.DependencyTree;
 import com.redhat.exhort.monitoring.MonitoringProcessor;
 
@@ -58,6 +58,8 @@ public class OssIndexIntegration extends EndpointRouteBuilder {
         .routeId("ossIndexScan")
         .transform(method(OssIndexRequestBuilder.class, "split"))
         .choice()
+          .when(method(OssIndexRequestBuilder.class, "missingAuthHeaders"))
+            .setBody(method(OssIndexResponseHandler.class, "unauthenticatedResponse"))
           .when(method(OssIndexRequestBuilder.class, "isEmpty"))
             .setBody(method(OssIndexResponseHandler.class, "emptyResponse"))
             .transform().method(OssIndexResponseHandler.class, "buildReport")

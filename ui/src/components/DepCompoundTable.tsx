@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import {
+  Button,
   Card,
   CardBody,
   Divider,
@@ -8,8 +9,6 @@ import {
   EmptyStateHeader,
   EmptyStateIcon,
   EmptyStateVariant,
-  Flex,
-  FlexItem,
   SearchInput,
   Toolbar,
   ToolbarContent,
@@ -28,10 +27,12 @@ import {TransitiveDependenciesTable} from './TransitiveDependenciesTable';
 import {VulnerabilitiesTable} from './VulnerabilitiesTable';
 import {VulnerabilitiesCountBySeverity} from './VulnerabilitiesCountBySeverity'
 import {extractDependencyVersion} from '../utils/utils';
-import SearchIcon from '@patternfly/react-icons/dist/esm/icons/search-icon';
+import CubesIcon from "@patternfly/react-icons/dist/esm/icons/cubes-icon";
+import SearchIcon from "@patternfly/react-icons/dist/esm/icons/search-icon";
 import {ConditionalTableBody} from './TableControls/ConditionalTableBody';
+import {RemediationsAvailability} from "./RemediationsAvailability";
 
-export const DepCompoundTable = ({ name, dependencies }: { name: string; dependencies: Dependency[] }) => {
+export const DepCompoundTable = ({name, dependencies}: { name: string; dependencies: Dependency[] }) => {
   // Filters
   const [filterText, setFilterText] = useState('');
 
@@ -43,7 +44,7 @@ export const DepCompoundTable = ({ name, dependencies }: { name: string; depende
     changeSortBy: onChangeSortBy,
   } = useTableControls();
 
-  const { pageItems, filteredItems } = useTable({
+  const {pageItems, filteredItems} = useTable({
     items: dependencies,
     currentPage: currentPage,
     currentSortBy: currentSortBy,
@@ -71,7 +72,7 @@ export const DepCompoundTable = ({ name, dependencies }: { name: string; depende
     version: 'Current Version',
     direct: 'Direct Vulnerabilities',
     transitive: 'Transitive Vulnerabilities',
-    rhRemediation: 'Red Hat Remediation available'
+    rhRemediation: 'Remediation available'
   };
   type ColumnKey = keyof typeof columnNames;
 
@@ -79,10 +80,10 @@ export const DepCompoundTable = ({ name, dependencies }: { name: string; depende
   // This is to prevent state from being based on row and column order index in case we later add sorting and rearranging columns.
   // Note that this behavior is very similar to selection state.
   const [expandedCells, setExpandedCells] = React.useState<Record<string, ColumnKey>>({
-      'siemur/test-space': 'name' // Default to the first cell of the first row being expanded
+    'siemur/test-space': 'name' // Default to the first cell of the first row being expanded
   });
   const setCellExpanded = (repo: Dependency, columnKey: ColumnKey, isExpanding = true) => {
-    const newExpandedCells = { ...expandedCells };
+    const newExpandedCells = {...expandedCells};
     if (isExpanding) {
       newExpandedCells[repo.ref] = columnKey;
     } else {
@@ -91,10 +92,10 @@ export const DepCompoundTable = ({ name, dependencies }: { name: string; depende
     setExpandedCells(newExpandedCells);
   };
   const compoundExpandParams = (
-      dependency: Dependency,
-      columnKey: ColumnKey,
-      rowIndex: number,
-      columnIndex: number
+    dependency: Dependency,
+    columnKey: ColumnKey,
+    rowIndex: number,
+    columnIndex: number
   ): TdProps['compoundExpand'] => ({
     isExpanded: expandedCells[dependency.ref] === columnKey,
     onToggle: () => setCellExpanded(dependency, columnKey, expandedCells[dependency.ref] !== columnKey),
@@ -111,159 +112,185 @@ export const DepCompoundTable = ({ name, dependencies }: { name: string; depende
             backgroundColor: 'var(--pf-v5-global--BackgroundColor--100)',
           }}
         >
-          <Toolbar>
-            <ToolbarContent>
-              <ToolbarToggleGroup toggleIcon={<FilterIcon />} breakpoint="xl">
-                <ToolbarItem variant="search-filter">
-                  <SearchInput
-                    style={{ width: '250px' }}
-                    placeholder="Filter by Dependency name"
-                    value={filterText}
-                    onChange={(_, value) => setFilterText(value)}
-                    onClear={() => setFilterText('')}
-                  />
-                </ToolbarItem>
-              </ToolbarToggleGroup>
-              <ToolbarItem
-                variant={ToolbarItemVariant.pagination}
-                align={{ default: 'alignRight' }}
-              >
-                <SimplePagination
-                    isTop={true}
-                    count={filteredItems.length}
-                    params={currentPage}
-                    onChange={onPageChange}
+          { name === 'oss-index' && dependencies === undefined ? (
+            <div>
+              <EmptyState variant={EmptyStateVariant.sm}>
+                <EmptyStateHeader
+                  icon={<EmptyStateIcon icon={CubesIcon}/>}
+                  titleText="Oss-Index Set up"
+                  headingLevel="h2"
                 />
-              </ToolbarItem>
-            </ToolbarContent>
-          </Toolbar>
-          <Table aria-label="Compound expandable table" variant={TableVariant.compact}>
-            <Thead>
-              <Tr>
-                <Th width={25}
-                    sort={{
-                      columnIndex: 1,
-                      sortBy: { ...currentSortBy },
-                      onSort: onChangeSortBy,
-                    }}
-                >{columnNames.name}</Th>
-                <Th>{columnNames.version}</Th>
-                <Th>{columnNames.direct}</Th>
-                <Th>{columnNames.transitive}</Th>
-                {/*<Th>{columnNames.rhRemediation}</Th>*/}
-              </Tr>
-            </Thead>
-            <ConditionalTableBody
-                isNoData={filteredItems.length === 0}
-                numRenderedColumns={8}
-                noDataEmptyState={
-                  <EmptyState variant={EmptyStateVariant.sm}>
-                    <EmptyStateHeader
-                        icon={<EmptyStateIcon icon={SearchIcon} />}
-                        titleText="No results found"
-                        headingLevel="h2"
+                <EmptyStateBody>
+                  You need to provide username and token to see Oss-Index data. You can use the button
+                  below to sing-up for Oss-Index. If you have already signed up, enter your username and token in your
+                  extension settings and then regenerate the Dependency Analytics report.
+                </EmptyStateBody>
+                <br/>
+                <br/>
+                <a href="https://ossindex.sonatype.org/user/register" target="_blank" rel="noopener noreferrer">
+                  <Button variant="primary" size="sm">
+                    Sign up for Oss-Index
+                  </Button>
+                </a>
+              </EmptyState>
+            </div>
+          ) : (
+            <>
+              <Toolbar>
+                <ToolbarContent>
+                  <ToolbarToggleGroup toggleIcon={<FilterIcon/>} breakpoint="xl">
+                    <ToolbarItem variant="search-filter">
+                      <SearchInput
+                        style={{width: '250px'}}
+                        placeholder="Filter by Dependency name"
+                        value={filterText}
+                        onChange={(_, value) => setFilterText(value)}
+                        onClear={() => setFilterText('')}
+                      />
+                    </ToolbarItem>
+                  </ToolbarToggleGroup>
+                  <ToolbarItem
+                    variant={ToolbarItemVariant.pagination}
+                    align={{default: 'alignRight'}}
+                  >
+                    <SimplePagination
+                      isTop={true}
+                      count={filteredItems.length}
+                      params={currentPage}
+                      onChange={onPageChange}
                     />
-                    <EmptyStateBody>Clear all filters and try again.</EmptyStateBody>
-                  </EmptyState>
-                }
-            >
-            {pageItems?.map((item, rowIndex) => {
-              const expandedCellKey = expandedCells[item.ref];
-              const isRowExpanded = !!expandedCellKey;
-              return (
-                  <Tbody key={item.ref} isExpanded={isRowExpanded}>
-                    <Tr>
-                      <Td width={30} dataLabel={columnNames.name} component="th">
-                        <DependencyLink name={item.ref} />
-                      </Td>
-                      <Td
+                  </ToolbarItem>
+                </ToolbarContent>
+              </Toolbar>
+              <Table aria-label="Compound expandable table" variant={TableVariant.compact}>
+                <Thead>
+                  <Tr>
+                    <Th width={25}
+                        sort={{
+                          columnIndex: 1,
+                          sortBy: {...currentSortBy},
+                          onSort: onChangeSortBy,
+                        }}
+                    >{columnNames.name}</Th>
+                    <Th>{columnNames.version}</Th>
+                    <Th>{columnNames.direct}</Th>
+                    <Th>{columnNames.transitive}</Th>
+                    <Th>{columnNames.rhRemediation}</Th>
+                  </Tr>
+                </Thead>
+                <ConditionalTableBody
+                    isNoData={filteredItems.length === 0}
+                    numRenderedColumns={8}
+                    noDataEmptyState={
+                      <EmptyState variant={EmptyStateVariant.sm}>
+                        <EmptyStateHeader
+                            icon={<EmptyStateIcon icon={SearchIcon} />}
+                            titleText="No results found"
+                            headingLevel="h2"
+                        />
+                        <EmptyStateBody>Clear all filters and try again.</EmptyStateBody>
+                      </EmptyState>
+                    }
+                >
+                {pageItems?.map((item, rowIndex) => {
+                  const expandedCellKey = expandedCells[item.ref];
+                  const isRowExpanded = !!expandedCellKey;
+                  return (
+                    <Tbody key={item.ref} isExpanded={isRowExpanded}>
+                      <Tr>
+                        <Td width={30} dataLabel={columnNames.name} component="th">
+                          <DependencyLink name={item.ref}/>
+                        </Td>
+                        <Td
                           width={15}
                           dataLabel={columnNames.version}
-                      >
-                        {extractDependencyVersion(item.ref)}
-                      </Td>
-                      <Td
+                        >
+                          {extractDependencyVersion(item.ref)}
+                        </Td>
+                        <Td
                           width={15}
                           dataLabel={columnNames.direct}
                           compoundExpand={compoundExpandParams(item, 'direct', rowIndex, 2)}
-                      >
-                        {(item.issues?.length )? (
-                            <Flex>
-                            <FlexItem>{item.issues?.length}</FlexItem>
-                            <Divider
+                        >
+                          {(item.issues?.length) ? (
+                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                              <div style={{ width: '25px' }}>{item.issues?.length}</div>
+                              <Divider
                                 orientation={{
                                   default: 'vertical'
                                 }}
-                            />
-                              <VulnerabilitiesCountBySeverity vulnerabilities = {item.issues} />
-                          </Flex>
-                        ) : 0}
-                        {/*{item.issues?.length || 0}*/}
-                      </Td>
-                      <Td
+                              />
+                              <VulnerabilitiesCountBySeverity vulnerabilities={item.issues}/>
+                            </div>
+                          ) : 0}
+                        </Td>
+                        <Td
                           width={15}
                           dataLabel={columnNames.transitive}
                           compoundExpand={compoundExpandParams(item, 'transitive', rowIndex, 3)}
-                      >
-                        {(item.transitive.length)? (
-                            <Flex>
-                              <FlexItem>{item.transitive
+                        >
+                          {(item.transitive?.length) ? (
+                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                              <div style={{ width: '25px' }}>
+                                {item.transitive
                                   .map(e => e.issues?.length)
-                                  .reduce((prev = 0, current = 0) =>
-                                      prev + current)}</FlexItem>
+                                  .reduce((prev = 0, current = 0) => prev + current)}
+                              </div>
                               <Divider
-                                  orientation={{
-                                    default: 'vertical'
-                                  }}
+                                orientation={{
+                                  default: 'vertical',
+                                }} style={{paddingRight: '10px'}}
                               />
                               <VulnerabilitiesCountBySeverity transitiveDependencies={item.transitive} />
-                            </Flex>
-                        ) : 0}
-                      </Td>
-                      {/*<Td width={15}*/}
-                      {/*    dataLabel={columnNames.rhRemediation}*/}
-                      {/*>*/}
-                      {/*  <RemediationsCount dependency={item} />*/}
-                      {/*</Td>*/}
-                    </Tr>
-                    {isRowExpanded ? (
+                            </div>
+                          ) : 0}
+                        </Td>
+                        <Td width={15}
+                            dataLabel={columnNames.rhRemediation}
+                        >
+                          <RemediationsAvailability dependency={item} />
+                        </Td>
+                      </Tr>
+                      {isRowExpanded ? (
                         <Tr isExpanded={isRowExpanded}>
                           <Td dataLabel={columnNames[expandedCellKey]} noPadding colSpan={6}>
                             <ExpandableRowContent>
                               <div className="pf-v5-u-m-md">
-                                {(expandedCellKey === 'direct' && item.issues && item.issues.length > 0 )? (
-                                    // Content for direct column
-                                    <VulnerabilitiesTable
-                                        providerName={name}
-                                        dependency={item}
-                                        vulnerabilities={item.issues}
-                                    />
-                                ) : (expandedCellKey === 'transitive' && item.transitive && item.transitive.length > 0 )? (
-                                    // Content for transitive column
-                                    <TransitiveDependenciesTable
-                                        providerName={name}
-                                        transitiveDependencies={item.transitive}
-                                    />
+                                {(expandedCellKey === 'direct' && item.issues && item.issues.length > 0) ? (
+                                  // Content for direct column
+                                  <VulnerabilitiesTable
+                                    providerName={name}
+                                    dependency={item}
+                                    vulnerabilities={item.issues}
+                                  />
+                                ) : (expandedCellKey === 'transitive' && item.transitive && item.transitive.length > 0) ? (
+                                  // Content for transitive column
+                                  <TransitiveDependenciesTable
+                                    providerName={name}
+                                    transitiveDependencies={item.transitive}
+                                  />
                                 ) : null}
                               </div>
                             </ExpandableRowContent>
                           </Td>
                         </Tr>
-                    ) : (null)
-                    }
-                  </Tbody>
-              );
-            })}
-            </ConditionalTableBody>
+                      ) : (null)
+                      }
+                    </Tbody>
+                  );
+                })}
+                </ConditionalTableBody>
 
-          </Table>
+              </Table>
 
-          <SimplePagination
-            isTop={false}
-            count={filteredItems.length}
-            params={currentPage}
-            onChange={onPageChange}
-          />
+              <SimplePagination
+                isTop={false}
+                count={filteredItems.length}
+                params={currentPage}
+                onChange={onPageChange}
+              />
+            </>
+          )}
         </div>
       </CardBody>
     </Card>

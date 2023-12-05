@@ -87,6 +87,16 @@ public abstract class ProviderResponseHandler {
                 .collect(Collectors.toList()));
   }
 
+  public ProviderReport unauthenticatedResponse(Exchange exchange) {
+    return new ProviderReport()
+        .status(
+            new ProviderStatus()
+                .name(getProviderName())
+                .ok(Boolean.FALSE)
+                .message("Missing mandatory credentials")
+                .code(Response.Status.UNAUTHORIZED.getStatusCode()));
+  }
+
   public void processResponseError(Exchange exchange) {
     ProviderStatus status = new ProviderStatus().ok(false).name(getProviderName());
     Exception exception = (Exception) exchange.getProperty(Exchange.EXCEPTION_CAUGHT);
