@@ -1,6 +1,6 @@
 import React from 'react';
 import { Alert, AlertVariant } from '@patternfly/react-core';
-import { uppercaseFirstLetter } from '../utils/utils';
+import { uppercaseFirstLetter, hasSignUpTab } from '../utils/utils';
 import { useAppContext } from '../App';
 
 export const ReportErrorAlert: React.FC = () => {
@@ -9,7 +9,7 @@ export const ReportErrorAlert: React.FC = () => {
     .map(name => {
       return appContext.report.providers[name].status;
     })
-    .filter(e => !e.ok);
+    .filter(e => !e.ok && !hasSignUpTab(e));
 
   return (
     <>

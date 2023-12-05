@@ -31,6 +31,7 @@ import CubesIcon from "@patternfly/react-icons/dist/esm/icons/cubes-icon";
 import SearchIcon from "@patternfly/react-icons/dist/esm/icons/search-icon";
 import {ConditionalTableBody} from './TableControls/ConditionalTableBody';
 import {RemediationsAvailability} from "./RemediationsAvailability";
+import {getSignUpLink} from '../utils/utils';
 
 export const DepCompoundTable = ({name, dependencies}: { name: string; dependencies: Dependency[] }) => {
   // Filters
@@ -112,24 +113,24 @@ export const DepCompoundTable = ({name, dependencies}: { name: string; dependenc
             backgroundColor: 'var(--pf-v5-global--BackgroundColor--100)',
           }}
         >
-          { name === 'oss-index' && dependencies === undefined ? (
+          { getSignUpLink(name) !== '' && dependencies === undefined ? (
             <div>
               <EmptyState variant={EmptyStateVariant.sm}>
                 <EmptyStateHeader
                   icon={<EmptyStateIcon icon={CubesIcon}/>}
-                  titleText="Oss-Index Set up"
+                  titleText={"Set up " + name}
                   headingLevel="h2"
                 />
                 <EmptyStateBody>
-                  You need to provide username and token to see Oss-Index data. You can use the button
-                  below to sing-up for Oss-Index. If you have already signed up, enter your username and token in your
+                  You need to provide a valid credentials to see {name} data. You can use the button
+                  below to sing-up for {name}. If you have already signed up, enter your credentials in your
                   extension settings and then regenerate the Dependency Analytics report.
                 </EmptyStateBody>
                 <br/>
                 <br/>
-                <a href="https://ossindex.sonatype.org/user/register" target="_blank" rel="noopener noreferrer">
+                <a href={getSignUpLink(name)} target="_blank" rel="noopener noreferrer">
                   <Button variant="primary" size="sm">
-                    Sign up for Oss-Index
+                    Sign up for {name}
                   </Button>
                 </a>
               </EmptyState>
@@ -218,7 +219,7 @@ export const DepCompoundTable = ({name, dependencies}: { name: string; dependenc
                               <Divider
                                 orientation={{
                                   default: 'vertical'
-                                }}
+                                }} style={{paddingRight: '10px'}}
                               />
                               <VulnerabilitiesCountBySeverity vulnerabilities={item.issues}/>
                             </div>
