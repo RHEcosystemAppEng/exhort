@@ -43,16 +43,14 @@ class TcResponseHandlerTest {
                 Map.of(
                     "pkg:mgr/io.group/packagename@1.0.0",
                     List.of(
-                        "pkg:mgr/io.group/packagename@1.0.0-redhat-00001"
-                            + REDHAT_REPOSITORY_SUFFIX),
+                        Map.of("package","pkg:mgr/io.group/packagename@1.0.0-redhat-00001"  + REDHAT_REPOSITORY_SUFFIX)),
                     "pkg:mgr/io.group/packagename2@1.0.0",
                     List.of(
-                        "pkg:mgr/io.group/packagename2@1.0.0-redhat-00001"
-                            + REDHAT_REPOSITORY_SUFFIX),
+                        Map.of("package","pkg:mgr/io.group/packagename2@1.0.0-redhat-00001" + REDHAT_REPOSITORY_SUFFIX)),
                     "pkg:mgr/io.group/packagename3@1.0.0",
                     List.of(
-                        "pkg:mgr/io.group/packagename3@1.0.0-redhat-00004"
-                            + REDHAT_REPOSITORY_SUFFIX))),
+                        Map.of("package","pkg:mgr/io.group/packagename3@1.0.0-redhat-00004" + REDHAT_REPOSITORY_SUFFIX)))
+            ),
             Map.of(
                 "pkg:mgr/io.group/packagename@1.0.0",
                 "pkg:mgr/io.group/packagename@1.0.0-redhat-00001" + REDHAT_REPOSITORY_SUFFIX,
@@ -66,7 +64,7 @@ class TcResponseHandlerTest {
 
   @ParameterizedTest
   @MethodSource("getPayload")
-  void test_Payload_With_Purls(Map<String, Map> input, Map<String, String> expectedOutput) {
+  void test_Payload_With_Purls(Map<String, Map<String,List>> input, Map<String, String> expectedOutput) {
     TcResponseHandler tcResponseHandler = new TcResponseHandler();
     try {
       Map<String, String> actualOutput = tcResponseHandler.responseToMap(input);

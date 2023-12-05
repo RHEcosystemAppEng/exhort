@@ -118,6 +118,27 @@ class TcResponseAggregationTest {
 
     Exchange newMessageWithRecommendations = new DefaultExchange(getDummyCamelContext());
     newMessageWithRecommendations.setMessage(new DefaultMessage(newMessageWithRecommendations));
+    newMessageWithRecommendations.getMessage().setBody(Map.of());
+    int hashCodeBefore = analysisReport.hashCode();
+    Exchange aggregate =
+            tcResponseAggregation.aggregate(originalMessage, newMessageWithRecommendations);
+
+    int hashCodeAfter = aggregate.getMessage().getBody().hashCode();
+    //Empty recommendations list must not touch AnalysisReport instance and let it remain the same.
+    assertEquals(hashCodeBefore,hashCodeAfter);
+
+  }
+
+
+  @Test
+  void Check_Integration_With_Map_Of_Recommendations() {
+    TcResponseAggregation tcResponseAggregation = new TcResponseAggregation();
+    Exchange originalMessage = new DefaultExchange(getDummyCamelContext());
+    originalMessage.setMessage(new DefaultMessage(originalMessage));
+    originalMessage.getMessage().setBody(this.analysisReport);
+
+    Exchange newMessageWithRecommendations = new DefaultExchange(getDummyCamelContext());
+    newMessageWithRecommendations.setMessage(new DefaultMessage(newMessageWithRecommendations));
     newMessageWithRecommendations.getMessage().setBody(this.recommendations);
     Exchange aggregate =
         tcResponseAggregation.aggregate(originalMessage, newMessageWithRecommendations);
@@ -1020,8 +1041,6 @@ class TcResponseAggregationTest {
     };
   }
 
-  @Test
-  void Check_Integration_With_Map_Of_Recommendations() {}
 
   private static Issue buildIssue(String id, Float score) {
     return new Issue()

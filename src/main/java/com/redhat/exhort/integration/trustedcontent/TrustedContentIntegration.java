@@ -29,6 +29,7 @@ import com.redhat.exhort.model.DependencyTree;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.core.MediaType;
+import org.apache.camel.model.dataformat.JsonLibrary;
 
 @ApplicationScoped
 public class TrustedContentIntegration extends EndpointRouteBuilder {
@@ -52,14 +53,12 @@ public class TrustedContentIntegration extends EndpointRouteBuilder {
         .setHeader(Exchange.HTTP_METHOD, constant("POST"))
         .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.APPLICATION_JSON))
         .circuitBreaker()
-        .faultToleranceConfiguration()
-        .timeoutEnabled(true)
-        .timeoutDuration(10)
-        .end()
         .to(vertxHttp("{{api.trustedcontent.host}}"))
+        .unmarshal()
+        .json(JsonLibrary.Jackson, Map.class)
+        .endCircuitBreaker()
         .onFallback()
-        .transform()
-        .constant(Map.of("recommendations", Map.of()))
+        .setBody(constant(Map.of("recommendations", Map.of())))
         .end();
   }
 
