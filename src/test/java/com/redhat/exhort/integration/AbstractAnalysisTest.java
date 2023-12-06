@@ -195,6 +195,7 @@ public abstract class AbstractAnalysisTest {
   protected void stubAllProviders() {
     stubSnykRequests();
     stubOssToken();
+    stubTrustedContentRequests();
   }
 
   protected void verifyProviders(
@@ -259,6 +260,12 @@ public abstract class AbstractAnalysisTest {
                         "{\"message\": \"The org acme (82be6926-dff6-4c22-a54a-8fb25ed4ee43)"
                             + " has exceeded the rate limit.\""
                             + ", \"error\": \"true\"}")));
+  }
+
+  protected void stubTrustedContentRequests() {
+    server.stubFor(
+        get(Constants.TRUSTED_CONTENT_PATH)
+            .willReturn(aResponse().withStatus(200).withBody("{ \"recommendations\": {}\n" + "}")));
   }
 
   protected void stubSnykRequests() {
