@@ -11,6 +11,8 @@ metadata:
     rhda/manifest-file-path: pom.xml
     backstage.io/techdocs-ref: url:https://github.com/RHEcosystemAppEng/exhort
   name: exhort
+  tags:
+    - rhda
 spec:
   lifecycle: production
   owner: ecosystem-appeng
