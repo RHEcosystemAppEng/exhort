@@ -54,7 +54,7 @@ objects:
           - metrics.k8s.io
         resources:
           - pods
-  - kind: ClusterRoleBinding
+  - kind: RoleBinding
     apiVersion: rbac.authorization.k8s.io/v1
     metadata:
       name: '${BACKSTAGE_PLUGIN_SA_ROLE_BINDING}'
@@ -63,7 +63,7 @@ objects:
         name: '${BACKSTAGE_PLUGIN_SA}'
     roleRef:
       apiGroup: rbac.authorization.k8s.io
-      kind: ClusterRole
+      kind: Role
       name: '${BACKSTAGE_PLUGIN_READ_ONLY_ROLE}'
   - kind: Service
     apiVersion: v1
