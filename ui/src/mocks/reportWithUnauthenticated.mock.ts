@@ -14,7 +14,7 @@ export const unauthenticatedReport: AppData = {
           "ok": false,
           "name": "oss-index",
           "code": 401,
-          "message": "Missing mandatory credentials"
+          "message": "Unauthenticated"
         }
       },
       "snyk": {

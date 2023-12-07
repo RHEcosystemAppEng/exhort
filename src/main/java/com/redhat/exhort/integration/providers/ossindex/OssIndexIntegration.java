@@ -20,7 +20,6 @@ package com.redhat.exhort.integration.providers.ossindex;
 
 import java.util.Base64;
 import java.util.List;
-import java.util.Objects;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.AggregationStrategies;
@@ -34,7 +33,6 @@ import com.redhat.exhort.monitoring.MonitoringProcessor;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.ClientErrorException;
 import jakarta.ws.rs.HttpMethod;
 import jakarta.ws.rs.core.MediaType;
 
@@ -58,45 +56,45 @@ public class OssIndexIntegration extends EndpointRouteBuilder {
         .routeId("ossIndexScan")
         .transform(method(OssIndexRequestBuilder.class, "split"))
         .choice()
-          .when(method(OssIndexRequestBuilder.class, "missingAuthHeaders"))
-            .setBody(method(OssIndexResponseHandler.class, "unauthenticatedResponse"))
-          .when(method(OssIndexRequestBuilder.class, "isEmpty"))
-            .setBody(method(OssIndexResponseHandler.class, "emptyResponse"))
-            .transform().method(OssIndexResponseHandler.class, "buildReport")
+        .when(method(OssIndexRequestBuilder.class, "missingAuthHeaders"))
+        .setBody(method(OssIndexResponseHandler.class, "unauthenticatedResponse"))
+        .when(method(OssIndexRequestBuilder.class, "isEmpty"))
+        .setBody(method(OssIndexResponseHandler.class, "emptyResponse"))
+        .transform().method(OssIndexResponseHandler.class, "buildReport")
         .endChoice()
         .otherwise()
-          .to(direct("ossSplitReq"))
-          .transform().method(OssIndexResponseHandler.class, "buildReport");
+        .to(direct("ossSplitReq"))
+        .transform().method(OssIndexResponseHandler.class, "buildReport");
 
     from(direct("ossSplitReq"))
         .routeId("ossSplitReq")
-          .split(body(), AggregationStrategies.beanAllowNull(OssIndexResponseHandler.class, "aggregateSplit"))
-            .parallelProcessing()
-              .transform().method(OssIndexRequestBuilder.class, "buildRequest")
-              .process(this::processComponentRequest)
-              .circuitBreaker()
-                .faultToleranceConfiguration()
-                  .timeoutEnabled(true)
-                  .timeoutDuration(timeout)
-                .end()
-                  .to(vertxHttp("{{api.ossindex.host}}"))
-                  .transform(method(OssIndexResponseHandler.class, "responseToIssues"))
-                .onFallback()
-                  .process(responseHandler::processResponseError);
-    
-    from(direct("ossValidateCredentials"))
-      .routeId("ossValidateCredentials")
-      .circuitBreaker()
+        .split(body(), AggregationStrategies.beanAllowNull(OssIndexResponseHandler.class, "aggregateSplit"))
+        .parallelProcessing()
+        .transform().method(OssIndexRequestBuilder.class, "buildRequest")
+        .process(this::processComponentRequest)
+        .circuitBreaker()
         .faultToleranceConfiguration()
-            .timeoutEnabled(true)
-            .timeoutDuration(timeout)
-          .end()
+        .timeoutEnabled(true)
+        .timeoutDuration(timeout)
+        .end()
+        .to(vertxHttp("{{api.ossindex.host}}"))
+        .transform(method(OssIndexResponseHandler.class, "responseToIssues"))
+        .onFallback()
+        .process(responseHandler::processResponseError);
+
+    from(direct("ossValidateCredentials"))
+        .routeId("ossValidateCredentials")
+        .circuitBreaker()
+        .faultToleranceConfiguration()
+        .timeoutEnabled(true)
+        .timeoutDuration(timeout)
+        .end()
         .setBody(constant(List.of(DependencyTree.getDefaultRoot(Constants.MAVEN_PKG_MANAGER))))
         .transform().method(OssIndexRequestBuilder.class, "buildRequest")
-        .process(this::processComponentRequest)  
+        .process(this::processComponentRequest)
         .to(vertxHttp("{{api.ossindex.host}}"))
         .setBody(constant("Token validated successfully"))
-      .onFallback()
+        .onFallback()
         .process(responseHandler::processTokenFallBack);
     // fmt:on
   }
@@ -112,15 +110,10 @@ public class OssIndexIntegration extends EndpointRouteBuilder {
 
     var username = message.getHeader(Constants.OSS_INDEX_USER_HEADER, String.class);
     var token = message.getHeader(Constants.OSS_INDEX_TOKEN_HEADER, String.class);
-    if (Objects.nonNull(username) && Objects.nonNull(token)) {
-      message.setHeader(Exchange.HTTP_PATH, Constants.OSS_INDEX_AUTH_COMPONENT_API_PATH);
-      var auth = new StringBuilder().append(username).append(":").append(token);
-      message.setHeader(
-          "Authorization",
-          "Basic " + Base64.getEncoder().encodeToString(auth.toString().getBytes()));
-    } else {
-      throw new ClientErrorException(401);
-    }
+    message.setHeader(Exchange.HTTP_PATH, Constants.OSS_INDEX_AUTH_COMPONENT_API_PATH);
+    var auth = new StringBuilder().append(username).append(":").append(token);
+    message.setHeader(
+        "Authorization", "Basic " + Base64.getEncoder().encodeToString(auth.toString().getBytes()));
     message.removeHeader(Constants.OSS_INDEX_USER_HEADER);
     message.removeHeader(Constants.OSS_INDEX_TOKEN_HEADER);
   }
