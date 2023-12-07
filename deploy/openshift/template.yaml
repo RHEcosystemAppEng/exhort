@@ -105,19 +105,19 @@ objects:
                 - podAffinityTerm:
                     labelSelector:
                       matchExpressions:
-                        - key: app
-                          operator: In
-                          values:
-                            - '${APP_NAME}'
+                      - key: app
+                        operator: In
+                        values:
+                        - '${APP_NAME}'
                     topologyKey: kubernetes.io/hostname
                   weight: 90
                 - podAffinityTerm:
                     labelSelector:
                       matchExpressions:
-                        - key: app
-                          operator: In
-                          values:
-                            - '${APP_NAME}'
+                      - key: app
+                        operator: In
+                        values:
+                        - '${APP_NAME}'
                     topologyKey: topology.kubernetes.io/zone
                   weight: 100
           containers:
