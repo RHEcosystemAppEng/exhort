@@ -93,7 +93,7 @@ public abstract class ProviderResponseHandler {
             new ProviderStatus()
                 .name(getProviderName())
                 .ok(Boolean.FALSE)
-                .message("Missing mandatory credentials")
+                .message(Constants.HTTP_UNAUTHENTICATED)
                 .code(Response.Status.UNAUTHORIZED.getStatusCode()));
   }
 

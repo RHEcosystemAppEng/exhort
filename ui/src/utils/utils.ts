@@ -28,7 +28,7 @@ export const getSignUpLink = (provider: string): string => {
 }
 
 export const hasSignUpTab = (provider: ProviderStatus): boolean => {
-  if(!provider.ok && provider.code === 401) {
+  if(!provider.ok && provider.code === 401 && provider.message === 'Unauthenticated') {
     return SIGN_UP_TAB_PROVIDERS.includes(provider.name);
   }
   return false;
