@@ -13,7 +13,7 @@ objects:
     apiVersion: v1
     metadata:
       name: '${BACKSTAGE_PLUGIN_SA}'
-  - kind: ClusterRole
+  - kind: Role
     apiVersion: rbac.authorization.k8s.io/v1
     metadata:
       name: '${BACKSTAGE_PLUGIN_READ_ONLY_ROLE}'
@@ -26,16 +26,10 @@ objects:
           - '*'
         resources:
           - pods
-          - configmaps
           - services
           - deployments
           - replicasets
           - horizontalpodautoscalers
-          - ingresses
-          - statefulsets
-          - limitranges
-          - resourcequotas
-          - daemonsets
           - pods/log
       - verbs:
           - get
@@ -46,15 +40,6 @@ objects:
         resources:
           - jobs
           - cronjobs
-      - verbs:
-          - get
-          - list
-        apiGroups:
-          - tekton.dev
-        resources:
-          - pipelineruns
-          - taskruns
-          - pipelines
       - verbs:
           - get
           - list
