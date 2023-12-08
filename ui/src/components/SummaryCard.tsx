@@ -101,7 +101,7 @@ export const SummaryCard = () => {
           <DescriptionListGroup>
             <CardTitle component="h4">
               <DescriptionListTerm style={{fontSize: "large"}}>
-                Subscribe to stay updated
+                Join to explore Red Hat TPA
               </DescriptionListTerm>
             </CardTitle>
             <CardBody>
@@ -113,7 +113,7 @@ export const SummaryCard = () => {
                   <ListItem>
                     <a href="https://console.redhat.com/application-services/trusted-content" target="_blank" rel="noopener noreferrer">
                       <Button variant="primary" size="sm">
-                        Sign up
+                        Take me there
                       </Button>
                     </a>
                   </ListItem>
