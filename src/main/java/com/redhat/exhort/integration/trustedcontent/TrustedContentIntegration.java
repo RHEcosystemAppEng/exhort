@@ -24,10 +24,9 @@ import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
 import org.apache.camel.model.dataformat.JsonLibrary;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
-import com.redhat.exhort.api.PackageRef;
 import com.redhat.exhort.integration.Constants;
-import com.redhat.exhort.model.DependencyTree;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -38,17 +37,19 @@ import jakarta.ws.rs.core.MediaType;
 @RegisterForReflection
 public class TrustedContentIntegration extends EndpointRouteBuilder {
 
+  @ConfigProperty(name = "api.trustedcontent.timeout", defaultValue = "5s")
+  String timeout;
+
   @Override
   public void configure() {
 
     from(direct("recommendationsTrustedContent"))
-        .to(direct("extractPurls"))
+        .transform()
+        .method(TrustedContentRequestBuilder.class, "extractPurlsFromDependencyTree")
         .process(this::handleHeaders)
         .to(direct("tcRequest"))
         .transform()
         .method(TcResponseHandler.class, "responseToMap");
-
-    from(direct("extractPurls")).process(this::extractPurlsFromDependencyTree);
 
     from(direct("tcRequest"))
         .marshal()
@@ -57,6 +58,10 @@ public class TrustedContentIntegration extends EndpointRouteBuilder {
         .setHeader(Exchange.HTTP_METHOD, constant("POST"))
         .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.APPLICATION_JSON))
         .circuitBreaker()
+        .faultToleranceConfiguration()
+        .timeoutEnabled(true)
+        .timeoutDuration(timeout)
+        .end()
         .to(vertxHttp("{{api.trustedcontent.host}}"))
         .unmarshal()
         .json(JsonLibrary.Jackson, Map.class)
@@ -77,24 +82,5 @@ public class TrustedContentIntegration extends EndpointRouteBuilder {
     message.removeHeader(Exchange.HTTP_URI);
     message.removeHeaders("*-token");
     message.removeHeader("Accept-Encoding");
-  }
-
-  private void extractPurlsFromDependencyTree(Exchange exchange) {
-    Map<String, List<String>> purlsMap = new HashMap<>();
-    Set<String> purls = new HashSet<>();
-    //    AnalysisReport report = (AnalysisReport) exchange.getMessage().getBody();
-    //    report.getProviders().values().stream()
-    //        .forEach(
-    //            providerReport ->
-    //                Objects.requireNonNull(providerReport.getSources())
-    //                    .forEach(
-    //                        (k, v) ->
-    //                            v.getDependencies()
-    //                                .forEach(dep -> purls.add(dep.getRef().toString()))));
-    List<String> allPurls =
-        ((DependencyTree) exchange.getProperty(Constants.DEPENDENCY_TREE_PROPERTY))
-            .getAll().stream().map(PackageRef::toString).toList();
-    purlsMap.put("purls", allPurls);
-    exchange.getMessage().setBody(purlsMap);
   }
 }

@@ -60,8 +60,6 @@ public class ExhortIntegration extends EndpointRouteBuilder {
 
   @Inject AnalyticsService analytics;
 
-  //  @Inject ObjectMapper mapper;
-
   @Inject MonitoringProcessor monitoringProcessor;
 
   @Inject TcResponseAggregation tcResponseAggregation;

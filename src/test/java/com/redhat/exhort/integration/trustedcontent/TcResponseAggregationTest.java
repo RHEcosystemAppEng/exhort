@@ -32,8 +32,6 @@ import org.apache.camel.vault.VaultConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.redhat.exhort.api.PackageRef;
 import com.redhat.exhort.api.v4.*;
 
@@ -79,19 +77,19 @@ class TcResponseAggregationTest {
     this.recommendations = new HashMap<>();
     this.recommendations.put(
         "pkg:mgr/io.group/packagename@1.0.0",
-        "pkg:mgr/io.group/packagename@1.0.0-redhat-00001" + REDHAT_REPOSITORY_SUFFIX);
+        "pkg:mgr/io.group/packagename@1.0.0-redhat-00001?" + REDHAT_REPOSITORY_SUFFIX);
     this.recommendations.put(
         "pkg:mgr/io.group/packagename2@1.1.1",
-        "pkg:mgr/io.group/packagename2@1.1.1-redhat-00003" + REDHAT_REPOSITORY_SUFFIX);
+        "pkg:mgr/io.group/packagename2@1.1.1-redhat-00003?" + REDHAT_REPOSITORY_SUFFIX);
     this.recommendations.put(
         "pkg:mgr/io.group/packagename3@1.1.2",
-        "pkg:mgr/io.group/packagename3@1.1.2-redhat-00004" + REDHAT_REPOSITORY_SUFFIX);
+        "pkg:mgr/io.group/packagename3@1.1.2-redhat-00004?" + REDHAT_REPOSITORY_SUFFIX);
     this.recommendations.put(
         "pkg:mgr/io.group/packagename4@2.0.5",
-        "pkg:mgr/io.group/packagename4@2.0.5-redhat-00002" + REDHAT_REPOSITORY_SUFFIX);
+        "pkg:mgr/io.group/packagename4@2.0.5-redhat-00002?" + REDHAT_REPOSITORY_SUFFIX);
     this.recommendations.put(
         "pkg:mgr/io.group/nonvulnerablePackage@0.5.0",
-        "pkg:mgr/io.group/nonvulnerablePackage@0.5.0-redhat-00001" + REDHAT_REPOSITORY_SUFFIX);
+        "pkg:mgr/io.group/nonvulnerablePackage@0.5.0-redhat-00001?" + REDHAT_REPOSITORY_SUFFIX);
   }
 
   private static DependencyReport buildDependency(String purlName, int numOfIssues) {
@@ -155,15 +153,16 @@ class TcResponseAggregationTest {
             .filter(dep -> dep.getIssues() == null)
             .count());
 
-    try {
-      String s = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(result);
-      System.out.println(s);
+    //    assertEquals();
 
-    } catch (JsonProcessingException e) {
-      throw new RuntimeException(e);
-    }
-
-    //            tcResponseAggregation.;
+    //    try {
+    //      String s = new
+    // ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(result);
+    //      System.out.println(s);
+    //
+    //    } catch (JsonProcessingException e) {
+    //      throw new RuntimeException(e);
+    //    }
 
   }
 
