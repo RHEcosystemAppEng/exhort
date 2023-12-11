@@ -9,6 +9,62 @@ objects:
     apiVersion: v1
     metadata:
       name: '${SERVICE_ACCOUNT_NAME}'
+  - kind: ServiceAccount
+    apiVersion: v1
+    metadata:
+      name: '${BACKSTAGE_PLUGIN_SA}'
+  - kind: Role
+    apiVersion: rbac.authorization.k8s.io/v1
+    metadata:
+      name: '${BACKSTAGE_PLUGIN_READ_ONLY_ROLE}'
+    rules:
+      - verbs:
+          - get
+          - list
+          - watch
+        apiGroups:
+          - '*'
+        resources:
+          - pods
+          - services
+          - deployments
+          - replicasets
+          - horizontalpodautoscalers
+          - pods/log
+      - verbs:
+          - get
+          - list
+          - watch
+        apiGroups:
+          - batch
+        resources:
+          - jobs
+          - cronjobs
+      - verbs:
+          - get
+          - list
+        apiGroups:
+          - route.openshift.io
+        resources:
+          - routes
+      - verbs:
+          - get
+          - list
+        apiGroups:
+          - metrics.k8s.io
+        resources:
+          - pods
+  - kind: RoleBinding
+    apiVersion: rbac.authorization.k8s.io/v1
+    metadata:
+      name: '${BACKSTAGE_PLUGIN_SA_ROLE_BINDING}'
+    subjects:
+      - kind: ServiceAccount
+        name: '${BACKSTAGE_PLUGIN_SA}'
+    roleRef:
+      apiGroup: rbac.authorization.k8s.io
+      kind: Role
+      name: '${BACKSTAGE_PLUGIN_READ_ONLY_ROLE}'
   - kind: Service
     apiVersion: v1
     metadata:
@@ -196,3 +252,18 @@ parameters:
     value: trusted-content-exhort-stage
     displayName: Project name (default -- trusted-content-exhort-stage)
     description: 'Project name'
+  - name: BACKSTAGE_PLUGIN_SA
+    displayName: Backstage ServiceAccount name
+    description: The name of the ServiceAccount to use by the backstage plugin.
+    value: backstage-k8-plugin-sa
+    required: true
+  - name: BACKSTAGE_PLUGIN_READ_ONLY_ROLE
+    displayName: Backstage plugin role
+    description: The name of the role used by backstage plugin service account.
+    value: backstage-k8-plugin-read-only
+    required: true
+  - name: BACKSTAGE_PLUGIN_SA_ROLE_BINDING
+    displayName: backstage plugin role binding name
+    description: The name of the role binding used by the ServiceAccount to used by the backstage plugin.
+    value: backstage-k8-plugin-sa-role-binding
+    required: true
