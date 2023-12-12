@@ -21,7 +21,6 @@ package com.redhat.exhort.integration.trustedcontent;
 import java.util.*;
 
 import org.apache.camel.Exchange;
-import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
 import org.apache.camel.model.dataformat.JsonLibrary;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -31,6 +30,7 @@ import com.redhat.exhort.integration.Constants;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.core.MediaType;
 
 @ApplicationScoped
@@ -39,6 +39,8 @@ public class TrustedContentIntegration extends EndpointRouteBuilder {
 
   @ConfigProperty(name = "api.trustedcontent.timeout", defaultValue = "5s")
   String timeout;
+
+  @Inject TcResponseHandler responseHandler;
 
   @Override
   public void configure() {
@@ -68,10 +70,7 @@ public class TrustedContentIntegration extends EndpointRouteBuilder {
         .endCircuitBreaker()
         .onFallback()
         .setBody(constant(Map.of("recommendations", Map.of())))
-        .log(
-            LoggingLevel.WARN,
-            "Failed to retrieve recommendations from Trusted content service' /recommend endpoint,"
-                + " error message => ${exception.message}")
+        .process(responseHandler::processResponseError)
         .end();
   }
 

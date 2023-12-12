@@ -23,13 +23,17 @@ import java.util.*;
 
 import org.apache.camel.Body;
 
+import com.redhat.exhort.integration.providers.ProviderResponseHandler;
+import com.redhat.exhort.model.DependencyTree;
+import com.redhat.exhort.model.ProviderResponse;
+
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 @RegisterForReflection
-public class TcResponseHandler {
+public class TcResponseHandler extends ProviderResponseHandler {
 
   //  ObjectMapper mapper = ObjectMapperProducer.newInstance();
 
@@ -47,5 +51,16 @@ public class TcResponseHandler {
             });
 
     return recommendations;
+  }
+
+  @Override
+  protected String getProviderName() {
+    return "TrustedContent";
+  }
+
+  @Override
+  public ProviderResponse responseToIssues(
+      byte[] response, String privateProviders, DependencyTree tree) throws IOException {
+    return null;
   }
 }
