@@ -266,9 +266,6 @@ public abstract class AbstractAnalysisTest {
     server.stubFor(
         post(Constants.TRUSTED_CONTENT_PATH)
             .willReturn(aResponse().withStatus(200).withBody("{ \"recommendations\": {}\n" + "}")));
-    server.stubFor(
-        get(Constants.TRUSTED_CONTENT_PATH)
-            .willReturn(aResponse().withStatus(200).withBody("{ \"recommendations\": {}\n" + "}")));
   }
 
   protected void stubSnykRequests() {

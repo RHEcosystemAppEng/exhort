@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.util.*;
 
 import org.apache.camel.Body;
-import org.apache.camel.Exchange;
 
 import com.redhat.exhort.integration.providers.ProviderResponseHandler;
 import com.redhat.exhort.model.DependencyTree;
@@ -36,13 +35,11 @@ import jakarta.enterprise.context.ApplicationScoped;
 @RegisterForReflection
 public class TcResponseHandler extends ProviderResponseHandler {
 
-  //  ObjectMapper mapper = ObjectMapperProducer.newInstance();
-
   public Map<String, String> responseToMap(@Body Map<String, Map<String, List>> tcResponse)
       throws IOException {
     HashMap<String, String> recommendations = new HashMap<>();
 
-    Map<String, List> rec = (Map<String, List>) tcResponse.get("recommendations");
+    Map<String, List> rec = tcResponse.get("recommendations");
     rec.entrySet().stream()
         .forEach(
             (entry) -> {
@@ -52,12 +49,6 @@ public class TcResponseHandler extends ProviderResponseHandler {
             });
 
     return recommendations;
-  }
-
-  @Override
-  public void processResponseError(Exchange exchange) {
-    super.processResponseError(exchange);
-    exchange.getMessage().setBody(Map.of("recommendations", Map.of()));
   }
 
   @Override

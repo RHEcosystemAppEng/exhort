@@ -31,6 +31,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.HttpMethod;
 import jakarta.ws.rs.core.MediaType;
 
 @ApplicationScoped
@@ -57,7 +58,7 @@ public class TrustedContentIntegration extends EndpointRouteBuilder {
         .marshal()
         .json()
         .setHeader(Exchange.HTTP_PATH, constant(Constants.TRUSTED_CONTENT_PATH))
-        .setHeader(Exchange.HTTP_METHOD, constant("POST"))
+        .setHeader(Exchange.HTTP_METHOD, constant(HttpMethod.POST))
         .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.APPLICATION_JSON))
         .circuitBreaker()
         .faultToleranceConfiguration()
@@ -69,8 +70,8 @@ public class TrustedContentIntegration extends EndpointRouteBuilder {
         .json(JsonLibrary.Jackson, Map.class)
         .endCircuitBreaker()
         .onFallback()
-        .setBody(constant(Map.of("recommendations", Map.of())))
         .process(responseHandler::processResponseError)
+        .setBody(constant(Map.of("recommendations", Map.of())))
         .end();
   }
 
