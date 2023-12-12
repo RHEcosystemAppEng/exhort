@@ -352,7 +352,7 @@ public abstract class ProviderResponseHandler {
           .transitive(total.get() - direct.get())
           .dependencies(dependencies.get())
           .remediations(remediations.get())
-          // TODO: Calculate recommendations
+          // Will be calculated later when TC recommendations will be added.
           .recommendations(0);
     }
   }

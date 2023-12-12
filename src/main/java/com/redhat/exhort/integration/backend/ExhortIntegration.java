@@ -32,12 +32,12 @@ import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
 import org.apache.camel.component.micrometer.MicrometerConstants;
 import org.apache.camel.component.micrometer.routepolicy.MicrometerRoutePolicyFactory;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.redhat.exhort.analytics.AnalyticsService;
 import com.redhat.exhort.integration.Constants;
 import com.redhat.exhort.integration.backend.sbom.SbomParserFactory;
 import com.redhat.exhort.integration.providers.ProviderAggregationStrategy;
 import com.redhat.exhort.integration.providers.VulnerabilityProvider;
+import com.redhat.exhort.integration.trustedcontent.TcResponseAggregation;
 import com.redhat.exhort.monitoring.MonitoringProcessor;
 
 import io.micrometer.core.instrument.MeterRegistry;
@@ -60,9 +60,9 @@ public class ExhortIntegration extends EndpointRouteBuilder {
 
   @Inject AnalyticsService analytics;
 
-  @Inject ObjectMapper mapper;
-
   @Inject MonitoringProcessor monitoringProcessor;
+
+  @Inject TcResponseAggregation tcResponseAggregation;
 
   ExhortIntegration(MeterRegistry registry) {
     this.registry = registry;
@@ -131,6 +131,7 @@ public class ExhortIntegration extends EndpointRouteBuilder {
       .process(this::processAnalysisRequest)
       .to(direct("findVulnerabilities"))
       .transform().method(ProviderAggregationStrategy.class, "toReport")
+      .enrich(direct("recommendationsTrustedContent"), tcResponseAggregation)
       .to(direct("report"))
       .to(seda("analyticsTrackAnalysis"))
       .process(this::cleanUpHeaders);

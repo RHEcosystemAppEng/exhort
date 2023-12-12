@@ -76,6 +76,7 @@ public final class Constants {
   public static final String SNYK_TOKEN_API_PATH = "/user/me";
   public static final String OSS_INDEX_AUTH_COMPONENT_API_PATH = "/authorized/component-report";
 
+  public static final String TRUSTED_CONTENT_PATH = "/recommend";
   public static final String DEFAULT_ACCEPT_MEDIA_TYPE = MediaType.APPLICATION_JSON;
   public static final boolean DEFAULT_VERBOSE_MODE = false;
 
