@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.*;
 
 import org.apache.camel.Body;
+import org.apache.camel.Exchange;
 
 import com.redhat.exhort.integration.providers.ProviderResponseHandler;
 import com.redhat.exhort.model.DependencyTree;
@@ -54,6 +55,12 @@ public class TcResponseHandler extends ProviderResponseHandler {
   }
 
   @Override
+  public void processResponseError(Exchange exchange) {
+    super.processResponseError(exchange);
+    exchange.getMessage().setBody(Map.of("recommendations", Map.of()));
+  }
+
+  @Override
   protected String getProviderName() {
     return "TrustedContent";
   }
@@ -61,6 +68,6 @@ public class TcResponseHandler extends ProviderResponseHandler {
   @Override
   public ProviderResponse responseToIssues(
       byte[] response, String privateProviders, DependencyTree tree) throws IOException {
-    return null;
+    throw new IllegalArgumentException("not implemented yet");
   }
 }
