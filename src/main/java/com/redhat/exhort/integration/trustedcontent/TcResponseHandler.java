@@ -23,9 +23,13 @@ import java.util.*;
 
 import org.apache.camel.Body;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.redhat.exhort.config.ObjectMapperProducer;
 import com.redhat.exhort.integration.providers.ProviderResponseHandler;
 import com.redhat.exhort.model.DependencyTree;
 import com.redhat.exhort.model.ProviderResponse;
+import com.redhat.exhort.model.trustedcontent.TrustedContentResponse;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -34,21 +38,23 @@ import jakarta.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 @RegisterForReflection
 public class TcResponseHandler extends ProviderResponseHandler {
+  public static void main(String[] args) {
+    try {
+      TrustedContentResponse trustedContentResponse =
+          new TcResponseHandler().responseToMap("{ \"recommendations\": {}\n}".getBytes());
+      System.out.println(trustedContentResponse);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
 
-  public Map<String, String> responseToMap(@Body Map<String, Map<String, List>> tcResponse)
-      throws IOException {
-    HashMap<String, String> recommendations = new HashMap<>();
+  ObjectMapper mapper =
+      ObjectMapperProducer.newInstance().configure(DeserializationFeature.UNWRAP_ROOT_VALUE, true);
 
-    Map<String, List> rec = tcResponse.get("recommendations");
-    rec.entrySet().stream()
-        .forEach(
-            (entry) -> {
-              recommendations.put(
-                  entry.getKey(),
-                  (String) ((Map) entry.getValue().stream().findFirst().get()).get("package"));
-            });
-
-    return recommendations;
+  public TrustedContentResponse responseToMap(@Body byte[] tcResponse) throws IOException {
+    TrustedContentResponse trustedContentResponse =
+        mapper.readValue(tcResponse, TrustedContentResponse.class);
+    return trustedContentResponse;
   }
 
   @Override

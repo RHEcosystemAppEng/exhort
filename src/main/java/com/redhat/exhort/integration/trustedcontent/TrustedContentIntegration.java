@@ -22,7 +22,6 @@ import java.util.*;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
-import org.apache.camel.model.dataformat.JsonLibrary;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import com.redhat.exhort.integration.Constants;
@@ -66,8 +65,6 @@ public class TrustedContentIntegration extends EndpointRouteBuilder {
         .timeoutDuration(timeout)
         .end()
         .to(vertxHttp("{{api.trustedcontent.host}}"))
-        .unmarshal()
-        .json(JsonLibrary.Jackson, Map.class)
         .endCircuitBreaker()
         .onFallback()
         .process(responseHandler::processResponseError)

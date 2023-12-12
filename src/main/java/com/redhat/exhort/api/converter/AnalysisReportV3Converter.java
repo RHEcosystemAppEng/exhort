@@ -140,8 +140,8 @@ public class AnalysisReportV3Converter {
             var r =
                 new Remediation()
                     .issueRef(i.getId())
-                    .mavenPackage(tc.getMavenPackage())
-                    .productStatus(tc.getProductStatus());
+                    .mavenPackage(tc.getPackage())
+                    .productStatus(tc.getStatus());
             i.getCves().forEach(cve -> remediations.put(i.getId(), r));
           }
         });

@@ -301,7 +301,7 @@ public abstract class ProviderResponseHandler {
           }
           if (i.getRemediation() != null
               && i.getRemediation().getTrustedContent() != null
-              && i.getRemediation().getTrustedContent().getMavenPackage() != null) {
+              && i.getRemediation().getTrustedContent().getPackage() != null) {
             counter.remediations.incrementAndGet();
           }
         });
