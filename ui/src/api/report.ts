@@ -61,7 +61,8 @@ export interface Dependency {
   ref: string;
   issues?: Vulnerability[];
   transitive?: TransitiveDependency[];
-  highestVulnerability: Vulnerability | null;
+  recommendation?: string | null;
+  highestVulnerability?: Vulnerability | null;
 }
 
 export function getSources(report: Report): SourceItem[] {
@@ -77,11 +78,13 @@ export function getSources(report: Report): SourceItem[] {
         } as SourceItem);
       });
     } else {
-      result.push({
-        provider: provider,
-        source: provider,
-        report: {} as SourceReport,
-      } as SourceItem);
+      if(provider !== 'trusted-content') {
+        result.push({
+          provider: provider,
+          source: provider,
+          report: {} as SourceReport,
+        } as SourceItem);
+      }
     }
   });
   return result.sort((a, b) => {
@@ -134,8 +137,9 @@ export interface Vulnerability {
   remediation?: {
     fixedIn?: string[] | null;
     trustedContent?: {
-      mavenPackage: string | null;
-      productStatus: string | null;
+      ref: string | '';
+      status: string | null;
+      justification: string | null;
     };
   };
 }
