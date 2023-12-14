@@ -20,6 +20,8 @@ const SIGN_UP_TAB_PROVIDERS = ['oss-index'];
 
 const OSS_SIGN_UP_LINK = 'https://ossindex.sonatype.org/user/register';
 
+const REDHAT_REPOSITORY = 'https://maven.repository.redhat.com/ga/';
+
 export const getSignUpLink = (provider: string): string => {
   switch(provider) {
     case 'oss-index': return OSS_SIGN_UP_LINK;
@@ -52,6 +54,16 @@ export const extractDependencyName = (name: string, showVersion: boolean) => {
   let result = extractName(pkgUrl);
   if(showVersion) {
     return result + `@${pkgUrl.version}`;
+  }
+  return result;
+};
+
+export const tcRemediationLink = (name: string) => {
+  const pkgUrl = PackageURL.fromString(name);
+  let result = REDHAT_REPOSITORY;
+  if(pkgUrl.namespace) {
+    let namespace = pkgUrl.namespace?.replace(/\./g, "/");
+    return `${REDHAT_REPOSITORY}${namespace}/${pkgUrl.name}/${pkgUrl.version}`;
   }
   return result;
 };
