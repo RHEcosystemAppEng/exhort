@@ -2,157 +2,19 @@ import { AppData } from '@app/api/report';
 
 export const reportMixed: AppData = {
   providerPrivateData: null,
-  report:{
+  report: {
     "scanned" : {
       "total" : 207,
       "direct" : 10,
       "transitive" : 197
     },
     "providers" : {
-      "oss-index": {
-        "status": {
-          "ok": true,
-          "name": "oss-index",
-          "code": 200,
-          "message": "OK"
-        },
-        "sources": {
-          "oss-index": {
-            "summary": {
-              "direct": 0,
-              "transitive": 3,
-              "total": 3,
-              "dependencies": 1,
-              "critical": 0,
-              "high": 3,
-              "medium": 0,
-              "low": 0,
-              "remediations": 0,
-              "recommendations": 0
-            },
-            "dependencies": [
-              {
-                "ref": "pkg:maven/io.quarkus/quarkus-hibernate-orm@2.13.5.Final",
-                "transitive": [
-                  {
-                    "ref": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.1",
-                    "issues": [
-                      {
-                        "id": "CVE-2020-36518",
-                        "title": "[CVE-2020-36518] CWE-787: Out-of-bounds Write",
-                        "source": "oss-index",
-                        "cvss": {
-                          "attackVector": "Network",
-                          "attackComplexity": "Low",
-                          "privilegesRequired": "None",
-                          "userInteraction": "None",
-                          "scope": "Unchanged",
-                          "confidentialityImpact": "None",
-                          "integrityImpact": "None",
-                          "availabilityImpact": "High",
-                          "cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
-                        },
-                        "cvssScore": 7.5,
-                        "severity": "HIGH",
-                        "cves": [
-                          "CVE-2020-36518"
-                        ],
-                        "unique": false
-                      },
-                      {
-                        "id": "CVE-2022-42003",
-                        "title": "[CVE-2022-42003] CWE-502: Deserialization of Untrusted Data",
-                        "source": "oss-index",
-                        "cvss": {
-                          "attackVector": "Network",
-                          "attackComplexity": "Low",
-                          "privilegesRequired": "None",
-                          "userInteraction": "None",
-                          "scope": "Unchanged",
-                          "confidentialityImpact": "None",
-                          "integrityImpact": "None",
-                          "availabilityImpact": "High",
-                          "cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
-                        },
-                        "cvssScore": 7.5,
-                        "severity": "HIGH",
-                        "cves": [
-                          "CVE-2022-42003"
-                        ],
-                        "unique": false
-                      },
-                      {
-                        "id": "CVE-2022-42004",
-                        "title": "[CVE-2022-42004] CWE-502: Deserialization of Untrusted Data",
-                        "source": "oss-index",
-                        "cvss": {
-                          "attackVector": "Network",
-                          "attackComplexity": "Low",
-                          "privilegesRequired": "None",
-                          "userInteraction": "None",
-                          "scope": "Unchanged",
-                          "confidentialityImpact": "None",
-                          "integrityImpact": "None",
-                          "availabilityImpact": "High",
-                          "cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
-                        },
-                        "cvssScore": 7.5,
-                        "severity": "HIGH",
-                        "cves": [
-                          "CVE-2022-42004"
-                        ],
-                        "unique": false
-                      }
-                    ],
-                    "highestVulnerability": {
-                      "id": "CVE-2020-36518",
-                      "title": "[CVE-2020-36518] CWE-787: Out-of-bounds Write",
-                      "source": "oss-index",
-                      "cvss": {
-                        "attackVector": "Network",
-                        "attackComplexity": "Low",
-                        "privilegesRequired": "None",
-                        "userInteraction": "None",
-                        "scope": "Unchanged",
-                        "confidentialityImpact": "None",
-                        "integrityImpact": "None",
-                        "availabilityImpact": "High",
-                        "cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
-                      },
-                      "cvssScore": 7.5,
-                      "severity": "HIGH",
-                      "cves": [
-                        "CVE-2020-36518"
-                      ],
-                      "unique": false
-                    }
-                  }
-                ],
-                "highestVulnerability": {
-                  "id": "CVE-2020-36518",
-                  "title": "[CVE-2020-36518] CWE-787: Out-of-bounds Write",
-                  "source": "oss-index",
-                  "cvss": {
-                    "attackVector": "Network",
-                    "attackComplexity": "Low",
-                    "privilegesRequired": "None",
-                    "userInteraction": "None",
-                    "scope": "Unchanged",
-                    "confidentialityImpact": "None",
-                    "integrityImpact": "None",
-                    "availabilityImpact": "High",
-                    "cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
-                  },
-                  "cvssScore": 7.5,
-                  "severity": "HIGH",
-                  "cves": [
-                    "CVE-2020-36518"
-                  ],
-                  "unique": false
-                }
-              }
-            ]
-          }
+      "oss-index" : {
+        "status" : {
+          "ok" : false,
+          "name" : "oss-index",
+          "code" : 401,
+          "message" : "Unauthenticated"
         }
       },
       "trusted-content" : {
@@ -181,7 +43,7 @@ export const reportMixed: AppData = {
               "high" : 4,
               "medium" : 11,
               "low" : 9,
-              "remediations" : 3,
+              "remediations" : 2,
               "recommendations" : 9
             },
             "dependencies" : [ {
@@ -210,7 +72,7 @@ export const reportMixed: AppData = {
                   "remediation" : {
                     "fixedIn" : [ "2.16.11.Final", "3.2.6.Final", "3.3.3" ],
                     "trustedContent" : {
-                      "ref" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.8.Final-redhat-00006",
+                      "ref" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.8.Final-redhat-00006?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
                       "status" : "Fixed",
                       "justification" : "NotProvided"
                     }
@@ -237,7 +99,7 @@ export const reportMixed: AppData = {
                   "remediation" : {
                     "fixedIn" : [ "2.16.8.Final", "3.2.1.Final" ],
                     "trustedContent" : {
-                      "ref" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.8.Final-redhat-00006",
+                      "ref" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.8.Final-redhat-00006?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
                       "status" : "Fixed",
                       "justification" : "NotProvided"
                     }
@@ -262,12 +124,7 @@ export const reportMixed: AppData = {
                   "cves" : [ "CVE-2023-0044" ],
                   "unique" : false,
                   "remediation" : {
-                    "fixedIn" : [ "2.13.7.Final" ],
-                    "trustedContent" : {
-                      "ref" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.8.Final-redhat-00006",
-                      "status" : "Affected",
-                      "justification" : "NotProvided"
-                    }
+                    "fixedIn" : [ "2.13.7.Final" ]
                   }
                 } ],
                 "highestVulnerability" : {
@@ -292,7 +149,7 @@ export const reportMixed: AppData = {
                   "remediation" : {
                     "fixedIn" : [ "2.16.11.Final", "3.2.6.Final", "3.3.3" ],
                     "trustedContent" : {
-                      "ref" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.8.Final-redhat-00006",
+                      "ref" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.8.Final-redhat-00006?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
                       "status" : "Fixed",
                       "justification" : "NotProvided"
                     }
@@ -323,7 +180,7 @@ export const reportMixed: AppData = {
                   "remediation" : {
                     "fixedIn" : [ "4.1.100.Final" ],
                     "trustedContent" : {
-                      "ref" : "pkg:maven/io.netty/netty-codec-http2@4.1.86.Final-redhat-00010",
+                      "ref" : "pkg:maven/io.netty/netty-codec-http2@4.1.86.Final-redhat-00010?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
                       "status" : "Fixed",
                       "justification" : "NotProvided"
                     }
@@ -352,7 +209,7 @@ export const reportMixed: AppData = {
                   "remediation" : {
                     "fixedIn" : [ "4.1.100.Final" ],
                     "trustedContent" : {
-                      "ref" : "pkg:maven/io.netty/netty-codec-http2@4.1.86.Final-redhat-00010",
+                      "ref" : "pkg:maven/io.netty/netty-codec-http2@4.1.86.Final-redhat-00010?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
                       "status" : "Fixed",
                       "justification" : "NotProvided"
                     }
@@ -878,12 +735,7 @@ export const reportMixed: AppData = {
                   "cves" : [ "CVE-2023-24815" ],
                   "unique" : false,
                   "remediation" : {
-                    "fixedIn" : [ "4.3.8" ],
-                    "trustedContent" : {
-                      "ref" : "pkg:maven/io.vertx/vertx-web@4.3.4.redhat-00008?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
-                      "status" : "Affected",
-                      "justification" : "NotProvided"
-                    }
+                    "fixedIn" : [ "4.3.8" ]
                   }
                 } ],
                 "highestVulnerability" : {
@@ -907,16 +759,11 @@ export const reportMixed: AppData = {
                   "cves" : [ "CVE-2023-24815" ],
                   "unique" : false,
                   "remediation" : {
-                    "fixedIn" : [ "4.3.8" ],
-                    "trustedContent" : {
-                      "ref" : "pkg:maven/io.vertx/vertx-web@4.3.4.redhat-00008?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
-                      "status" : "Affected",
-                      "justification" : "NotProvided"
-                    }
+                    "fixedIn" : [ "4.3.8" ]
                   }
                 }
               } ],
-              "recommendation" : "pkg:maven/io.quarkus/quarkus-resteasy@2.13.8.Final-redhat-00006",
+              "recommendation" : "pkg:maven/io.quarkus/quarkus-resteasy@2.13.8.Final-redhat-00006?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
               "highestVulnerability" : {
                 "id" : "SNYK-JAVA-IOQUARKUS-5905727",
                 "title" : "Access Restriction Bypass",
@@ -939,7 +786,7 @@ export const reportMixed: AppData = {
                 "remediation" : {
                   "fixedIn" : [ "2.16.11.Final", "3.2.6.Final", "3.3.3" ],
                   "trustedContent" : {
-                    "ref" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.8.Final-redhat-00006",
+                    "ref" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.8.Final-redhat-00006?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
                     "status" : "Fixed",
                     "justification" : "NotProvided"
                   }
@@ -971,7 +818,7 @@ export const reportMixed: AppData = {
                   "remediation" : {
                     "fixedIn" : [ "2.16.11.Final", "3.2.6.Final", "3.3.3" ],
                     "trustedContent" : {
-                      "ref" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.8.Final-redhat-00006",
+                      "ref" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.8.Final-redhat-00006?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
                       "status" : "Fixed",
                       "justification" : "NotProvided"
                     }
@@ -998,7 +845,7 @@ export const reportMixed: AppData = {
                   "remediation" : {
                     "fixedIn" : [ "2.16.8.Final", "3.2.1.Final" ],
                     "trustedContent" : {
-                      "ref" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.8.Final-redhat-00006",
+                      "ref" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.8.Final-redhat-00006?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
                       "status" : "Fixed",
                       "justification" : "NotProvided"
                     }
@@ -1023,12 +870,7 @@ export const reportMixed: AppData = {
                   "cves" : [ "CVE-2023-0044" ],
                   "unique" : false,
                   "remediation" : {
-                    "fixedIn" : [ "2.13.7.Final" ],
-                    "trustedContent" : {
-                      "ref" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.8.Final-redhat-00006",
-                      "status" : "Affected",
-                      "justification" : "NotProvided"
-                    }
+                    "fixedIn" : [ "2.13.7.Final" ]
                   }
                 } ],
                 "highestVulnerability" : {
@@ -1053,7 +895,7 @@ export const reportMixed: AppData = {
                   "remediation" : {
                     "fixedIn" : [ "2.16.11.Final", "3.2.6.Final", "3.3.3" ],
                     "trustedContent" : {
-                      "ref" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.8.Final-redhat-00006",
+                      "ref" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.8.Final-redhat-00006?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
                       "status" : "Fixed",
                       "justification" : "NotProvided"
                     }
@@ -1084,7 +926,7 @@ export const reportMixed: AppData = {
                   "remediation" : {
                     "fixedIn" : [ "4.1.100.Final" ],
                     "trustedContent" : {
-                      "ref" : "pkg:maven/io.netty/netty-codec-http2@4.1.86.Final-redhat-00010",
+                      "ref" : "pkg:maven/io.netty/netty-codec-http2@4.1.86.Final-redhat-00010?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
                       "status" : "Fixed",
                       "justification" : "NotProvided"
                     }
@@ -1113,7 +955,7 @@ export const reportMixed: AppData = {
                   "remediation" : {
                     "fixedIn" : [ "4.1.100.Final" ],
                     "trustedContent" : {
-                      "ref" : "pkg:maven/io.netty/netty-codec-http2@4.1.86.Final-redhat-00010",
+                      "ref" : "pkg:maven/io.netty/netty-codec-http2@4.1.86.Final-redhat-00010?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
                       "status" : "Fixed",
                       "justification" : "NotProvided"
                     }
@@ -1639,12 +1481,7 @@ export const reportMixed: AppData = {
                   "cves" : [ "CVE-2023-24815" ],
                   "unique" : false,
                   "remediation" : {
-                    "fixedIn" : [ "4.3.8" ],
-                    "trustedContent" : {
-                      "ref" : "pkg:maven/io.vertx/vertx-web@4.3.4.redhat-00008?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
-                      "status" : "Affected",
-                      "justification" : "NotProvided"
-                    }
+                    "fixedIn" : [ "4.3.8" ]
                   }
                 } ],
                 "highestVulnerability" : {
@@ -1668,16 +1505,11 @@ export const reportMixed: AppData = {
                   "cves" : [ "CVE-2023-24815" ],
                   "unique" : false,
                   "remediation" : {
-                    "fixedIn" : [ "4.3.8" ],
-                    "trustedContent" : {
-                      "ref" : "pkg:maven/io.vertx/vertx-web@4.3.4.redhat-00008?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
-                      "status" : "Affected",
-                      "justification" : "NotProvided"
-                    }
+                    "fixedIn" : [ "4.3.8" ]
                   }
                 }
               } ],
-              "recommendation" : "pkg:maven/io.quarkus/quarkus-resteasy-jackson@2.13.8.Final-redhat-00006",
+              "recommendation" : "pkg:maven/io.quarkus/quarkus-resteasy-jackson@2.13.8.Final-redhat-00006?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
               "highestVulnerability" : {
                 "id" : "SNYK-JAVA-IOQUARKUS-5905727",
                 "title" : "Access Restriction Bypass",
@@ -1700,7 +1532,7 @@ export const reportMixed: AppData = {
                 "remediation" : {
                   "fixedIn" : [ "2.16.11.Final", "3.2.6.Final", "3.3.3" ],
                   "trustedContent" : {
-                    "ref" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.8.Final-redhat-00006",
+                    "ref" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.8.Final-redhat-00006?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
                     "status" : "Fixed",
                     "justification" : "NotProvided"
                   }
@@ -1733,7 +1565,7 @@ export const reportMixed: AppData = {
                   "remediation" : {
                     "fixedIn" : [ "4.1.100.Final" ],
                     "trustedContent" : {
-                      "ref" : "pkg:maven/io.netty/netty-codec-http2@4.1.86.Final-redhat-00010",
+                      "ref" : "pkg:maven/io.netty/netty-codec-http2@4.1.86.Final-redhat-00010?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
                       "status" : "Fixed",
                       "justification" : "NotProvided"
                     }
@@ -1762,7 +1594,7 @@ export const reportMixed: AppData = {
                   "remediation" : {
                     "fixedIn" : [ "4.1.100.Final" ],
                     "trustedContent" : {
-                      "ref" : "pkg:maven/io.netty/netty-codec-http2@4.1.86.Final-redhat-00010",
+                      "ref" : "pkg:maven/io.netty/netty-codec-http2@4.1.86.Final-redhat-00010?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
                       "status" : "Fixed",
                       "justification" : "NotProvided"
                     }
@@ -2192,12 +2024,7 @@ export const reportMixed: AppData = {
                   "cves" : [ "CVE-2023-24815" ],
                   "unique" : false,
                   "remediation" : {
-                    "fixedIn" : [ "4.3.8" ],
-                    "trustedContent" : {
-                      "ref" : "pkg:maven/io.vertx/vertx-web@4.3.4.redhat-00008?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
-                      "status" : "Affected",
-                      "justification" : "NotProvided"
-                    }
+                    "fixedIn" : [ "4.3.8" ]
                   }
                 } ],
                 "highestVulnerability" : {
@@ -2221,16 +2048,11 @@ export const reportMixed: AppData = {
                   "cves" : [ "CVE-2023-24815" ],
                   "unique" : false,
                   "remediation" : {
-                    "fixedIn" : [ "4.3.8" ],
-                    "trustedContent" : {
-                      "ref" : "pkg:maven/io.vertx/vertx-web@4.3.4.redhat-00008?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
-                      "status" : "Affected",
-                      "justification" : "NotProvided"
-                    }
+                    "fixedIn" : [ "4.3.8" ]
                   }
                 }
               } ],
-              "recommendation" : "pkg:maven/io.quarkus/quarkus-hibernate-orm-deployment@2.13.8.Final-redhat-00006",
+              "recommendation" : "pkg:maven/io.quarkus/quarkus-hibernate-orm-deployment@2.13.8.Final-redhat-00006?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
               "highestVulnerability" : {
                 "id" : "SNYK-JAVA-IONETTY-5953332",
                 "title" : "Denial of Service (DoS)",
@@ -2254,7 +2076,7 @@ export const reportMixed: AppData = {
                 "remediation" : {
                   "fixedIn" : [ "4.1.100.Final" ],
                   "trustedContent" : {
-                    "ref" : "pkg:maven/io.netty/netty-codec-http2@4.1.86.Final-redhat-00010",
+                    "ref" : "pkg:maven/io.netty/netty-codec-http2@4.1.86.Final-redhat-00010?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
                     "status" : "Fixed",
                     "justification" : "NotProvided"
                   }
@@ -2284,7 +2106,7 @@ export const reportMixed: AppData = {
                 "remediation" : {
                   "fixedIn" : [ "2.16.11.Final", "3.2.6.Final", "3.3.3" ],
                   "trustedContent" : {
-                    "ref" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.8.Final-redhat-00006",
+                    "ref" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.8.Final-redhat-00006?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
                     "status" : "Fixed",
                     "justification" : "NotProvided"
                   }
@@ -2311,7 +2133,7 @@ export const reportMixed: AppData = {
                 "remediation" : {
                   "fixedIn" : [ "2.16.8.Final", "3.2.1.Final" ],
                   "trustedContent" : {
-                    "ref" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.8.Final-redhat-00006",
+                    "ref" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.8.Final-redhat-00006?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
                     "status" : "Fixed",
                     "justification" : "NotProvided"
                   }
@@ -2336,12 +2158,7 @@ export const reportMixed: AppData = {
                 "cves" : [ "CVE-2023-0044" ],
                 "unique" : false,
                 "remediation" : {
-                  "fixedIn" : [ "2.13.7.Final" ],
-                  "trustedContent" : {
-                    "ref" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.8.Final-redhat-00006",
-                    "status" : "Affected",
-                    "justification" : "NotProvided"
-                  }
+                  "fixedIn" : [ "2.13.7.Final" ]
                 }
               } ],
               "transitive" : [ {
@@ -2369,7 +2186,7 @@ export const reportMixed: AppData = {
                   "remediation" : {
                     "fixedIn" : [ "4.1.100.Final" ],
                     "trustedContent" : {
-                      "ref" : "pkg:maven/io.netty/netty-codec-http2@4.1.86.Final-redhat-00010",
+                      "ref" : "pkg:maven/io.netty/netty-codec-http2@4.1.86.Final-redhat-00010?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
                       "status" : "Fixed",
                       "justification" : "NotProvided"
                     }
@@ -2398,7 +2215,7 @@ export const reportMixed: AppData = {
                   "remediation" : {
                     "fixedIn" : [ "4.1.100.Final" ],
                     "trustedContent" : {
-                      "ref" : "pkg:maven/io.netty/netty-codec-http2@4.1.86.Final-redhat-00010",
+                      "ref" : "pkg:maven/io.netty/netty-codec-http2@4.1.86.Final-redhat-00010?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
                       "status" : "Fixed",
                       "justification" : "NotProvided"
                     }
@@ -2876,12 +2693,7 @@ export const reportMixed: AppData = {
                   "cves" : [ "CVE-2023-24815" ],
                   "unique" : false,
                   "remediation" : {
-                    "fixedIn" : [ "4.3.8" ],
-                    "trustedContent" : {
-                      "ref" : "pkg:maven/io.vertx/vertx-web@4.3.4.redhat-00008?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
-                      "status" : "Affected",
-                      "justification" : "NotProvided"
-                    }
+                    "fixedIn" : [ "4.3.8" ]
                   }
                 } ],
                 "highestVulnerability" : {
@@ -2905,16 +2717,11 @@ export const reportMixed: AppData = {
                   "cves" : [ "CVE-2023-24815" ],
                   "unique" : false,
                   "remediation" : {
-                    "fixedIn" : [ "4.3.8" ],
-                    "trustedContent" : {
-                      "ref" : "pkg:maven/io.vertx/vertx-web@4.3.4.redhat-00008?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
-                      "status" : "Affected",
-                      "justification" : "NotProvided"
-                    }
+                    "fixedIn" : [ "4.3.8" ]
                   }
                 }
               } ],
-              "recommendation" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.8.Final-redhat-00006",
+              "recommendation" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.8.Final-redhat-00006?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
               "highestVulnerability" : {
                 "id" : "SNYK-JAVA-IONETTY-5953332",
                 "title" : "Denial of Service (DoS)",
@@ -2938,7 +2745,7 @@ export const reportMixed: AppData = {
                 "remediation" : {
                   "fixedIn" : [ "4.1.100.Final" ],
                   "trustedContent" : {
-                    "ref" : "pkg:maven/io.netty/netty-codec-http2@4.1.86.Final-redhat-00010",
+                    "ref" : "pkg:maven/io.netty/netty-codec-http2@4.1.86.Final-redhat-00010?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
                     "status" : "Fixed",
                     "justification" : "NotProvided"
                   }
@@ -3300,7 +3107,7 @@ export const reportMixed: AppData = {
                   }
                 }
               } ],
-              "recommendation" : "pkg:maven/io.quarkus/quarkus-hibernate-orm@2.13.8.Final-redhat-00006",
+              "recommendation" : "pkg:maven/io.quarkus/quarkus-hibernate-orm@2.13.8.Final-redhat-00006?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
               "highestVulnerability" : {
                 "id" : "SNYK-JAVA-ORGGRAALVMSDK-5457933",
                 "title" : "Information Exposure",
@@ -3680,7 +3487,7 @@ export const reportMixed: AppData = {
                   }
                 }
               } ],
-              "recommendation" : "pkg:maven/io.quarkus/quarkus-kubernetes-service-binding@2.13.8.Final-redhat-00006",
+              "recommendation" : "pkg:maven/io.quarkus/quarkus-kubernetes-service-binding@2.13.8.Final-redhat-00006?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
               "highestVulnerability" : {
                 "id" : "SNYK-JAVA-ORGGRAALVMSDK-5457933",
                 "title" : "Information Exposure",
@@ -4487,7 +4294,7 @@ export const reportMixed: AppData = {
                   }
                 }
               } ],
-              "recommendation" : "pkg:maven/io.quarkus/quarkus-jdbc-postgresql@2.13.8.Final-redhat-00006",
+              "recommendation" : "pkg:maven/io.quarkus/quarkus-jdbc-postgresql@2.13.8.Final-redhat-00006?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
               "highestVulnerability" : {
                 "id" : "SNYK-JAVA-ORGGRAALVMSDK-5457933",
                 "title" : "Information Exposure",
@@ -4867,7 +4674,7 @@ export const reportMixed: AppData = {
                   }
                 }
               } ],
-              "recommendation" : "pkg:maven/io.quarkus/quarkus-agroal@2.13.8.Final-redhat-00006",
+              "recommendation" : "pkg:maven/io.quarkus/quarkus-agroal@2.13.8.Final-redhat-00006?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
               "highestVulnerability" : {
                 "id" : "SNYK-JAVA-ORGGRAALVMSDK-5457933",
                 "title" : "Information Exposure",
@@ -4900,438 +4707,6 @@ export const reportMixed: AppData = {
       }
     }
   },
-  // report: {
-  //   "scanned": {
-  //     "total": 9,
-  //     "direct": 2,
-  //     "transitive": 7
-  //   },
-  //   "providers": {
-  //     "oss-index": {
-  //       "status": {
-  //         "ok": true,
-  //         "name": "oss-index",
-  //         "code": 200,
-  //         "message": "OK"
-  //       },
-  //       "sources": {
-  //         "oss-index": {
-  //           "summary": {
-  //             "direct": 0,
-  //             "transitive": 3,
-  //             "total": 3,
-  //             "dependencies": 1,
-  //             "critical": 0,
-  //             "high": 3,
-  //             "medium": 0,
-  //             "low": 0,
-  //             "remediations": 0,
-  //             "recommendations": 0
-  //           },
-  //           "dependencies": [
-  //             {
-  //               "ref": "pkg:maven/io.quarkus/quarkus-hibernate-orm@2.13.5.Final",
-  //               "transitive": [
-  //                 {
-  //                   "ref": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.1",
-  //                   "issues": [
-  //                     {
-  //                       "id": "CVE-2020-36518",
-  //                       "title": "[CVE-2020-36518] CWE-787: Out-of-bounds Write",
-  //                       "source": "oss-index",
-  //                       "cvss": {
-  //                         "attackVector": "Network",
-  //                         "attackComplexity": "Low",
-  //                         "privilegesRequired": "None",
-  //                         "userInteraction": "None",
-  //                         "scope": "Unchanged",
-  //                         "confidentialityImpact": "None",
-  //                         "integrityImpact": "None",
-  //                         "availabilityImpact": "High",
-  //                         "cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
-  //                       },
-  //                       "cvssScore": 7.5,
-  //                       "severity": "HIGH",
-  //                       "cves": [
-  //                         "CVE-2020-36518"
-  //                       ],
-  //                       "unique": false
-  //                     },
-  //                     {
-  //                       "id": "CVE-2022-42003",
-  //                       "title": "[CVE-2022-42003] CWE-502: Deserialization of Untrusted Data",
-  //                       "source": "oss-index",
-  //                       "cvss": {
-  //                         "attackVector": "Network",
-  //                         "attackComplexity": "Low",
-  //                         "privilegesRequired": "None",
-  //                         "userInteraction": "None",
-  //                         "scope": "Unchanged",
-  //                         "confidentialityImpact": "None",
-  //                         "integrityImpact": "None",
-  //                         "availabilityImpact": "High",
-  //                         "cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
-  //                       },
-  //                       "cvssScore": 7.5,
-  //                       "severity": "HIGH",
-  //                       "cves": [
-  //                         "CVE-2022-42003"
-  //                       ],
-  //                       "unique": false
-  //                     },
-  //                     {
-  //                       "id": "CVE-2022-42004",
-  //                       "title": "[CVE-2022-42004] CWE-502: Deserialization of Untrusted Data",
-  //                       "source": "oss-index",
-  //                       "cvss": {
-  //                         "attackVector": "Network",
-  //                         "attackComplexity": "Low",
-  //                         "privilegesRequired": "None",
-  //                         "userInteraction": "None",
-  //                         "scope": "Unchanged",
-  //                         "confidentialityImpact": "None",
-  //                         "integrityImpact": "None",
-  //                         "availabilityImpact": "High",
-  //                         "cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
-  //                       },
-  //                       "cvssScore": 7.5,
-  //                       "severity": "HIGH",
-  //                       "cves": [
-  //                         "CVE-2022-42004"
-  //                       ],
-  //                       "unique": false
-  //                     }
-  //                   ],
-  //                   "highestVulnerability": {
-  //                     "id": "CVE-2020-36518",
-  //                     "title": "[CVE-2020-36518] CWE-787: Out-of-bounds Write",
-  //                     "source": "oss-index",
-  //                     "cvss": {
-  //                       "attackVector": "Network",
-  //                       "attackComplexity": "Low",
-  //                       "privilegesRequired": "None",
-  //                       "userInteraction": "None",
-  //                       "scope": "Unchanged",
-  //                       "confidentialityImpact": "None",
-  //                       "integrityImpact": "None",
-  //                       "availabilityImpact": "High",
-  //                       "cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
-  //                     },
-  //                     "cvssScore": 7.5,
-  //                     "severity": "HIGH",
-  //                     "cves": [
-  //                       "CVE-2020-36518"
-  //                     ],
-  //                     "unique": false
-  //                   }
-  //                 }
-  //               ],
-  //               "highestVulnerability": {
-  //                 "id": "CVE-2020-36518",
-  //                 "title": "[CVE-2020-36518] CWE-787: Out-of-bounds Write",
-  //                 "source": "oss-index",
-  //                 "cvss": {
-  //                   "attackVector": "Network",
-  //                   "attackComplexity": "Low",
-  //                   "privilegesRequired": "None",
-  //                   "userInteraction": "None",
-  //                   "scope": "Unchanged",
-  //                   "confidentialityImpact": "None",
-  //                   "integrityImpact": "None",
-  //                   "availabilityImpact": "High",
-  //                   "cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
-  //                 },
-  //                 "cvssScore": 7.5,
-  //                 "severity": "HIGH",
-  //                 "cves": [
-  //                   "CVE-2020-36518"
-  //                 ],
-  //                 "unique": false
-  //               }
-  //             }
-  //           ]
-  //         }
-  //       }
-  //     },
-  //     "snyk": {
-  //       "status": {
-  //         "ok": true,
-  //         "name": "snyk",
-  //         "code": 200,
-  //         "message": "OK"
-  //       },
-  //       "sources": {
-  //         "snyk": {
-  //           "summary": {
-  //             "direct": 0,
-  //             "transitive": 4,
-  //             "total": 4,
-  //             "dependencies": 2,
-  //             "critical": 0,
-  //             "high": 1,
-  //             "medium": 3,
-  //             "low": 0,
-  //             "remediations": 0,
-  //             "recommendations": 0
-  //           },
-  //           "dependencies": [
-  //             {
-  //               "ref": "pkg:maven/io.quarkus/quarkus-hibernate-orm@2.13.5.Final",
-  //               "transitive": [
-  //                 {
-  //                   "ref": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.1",
-  //                   "issues": [
-  //                     {
-  //                       "id": "SNYK-JAVA-COMFASTERXMLJACKSONCORE-2421244",
-  //                       "title": "Denial of Service (DoS)",
-  //                       "source": "snyk",
-  //                       "cvss": {
-  //                         "attackVector": "Network",
-  //                         "attackComplexity": "Low",
-  //                         "privilegesRequired": "None",
-  //                         "userInteraction": "None",
-  //                         "scope": "Unchanged",
-  //                         "confidentialityImpact": "None",
-  //                         "integrityImpact": "None",
-  //                         "availabilityImpact": "High",
-  //                         "cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
-  //                       },
-  //                       "cvssScore": 7.5,
-  //                       "severity": "HIGH",
-  //                       "cves": [
-  //                         "CVE-2020-36518"
-  //                       ],
-  //                       "unique": false,
-  //                       "remediation": {
-  //                         "fixedIn": [
-  //                           "2.12.6.1",
-  //                           "2.13.2.1",
-  //                           "2.14.0"
-  //                         ]
-  //                       }
-  //                     },
-  //                     {
-  //                       "id": "SNYK-JAVA-COMFASTERXMLJACKSONCORE-3038424",
-  //                       "title": "Denial of Service (DoS)",
-  //                       "source": "snyk",
-  //                       "cvss": {
-  //                         "attackVector": "Network",
-  //                         "attackComplexity": "High",
-  //                         "privilegesRequired": "None",
-  //                         "userInteraction": "None",
-  //                         "scope": "Unchanged",
-  //                         "confidentialityImpact": "None",
-  //                         "integrityImpact": "None",
-  //                         "availabilityImpact": "High",
-  //                         "exploitCodeMaturity": "Proof of concept code",
-  //                         "cvss": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H/E:P"
-  //                       },
-  //                       "cvssScore": 5.9,
-  //                       "severity": "MEDIUM",
-  //                       "unique": true,
-  //                       "remediation": {
-  //                         "fixedIn": [
-  //                           "2.13.4"
-  //                         ]
-  //                       }
-  //                     },
-  //                     {
-  //                       "id": "SNYK-JAVA-COMFASTERXMLJACKSONCORE-3038426",
-  //                       "title": "Denial of Service (DoS)",
-  //                       "source": "snyk",
-  //                       "cvss": {
-  //                         "attackVector": "Network",
-  //                         "attackComplexity": "High",
-  //                         "privilegesRequired": "None",
-  //                         "userInteraction": "None",
-  //                         "scope": "Unchanged",
-  //                         "confidentialityImpact": "None",
-  //                         "integrityImpact": "None",
-  //                         "availabilityImpact": "High",
-  //                         "exploitCodeMaturity": "Proof of concept code",
-  //                         "cvss": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H/E:P"
-  //                       },
-  //                       "cvssScore": 5.9,
-  //                       "severity": "MEDIUM",
-  //                       "cves": [
-  //                         "CVE-2022-42003"
-  //                       ],
-  //                       "unique": false,
-  //                       "remediation": {
-  //                         "fixedIn": [
-  //                           "2.12.7.1",
-  //                           "2.13.4.2"
-  //                         ]
-  //                       }
-  //                     }
-  //                   ],
-  //                   "highestVulnerability": {
-  //                     "id": "SNYK-JAVA-COMFASTERXMLJACKSONCORE-2421244",
-  //                     "title": "Denial of Service (DoS)",
-  //                     "source": "snyk",
-  //                     "cvss": {
-  //                       "attackVector": "Network",
-  //                       "attackComplexity": "Low",
-  //                       "privilegesRequired": "None",
-  //                       "userInteraction": "None",
-  //                       "scope": "Unchanged",
-  //                       "confidentialityImpact": "None",
-  //                       "integrityImpact": "None",
-  //                       "availabilityImpact": "High",
-  //                       "cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
-  //                     },
-  //                     "cvssScore": 7.5,
-  //                     "severity": "HIGH",
-  //                     "cves": [
-  //                       "CVE-2020-36518"
-  //                     ],
-  //                     "unique": false,
-  //                     "remediation": {
-  //                       "fixedIn": [
-  //                         "2.12.6.1",
-  //                         "2.13.2.1",
-  //                         "2.14.0"
-  //                       ]
-  //                     }
-  //                   }
-  //                 }
-  //               ],
-  //               "highestVulnerability": {
-  //                 "id": "SNYK-JAVA-COMFASTERXMLJACKSONCORE-2421244",
-  //                 "title": "Denial of Service (DoS)",
-  //                 "source": "snyk",
-  //                 "cvss": {
-  //                   "attackVector": "Network",
-  //                   "attackComplexity": "Low",
-  //                   "privilegesRequired": "None",
-  //                   "userInteraction": "None",
-  //                   "scope": "Unchanged",
-  //                   "confidentialityImpact": "None",
-  //                   "integrityImpact": "None",
-  //                   "availabilityImpact": "High",
-  //                   "cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
-  //                 },
-  //                 "cvssScore": 7.5,
-  //                 "severity": "HIGH",
-  //                 "cves": [
-  //                   "CVE-2020-36518"
-  //                 ],
-  //                 "unique": false,
-  //                 "remediation": {
-  //                   "fixedIn": [
-  //                     "2.12.6.1",
-  //                     "2.13.2.1",
-  //                     "2.14.0"
-  //                   ]
-  //                 }
-  //               }
-  //             },
-  //             {
-  //               "ref": "pkg:maven/io.quarkus/quarkus-jdbc-postgresql@2.13.5.Final",
-  //               "transitive": [
-  //                 {
-  //                   "ref": "pkg:maven/org.postgresql/postgresql@42.5.0",
-  //                   "issues": [
-  //                     {
-  //                       "id": "SNYK-JAVA-ORGPOSTGRESQL-3146847",
-  //                       "title": "Information Exposure",
-  //                       "source": "snyk",
-  //                       "cvss": {
-  //                         "attackVector": "Local",
-  //                         "attackComplexity": "High",
-  //                         "privilegesRequired": "Low",
-  //                         "userInteraction": "None",
-  //                         "scope": "Unchanged",
-  //                         "confidentialityImpact": "High",
-  //                         "integrityImpact": "None",
-  //                         "availabilityImpact": "None",
-  //                         "cvss": "CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:H/I:N/A:N"
-  //                       },
-  //                       "cvssScore": 4.7,
-  //                       "severity": "MEDIUM",
-  //                       "cves": [
-  //                         "CVE-2022-41946"
-  //                       ],
-  //                       "unique": false,
-  //                       "remediation": {
-  //                         "fixedIn": [
-  //                           "42.2.27",
-  //                           "42.3.8",
-  //                           "42.4.3",
-  //                           "42.5.1"
-  //                         ]
-  //                       }
-  //                     }
-  //                   ],
-  //                   "highestVulnerability": {
-  //                     "id": "SNYK-JAVA-ORGPOSTGRESQL-3146847",
-  //                     "title": "Information Exposure",
-  //                     "source": "snyk",
-  //                     "cvss": {
-  //                       "attackVector": "Local",
-  //                       "attackComplexity": "High",
-  //                       "privilegesRequired": "Low",
-  //                       "userInteraction": "None",
-  //                       "scope": "Unchanged",
-  //                       "confidentialityImpact": "High",
-  //                       "integrityImpact": "None",
-  //                       "availabilityImpact": "None",
-  //                       "cvss": "CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:H/I:N/A:N"
-  //                     },
-  //                     "cvssScore": 4.7,
-  //                     "severity": "MEDIUM",
-  //                     "cves": [
-  //                       "CVE-2022-41946"
-  //                     ],
-  //                     "unique": false,
-  //                     "remediation": {
-  //                       "fixedIn": [
-  //                         "42.2.27",
-  //                         "42.3.8",
-  //                         "42.4.3",
-  //                         "42.5.1"
-  //                       ]
-  //                     }
-  //                   }
-  //                 }
-  //               ],
-  //               "highestVulnerability": {
-  //                 "id": "SNYK-JAVA-ORGPOSTGRESQL-3146847",
-  //                 "title": "Information Exposure",
-  //                 "source": "snyk",
-  //                 "cvss": {
-  //                   "attackVector": "Local",
-  //                   "attackComplexity": "High",
-  //                   "privilegesRequired": "Low",
-  //                   "userInteraction": "None",
-  //                   "scope": "Unchanged",
-  //                   "confidentialityImpact": "High",
-  //                   "integrityImpact": "None",
-  //                   "availabilityImpact": "None",
-  //                   "cvss": "CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:H/I:N/A:N"
-  //                 },
-  //                 "cvssScore": 4.7,
-  //                 "severity": "MEDIUM",
-  //                 "cves": [
-  //                   "CVE-2022-41946"
-  //                 ],
-  //                 "unique": false,
-  //                 "remediation": {
-  //                   "fixedIn": [
-  //                     "42.2.27",
-  //                     "42.3.8",
-  //                     "42.4.3",
-  //                     "42.5.1"
-  //                   ]
-  //                 }
-  //               }
-  //             }
-  //           ]
-  //         }
-  //       }
-  //     }
-  //   }
-  // },
   ossIssueTemplate: 'http://ossindex.sonatype.org/vulnerability/__ISSUE_ID__',
   snykIssueTemplate: 'https://security.snyk.io/vuln/__ISSUE_ID__',
   snykSignup: 'https://app.snyk.io/login',
