@@ -18,11 +18,8 @@
 
 package com.redhat.exhort.integration.trustedcontent;
 
-import java.util.*;
-
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
-import org.apache.camel.model.dataformat.JsonLibrary;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import com.redhat.exhort.integration.Constants;
@@ -38,49 +35,43 @@ import jakarta.ws.rs.core.MediaType;
 @RegisterForReflection
 public class TrustedContentIntegration extends EndpointRouteBuilder {
 
-  @ConfigProperty(name = "api.trustedcontent.timeout", defaultValue = "5s")
+  @ConfigProperty(name = "api.trustedcontent.timeout", defaultValue = "30s")
   String timeout;
 
   @Inject TcResponseHandler responseHandler;
 
+  @Inject TrustedContentRequestBuilder requestBuilder;
+
   @Override
   public void configure() {
-
-    from(direct("recommendationsTrustedContent"))
-        .transform()
-        .method(TrustedContentRequestBuilder.class, "extractPurlsFromDependencyTree")
-        .process(this::handleHeaders)
-        .to(direct("tcRequest"))
-        .transform()
-        .method(TcResponseHandler.class, "responseToMap");
-
-    from(direct("tcRequest"))
-        .marshal()
-        .json()
-        .setHeader(Exchange.HTTP_PATH, constant(Constants.TRUSTED_CONTENT_PATH))
-        .setHeader(Exchange.HTTP_METHOD, constant(HttpMethod.POST))
-        .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.APPLICATION_JSON))
-        .circuitBreaker()
+    // fmt:off
+    from(direct("recommendTrustedContent"))
+      .routeId("recommendTrustedContent")
+      .circuitBreaker()
         .faultToleranceConfiguration()
-        .timeoutEnabled(true)
-        .timeoutDuration(timeout)
+          .timeoutEnabled(true)
+          .timeoutDuration(timeout)
         .end()
+        .transform().method(requestBuilder, "buildRequest")
+        .process(this::handleHeaders)
         .to(vertxHttp("{{api.trustedcontent.host}}"))
-        .unmarshal()
-        .json(JsonLibrary.Jackson, Map.class)
-        .endCircuitBreaker()
-        .onFallback()
-        .process(responseHandler::processResponseError)
-        .setBody(constant(Map.of("recommendations", Map.of())))
-        .end();
+        .transform(method(TcResponseHandler.class, "parseResponse"))
+      .endCircuitBreaker()
+      .onFallback()
+        .process(responseHandler::processResponseError);
+    // fmt:on
   }
 
   private void handleHeaders(Exchange exchange) {
     var message = exchange.getMessage();
-    message.removeHeader(Exchange.HTTP_PATH);
     message.removeHeader(Exchange.HTTP_QUERY);
     message.removeHeader(Exchange.HTTP_URI);
-    message.removeHeaders("*-token");
     message.removeHeader("Accept-Encoding");
+    message.removeHeaders("ex-*-token");
+    message.removeHeaders("ex-*-user");
+
+    message.setHeader(Exchange.HTTP_PATH, Constants.TRUSTED_CONTENT_PATH);
+    message.setHeader(Exchange.HTTP_METHOD, HttpMethod.POST);
+    message.setHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON);
   }
 }

@@ -18,69 +18,115 @@
 
 package com.redhat.exhort.integration.trustedcontent;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Stream;
+import java.util.Set;
 
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.api.Test;
 
+import com.redhat.exhort.api.PackageRef;
+import com.redhat.exhort.integration.Constants;
+
+import io.quarkus.test.junit.QuarkusTest;
+
+import jakarta.inject.Inject;
+
+@QuarkusTest
 class TcResponseHandlerTest {
 
-  static final String REDHAT_REPOSITORY_SUFFIX =
-      "repository_url=https://maven.repository.redhat.com/ga/&type=jar";
+  @Inject TcResponseHandler handler;
 
-  private static Stream<Arguments> getPayload() {
-    return Stream.of(
-        // full payload with pairs of purls and their recommendations - input, and expected output
-        Arguments.of(
-            Map.of(
-                "recommendations",
-                Map.of(
-                    "pkg:mgr/io.group/packagename@1.0.0",
-                    List.of(
-                        Map.of(
-                            "package",
-                            "pkg:mgr/io.group/packagename@1.0.0-redhat-00001"
-                                + REDHAT_REPOSITORY_SUFFIX)),
-                    "pkg:mgr/io.group/packagename2@1.0.0",
-                    List.of(
-                        Map.of(
-                            "package",
-                            "pkg:mgr/io.group/packagename2@1.0.0-redhat-00001"
-                                + REDHAT_REPOSITORY_SUFFIX)),
-                    "pkg:mgr/io.group/packagename3@1.0.0",
-                    List.of(
-                        Map.of(
-                            "package",
-                            "pkg:mgr/io.group/packagename3@1.0.0-redhat-00004"
-                                + REDHAT_REPOSITORY_SUFFIX)))),
-            Map.of(
-                "pkg:mgr/io.group/packagename@1.0.0",
-                "pkg:mgr/io.group/packagename@1.0.0-redhat-00001" + REDHAT_REPOSITORY_SUFFIX,
-                "pkg:mgr/io.group/packagename2@1.0.0",
-                "pkg:mgr/io.group/packagename2@1.0.0-redhat-00001" + REDHAT_REPOSITORY_SUFFIX,
-                "pkg:mgr/io.group/packagename3@1.0.0",
-                "pkg:mgr/io.group/packagename3@1.0.0-redhat-00004" + REDHAT_REPOSITORY_SUFFIX)),
-        // empty response
-        Arguments.of(Map.of("recommendations", Map.of()), Map.of()));
+  @Test
+  void testAggregation() throws IOException {
+    var response =
+        handler.parseResponse(
+            getClass()
+                .getClassLoader()
+                .getResourceAsStream("__files/trustedcontent/simple.json")
+                .readAllBytes());
+    assertNotNull(response);
+    assertTrue(response.status().getOk());
+    assertEquals("OK", response.status().getMessage());
+    assertEquals(200, response.status().getCode());
+    assertEquals(Constants.TRUSTED_CONTENT_PROVIDER, response.status().getName());
+
+    assertEquals(3, response.recommendations().size());
+
+    Map<String, ExpectedRecommendation> expectations = new HashMap<>();
+    expectations.put(
+        "pkg:maven/jakarta.interceptor/jakarta.interceptor-api@1.2.5?type=jar",
+        new ExpectedRecommendation(
+            "1.2.5.redhat-00003", Set.of("CVE-2023-2974", "CVE-2023-1584", "CVE-2023-28867")));
+    expectations.put(
+        "pkg:maven/io.quarkus/quarkus-narayana-jta@2.13.5.Final?type=jar",
+        new ExpectedRecommendation(
+            "2.13.8.Final-redhat-00006",
+            Set.of("CVE-2020-36518", "CVE-2023-44487", "CVE-2023-4853")));
+
+    expectations.put(
+        "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.1?type=jar",
+        new ExpectedRecommendation("2.13.4.2-redhat-00001", Collections.emptySet()));
+
+    expectations
+        .entrySet()
+        .forEach(
+            e -> {
+              var r = response.recommendations().get(new PackageRef(e.getKey()));
+              assertNotNull(r);
+              assertEquals(e.getValue().version(), r.packageName().version());
+              assertEquals(e.getValue().cves().size(), r.vulnerabilities().size());
+              assertTrue(e.getValue().cves().containsAll(r.vulnerabilities().keySet()));
+            });
   }
 
-  @ParameterizedTest
-  @MethodSource("getPayload")
-  void test_Payload_With_Purls(
-      Map<String, Map<String, List>> input, Map<String, String> expectedOutput) {
-    TcResponseHandler tcResponseHandler = new TcResponseHandler();
-    try {
-      Map<String, String> actualOutput = tcResponseHandler.responseToMap(input);
-      assertEquals(expectedOutput, actualOutput);
+  @Test
+  void testIgnoreAffected() throws IOException {
+    var response =
+        handler.parseResponse(
+            getClass()
+                .getClassLoader()
+                .getResourceAsStream("__files/trustedcontent/affected.json")
+                .readAllBytes());
+    assertNotNull(response);
+    assertTrue(response.status().getOk());
+    assertEquals("OK", response.status().getMessage());
+    assertEquals(200, response.status().getCode());
+    assertEquals(Constants.TRUSTED_CONTENT_PROVIDER, response.status().getName());
 
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
+    var r =
+        response
+            .recommendations()
+            .get(
+                new PackageRef(
+                    "pkg:maven/jakarta.interceptor/jakarta.interceptor-api@1.2.5?type=jar"));
+    assertNotNull(r);
+    assertEquals(5, r.vulnerabilities().size());
+    assertTrue(
+        r.vulnerabilities().values().stream().noneMatch(v -> v.getStatus().equals("Affected")));
   }
+
+  @Test
+  void testEmpty() throws IOException {
+    var response =
+        handler.parseResponse(
+            getClass()
+                .getClassLoader()
+                .getResourceAsStream("__files/trustedcontent/empty_report.json")
+                .readAllBytes());
+    assertNotNull(response);
+    assertTrue(response.status().getOk());
+    assertEquals("OK", response.status().getMessage());
+    assertEquals(200, response.status().getCode());
+    assertEquals(Constants.TRUSTED_CONTENT_PROVIDER, response.status().getName());
+
+    assertTrue(response.recommendations().isEmpty());
+  }
+
+  private static final record ExpectedRecommendation(String version, Set<String> cves) {}
 }

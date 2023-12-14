@@ -212,6 +212,7 @@ public abstract class AbstractAnalysisTest {
                     isEmpty);
               }
             });
+    verifyTrustedContentRequest();
   }
 
   protected void stubSnykTokenRequests() {
@@ -265,7 +266,27 @@ public abstract class AbstractAnalysisTest {
   protected void stubTrustedContentRequests() {
     server.stubFor(
         post(Constants.TRUSTED_CONTENT_PATH)
-            .willReturn(aResponse().withStatus(200).withBody("{ \"recommendations\": {}\n" + "}")));
+            .withHeader(Exchange.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON))
+            .willReturn(
+                aResponse()
+                    .withStatus(200)
+                    .withHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                    .withBodyFile("trustedcontent/empty_report.json")));
+    server.stubFor(
+        post(Constants.TRUSTED_CONTENT_PATH)
+            .withHeader(Exchange.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON))
+            .withRequestBody(
+                equalToJson(
+                    loadFileAsString("__files/trustedcontent/maven_request.json"), true, false))
+            .willReturn(
+                aResponse()
+                    .withStatus(200)
+                    .withHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                    .withBodyFile("trustedcontent/maven_report.json")));
+  }
+
+  protected void verifyTrustedContentRequest() {
+    server.verify(1, postRequestedFor(urlEqualTo(Constants.TRUSTED_CONTENT_PATH)));
   }
 
   protected void stubSnykRequests() {
@@ -421,5 +442,9 @@ public abstract class AbstractAnalysisTest {
 
   protected void verifyNoInteractionsWithOSS() {
     server.verify(0, postRequestedFor(urlEqualTo(Constants.OSS_INDEX_AUTH_COMPONENT_API_PATH)));
+  }
+
+  protected void verifyNoInteractionsWithTrustedContent() {
+    server.verify(0, postRequestedFor(urlEqualTo(Constants.TRUSTED_CONTENT_PATH)));
   }
 }

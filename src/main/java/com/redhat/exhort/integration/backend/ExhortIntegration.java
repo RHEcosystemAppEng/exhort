@@ -131,7 +131,7 @@ public class ExhortIntegration extends EndpointRouteBuilder {
       .process(this::processAnalysisRequest)
       .to(direct("findVulnerabilities"))
       .transform().method(ProviderAggregationStrategy.class, "toReport")
-      .enrich(direct("recommendationsTrustedContent"), tcResponseAggregation)
+      .enrich(direct("recommendTrustedContent"), tcResponseAggregation)
       .to(direct("report"))
       .to(seda("analyticsTrackAnalysis"))
       .process(this::cleanUpHeaders);

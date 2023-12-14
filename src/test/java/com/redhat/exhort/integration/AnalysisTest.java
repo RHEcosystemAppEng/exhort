@@ -99,7 +99,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .body()
             .as(AnalysisReport.class);
 
-    assertEquals(2, report.getProviders().size());
+    assertEquals(3, report.getProviders().size());
     assertEquals(
         401, report.getProviders().get(Constants.OSS_INDEX_PROVIDER).getStatus().getCode());
     var status = report.getProviders().get(Constants.SNYK_PROVIDER).getStatus();
@@ -113,6 +113,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
   @ParameterizedTest
   @ValueSource(strings = {CYCLONEDX, SPDX})
   public void testWithMixedPkgManagers(String sbom) {
+    stubTrustedContentRequests();
     var report =
         given()
             .header(CONTENT_TYPE, getContentType(sbom))
@@ -127,7 +128,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .body()
             .as(AnalysisReport.class);
 
-    assertEquals(2, report.getProviders().size());
+    assertEquals(3, report.getProviders().size());
     assertEquals(
         401, report.getProviders().get(Constants.OSS_INDEX_PROVIDER).getStatus().getCode());
     var status = report.getProviders().get(Constants.SNYK_PROVIDER).getStatus();
@@ -136,9 +137,12 @@ public class AnalysisTest extends AbstractAnalysisTest {
         "It is not supported to submit mixed Package Manager types. Found: [pypi, npm]",
         status.getMessage());
     assertEquals(Constants.SNYK_PROVIDER, status.getName());
+    assertEquals(
+        200, report.getProviders().get(Constants.TRUSTED_CONTENT_PROVIDER).getStatus().getCode());
     assertFalse(status.getOk());
 
     verifyNoInteractions();
+    verifyTrustedContentRequest();
   }
 
   @ParameterizedTest
@@ -276,7 +280,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .body()
             .as(AnalysisReport.class);
 
-    assertEquals(2, report.getProviders().size());
+    assertEquals(3, report.getProviders().size());
     assertEquals(
         401, report.getProviders().get(Constants.OSS_INDEX_PROVIDER).getStatus().getCode());
     assertTrue(report.getProviders().get(Constants.SNYK_PROVIDER).getSources().isEmpty());
@@ -308,7 +312,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .body()
             .as(AnalysisReport.class);
 
-    assertEquals(2, report.getProviders().size());
+    assertEquals(3, report.getProviders().size());
     assertEquals(
         401, report.getProviders().get(Constants.OSS_INDEX_PROVIDER).getStatus().getCode());
     assertTrue(report.getProviders().get(Constants.SNYK_PROVIDER).getSources().isEmpty());
@@ -483,12 +487,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
     assertEquals(2, dependencies.size());
 
     var hibernate =
-        PackageRef.builder()
-            .pkgManager(Constants.MAVEN_PKG_MANAGER)
-            .namespace("io.quarkus")
-            .name("quarkus-hibernate-orm")
-            .version("2.13.5.Final")
-            .build();
+        new PackageRef("pkg:maven/io.quarkus/quarkus-hibernate-orm@2.13.5.Final?type=jar");
     var report = getReport(hibernate.name(), dependencies);
     assertNotNull(report);
     assertEquals(hibernate, report.getRef());
@@ -497,12 +496,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
     assertEquals(1, report.getTransitive().size());
     var tReport = report.getTransitive().get(0);
     var jackson =
-        PackageRef.builder()
-            .pkgManager(Constants.MAVEN_PKG_MANAGER)
-            .namespace("com.fasterxml.jackson.core")
-            .name("jackson-databind")
-            .version("2.13.1")
-            .build();
+        new PackageRef("pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.1?type=jar");
     assertEquals(jackson, tReport.getRef());
     assertEquals(3, tReport.getIssues().size());
     assertEquals(tReport.getHighestVulnerability(), tReport.getIssues().get(0));

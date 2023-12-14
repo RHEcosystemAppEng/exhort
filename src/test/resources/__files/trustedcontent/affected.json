@@ -1,0 +1,46 @@
+{
+    "recommendations": {
+        "pkg:maven/jakarta.interceptor/jakarta.interceptor-api@1.2.5?type=jar": [
+            {
+                "package": "pkg:maven/jakarta.interceptor/jakarta.interceptor-api@1.2.5.redhat-00003?repository_url=https://maven.repository.redhat.com/ga/&type=jar",
+                "vulnerabilities": [
+                    {
+                        "id": "cve-2023-2974",
+                        "status": "Affected",
+                        "justification": "VulnerableCodeNotPresent"
+                    },
+                    {
+                        "id": "cve-2023-1584",
+                        "status": "Affected",
+                        "justification": "VulnerableCodeNotPresent"
+                    },
+                    {
+                        "id": "cve-2023-28867",
+                        "status": "Fixed",
+                        "justification": "VulnerableCodeNotPresent"
+                    },
+                    {
+                        "id": "cve-2020-36518",
+                        "status": "NotAffected",
+                        "justification": "VulnerableCodeNotPresent"
+                    },
+                    {
+                        "id": "cve-2023-44487",
+                        "status": "NotAffected",
+                        "justification": "VulnerableCodeNotPresent"
+                    },
+                    {
+                        "id": "cve-2023-4853",
+                        "status": "NotAffected",
+                        "justification": "VulnerableCodeNotPresent"
+                    },
+                    {
+                        "id": "cve-2022-45787",
+                        "status": "NotAffected",
+                        "justification": "VulnerableCodeNotPresent"
+                    }
+                ]
+            }
+        ]
+    }
+}
