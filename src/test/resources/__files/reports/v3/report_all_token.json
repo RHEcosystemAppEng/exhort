@@ -6,18 +6,18 @@
     },
     "vulnerabilities": {
       "direct": 0,
-      "total": 4,
+      "total": 7,
       "critical": 0,
-      "high": 1,
+      "high": 4,
       "medium": 3,
       "low": 0
     },
     "providerStatuses": [
       {
-        "ok": false,
+        "ok": true,
         "provider": "oss-index",
-        "status": 401,
-        "message": "Unauthorized: Verify the provided credentials are valid."
+        "status": 200,
+        "message": "OK"
       },
       {
         "ok": true,
@@ -34,6 +34,128 @@
     ]
   },
   "dependencies": [
+    {
+      "ref": "pkg:maven/io.quarkus/quarkus-hibernate-orm@2.13.5.Final?type=jar",
+      "transitive": [
+        {
+          "ref": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.1?type=jar",
+          "issues": [
+            {
+              "id": "CVE-2020-36518",
+              "title": "[CVE-2020-36518] CWE-787: Out-of-bounds Write",
+              "source": "oss-index",
+              "cvss": {
+                "attackVector": "Network",
+                "attackComplexity": "Low",
+                "privilegesRequired": "None",
+                "userInteraction": "None",
+                "scope": "Unchanged",
+                "confidentialityImpact": "None",
+                "integrityImpact": "None",
+                "availabilityImpact": "High",
+                "cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+              },
+              "cvssScore": 7.5,
+              "severity": "HIGH",
+              "cves": ["CVE-2020-36518"],
+              "unique": false
+            },
+            {
+              "id": "CVE-2022-42003",
+              "title": "[CVE-2022-42003] CWE-502: Deserialization of Untrusted Data",
+              "source": "oss-index",
+              "cvss": {
+                "attackVector": "Network",
+                "attackComplexity": "Low",
+                "privilegesRequired": "None",
+                "userInteraction": "None",
+                "scope": "Unchanged",
+                "confidentialityImpact": "None",
+                "integrityImpact": "None",
+                "availabilityImpact": "High",
+                "cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+              },
+              "cvssScore": 7.5,
+              "severity": "HIGH",
+              "cves": ["CVE-2022-42003"],
+              "unique": false
+            },
+            {
+              "id": "CVE-2022-42004",
+              "title": "[CVE-2022-42004] CWE-502: Deserialization of Untrusted Data",
+              "source": "oss-index",
+              "cvss": {
+                "attackVector": "Network",
+                "attackComplexity": "Low",
+                "privilegesRequired": "None",
+                "userInteraction": "None",
+                "scope": "Unchanged",
+                "confidentialityImpact": "None",
+                "integrityImpact": "None",
+                "availabilityImpact": "High",
+                "cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+              },
+              "cvssScore": 7.5,
+              "severity": "HIGH",
+              "cves": ["CVE-2022-42004"],
+              "unique": false
+            }
+          ],
+          "remediations": {
+            "CVE-2020-36518": {
+              "issueRef": "CVE-2020-36518",
+              "mavenPackage": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.2-redhat-00001?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
+              "productStatus": "NotAffected"
+            }
+          },
+          "highestVulnerability": {
+            "id": "CVE-2020-36518",
+            "title": "[CVE-2020-36518] CWE-787: Out-of-bounds Write",
+            "source": "oss-index",
+            "cvss": {
+              "attackVector": "Network",
+              "attackComplexity": "Low",
+              "privilegesRequired": "None",
+              "userInteraction": "None",
+              "scope": "Unchanged",
+              "confidentialityImpact": "None",
+              "integrityImpact": "None",
+              "availabilityImpact": "High",
+              "cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+            },
+            "cvssScore": 7.5,
+            "severity": "HIGH",
+            "cves": ["CVE-2020-36518"],
+            "unique": false
+          }
+        }
+      ],
+      "recommendation": "pkg:maven/io.quarkus/quarkus-hibernate-orm@2.13.8.Final-redhat-00006?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
+      "highestVulnerability": {
+        "id": "CVE-2020-36518",
+        "title": "[CVE-2020-36518] CWE-787: Out-of-bounds Write",
+        "source": "oss-index",
+        "cvss": {
+          "attackVector": "Network",
+          "attackComplexity": "Low",
+          "privilegesRequired": "None",
+          "userInteraction": "None",
+          "scope": "Unchanged",
+          "confidentialityImpact": "None",
+          "integrityImpact": "None",
+          "availabilityImpact": "High",
+          "cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+        },
+        "cvssScore": 7.5,
+        "severity": "HIGH",
+        "cves": ["CVE-2020-36518"],
+        "unique": false
+      }
+    },
+    {
+      "ref": "pkg:maven/io.quarkus/quarkus-jdbc-postgresql@2.13.5.Final?type=jar",
+      "recommendation": "pkg:maven/io.quarkus/quarkus-jdbc-postgresql@2.13.8.Final-redhat-00006?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar"
+    },
     {
       "ref": "pkg:maven/io.quarkus/quarkus-hibernate-orm@2.13.5.Final?type=jar",
       "transitive": [
