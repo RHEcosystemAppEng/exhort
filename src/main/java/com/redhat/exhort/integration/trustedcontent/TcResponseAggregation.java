@@ -34,6 +34,7 @@ import com.redhat.exhort.api.v4.AnalysisReport;
 import com.redhat.exhort.api.v4.DependencyReport;
 import com.redhat.exhort.api.v4.Issue;
 import com.redhat.exhort.api.v4.ProviderReport;
+import com.redhat.exhort.api.v4.Remediation;
 import com.redhat.exhort.api.v4.RemediationTrustedContent;
 import com.redhat.exhort.api.v4.Source;
 import com.redhat.exhort.api.v4.TransitiveDependencyReport;
@@ -186,6 +187,9 @@ public class TcResponseAggregation implements AggregationStrategy {
       var cve = issue.getCves().get(0);
       var vulnerability = recommendation.vulnerabilities().get(cve);
       if (vulnerability != null) {
+        if (issue.getRemediation() == null) {
+          issue.setRemediation(new Remediation());
+        }
         issue
             .getRemediation()
             .setTrustedContent(
