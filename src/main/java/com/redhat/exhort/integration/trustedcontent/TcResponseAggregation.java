@@ -145,7 +145,8 @@ public class TcResponseAggregation implements AggregationStrategy {
             dependencyReport -> {
               var recommendation = recommendations.get(dependencyReport.getRef());
 
-              if (recommendation != null) {
+              if (recommendation != null
+                  && !Objects.equals(dependencyReport.getRef(), recommendation.packageName())) {
                 dependencyReport.recommendation(recommendation.packageName());
                 dependencyReport.getIssues().stream()
                     .forEach(
