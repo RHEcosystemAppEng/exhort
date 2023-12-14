@@ -137,7 +137,7 @@ export interface Vulnerability {
   remediation?: {
     fixedIn?: string[] | null;
     trustedContent?: {
-      package: string | '';
+      ref: string | '';
       status: string | null;
       justification: string | null;
     };

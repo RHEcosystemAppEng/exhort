@@ -9,12 +9,150 @@ export const reportMixed: AppData = {
       "transitive" : 197
     },
     "providers" : {
-      "oss-index" : {
-        "status" : {
-          "ok" : false,
-          "name" : "oss-index",
-          "code" : 401,
-          "message" : "Unauthenticated"
+      "oss-index": {
+        "status": {
+          "ok": true,
+          "name": "oss-index",
+          "code": 200,
+          "message": "OK"
+        },
+        "sources": {
+          "oss-index": {
+            "summary": {
+              "direct": 0,
+              "transitive": 3,
+              "total": 3,
+              "dependencies": 1,
+              "critical": 0,
+              "high": 3,
+              "medium": 0,
+              "low": 0,
+              "remediations": 0,
+              "recommendations": 0
+            },
+            "dependencies": [
+              {
+                "ref": "pkg:maven/io.quarkus/quarkus-hibernate-orm@2.13.5.Final",
+                "transitive": [
+                  {
+                    "ref": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.1",
+                    "issues": [
+                      {
+                        "id": "CVE-2020-36518",
+                        "title": "[CVE-2020-36518] CWE-787: Out-of-bounds Write",
+                        "source": "oss-index",
+                        "cvss": {
+                          "attackVector": "Network",
+                          "attackComplexity": "Low",
+                          "privilegesRequired": "None",
+                          "userInteraction": "None",
+                          "scope": "Unchanged",
+                          "confidentialityImpact": "None",
+                          "integrityImpact": "None",
+                          "availabilityImpact": "High",
+                          "cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+                        },
+                        "cvssScore": 7.5,
+                        "severity": "HIGH",
+                        "cves": [
+                          "CVE-2020-36518"
+                        ],
+                        "unique": false
+                      },
+                      {
+                        "id": "CVE-2022-42003",
+                        "title": "[CVE-2022-42003] CWE-502: Deserialization of Untrusted Data",
+                        "source": "oss-index",
+                        "cvss": {
+                          "attackVector": "Network",
+                          "attackComplexity": "Low",
+                          "privilegesRequired": "None",
+                          "userInteraction": "None",
+                          "scope": "Unchanged",
+                          "confidentialityImpact": "None",
+                          "integrityImpact": "None",
+                          "availabilityImpact": "High",
+                          "cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+                        },
+                        "cvssScore": 7.5,
+                        "severity": "HIGH",
+                        "cves": [
+                          "CVE-2022-42003"
+                        ],
+                        "unique": false
+                      },
+                      {
+                        "id": "CVE-2022-42004",
+                        "title": "[CVE-2022-42004] CWE-502: Deserialization of Untrusted Data",
+                        "source": "oss-index",
+                        "cvss": {
+                          "attackVector": "Network",
+                          "attackComplexity": "Low",
+                          "privilegesRequired": "None",
+                          "userInteraction": "None",
+                          "scope": "Unchanged",
+                          "confidentialityImpact": "None",
+                          "integrityImpact": "None",
+                          "availabilityImpact": "High",
+                          "cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+                        },
+                        "cvssScore": 7.5,
+                        "severity": "HIGH",
+                        "cves": [
+                          "CVE-2022-42004"
+                        ],
+                        "unique": false
+                      }
+                    ],
+                    "highestVulnerability": {
+                      "id": "CVE-2020-36518",
+                      "title": "[CVE-2020-36518] CWE-787: Out-of-bounds Write",
+                      "source": "oss-index",
+                      "cvss": {
+                        "attackVector": "Network",
+                        "attackComplexity": "Low",
+                        "privilegesRequired": "None",
+                        "userInteraction": "None",
+                        "scope": "Unchanged",
+                        "confidentialityImpact": "None",
+                        "integrityImpact": "None",
+                        "availabilityImpact": "High",
+                        "cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+                      },
+                      "cvssScore": 7.5,
+                      "severity": "HIGH",
+                      "cves": [
+                        "CVE-2020-36518"
+                      ],
+                      "unique": false
+                    }
+                  }
+                ],
+                "highestVulnerability": {
+                  "id": "CVE-2020-36518",
+                  "title": "[CVE-2020-36518] CWE-787: Out-of-bounds Write",
+                  "source": "oss-index",
+                  "cvss": {
+                    "attackVector": "Network",
+                    "attackComplexity": "Low",
+                    "privilegesRequired": "None",
+                    "userInteraction": "None",
+                    "scope": "Unchanged",
+                    "confidentialityImpact": "None",
+                    "integrityImpact": "None",
+                    "availabilityImpact": "High",
+                    "cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+                  },
+                  "cvssScore": 7.5,
+                  "severity": "HIGH",
+                  "cves": [
+                    "CVE-2020-36518"
+                  ],
+                  "unique": false
+                }
+              }
+            ]
+          }
         }
       },
       "trusted-content" : {
@@ -72,7 +210,7 @@ export const reportMixed: AppData = {
                   "remediation" : {
                     "fixedIn" : [ "2.16.11.Final", "3.2.6.Final", "3.3.3" ],
                     "trustedContent" : {
-                      "package" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.8.Final-redhat-00006",
+                      "ref" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.8.Final-redhat-00006",
                       "status" : "Fixed",
                       "justification" : "NotProvided"
                     }
@@ -99,7 +237,7 @@ export const reportMixed: AppData = {
                   "remediation" : {
                     "fixedIn" : [ "2.16.8.Final", "3.2.1.Final" ],
                     "trustedContent" : {
-                      "package" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.8.Final-redhat-00006",
+                      "ref" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.8.Final-redhat-00006",
                       "status" : "Fixed",
                       "justification" : "NotProvided"
                     }
@@ -126,7 +264,7 @@ export const reportMixed: AppData = {
                   "remediation" : {
                     "fixedIn" : [ "2.13.7.Final" ],
                     "trustedContent" : {
-                      "package" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.8.Final-redhat-00006",
+                      "ref" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.8.Final-redhat-00006",
                       "status" : "Affected",
                       "justification" : "NotProvided"
                     }
@@ -154,7 +292,7 @@ export const reportMixed: AppData = {
                   "remediation" : {
                     "fixedIn" : [ "2.16.11.Final", "3.2.6.Final", "3.3.3" ],
                     "trustedContent" : {
-                      "package" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.8.Final-redhat-00006",
+                      "ref" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.8.Final-redhat-00006",
                       "status" : "Fixed",
                       "justification" : "NotProvided"
                     }
@@ -185,7 +323,7 @@ export const reportMixed: AppData = {
                   "remediation" : {
                     "fixedIn" : [ "4.1.100.Final" ],
                     "trustedContent" : {
-                      "package" : "pkg:maven/io.netty/netty-codec-http2@4.1.86.Final-redhat-00010",
+                      "ref" : "pkg:maven/io.netty/netty-codec-http2@4.1.86.Final-redhat-00010",
                       "status" : "Fixed",
                       "justification" : "NotProvided"
                     }
@@ -214,7 +352,7 @@ export const reportMixed: AppData = {
                   "remediation" : {
                     "fixedIn" : [ "4.1.100.Final" ],
                     "trustedContent" : {
-                      "package" : "pkg:maven/io.netty/netty-codec-http2@4.1.86.Final-redhat-00010",
+                      "ref" : "pkg:maven/io.netty/netty-codec-http2@4.1.86.Final-redhat-00010",
                       "status" : "Fixed",
                       "justification" : "NotProvided"
                     }
@@ -742,7 +880,7 @@ export const reportMixed: AppData = {
                   "remediation" : {
                     "fixedIn" : [ "4.3.8" ],
                     "trustedContent" : {
-                      "package" : "pkg:maven/io.vertx/vertx-web@4.3.4.redhat-00008?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
+                      "ref" : "pkg:maven/io.vertx/vertx-web@4.3.4.redhat-00008?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
                       "status" : "Affected",
                       "justification" : "NotProvided"
                     }
@@ -771,7 +909,7 @@ export const reportMixed: AppData = {
                   "remediation" : {
                     "fixedIn" : [ "4.3.8" ],
                     "trustedContent" : {
-                      "package" : "pkg:maven/io.vertx/vertx-web@4.3.4.redhat-00008?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
+                      "ref" : "pkg:maven/io.vertx/vertx-web@4.3.4.redhat-00008?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
                       "status" : "Affected",
                       "justification" : "NotProvided"
                     }
@@ -801,7 +939,7 @@ export const reportMixed: AppData = {
                 "remediation" : {
                   "fixedIn" : [ "2.16.11.Final", "3.2.6.Final", "3.3.3" ],
                   "trustedContent" : {
-                    "package" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.8.Final-redhat-00006",
+                    "ref" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.8.Final-redhat-00006",
                     "status" : "Fixed",
                     "justification" : "NotProvided"
                   }
@@ -833,7 +971,7 @@ export const reportMixed: AppData = {
                   "remediation" : {
                     "fixedIn" : [ "2.16.11.Final", "3.2.6.Final", "3.3.3" ],
                     "trustedContent" : {
-                      "package" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.8.Final-redhat-00006",
+                      "ref" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.8.Final-redhat-00006",
                       "status" : "Fixed",
                       "justification" : "NotProvided"
                     }
@@ -860,7 +998,7 @@ export const reportMixed: AppData = {
                   "remediation" : {
                     "fixedIn" : [ "2.16.8.Final", "3.2.1.Final" ],
                     "trustedContent" : {
-                      "package" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.8.Final-redhat-00006",
+                      "ref" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.8.Final-redhat-00006",
                       "status" : "Fixed",
                       "justification" : "NotProvided"
                     }
@@ -887,7 +1025,7 @@ export const reportMixed: AppData = {
                   "remediation" : {
                     "fixedIn" : [ "2.13.7.Final" ],
                     "trustedContent" : {
-                      "package" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.8.Final-redhat-00006",
+                      "ref" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.8.Final-redhat-00006",
                       "status" : "Affected",
                       "justification" : "NotProvided"
                     }
@@ -915,7 +1053,7 @@ export const reportMixed: AppData = {
                   "remediation" : {
                     "fixedIn" : [ "2.16.11.Final", "3.2.6.Final", "3.3.3" ],
                     "trustedContent" : {
-                      "package" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.8.Final-redhat-00006",
+                      "ref" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.8.Final-redhat-00006",
                       "status" : "Fixed",
                       "justification" : "NotProvided"
                     }
@@ -946,7 +1084,7 @@ export const reportMixed: AppData = {
                   "remediation" : {
                     "fixedIn" : [ "4.1.100.Final" ],
                     "trustedContent" : {
-                      "package" : "pkg:maven/io.netty/netty-codec-http2@4.1.86.Final-redhat-00010",
+                      "ref" : "pkg:maven/io.netty/netty-codec-http2@4.1.86.Final-redhat-00010",
                       "status" : "Fixed",
                       "justification" : "NotProvided"
                     }
@@ -975,7 +1113,7 @@ export const reportMixed: AppData = {
                   "remediation" : {
                     "fixedIn" : [ "4.1.100.Final" ],
                     "trustedContent" : {
-                      "package" : "pkg:maven/io.netty/netty-codec-http2@4.1.86.Final-redhat-00010",
+                      "ref" : "pkg:maven/io.netty/netty-codec-http2@4.1.86.Final-redhat-00010",
                       "status" : "Fixed",
                       "justification" : "NotProvided"
                     }
@@ -1503,7 +1641,7 @@ export const reportMixed: AppData = {
                   "remediation" : {
                     "fixedIn" : [ "4.3.8" ],
                     "trustedContent" : {
-                      "package" : "pkg:maven/io.vertx/vertx-web@4.3.4.redhat-00008?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
+                      "ref" : "pkg:maven/io.vertx/vertx-web@4.3.4.redhat-00008?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
                       "status" : "Affected",
                       "justification" : "NotProvided"
                     }
@@ -1532,7 +1670,7 @@ export const reportMixed: AppData = {
                   "remediation" : {
                     "fixedIn" : [ "4.3.8" ],
                     "trustedContent" : {
-                      "package" : "pkg:maven/io.vertx/vertx-web@4.3.4.redhat-00008?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
+                      "ref" : "pkg:maven/io.vertx/vertx-web@4.3.4.redhat-00008?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
                       "status" : "Affected",
                       "justification" : "NotProvided"
                     }
@@ -1562,7 +1700,7 @@ export const reportMixed: AppData = {
                 "remediation" : {
                   "fixedIn" : [ "2.16.11.Final", "3.2.6.Final", "3.3.3" ],
                   "trustedContent" : {
-                    "package" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.8.Final-redhat-00006",
+                    "ref" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.8.Final-redhat-00006",
                     "status" : "Fixed",
                     "justification" : "NotProvided"
                   }
@@ -1595,7 +1733,7 @@ export const reportMixed: AppData = {
                   "remediation" : {
                     "fixedIn" : [ "4.1.100.Final" ],
                     "trustedContent" : {
-                      "package" : "pkg:maven/io.netty/netty-codec-http2@4.1.86.Final-redhat-00010",
+                      "ref" : "pkg:maven/io.netty/netty-codec-http2@4.1.86.Final-redhat-00010",
                       "status" : "Fixed",
                       "justification" : "NotProvided"
                     }
@@ -1624,7 +1762,7 @@ export const reportMixed: AppData = {
                   "remediation" : {
                     "fixedIn" : [ "4.1.100.Final" ],
                     "trustedContent" : {
-                      "package" : "pkg:maven/io.netty/netty-codec-http2@4.1.86.Final-redhat-00010",
+                      "ref" : "pkg:maven/io.netty/netty-codec-http2@4.1.86.Final-redhat-00010",
                       "status" : "Fixed",
                       "justification" : "NotProvided"
                     }
@@ -2056,7 +2194,7 @@ export const reportMixed: AppData = {
                   "remediation" : {
                     "fixedIn" : [ "4.3.8" ],
                     "trustedContent" : {
-                      "package" : "pkg:maven/io.vertx/vertx-web@4.3.4.redhat-00008?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
+                      "ref" : "pkg:maven/io.vertx/vertx-web@4.3.4.redhat-00008?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
                       "status" : "Affected",
                       "justification" : "NotProvided"
                     }
@@ -2085,7 +2223,7 @@ export const reportMixed: AppData = {
                   "remediation" : {
                     "fixedIn" : [ "4.3.8" ],
                     "trustedContent" : {
-                      "package" : "pkg:maven/io.vertx/vertx-web@4.3.4.redhat-00008?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
+                      "ref" : "pkg:maven/io.vertx/vertx-web@4.3.4.redhat-00008?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
                       "status" : "Affected",
                       "justification" : "NotProvided"
                     }
@@ -2116,7 +2254,7 @@ export const reportMixed: AppData = {
                 "remediation" : {
                   "fixedIn" : [ "4.1.100.Final" ],
                   "trustedContent" : {
-                    "package" : "pkg:maven/io.netty/netty-codec-http2@4.1.86.Final-redhat-00010",
+                    "ref" : "pkg:maven/io.netty/netty-codec-http2@4.1.86.Final-redhat-00010",
                     "status" : "Fixed",
                     "justification" : "NotProvided"
                   }
@@ -2146,7 +2284,7 @@ export const reportMixed: AppData = {
                 "remediation" : {
                   "fixedIn" : [ "2.16.11.Final", "3.2.6.Final", "3.3.3" ],
                   "trustedContent" : {
-                    "package" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.8.Final-redhat-00006",
+                    "ref" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.8.Final-redhat-00006",
                     "status" : "Fixed",
                     "justification" : "NotProvided"
                   }
@@ -2173,7 +2311,7 @@ export const reportMixed: AppData = {
                 "remediation" : {
                   "fixedIn" : [ "2.16.8.Final", "3.2.1.Final" ],
                   "trustedContent" : {
-                    "package" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.8.Final-redhat-00006",
+                    "ref" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.8.Final-redhat-00006",
                     "status" : "Fixed",
                     "justification" : "NotProvided"
                   }
@@ -2200,7 +2338,7 @@ export const reportMixed: AppData = {
                 "remediation" : {
                   "fixedIn" : [ "2.13.7.Final" ],
                   "trustedContent" : {
-                    "package" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.8.Final-redhat-00006",
+                    "ref" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.8.Final-redhat-00006",
                     "status" : "Affected",
                     "justification" : "NotProvided"
                   }
@@ -2231,7 +2369,7 @@ export const reportMixed: AppData = {
                   "remediation" : {
                     "fixedIn" : [ "4.1.100.Final" ],
                     "trustedContent" : {
-                      "package" : "pkg:maven/io.netty/netty-codec-http2@4.1.86.Final-redhat-00010",
+                      "ref" : "pkg:maven/io.netty/netty-codec-http2@4.1.86.Final-redhat-00010",
                       "status" : "Fixed",
                       "justification" : "NotProvided"
                     }
@@ -2260,7 +2398,7 @@ export const reportMixed: AppData = {
                   "remediation" : {
                     "fixedIn" : [ "4.1.100.Final" ],
                     "trustedContent" : {
-                      "package" : "pkg:maven/io.netty/netty-codec-http2@4.1.86.Final-redhat-00010",
+                      "ref" : "pkg:maven/io.netty/netty-codec-http2@4.1.86.Final-redhat-00010",
                       "status" : "Fixed",
                       "justification" : "NotProvided"
                     }
@@ -2740,7 +2878,7 @@ export const reportMixed: AppData = {
                   "remediation" : {
                     "fixedIn" : [ "4.3.8" ],
                     "trustedContent" : {
-                      "package" : "pkg:maven/io.vertx/vertx-web@4.3.4.redhat-00008?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
+                      "ref" : "pkg:maven/io.vertx/vertx-web@4.3.4.redhat-00008?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
                       "status" : "Affected",
                       "justification" : "NotProvided"
                     }
@@ -2769,7 +2907,7 @@ export const reportMixed: AppData = {
                   "remediation" : {
                     "fixedIn" : [ "4.3.8" ],
                     "trustedContent" : {
-                      "package" : "pkg:maven/io.vertx/vertx-web@4.3.4.redhat-00008?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
+                      "ref" : "pkg:maven/io.vertx/vertx-web@4.3.4.redhat-00008?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
                       "status" : "Affected",
                       "justification" : "NotProvided"
                     }
@@ -2800,7 +2938,7 @@ export const reportMixed: AppData = {
                 "remediation" : {
                   "fixedIn" : [ "4.1.100.Final" ],
                   "trustedContent" : {
-                    "package" : "pkg:maven/io.netty/netty-codec-http2@4.1.86.Final-redhat-00010",
+                    "ref" : "pkg:maven/io.netty/netty-codec-http2@4.1.86.Final-redhat-00010",
                     "status" : "Fixed",
                     "justification" : "NotProvided"
                   }
