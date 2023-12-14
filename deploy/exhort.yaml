@@ -35,6 +35,16 @@ spec:
             secretKeyRef:
               name: exhort-secret
               key: api-snyk-token
+        - name: API_OSSINDEX_TRUSTIFICATION_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: exhort-secret
+              key: api-ossindex-trustification-token
+        - name: API_OSSINDEX_TRUSTIFICATION_USER
+          valueFrom:
+            secretKeyRef:
+              name: exhort-secret
+              key: api-ossindex-trustification-user  
         - name: MONITORING_ENABLED
           value: "true"
         - name: MONITORING_SENTRY_DSN

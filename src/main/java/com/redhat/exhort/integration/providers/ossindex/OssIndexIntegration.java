@@ -20,6 +20,7 @@ package com.redhat.exhort.integration.providers.ossindex;
 
 import java.util.Base64;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.AggregationStrategies;
@@ -39,8 +40,16 @@ import jakarta.ws.rs.core.MediaType;
 @ApplicationScoped
 public class OssIndexIntegration extends EndpointRouteBuilder {
 
-  @ConfigProperty(name = "api.ossindex.timeout", defaultValue = "1000s")
+  private static final String TRUSTIFICATION_SOURCE = "trustification";
+
+  @ConfigProperty(name = "api.ossindex.timeout", defaultValue = "10s")
   String timeout;
+
+  @ConfigProperty(name = "api.ossindex.trustification.user")
+  Optional<String> trustificationUser;
+
+  @ConfigProperty(name = "api.ossindex.trustification.token")
+  Optional<String> trustificationToken;
 
   @Inject VulnerabilityProvider vulnerabilityProvider;
 
@@ -55,6 +64,7 @@ public class OssIndexIntegration extends EndpointRouteBuilder {
     from(direct("ossIndexScan"))
       .routeId("ossIndexScan")
       .transform(method(OssIndexRequestBuilder.class, "split"))
+      .process(this::authenticateTrustificationSource)
       .choice()
         .when(method(OssIndexRequestBuilder.class, "missingAuthHeaders"))
           .setBody(method(OssIndexResponseHandler.class, "unauthenticatedResponse"))
@@ -116,5 +126,18 @@ public class OssIndexIntegration extends EndpointRouteBuilder {
         "Authorization", "Basic " + Base64.getEncoder().encodeToString(auth.toString().getBytes()));
     message.removeHeader(Constants.OSS_INDEX_USER_HEADER);
     message.removeHeader(Constants.OSS_INDEX_TOKEN_HEADER);
+  }
+
+  private void authenticateTrustificationSource(Exchange exchange) {
+    var headers = exchange.getIn().getHeaders();
+    var source = headers.get(Constants.RHDA_SOURCE_HEADER);
+    if (!TRUSTIFICATION_SOURCE.equals(source)) {
+      return;
+    }
+    if (!headers.containsKey(Constants.OSS_INDEX_USER_HEADER)
+        && !headers.containsKey(Constants.OSS_INDEX_TOKEN_HEADER)) {
+      headers.put(Constants.OSS_INDEX_USER_HEADER, trustificationUser.orElse(null));
+      headers.put(Constants.OSS_INDEX_TOKEN_HEADER, trustificationToken.orElse(null));
+    }
   }
 }
