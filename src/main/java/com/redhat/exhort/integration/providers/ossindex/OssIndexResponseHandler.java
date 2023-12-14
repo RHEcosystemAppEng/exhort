@@ -25,8 +25,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.camel.Body;
+import org.apache.camel.ExchangeProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +39,7 @@ import com.redhat.exhort.api.PackageRef;
 import com.redhat.exhort.api.v4.Issue;
 import com.redhat.exhort.api.v4.SeverityUtils;
 import com.redhat.exhort.config.ObjectMapperProducer;
+import com.redhat.exhort.integration.Constants;
 import com.redhat.exhort.integration.providers.ProviderResponseHandler;
 import com.redhat.exhort.model.CvssParser;
 import com.redhat.exhort.model.DependencyTree;
@@ -83,18 +86,26 @@ public class OssIndexResponseHandler extends ProviderResponseHandler {
   }
 
   public ProviderResponse responseToIssues(
-      @Body byte[] response, String privateProviders, DependencyTree tree) throws IOException {
+      @Body byte[] response,
+      String privateProviders,
+      @ExchangeProperty(Constants.DEPENDENCY_TREE_PROPERTY) DependencyTree tree)
+      throws IOException {
     var json = (ArrayNode) mapper.readTree(response);
-    return new ProviderResponse(getIssues(json), null);
+    return new ProviderResponse(getIssues(json, tree), null);
   }
 
-  private Map<String, List<Issue>> getIssues(ArrayNode response) {
+  private Map<String, List<Issue>> getIssues(ArrayNode response, DependencyTree tree) {
     Map<String, List<Issue>> reports = new HashMap<>();
+    Map<String, PackageRef> coordinates =
+        tree.getAll().stream()
+            .collect(
+                Collectors.toMap(
+                    d -> new PackageRef(d.toString()).purl().getCoordinates(), d -> d));
     response.forEach(
         n -> {
           var pkgRef = n.get("coordinates").asText();
           try {
-            var key = PackageRef.builder().purl(pkgRef).build();
+            var key = coordinates.get(pkgRef);
             List<Issue> issues = new ArrayList<>();
             var vulnerabilities = (ArrayNode) n.get("vulnerabilities");
             vulnerabilities.forEach(v -> issues.add(toIssue(v)));

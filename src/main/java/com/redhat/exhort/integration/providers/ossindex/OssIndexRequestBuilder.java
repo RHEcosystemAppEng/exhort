@@ -20,7 +20,6 @@ package com.redhat.exhort.integration.providers.ossindex;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import org.apache.camel.Body;
 import org.apache.camel.Header;
@@ -71,11 +70,9 @@ public class OssIndexRequestBuilder {
 
   public String buildRequest(List<PackageRef> packages) throws JsonProcessingException {
     var coordinates = mapper.createArrayNode();
-    packages.stream()
-        .map(PackageRef::purl)
-        .filter(Objects::nonNull)
-        .forEach(purl -> coordinates.add(purl.getCoordinates()));
-
+    // oss-index don't allow qualifiers
+    // getCoordinates method is NOT idempotent!
+    packages.forEach(p -> coordinates.add(new PackageRef(p.toString()).purl().getCoordinates()));
     var root = mapper.createObjectNode().set("coordinates", coordinates);
     return mapper.writeValueAsString(root);
   }

@@ -23,15 +23,15 @@
             "high": 3,
             "medium": 0,
             "low": 0,
-            "remediations": 0,
-            "recommendations": 0
+            "remediations": 1,
+            "recommendations": 2
           },
           "dependencies": [
             {
-              "ref": "pkg:maven/io.quarkus/quarkus-hibernate-orm@2.13.5.Final",
+              "ref": "pkg:maven/io.quarkus/quarkus-hibernate-orm@2.13.5.Final?type=jar",
               "transitive": [
                 {
-                  "ref": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.1",
+                  "ref": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.1?type=jar",
                   "issues": [
                     {
                       "id": "CVE-2020-36518",
@@ -51,7 +51,14 @@
                       "cvssScore": 7.5,
                       "severity": "HIGH",
                       "cves": ["CVE-2020-36518"],
-                      "unique": false
+                      "unique": false,
+                      "remediation": {
+                        "trustedContent": {
+                          "ref": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.2-redhat-00001?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
+                          "status": "NotAffected",
+                          "justification": "VulnerableCodeNotPresent"
+                        }
+                      }
                     },
                     {
                       "id": "CVE-2022-42003",
@@ -112,10 +119,18 @@
                     "cvssScore": 7.5,
                     "severity": "HIGH",
                     "cves": ["CVE-2020-36518"],
-                    "unique": false
+                    "unique": false,
+                    "remediation": {
+                      "trustedContent": {
+                        "ref": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.2-redhat-00001?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
+                        "status": "NotAffected",
+                        "justification": "VulnerableCodeNotPresent"
+                      }
+                    }
                   }
                 }
               ],
+              "recommendation": "pkg:maven/io.quarkus/quarkus-hibernate-orm@2.13.8.Final-redhat-00006?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
               "highestVulnerability": {
                 "id": "CVE-2020-36518",
                 "title": "[CVE-2020-36518] CWE-787: Out-of-bounds Write",
@@ -134,8 +149,19 @@
                 "cvssScore": 7.5,
                 "severity": "HIGH",
                 "cves": ["CVE-2020-36518"],
-                "unique": false
+                "unique": false,
+                "remediation": {
+                  "trustedContent": {
+                    "ref": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.2-redhat-00001?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
+                    "status": "NotAffected",
+                    "justification": "VulnerableCodeNotPresent"
+                  }
+                }
               }
+            },
+            {
+              "ref": "pkg:maven/io.quarkus/quarkus-jdbc-postgresql@2.13.5.Final?type=jar",
+              "recommendation": "pkg:maven/io.quarkus/quarkus-jdbc-postgresql@2.13.8.Final-redhat-00006?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar"
             }
           ]
         }
@@ -167,15 +193,15 @@
             "high": 1,
             "medium": 3,
             "low": 0,
-            "remediations": 0,
-            "recommendations": 0
+            "remediations": 1,
+            "recommendations": 2
           },
           "dependencies": [
             {
-              "ref": "pkg:maven/io.quarkus/quarkus-hibernate-orm@2.13.5.Final",
+              "ref": "pkg:maven/io.quarkus/quarkus-hibernate-orm@2.13.5.Final?type=jar",
               "transitive": [
                 {
-                  "ref": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.1",
+                  "ref": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.1?type=jar",
                   "issues": [
                     {
                       "id": "SNYK-JAVA-COMFASTERXMLJACKSONCORE-2421244",
@@ -197,7 +223,12 @@
                       "cves": ["CVE-2020-36518"],
                       "unique": false,
                       "remediation": {
-                        "fixedIn": ["2.12.6.1", "2.13.2.1", "2.14.0"]
+                        "fixedIn": ["2.12.6.1", "2.13.2.1", "2.14.0"],
+                        "trustedContent": {
+                          "ref": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.2-redhat-00001?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
+                          "status": "NotAffected",
+                          "justification": "VulnerableCodeNotPresent"
+                        }
                       }
                     },
                     {
@@ -268,11 +299,17 @@
                     "cves": ["CVE-2020-36518"],
                     "unique": false,
                     "remediation": {
-                      "fixedIn": ["2.12.6.1", "2.13.2.1", "2.14.0"]
+                      "fixedIn": ["2.12.6.1", "2.13.2.1", "2.14.0"],
+                      "trustedContent": {
+                        "ref": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.2-redhat-00001?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
+                        "status": "NotAffected",
+                        "justification": "VulnerableCodeNotPresent"
+                      }
                     }
                   }
                 }
               ],
+              "recommendation": "pkg:maven/io.quarkus/quarkus-hibernate-orm@2.13.8.Final-redhat-00006?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
               "highestVulnerability": {
                 "id": "SNYK-JAVA-COMFASTERXMLJACKSONCORE-2421244",
                 "title": "Denial of Service (DoS)",
@@ -293,15 +330,20 @@
                 "cves": ["CVE-2020-36518"],
                 "unique": false,
                 "remediation": {
-                  "fixedIn": ["2.12.6.1", "2.13.2.1", "2.14.0"]
+                  "fixedIn": ["2.12.6.1", "2.13.2.1", "2.14.0"],
+                  "trustedContent": {
+                    "ref": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.2-redhat-00001?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
+                    "status": "NotAffected",
+                    "justification": "VulnerableCodeNotPresent"
+                  }
                 }
               }
             },
             {
-              "ref": "pkg:maven/io.quarkus/quarkus-jdbc-postgresql@2.13.5.Final",
+              "ref": "pkg:maven/io.quarkus/quarkus-jdbc-postgresql@2.13.5.Final?type=jar",
               "transitive": [
                 {
-                  "ref": "pkg:maven/org.postgresql/postgresql@42.5.0",
+                  "ref": "pkg:maven/org.postgresql/postgresql@42.5.0?type=jar",
                   "issues": [
                     {
                       "id": "SNYK-JAVA-ORGPOSTGRESQL-3146847",
@@ -352,6 +394,7 @@
                   }
                 }
               ],
+              "recommendation": "pkg:maven/io.quarkus/quarkus-jdbc-postgresql@2.13.8.Final-redhat-00006?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
               "highestVulnerability": {
                 "id": "SNYK-JAVA-ORGPOSTGRESQL-3146847",
                 "title": "Information Exposure",
