@@ -87,13 +87,13 @@ public class HtmlReportTest extends AbstractAnalysisTest {
     page = snykSourceBtn.click();
 
     DomNodeList<DomElement> tables = page.getElementsByTagName("table");
-    assertEquals(1, tables.size());
+    assertEquals(2, tables.size());
     DomElement snykTable = tables.get(0);
     HtmlTableBody tbody = getTableBodyForDependency("io.quarkus:quarkus-hibernate-orm", snykTable);
     assertNotNull(tbody);
     page = expandTransitiveTableDataCell(tbody);
     tables = page.getElementsByTagName("table");
-    assertEquals(2, tables.size());
+    assertEquals(3, tables.size());
     snykTable = tables.get(1);
     List<HtmlTableBody> tbodies = snykTable.getByXPath(".//tbody");
     HtmlTableBody privateIssueTbody =
@@ -116,8 +116,9 @@ public class HtmlReportTest extends AbstractAnalysisTest {
     assertNotNull(ossIndexSourceBtn);
     page = ossIndexSourceBtn.click();
 
-    HtmlHeading2 heading = page.getFirstByXPath("//div[@class='pf-v5-c-empty-state__title']/h2");
-    assertEquals("Set up oss-index", heading.getTextContent());
+    List<HtmlHeading2> headings = page.getByXPath("//div[@class='pf-v5-c-empty-state__title']/h2");
+    assertEquals("Set up oss-index", headings.get(1).getTextContent());
+    assertEquals("No results found", headings.get(0).getTextContent());
 
     verifySnykRequest(null);
   }

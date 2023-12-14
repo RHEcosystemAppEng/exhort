@@ -52,6 +52,7 @@ public final class Constants {
 
   public static final String SNYK_PROVIDER = "snyk";
   public static final String OSS_INDEX_PROVIDER = "oss-index";
+  public static final String TRUSTED_CONTENT_PROVIDER = "trusted-content";
   public static final String UNKNOWN_PROVIDER = "unknown";
 
   public static final String HTTP_UNAUTHENTICATED = "Unauthenticated";

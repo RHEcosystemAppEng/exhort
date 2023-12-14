@@ -99,7 +99,9 @@ public class AnalysisReportV3Converter {
             .recommendation(d.getRecommendation())
             .issues(issues)
             .remediations(getRemediations(d.getIssues()));
-    d.getTransitive().forEach(t -> dep.addTransitiveItem(getTransitive(t)));
+    if (d.getTransitive() != null) {
+      d.getTransitive().forEach(t -> dep.addTransitiveItem(getTransitive(t)));
+    }
     return dep;
   }
 
@@ -119,6 +121,9 @@ public class AnalysisReportV3Converter {
   }
 
   private static Issue getIssue(com.redhat.exhort.api.v4.Issue i) {
+    if (i == null) {
+      return null;
+    }
     return new Issue()
         .cves(i.getCves())
         .id(i.getId())
@@ -133,6 +138,9 @@ public class AnalysisReportV3Converter {
   private static Map<String, Remediation> getRemediations(
       List<com.redhat.exhort.api.v4.Issue> issues) {
     Map<String, Remediation> remediations = new HashMap<>();
+    if (issues == null) {
+      return Collections.emptyMap();
+    }
     issues.forEach(
         i -> {
           if (i.getRemediation() != null && i.getRemediation().getTrustedContent() != null) {
@@ -140,7 +148,7 @@ public class AnalysisReportV3Converter {
             var r =
                 new Remediation()
                     .issueRef(i.getId())
-                    .mavenPackage(tc.getPackage())
+                    .mavenPackage(tc.getRef())
                     .productStatus(tc.getStatus());
             i.getCves().forEach(cve -> remediations.put(i.getId(), r));
           }

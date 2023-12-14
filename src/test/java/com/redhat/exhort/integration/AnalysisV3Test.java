@@ -164,6 +164,7 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
     assertJson("reports/v3/report_all_token.json", body);
     verifySnykRequest(OK_TOKEN);
     verifyOssRequest(OK_USER, OK_TOKEN, false);
+    verifyTrustedContentRequest();
   }
 
   @Test
@@ -188,6 +189,7 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
 
     assertJson("reports/v3/report_all_no_snyk_token.json", body);
     verifySnykRequest(null);
+    verifyTrustedContentRequest();
   }
 
   @Test
@@ -210,7 +212,7 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
             .body()
             .as(AnalysisReport.class);
 
-    assertEquals(2, report.getSummary().getProviderStatuses().size());
+    assertEquals(3, report.getSummary().getProviderStatuses().size());
     var status =
         report.getSummary().getProviderStatuses().stream()
             .filter(ps -> ps.getProvider().equals(Constants.SNYK_PROVIDER))
@@ -250,7 +252,7 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
             .body()
             .as(AnalysisReport.class);
 
-    assertEquals(2, report.getSummary().getProviderStatuses().size());
+    assertEquals(3, report.getSummary().getProviderStatuses().size());
     var status =
         report.getSummary().getProviderStatuses().stream()
             .filter(ps -> ps.getProvider().equals(Constants.SNYK_PROVIDER))

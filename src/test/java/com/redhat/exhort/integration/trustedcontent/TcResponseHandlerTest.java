@@ -18,157 +18,115 @@
 
 package com.redhat.exhort.integration.trustedcontent;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
+import java.util.Set;
 
-import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.api.Test;
 
 import com.redhat.exhort.api.PackageRef;
-import com.redhat.exhort.model.trustedcontent.TcRecommendation;
-import com.redhat.exhort.model.trustedcontent.TrustedContentResponse;
-import com.redhat.exhort.model.trustedcontent.Vulnerability;
+import com.redhat.exhort.integration.Constants;
 
+import io.quarkus.test.junit.QuarkusTest;
+
+import jakarta.inject.Inject;
+
+@QuarkusTest
 class TcResponseHandlerTest {
 
-  static final String REDHAT_REPOSITORY_SUFFIX =
-      "repository_url=https://maven.repository.redhat.com/ga/&type=jar";
+  @Inject TcResponseHandler handler;
 
-  private static Stream<Arguments> getPayload() {
-    return Stream.of(
-        // full payload with pairs of purls and their recommendations - input, and expected output
-        Arguments.of(
-            "{\"recommendations\": {\n"
-                + "        \"pkg:maven/io.quarkus/quarkus-vertx-http@2.13.5.Final\": [\n"
-                + "            {\n"
-                + "                \"package\":"
-                + " \"pkg:maven/io.quarkus/quarkus-vertx-http@2.13.8.Final-redhat-00004?repository_url=https://maven.repository.redhat.com/ga/&type=jar\",\n"
-                + "                \"vulnerabilities\": [\n"
-                + "                    {\n"
-                + "                        \"id\": \"cve-2023-0044\",\n"
-                + "                        \"status\": \"Affected\",\n"
-                + "                        \"justification\": \"NotProvided\"\n"
-                + "                    },\n"
-                + "                    {\n"
-                + "                        \"id\": \"cve-2023-0481\",\n"
-                + "                        \"status\": \"NotAffected\",\n"
-                + "                        \"justification\": \"VulnerableCodeNotPresent\"\n"
-                + "                    },\n"
-                + "                    {\n"
-                + "                        \"id\": \"cve-2023-2974\",\n"
-                + "                        \"status\": \"Fixed\",\n"
-                + "                        \"justification\": \"NotProvided\"\n"
-                + "                    },\n"
-                + "                    {\n"
-                + "                        \"id\": \"cve-2023-1584\",\n"
-                + "                        \"status\": \"NotAffected\",\n"
-                + "                        \"justification\": \"VulnerableCodeNotPresent\"\n"
-                + "                    },\n"
-                + "                    {\n"
-                + "                        \"id\": \"cve-2023-28867\",\n"
-                + "                        \"status\": \"NotAffected\",\n"
-                + "                        \"justification\": \"VulnerableCodeNotPresent\"\n"
-                + "                    },\n"
-                + "                    {\n"
-                + "                        \"id\": \"cve-2022-45787\",\n"
-                + "                        \"status\": \"NotAffected\",\n"
-                + "                        \"justification\": \"VulnerableCodeNotPresent\"\n"
-                + "                    }\n"
-                + "                ]\n"
-                + "            },\n"
-                + "            {\n"
-                + "                \"package\":"
-                + " \"pkg:maven/io.quarkus/quarkus-vertx-http@2.13.8.Final-redhat-00006?repository_url=https://maven.repository.redhat.com/ga/&type=jar\",\n"
-                + "                \"vulnerabilities\": [\n"
-                + "                    {\n"
-                + "                        \"id\": \"cve-2023-44487\",\n"
-                + "                        \"status\": \"NotAffected\",\n"
-                + "                        \"justification\": \"VulnerableCodeNotPresent\"\n"
-                + "                    }\n"
-                + "                ]\n"
-                + "            },\n"
-                + "            {\n"
-                + "                \"package\":"
-                + " \"pkg:maven/io.quarkus/quarkus-vertx-http@2.13.8.Final-redhat-00005?repository_url=https://maven.repository.redhat.com/ga/&type=jar\",\n"
-                + "                \"vulnerabilities\": [\n"
-                + "                    {\n"
-                + "                        \"id\": \"cve-2023-4853\",\n"
-                + "                        \"status\": \"Fixed\",\n"
-                + "                        \"justification\": \"NotProvided\"\n"
-                + "                    }\n"
-                + "                ]\n"
-                + "            }\n"
-                + "        ]\n"
-                + "    }\n"
-                + "}",
-            buildEquivalentTrustedContentResponse()),
+  @Test
+  void testAggregation() throws IOException {
+    var response =
+        handler.parseResponse(
+            getClass()
+                .getClassLoader()
+                .getResourceAsStream("__files/trustedcontent/simple.json")
+                .readAllBytes());
+    assertNotNull(response);
+    assertTrue(response.status().getOk());
+    assertEquals("OK", response.status().getMessage());
+    assertEquals(200, response.status().getCode());
+    assertEquals(Constants.TRUSTED_CONTENT_PROVIDER, response.status().getName());
 
-        // empty response
-        Arguments.of("{ \"recommendations\": {}\n}", new TrustedContentResponse(null)));
+    assertEquals(3, response.recommendations().size());
+
+    Map<String, ExpectedRecommendation> expectations = new HashMap<>();
+    expectations.put(
+        "pkg:maven/jakarta.interceptor/jakarta.interceptor-api@1.2.5?type=jar",
+        new ExpectedRecommendation(
+            "1.2.5.redhat-00003", Set.of("CVE-2023-2974", "CVE-2023-1584", "CVE-2023-28867")));
+    expectations.put(
+        "pkg:maven/io.quarkus/quarkus-narayana-jta@2.13.5.Final?type=jar",
+        new ExpectedRecommendation(
+            "2.13.8.Final-redhat-00006",
+            Set.of("CVE-2020-36518", "CVE-2023-44487", "CVE-2023-4853")));
+
+    expectations.put(
+        "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.1?type=jar",
+        new ExpectedRecommendation("2.13.4.2-redhat-00001", Collections.emptySet()));
+
+    expectations
+        .entrySet()
+        .forEach(
+            e -> {
+              var r = response.recommendations().get(new PackageRef(e.getKey()));
+              assertNotNull(r);
+              assertEquals(e.getValue().version(), r.packageName().version());
+              assertEquals(e.getValue().cves().size(), r.vulnerabilities().size());
+              assertTrue(e.getValue().cves().containsAll(r.vulnerabilities().keySet()));
+            });
   }
 
-  static TrustedContentResponse buildEquivalentTrustedContentResponse() {
-    Map<String, List<TcRecommendation>> recommendationsMap = new HashMap<>();
-    recommendationsMap.put(
-        "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.5.Final",
-        buildTcRecommendationsList(
-            "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.8.Final",
-            List.of("00004", "00005", "00006")));
-    return TrustedContentResponse.builder().recommendationsMatching(recommendationsMap).build();
+  @Test
+  void testIgnoreAffected() throws IOException {
+    var response =
+        handler.parseResponse(
+            getClass()
+                .getClassLoader()
+                .getResourceAsStream("__files/trustedcontent/affected.json")
+                .readAllBytes());
+    assertNotNull(response);
+    assertTrue(response.status().getOk());
+    assertEquals("OK", response.status().getMessage());
+    assertEquals(200, response.status().getCode());
+    assertEquals(Constants.TRUSTED_CONTENT_PROVIDER, response.status().getName());
+
+    var r =
+        response
+            .recommendations()
+            .get(
+                new PackageRef(
+                    "pkg:maven/jakarta.interceptor/jakarta.interceptor-api@1.2.5?type=jar"));
+    assertNotNull(r);
+    assertEquals(5, r.vulnerabilities().size());
+    assertTrue(
+        r.vulnerabilities().values().stream().noneMatch(v -> v.getStatus().equals("Affected")));
   }
 
-  static List<TcRecommendation> buildTcRecommendationsList(
-      String redhatPackage, List<String> classifiers) {
-    List<TcRecommendation> recommendations = new ArrayList<>();
-    classifiers.forEach(
-        classifier -> {
-          recommendations.add(
-              new TcRecommendation(
-                  new PackageRef(redhatPackage + "-" + classifier),
-                  buildVulnerabilitiesList(classifier)));
-        });
+  @Test
+  void testEmpty() throws IOException {
+    var response =
+        handler.parseResponse(
+            getClass()
+                .getClassLoader()
+                .getResourceAsStream("__files/trustedcontent/empty_report.json")
+                .readAllBytes());
+    assertNotNull(response);
+    assertTrue(response.status().getOk());
+    assertEquals("OK", response.status().getMessage());
+    assertEquals(200, response.status().getCode());
+    assertEquals(Constants.TRUSTED_CONTENT_PROVIDER, response.status().getName());
 
-    return recommendations;
+    assertTrue(response.recommendations().isEmpty());
   }
 
-  private static List<Vulnerability> buildVulnerabilitiesList(String classifier) {
-    switch (classifier) {
-      case "00004":
-        return List.of(
-            new Vulnerability("cve-2023-0044", "Affected", "NotProvided"),
-            new Vulnerability("cve-2023-0481", "NotAffected", "VulnerableCodeNotPresent"),
-            new Vulnerability("ccve-2023-2974", "Fixed", "NotProvided"),
-            new Vulnerability("cve-2023-1584", "NotAffected", "VulnerableCodeNotPresent"),
-            new Vulnerability("cve-2023-28867", "NotAffected", "VulnerableCodeNotPresent"),
-            new Vulnerability("cve-2022-45787", "NotAffected", "VulnerableCodeNotPresent"));
-      case "00005":
-        return List.of(new Vulnerability("cve-2023-4853", "Fixed", "NotProvided"));
-
-      case "00006":
-        return List.of(
-            new Vulnerability("cve-2023-44487", "NotAffected", "VulnerableCodeNotPresent"));
-
-      default:
-        return List.of();
-    }
-  }
-
-  //  @ParameterizedTest
-  //  @MethodSource("getPayload")
-  void test_Payload_With_Purls(String input, TrustedContentResponse expectedOutput) {
-    TcResponseHandler tcResponseHandler = new TcResponseHandler();
-    try {
-      byte[] bytes = input.getBytes();
-      TrustedContentResponse actualOutput = tcResponseHandler.responseToMap(bytes);
-      assertEquals(expectedOutput, actualOutput);
-
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-  }
+  private static final record ExpectedRecommendation(String version, Set<String> cves) {}
 }

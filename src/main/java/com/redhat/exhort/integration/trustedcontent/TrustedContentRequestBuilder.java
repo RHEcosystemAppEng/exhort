@@ -18,25 +18,32 @@
 
 package com.redhat.exhort.integration.trustedcontent;
 
-import java.util.*;
-
 import org.apache.camel.ExchangeProperty;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.redhat.exhort.api.PackageRef;
 import com.redhat.exhort.integration.Constants;
 import com.redhat.exhort.model.DependencyTree;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+
+@ApplicationScoped
 @RegisterForReflection
 public class TrustedContentRequestBuilder {
 
-  public Map<String, List<String>> extractPurlsFromDependencyTree(
-      @ExchangeProperty(Constants.DEPENDENCY_TREE_PROPERTY) DependencyTree tree) {
-    Map<String, List<String>> purlsMap = new HashMap<>();
+  @Inject ObjectMapper mapper;
 
-    List<String> allPurls = tree.getAll().stream().map(PackageRef::toString).toList();
-    purlsMap.put("purls", allPurls);
-    return purlsMap;
+  public String buildRequest(
+      @ExchangeProperty(Constants.DEPENDENCY_TREE_PROPERTY) DependencyTree tree)
+      throws JsonProcessingException {
+
+    var purls = mapper.createArrayNode();
+    tree.getAll().stream().map(PackageRef::toString).forEach(purls::add);
+    var obj = mapper.createObjectNode().set("purls", purls);
+    return mapper.writeValueAsString(obj);
   }
 }

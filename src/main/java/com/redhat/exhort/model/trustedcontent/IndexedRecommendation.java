@@ -21,7 +21,34 @@ package com.redhat.exhort.model.trustedcontent;
 import java.util.Map;
 
 import com.redhat.exhort.api.PackageRef;
-import com.redhat.exhort.api.v4.ProviderStatus;
 
-public record TrustedContentResponse(
-    Map<PackageRef, IndexedRecommendation> recommendations, ProviderStatus status) {}
+import io.quarkus.runtime.annotations.RegisterForReflection;
+
+@RegisterForReflection
+public record IndexedRecommendation(
+    PackageRef packageName, Map<String, Vulnerability> vulnerabilities) {
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  public static class Builder {
+    public PackageRef packageName;
+
+    public Map<String, Vulnerability> vulnerabilities;
+
+    public Builder packageName(PackageRef packageName) {
+      this.packageName = packageName;
+      return this;
+    }
+
+    public Builder vulnerabilities(Map<String, Vulnerability> vulnerabilities) {
+      this.vulnerabilities = vulnerabilities;
+      return this;
+    }
+
+    public IndexedRecommendation build() {
+      return new IndexedRecommendation(packageName, vulnerabilities);
+    }
+  }
+}
