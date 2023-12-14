@@ -31,7 +31,7 @@ export const SummaryCard = () => {
           <ExclamationTriangleIcon style={{fill: "#f0ab00"}}/>
         </Icon>&nbsp;Red Hat Overview of security Issues
       </Title>
-      <Divider />
+      <Divider/>
       <GridItem>
         <Card isFlat isFullHeight>
           <CardHeader>
@@ -52,7 +52,7 @@ export const SummaryCard = () => {
             <DescriptionList isAutoFit style={{paddingTop: "10px"}}>
               {
                 getSources(appContext.report).map((source, index) => {
-                  if(Object.keys(source.report).length > 0){
+                  if (Object.keys(source.report).length > 0) {
                     return (
                       <DescriptionListGroup key={index}>
                         <DescriptionListTerm style={{fontSize: "large"}}>{getSourceName(source)}</DescriptionListTerm>
@@ -84,19 +84,34 @@ export const SummaryCard = () => {
             <CardBody>
               <DescriptionListDescription>
                 <List isPlain>
-                  <ListItem>
-                    <Icon isInline status="success">
-                      <img src={SecurityCheckIcon} alt="Security Check Icon"/>
-                    </Icon>&nbsp;
-                    There are no available Red Hat remediations for your SBOM at this time
-                  </ListItem>
+                  {getSources(appContext.report).map((source, index) => {
+                    if (Object.keys(source.report).length > 0) {
+                      return (
+                        <ListItem>
+                          <Icon isInline status="success">
+                            <img src={SecurityCheckIcon} alt="Security Check Icon"/>
+                          </Icon>&nbsp;{source.report.summary.remediations} remediations are available from Red Hat
+                          for {source.provider}
+                        </ListItem>
+                      )
+                    }
+                    return (
+                      <ListItem>
+                        <Icon isInline status="success">
+                          <img src={SecurityCheckIcon} alt="Security Check Icon"/>
+                        </Icon>&nbsp;
+                        There are no available Red Hat remediations for your SBOM at this time for {source.provider}
+                      </ListItem>
+                    )
+                  })
+                  }
                 </List>
               </DescriptionListDescription>
             </CardBody>
           </DescriptionListGroup>
         </Card>&nbsp;
       </GridItem>
-        <GridItem md={6}>
+      <GridItem md={6}>
         <Card isFlat>
           <DescriptionListGroup>
             <CardTitle component="h4">
@@ -108,10 +123,12 @@ export const SummaryCard = () => {
               <DescriptionListDescription>
                 <List isPlain>
                   <ListItem>
-                    Check out our new Trusted Profile Analyzer to get visibility and insight into your software risk profile, for instance by exploring vulnerabilites or analyzing SBOMs.
+                    Check out our new Trusted Profile Analyzer to get visibility and insight into your software risk
+                    profile, for instance by exploring vulnerabilites or analyzing SBOMs.
                   </ListItem>
                   <ListItem>
-                    <a href="https://console.redhat.com/application-services/trusted-content" target="_blank" rel="noopener noreferrer">
+                    <a href="https://console.redhat.com/application-services/trusted-content" target="_blank"
+                       rel="noopener noreferrer">
                       <Button variant="primary" size="sm">
                         Take me there
                       </Button>
