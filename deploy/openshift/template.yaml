@@ -147,7 +147,9 @@ objects:
                   valueFrom:
                     secretKeyRef:
                       name: exhort-secret
-                      key: api-snyk-token            
+                      key: api-snyk-token      
+                - name: API_OSSINDEX_DISABLED
+                  value: "true"
                 - name: TELEMETRY_WRITE_KEY
                   valueFrom:
                     secretKeyRef:
