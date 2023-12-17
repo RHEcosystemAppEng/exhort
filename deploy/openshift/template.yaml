@@ -245,7 +245,7 @@ parameters:
     description: The maximum amount of memory the container can use.
     displayName: Memory Limit
     required: true
-    value: 150Mi
+    value: 1024Mi
   - name: ENV_NAME
     value: stage
     displayName: Environment (default -- stage)
