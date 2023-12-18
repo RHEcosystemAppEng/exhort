@@ -261,30 +261,6 @@
         </configuration>
       </plugin>
       <plugin>
-        <artifactId>maven-resources-plugin</artifactId>
-        <version>${resources-plugin.version}</version>
-        <executions>
-          <execution>
-            <id>copy-resources</id>
-            <phase>process-classes</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.basedir}/target/classes/META-INF/</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>${project.basedir}/api-spec/v3/</directory>
-                </resource>
-                <resource>
-                  <directory>${project.basedir}/api-spec/v4/</directory>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <groupId>${quarkus.platform.group-id}</groupId>
         <artifactId>quarkus-maven-plugin</artifactId>
         <version>${quarkus.platform.version}</version>
