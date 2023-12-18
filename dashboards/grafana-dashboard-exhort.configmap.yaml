@@ -526,7 +526,7 @@ data:
                 "uid": "${datasource}"
               },
               "editorMode": "code",
-              "expr": "histogram_quantile(0.90, sum(rate(http_server_requests_seconds_bucket{ status!~\"5..\", uri=\"/api/v3/analysis\"}[2m])) by (le))",
+              "expr": "histogram_quantile(0.90, sum(rate(http_server_requests_seconds_bucket{ status!~\"5..\", uri=\"/api/v4/analysis\"}[2m])) by (le))",
               "interval": "",
               "legendFormat": "0.90",
               "range": true,
@@ -538,7 +538,7 @@ data:
                 "uid": "${datasource}"
               },
               "editorMode": "code",
-              "expr": "histogram_quantile(0.95, sum(rate(http_server_requests_seconds_bucket{ status!~\"5..\", uri=\"/api/v3/analysis\"}[2m])) by (le))",
+              "expr": "histogram_quantile(0.95, sum(rate(http_server_requests_seconds_bucket{ status!~\"5..\", uri=\"/api/v4/analysis\"}[2m])) by (le))",
               "interval": "",
               "legendFormat": "0.95",
               "range": true,
@@ -550,7 +550,7 @@ data:
                 "uid": "${datasource}"
               },
               "editorMode": "code",
-              "expr": "histogram_quantile(0.99, sum(rate(http_server_requests_seconds_bucket{ status!~\"5..\", uri=\"/api/v3/analysis\"}[2m])) by (le))",
+              "expr": "histogram_quantile(0.99, sum(rate(http_server_requests_seconds_bucket{ status!~\"5..\", uri=\"/api/v4/analysis\"}[2m])) by (le))",
               "interval": "",
               "legendFormat": "0.99",
               "range": true,
@@ -1348,7 +1348,7 @@ data:
                     "uid": "${datasource}"
                   },
                   "editorMode": "code",
-                  "expr": "histogram_quantile(0.95, sum(rate(http_server_requests_seconds_bucket{ status!~\"5..\", uri=\"/api/v3/analysis\"}[28d])) by (le))",
+                  "expr": "histogram_quantile(0.95, sum(rate(http_server_requests_seconds_bucket{ status!~\"5..\", uri=\"/api/v4/analysis\"}[28d])) by (le))",
                   "interval": "",
                   "legendFormat": "0.95",
                   "range": true,
