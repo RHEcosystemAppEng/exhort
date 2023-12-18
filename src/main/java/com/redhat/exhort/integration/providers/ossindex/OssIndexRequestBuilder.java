@@ -26,6 +26,7 @@ import org.apache.camel.Header;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.packageurl.PackageURL;
 import com.redhat.exhort.api.PackageRef;
 import com.redhat.exhort.config.ObjectMapperProducer;
 import com.redhat.exhort.integration.Constants;
@@ -71,8 +72,10 @@ public class OssIndexRequestBuilder {
   public String buildRequest(List<PackageRef> packages) throws JsonProcessingException {
     var coordinates = mapper.createArrayNode();
     // oss-index don't allow qualifiers
-    // getCoordinates method is NOT idempotent!
-    packages.forEach(p -> coordinates.add(new PackageRef(p.toString()).purl().getCoordinates()));
+    packages.stream()
+        .map(PackageRef::purl)
+        .map(PackageURL::getCoordinates)
+        .forEach(coordinates::add);
     var root = mapper.createObjectNode().set("coordinates", coordinates);
     return mapper.writeValueAsString(root);
   }

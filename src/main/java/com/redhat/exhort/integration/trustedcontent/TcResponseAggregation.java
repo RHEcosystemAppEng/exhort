@@ -146,7 +146,7 @@ public class TcResponseAggregation implements AggregationStrategy {
               var recommendation = recommendations.get(dependencyReport.getRef());
 
               if (recommendation != null
-                  && !Objects.equals(dependencyReport.getRef(), recommendation.packageName())) {
+                  && !dependencyReport.getRef().isCoordinatesEquals(recommendation.packageName())) {
                 dependencyReport.recommendation(recommendation.packageName());
                 dependencyReport.getIssues().stream()
                     .forEach(
@@ -160,7 +160,14 @@ public class TcResponseAggregation implements AggregationStrategy {
                       transitive -> {
                         transitive.getIssues().stream()
                             .forEach(
-                                i -> addRemediation(recommendations.get(transitive.getRef()), i));
+                                i -> {
+                                  if (recommendation != null
+                                      && !transitive
+                                          .getRef()
+                                          .isCoordinatesEquals(recommendation.packageName())) {
+                                    addRemediation(recommendations.get(transitive.getRef()), i);
+                                  }
+                                });
                       });
             });
   }
@@ -172,11 +179,17 @@ public class TcResponseAggregation implements AggregationStrategy {
         .filter(pkg -> !sourceDeps.contains(pkg))
         .filter(pkg -> tree.dependencies().containsKey(pkg))
         .forEach(
-            pkg ->
-                source.addDependenciesItem(
+            pkg -> {
+              var recommendation = recommendations.get(pkg);
+              if (recommendation != null
+                  && !pkg.isCoordinatesEquals(recommendation.packageName())) {
+                var depReport =
                     new DependencyReport()
                         .ref(pkg)
-                        .recommendation(recommendations.get(pkg).packageName())));
+                        .recommendation(recommendations.get(pkg).packageName());
+                source.addDependenciesItem(depReport);
+              }
+            });
   }
 
   private void addRemediation(IndexedRecommendation recommendation, Issue issue) {
