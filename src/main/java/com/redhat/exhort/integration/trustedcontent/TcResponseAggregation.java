@@ -161,11 +161,12 @@ public class TcResponseAggregation implements AggregationStrategy {
                         transitive.getIssues().stream()
                             .forEach(
                                 i -> {
-                                  if (recommendation != null
+                                  var trecommendation = recommendations.get(transitive.getRef());
+                                  if (trecommendation != null
                                       && !transitive
                                           .getRef()
-                                          .isCoordinatesEquals(recommendation.packageName())) {
-                                    addRemediation(recommendations.get(transitive.getRef()), i);
+                                          .isCoordinatesEquals(trecommendation.packageName())) {
+                                    addRemediation(trecommendation, i);
                                   }
                                 });
                       });
