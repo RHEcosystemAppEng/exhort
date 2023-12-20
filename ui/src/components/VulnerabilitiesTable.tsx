@@ -18,7 +18,7 @@ export const VulnerabilitiesTable = ({ providerName, dependency, vulnerabilities
             <Th width={20}>Description</Th>
             <Th>Severity</Th>
             <Th width={20}>CVSS Score</Th>
-            <Th width={20}>Transitive Dependency</Th>
+            <Th width={20}>Direct Dependency</Th>
             <Th>Remediation</Th>
           </Tr>
         </Thead>
