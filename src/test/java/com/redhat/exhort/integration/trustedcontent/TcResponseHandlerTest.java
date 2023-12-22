@@ -86,32 +86,6 @@ class TcResponseHandlerTest {
   }
 
   @Test
-  void testIgnoreAffected() throws IOException {
-    var response =
-        handler.parseResponse(
-            getClass()
-                .getClassLoader()
-                .getResourceAsStream("__files/trustedcontent/affected.json")
-                .readAllBytes());
-    assertNotNull(response);
-    assertTrue(response.status().getOk());
-    assertEquals("OK", response.status().getMessage());
-    assertEquals(200, response.status().getCode());
-    assertEquals(Constants.TRUSTED_CONTENT_PROVIDER, response.status().getName());
-
-    var r =
-        response
-            .recommendations()
-            .get(
-                new PackageRef(
-                    "pkg:maven/jakarta.interceptor/jakarta.interceptor-api@1.2.5?type=jar"));
-    assertNotNull(r);
-    assertEquals(5, r.vulnerabilities().size());
-    assertTrue(
-        r.vulnerabilities().values().stream().noneMatch(v -> v.getStatus().equals("Affected")));
-  }
-
-  @Test
   void testEmpty() throws IOException {
     var response =
         handler.parseResponse(

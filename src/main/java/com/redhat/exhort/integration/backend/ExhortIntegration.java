@@ -129,9 +129,9 @@ public class ExhortIntegration extends EndpointRouteBuilder {
       .setProperty(REQUEST_CONTENT_PROPERTY, method(BackendUtils.class, "getResponseMediaType"))
       .setProperty(VERBOSE_MODE_HEADER, header(VERBOSE_MODE_HEADER))
       .process(this::processAnalysisRequest)
+      .enrich(direct("getTrustedContent"), tcResponseAggregation)
       .to(direct("findVulnerabilities"))
       .transform().method(ProviderAggregationStrategy.class, "toReport")
-      .enrich(direct("recommendTrustedContent"), tcResponseAggregation)
       .to(direct("report"))
       .to(seda("analyticsTrackAnalysis"))
       .process(this::cleanUpHeaders);

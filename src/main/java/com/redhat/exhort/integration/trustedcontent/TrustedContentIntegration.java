@@ -45,8 +45,8 @@ public class TrustedContentIntegration extends EndpointRouteBuilder {
   @Override
   public void configure() {
     // fmt:off
-    from(direct("recommendTrustedContent"))
-      .routeId("recommendTrustedContent")
+    from(direct("getTrustedContent"))
+      .routeId("getTrustedContent")
       .circuitBreaker()
         .faultToleranceConfiguration()
           .timeoutEnabled(true)
@@ -66,9 +66,6 @@ public class TrustedContentIntegration extends EndpointRouteBuilder {
     var message = exchange.getMessage();
     message.removeHeader(Exchange.HTTP_QUERY);
     message.removeHeader(Exchange.HTTP_URI);
-    message.removeHeader("Accept-Encoding");
-    message.removeHeaders("ex-*-token");
-    message.removeHeaders("ex-*-user");
 
     message.setHeader(Exchange.HTTP_PATH, Constants.TRUSTED_CONTENT_PATH);
     message.setHeader(Exchange.HTTP_METHOD, HttpMethod.POST);

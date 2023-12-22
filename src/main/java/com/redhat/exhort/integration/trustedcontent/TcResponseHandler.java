@@ -50,8 +50,6 @@ import jakarta.ws.rs.core.Response.Status;
 @RegisterForReflection
 public class TcResponseHandler extends ProviderResponseHandler {
 
-  private static final String AFFECTED_STATUS = "Affected";
-
   @Inject ObjectMapper mapper;
 
   public TrustedContentResponse parseResponse(@Body byte[] tcResponse) throws IOException {
@@ -84,7 +82,6 @@ public class TcResponseHandler extends ProviderResponseHandler {
         recommendations.stream()
             .map(TcRecommendation::vulnerabilities)
             .flatMap(List::stream)
-            .filter(v -> !AFFECTED_STATUS.equalsIgnoreCase(v.getStatus()))
             .collect(Collectors.toMap(v -> v.getId().toUpperCase(), v -> v)));
   }
 

@@ -41,6 +41,8 @@ import com.redhat.exhort.api.v4.DependencyReport;
 import com.redhat.exhort.api.v4.Issue;
 import com.redhat.exhort.api.v4.ProviderReport;
 import com.redhat.exhort.api.v4.ProviderStatus;
+import com.redhat.exhort.api.v4.Remediation;
+import com.redhat.exhort.api.v4.RemediationTrustedContent;
 import com.redhat.exhort.api.v4.Source;
 import com.redhat.exhort.api.v4.SourceSummary;
 import com.redhat.exhort.api.v4.TransitiveDependencyReport;
@@ -49,6 +51,9 @@ import com.redhat.exhort.model.CvssScoreComparable.DependencyScoreComparator;
 import com.redhat.exhort.model.CvssScoreComparable.TransitiveScoreComparator;
 import com.redhat.exhort.model.DependencyTree;
 import com.redhat.exhort.model.ProviderResponse;
+import com.redhat.exhort.model.trustedcontent.IndexedRecommendation;
+import com.redhat.exhort.model.trustedcontent.TrustedContentResponse;
+import com.redhat.exhort.model.trustedcontent.Vulnerability;
 import com.redhat.exhort.monitoring.MonitoringProcessor;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
@@ -60,6 +65,8 @@ import jakarta.ws.rs.core.Response;
 @RegisterForReflection
 @ApplicationScoped
 public abstract class ProviderResponseHandler {
+
+  public static final String AFFECTED_STATUS = "Affected";
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ProviderResponseHandler.class);
 
@@ -201,7 +208,8 @@ public abstract class ProviderResponseHandler {
   public ProviderReport buildReport(
       @Body ProviderResponse response,
       @ExchangeProperty(Constants.DEPENDENCY_TREE_PROPERTY) DependencyTree tree,
-      @ExchangeProperty(Constants.PROVIDER_PRIVATE_DATA_PROPERTY) String privateProviders)
+      @ExchangeProperty(Constants.PROVIDER_PRIVATE_DATA_PROPERTY) String privateProviders,
+      @ExchangeProperty(Constants.TRUSTED_CONTENT_PROVIDER) TrustedContentResponse tcResponse)
       throws IOException {
     if (response.status() != null) {
       return new ProviderReport().status(response.status()).sources(Collections.emptyMap());
@@ -212,39 +220,44 @@ public abstract class ProviderResponseHandler {
         .keySet()
         .forEach(
             k ->
-                reports.put(k, buildReportForSource(sourcesIssues.get(k), tree, privateProviders)));
+                reports.put(
+                    k,
+                    buildReportForSource(
+                        sourcesIssues.get(k), tree, privateProviders, tcResponse)));
     return new ProviderReport().status(defaultOkStatus(getProviderName())).sources(reports);
   }
 
   public Source buildReportForSource(
-      Map<String, List<Issue>> issuesData, DependencyTree tree, String privateProviders) {
+      Map<String, List<Issue>> issuesData,
+      DependencyTree tree,
+      String privateProviders,
+      TrustedContentResponse tcResponse) {
     List<DependencyReport> sourceReport = new ArrayList<>();
     tree.dependencies().entrySet().stream()
         .forEach(
             depEntry -> {
-              var ref = depEntry.getKey().ref();
-              var issues = issuesData.get(ref);
+              var recommendation = tcResponse.recommendations().get(depEntry.getKey());
+              var issues = getIssues(depEntry.getKey(), issuesData, recommendation);
               var directReport = new DependencyReport().ref(depEntry.getKey());
-              if (issues == null) {
-                issues = Collections.emptyList();
-              }
               directReport.issues(
                   issues.stream()
                       .sorted(Comparator.comparing(Issue::getCvssScore).reversed())
                       .collect(Collectors.toList()));
+              if (recommendation != null
+                  && !depEntry.getKey().isCoordinatesEquals(recommendation.packageName())) {
+                directReport.recommendation(recommendation.packageName());
+              }
               directReport.setHighestVulnerability(issues.stream().findFirst().orElse(null));
               List<TransitiveDependencyReport> transitiveReports =
                   depEntry.getValue().transitive().stream()
                       .map(
                           t -> {
-                            List<Issue> transitiveIssues = Collections.emptyList();
-                            var tRef = t.ref();
-                            if (issuesData.get(tRef) != null) {
-                              transitiveIssues =
-                                  issuesData.get(tRef).stream()
-                                      .sorted(Comparator.comparing(Issue::getCvssScore).reversed())
-                                      .collect(Collectors.toList());
-                            }
+                            var tRecommendation = tcResponse.recommendations().get(t);
+                            var transitiveIssues = getIssues(t, issuesData, tRecommendation);
+                            transitiveIssues =
+                                transitiveIssues.stream()
+                                    .sorted(Comparator.comparing(Issue::getCvssScore).reversed())
+                                    .collect(Collectors.toList());
                             var highestTransitive = transitiveIssues.stream().findFirst();
                             if (highestTransitive.isPresent()) {
                               if (directReport.getHighestVulnerability() == null
@@ -262,22 +275,91 @@ public abstract class ProviderResponseHandler {
                       .collect(Collectors.toList());
               transitiveReports.sort(Collections.reverseOrder(new TransitiveScoreComparator()));
               directReport.setTransitive(transitiveReports);
-              if (directReport.getHighestVulnerability() != null) {
+              if (directReport.getHighestVulnerability() != null
+                  || directReport.getRecommendation() != null) {
                 sourceReport.add(directReport);
               }
             });
 
     sourceReport.sort(Collections.reverseOrder(new DependencyScoreComparator()));
-    return new Source().summary(buildSummary(issuesData, tree)).dependencies(sourceReport);
+    var summary = buildSummary(issuesData, tree, sourceReport);
+    return new Source().summary(summary).dependencies(sourceReport);
   }
 
-  private SourceSummary buildSummary(Map<String, List<Issue>> issuesData, DependencyTree tree) {
+  private List<Issue> getIssues(
+      PackageRef ref, Map<String, List<Issue>> issuesData, IndexedRecommendation recommendation) {
+    var providerIssues = issuesData.get(ref.ref());
+    if (providerIssues == null) {
+      return Collections.emptyList();
+    }
+    if (recommendation == null) {
+      return providerIssues;
+    }
+    return providerIssues.stream()
+        .map(i -> setRemediation(i, recommendation))
+        .filter(i -> !isAffectedTrustedContent(ref, i, recommendation))
+        .toList();
+  }
+
+  private boolean isAffectedTrustedContent(
+      PackageRef ref, Issue issue, IndexedRecommendation recommendation) {
+    if (recommendation == null) {
+      return false;
+    }
+    if (!ref.isCoordinatesEquals(recommendation.packageName())) {
+      return false;
+    }
+    Vulnerability vuln;
+    if (issue.getCves() == null || issue.getCves().isEmpty()) {
+      vuln = recommendation.vulnerabilities().get(issue.getId());
+    } else {
+      vuln = recommendation.vulnerabilities().get(issue.getCves().get(0));
+    }
+    return !isAffected(vuln);
+  }
+
+  private Issue setRemediation(Issue i, IndexedRecommendation recommendation) {
+    if (i.getCves() == null || i.getCves().isEmpty()) {
+      return i;
+    }
+    var cve = i.getCves().get(0);
+    var vuln = recommendation.vulnerabilities().get(cve);
+    if (isAffected(vuln)) {
+      return i;
+    }
+    if (i.getRemediation() == null) {
+      i.remediation(new Remediation());
+    }
+
+    i.getRemediation()
+        .setTrustedContent(
+            new RemediationTrustedContent()
+                .justification(vuln.getJustification())
+                .status(vuln.getStatus())
+                .ref(recommendation.packageName()));
+    return i;
+  }
+
+  private boolean isAffected(Vulnerability vuln) {
+    if (vuln == null) {
+      return true;
+    }
+    return AFFECTED_STATUS.equals(vuln.getStatus());
+  }
+
+  private SourceSummary buildSummary(
+      Map<String, List<Issue>> issuesData,
+      DependencyTree tree,
+      List<DependencyReport> sourceReport) {
     var counter = new VulnerabilityCounter();
     var directRefs =
         tree.dependencies().keySet().stream().map(PackageRef::ref).collect(Collectors.toSet());
     issuesData
         .entrySet()
         .forEach(e -> incrementCounter(e.getValue(), counter, directRefs.contains(e.getKey())));
+    Long recommendationsCount =
+        sourceReport.stream().filter(s -> s.getRecommendation() != null).count();
+    counter.recommendations.set(recommendationsCount.intValue());
     return counter.getSummary();
   }
 
@@ -327,10 +409,12 @@ public abstract class ProviderResponseHandler {
       AtomicInteger low,
       AtomicInteger direct,
       AtomicInteger dependencies,
-      AtomicInteger remediations) {
+      AtomicInteger remediations,
+      AtomicInteger recommendations) {
 
     VulnerabilityCounter() {
       this(
+          new AtomicInteger(),
           new AtomicInteger(),
           new AtomicInteger(),
           new AtomicInteger(),
@@ -353,7 +437,7 @@ public abstract class ProviderResponseHandler {
           .dependencies(dependencies.get())
           .remediations(remediations.get())
           // Will be calculated later when TC recommendations will be added.
-          .recommendations(0);
+          .recommendations(recommendations.get());
     }
   }
 }
