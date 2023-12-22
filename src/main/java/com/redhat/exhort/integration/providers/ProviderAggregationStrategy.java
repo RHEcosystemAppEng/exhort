@@ -29,6 +29,7 @@ import com.redhat.exhort.api.v4.ProviderReport;
 import com.redhat.exhort.api.v4.Scanned;
 import com.redhat.exhort.integration.Constants;
 import com.redhat.exhort.model.DependencyTree;
+import com.redhat.exhort.model.trustedcontent.TrustedContentResponse;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -46,7 +47,11 @@ public class ProviderAggregationStrategy {
 
   public AnalysisReport toReport(
       @Body Map<String, ProviderReport> reports,
-      @ExchangeProperty(Constants.DEPENDENCY_TREE_PROPERTY) DependencyTree tree) {
+      @ExchangeProperty(Constants.DEPENDENCY_TREE_PROPERTY) DependencyTree tree,
+      @ExchangeProperty(Constants.TRUSTED_CONTENT_PROVIDER) TrustedContentResponse tcResponse) {
+
+    reports.put(
+        Constants.TRUSTED_CONTENT_PROVIDER, new ProviderReport().status(tcResponse.status()));
     var scanned = new Scanned().direct(tree.directCount()).transitive(tree.transitiveCount());
     scanned.total(scanned.getDirect() + scanned.getTransitive());
     return new AnalysisReport().providers(reports).scanned(scanned);

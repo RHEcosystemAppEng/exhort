@@ -18,10 +18,21 @@
 
 package com.redhat.exhort.model.trustedcontent;
 
+import java.util.Collections;
 import java.util.Map;
 
 import com.redhat.exhort.api.PackageRef;
 import com.redhat.exhort.api.v4.ProviderStatus;
 
 public record TrustedContentResponse(
-    Map<PackageRef, IndexedRecommendation> recommendations, ProviderStatus status) {}
+    Map<PackageRef, IndexedRecommendation> recommendations, ProviderStatus status) {
+
+  public TrustedContentResponse {
+    if (recommendations == null) {
+      recommendations = Collections.emptyMap();
+    }
+    if (status == null) {
+      status = new ProviderStatus();
+    }
+  }
+}
