@@ -18,6 +18,12 @@
 
 package com.redhat.exhort.integration.backend;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
+import java.util.Objects;
+
 import org.apache.camel.Header;
 import org.jboss.resteasy.reactive.common.util.MediaTypeHelper;
 
@@ -46,5 +52,34 @@ public class BackendUtils {
           Status.UNSUPPORTED_MEDIA_TYPE);
     }
     return match.toString();
+  }
+
+  public String generateRequestId(@Header(Constants.RHDA_TOKEN_HEADER) String rhdaToken) {
+    byte[] requestId;
+    try {
+      MessageDigest digestMaker = MessageDigest.getInstance("SHA-256");
+      String tsOfNow = LocalDateTime.now().toString();
+      var token = rhdaToken;
+      if (Objects.isNull(rhdaToken) || rhdaToken.trim().equals("")) {
+        token = Double.valueOf(Math.random()).toString();
+      }
+      byte[] inputForSha256 = new String(token + tsOfNow).getBytes(StandardCharsets.UTF_8);
+      requestId = digestMaker.digest(inputForSha256);
+    } catch (NoSuchAlgorithmException e) {
+      throw new RuntimeException(e);
+    }
+    return bytesToHex(requestId);
+  }
+
+  private static String bytesToHex(byte[] hash) {
+    StringBuilder hexString = new StringBuilder(2 * hash.length);
+    for (int i = 0; i < hash.length; i++) {
+      String hex = Integer.toHexString(0xff & hash[i]);
+      if (hex.length() == 1) {
+        hexString.append('0');
+      }
+      hexString.append(hex);
+    }
+    return hexString.toString();
   }
 }
