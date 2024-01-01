@@ -21,6 +21,7 @@ package com.redhat.exhort.integration.backend;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -36,6 +37,12 @@ import jakarta.ws.rs.core.Response.Status;
 
 @RegisterForReflection
 public class BackendUtils {
+
+  public void setClock(Clock clock) {
+    this.clock = clock;
+  }
+
+  private Clock clock;
 
   public String getResponseMediaType(@Header(Constants.ACCEPT_HEADER) String acceptHeader) {
     if (acceptHeader == null || acceptHeader.isBlank()) {
@@ -58,7 +65,12 @@ public class BackendUtils {
     byte[] requestId;
     try {
       MessageDigest digestMaker = MessageDigest.getInstance("SHA-256");
-      String tsOfNow = LocalDateTime.now().toString();
+      String tsOfNow;
+      if (Objects.isNull(this.clock)) {
+        tsOfNow = LocalDateTime.now(Clock.systemDefaultZone()).toString();
+      } else {
+        tsOfNow = LocalDateTime.now(this.clock).toString();
+      }
       var token = rhdaToken;
       if (Objects.isNull(rhdaToken) || rhdaToken.trim().equals("")) {
         token = Double.valueOf(Math.random()).toString();
