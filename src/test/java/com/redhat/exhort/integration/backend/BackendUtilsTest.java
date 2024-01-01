@@ -53,8 +53,8 @@ class BackendUtilsTest {
     return Arrays.stream(ArrayUtils.toObject(requestId.getBytes(StandardCharsets.UTF_8)))
             .filter(
                 t -> // character is hexadecimal digit a-f
-                    (t.shortValue() >= 97 && t.shortValue() <= 102)
-                            // or char is one of 0-9 digits.
+                (t.shortValue() >= 97 && t.shortValue() <= 102)
+                        // or char is one of 0-9 digits.
                         || (t.shortValue() >= 48 && (t.shortValue() <= 57)))
             .collect(Collectors.toList())
             .size()
