@@ -43,7 +43,7 @@ export const VulnerabilitiesCountBySeverity = ({
             {severityCounts.CRITICAL > 0 && (
                 <>
                     <Icon isInline>
-                        <SecurityIcon style={{fill: '#A30000', height: '13px'}}/>
+                        <SecurityIcon style={{fill: '#800000', height: '13px'}}/>
                     </Icon>&nbsp;
                     {severityCounts.CRITICAL}&nbsp;
                 </>
@@ -51,7 +51,7 @@ export const VulnerabilitiesCountBySeverity = ({
             {severityCounts.HIGH > 0 && (
                 <>
                     <Icon isInline>
-                        <SecurityIcon style={{fill: '#C9190B', height: '13px'}}/>
+                        <SecurityIcon style={{fill: '#FF0000', height: '13px'}}/>
                     </Icon>&nbsp;
                     {severityCounts.HIGH}&nbsp;
                 </>
@@ -59,7 +59,7 @@ export const VulnerabilitiesCountBySeverity = ({
             {severityCounts.MEDIUM > 0 && (
                 <>
                     <Icon isInline>
-                        <SecurityIcon style={{fill: '#ef9234', height: '13px'}}/>
+                        <SecurityIcon style={{fill: '#FFA500', height: '13px'}}/>
                     </Icon>&nbsp;
                     {severityCounts.MEDIUM}&nbsp;
                 </>
@@ -67,7 +67,7 @@ export const VulnerabilitiesCountBySeverity = ({
             {severityCounts.LOW > 0 && (
                 <>
                     <Icon isInline>
-                        <SecurityIcon style={{fill: '#f6d173', height: '13px'}}/>
+                        <SecurityIcon style={{fill: '#5BA352', height: '13px'}}/>
                     </Icon>&nbsp;
                     {severityCounts.LOW}
                 </>
