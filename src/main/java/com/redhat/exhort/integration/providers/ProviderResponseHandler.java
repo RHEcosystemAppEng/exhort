@@ -247,7 +247,8 @@ public abstract class ProviderResponseHandler {
                   && !depEntry.getKey().isCoordinatesEquals(recommendation.packageName())) {
                 directReport.recommendation(recommendation.packageName());
               }
-              directReport.setHighestVulnerability(issues.stream().findFirst().orElse(null));
+              directReport.setHighestVulnerability(
+                  directReport.getIssues().stream().findFirst().orElse(null));
               List<TransitiveDependencyReport> transitiveReports =
                   depEntry.getValue().transitive().stream()
                       .map(

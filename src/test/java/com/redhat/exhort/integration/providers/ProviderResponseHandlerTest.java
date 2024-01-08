@@ -209,6 +209,43 @@ public class ProviderResponseHandlerTest {
     assertEquals("aa", reportLowest.getRef().name());
     assertEquals("aaa", reportLowest.getTransitive().get(0).getRef().name());
     assertEquals("aab", reportLowest.getTransitive().get(1).getRef().name());
+
+    assertEquals("ISSUE-006", reportHighest.getHighestVulnerability().getId());
+    assertEquals("ISSUE-001", reportLowest.getHighestVulnerability().getId());
+  }
+
+  @Test
+  public void testHighestVulnerabilityInDirectDependency() throws IOException {
+    Map<String, List<Issue>> issues =
+        Map.of("pkg:npm/aa@1", List.of(buildIssue(1, 4f), buildIssue(2, 9f), buildIssue(3, 1f)));
+    ProviderResponseHandler handler = new TestResponseHandler();
+
+    ProviderReport response =
+        handler.buildReport(
+            new ProviderResponse(issues, null), buildTree(), null, EMPTY_TRUSTED_CONTENT_RESPONSE);
+
+    assertOkStatus(response);
+    DependencyReport highest = getValidSource(response).getDependencies().get(0);
+    assertEquals("ISSUE-002", highest.getHighestVulnerability().getId());
+    assertEquals(9f, highest.getHighestVulnerability().getCvssScore());
+  }
+
+  @Test
+  public void testHighestVulnerabilityInTransitiveDependency() throws IOException {
+    Map<String, List<Issue>> issues =
+        Map.of(
+            "pkg:npm/aa@1", Collections.emptyList(),
+            "pkg:npm/aaa@1", List.of(buildIssue(1, 4f), buildIssue(2, 9f), buildIssue(3, 1f)));
+    ProviderResponseHandler handler = new TestResponseHandler();
+
+    ProviderReport response =
+        handler.buildReport(
+            new ProviderResponse(issues, null), buildTree(), null, EMPTY_TRUSTED_CONTENT_RESPONSE);
+
+    assertOkStatus(response);
+    DependencyReport highest = getValidSource(response).getDependencies().get(0);
+    assertEquals("ISSUE-002", highest.getHighestVulnerability().getId());
+    assertEquals(9f, highest.getHighestVulnerability().getCvssScore());
   }
 
   @Test
