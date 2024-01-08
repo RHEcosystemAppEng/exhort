@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.cyclonedx.CycloneDxMediaType;
+import org.hamcrest.text.MatchesPattern;
 import org.junit.jupiter.api.Test;
 
 import com.gargoylesoftware.htmlunit.BrowserVersion;
@@ -76,6 +77,9 @@ public class HtmlReportTest extends AbstractAnalysisTest {
             .assertThat()
             .statusCode(200)
             .contentType(MediaType.TEXT_HTML)
+            .header(
+                Constants.EXHORT_REQUEST_ID_HEADER,
+                MatchesPattern.matchesPattern(regexMatcherRequestId))
             .extract()
             .body()
             .asString();
@@ -148,6 +152,9 @@ public class HtmlReportTest extends AbstractAnalysisTest {
             .assertThat()
             .statusCode(200)
             .contentType(MediaType.TEXT_HTML)
+            .header(
+                Constants.EXHORT_REQUEST_ID_HEADER,
+                MatchesPattern.matchesPattern(regexMatcherRequestId))
             .extract()
             .body()
             .asString();
@@ -199,6 +206,9 @@ public class HtmlReportTest extends AbstractAnalysisTest {
             .assertThat()
             .statusCode(200)
             .contentType(MediaType.TEXT_HTML)
+            .header(
+                Constants.EXHORT_REQUEST_ID_HEADER,
+                MatchesPattern.matchesPattern(regexMatcherRequestId))
             .extract()
             .body()
             .asString();
@@ -236,6 +246,9 @@ public class HtmlReportTest extends AbstractAnalysisTest {
             .assertThat()
             .statusCode(200)
             .contentType(MediaType.TEXT_HTML)
+            .header(
+                Constants.EXHORT_REQUEST_ID_HEADER,
+                MatchesPattern.matchesPattern(regexMatcherRequestId))
             .extract()
             .body()
             .asString();
@@ -272,6 +285,9 @@ public class HtmlReportTest extends AbstractAnalysisTest {
             .post("/api/v4/analysis")
             .then()
             .assertThat()
+            .header(
+                Constants.EXHORT_REQUEST_ID_HEADER,
+                MatchesPattern.matchesPattern(regexMatcherRequestId))
             .statusCode(200)
             .contentType(MediaType.TEXT_HTML)
             .extract()
