@@ -24,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import org.hamcrest.text.MatchesPattern;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -46,6 +47,9 @@ public class TokenValidationTest extends AbstractAnalysisTest {
             .then()
             .assertThat()
             .statusCode(400)
+            .header(
+                Constants.EXHORT_REQUEST_ID_HEADER,
+                MatchesPattern.matchesPattern(REGEX_MATCHER_REQUEST_ID))
             .contentType(MediaType.TEXT_PLAIN)
             .extract()
             .body()
@@ -70,6 +74,9 @@ public class TokenValidationTest extends AbstractAnalysisTest {
             .assertThat()
             .statusCode(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode())
             .contentType(MediaType.TEXT_PLAIN)
+            .header(
+                Constants.EXHORT_REQUEST_ID_HEADER,
+                MatchesPattern.matchesPattern(REGEX_MATCHER_REQUEST_ID))
             .extract()
             .body()
             .asString();
@@ -105,6 +112,9 @@ public class TokenValidationTest extends AbstractAnalysisTest {
             .assertThat()
             .statusCode(Response.Status.OK.getStatusCode())
             .contentType(MediaType.TEXT_PLAIN)
+            .header(
+                Constants.EXHORT_REQUEST_ID_HEADER,
+                MatchesPattern.matchesPattern(REGEX_MATCHER_REQUEST_ID))
             .extract()
             .body()
             .asString();
@@ -140,6 +150,9 @@ public class TokenValidationTest extends AbstractAnalysisTest {
             .assertThat()
             .statusCode(Response.Status.UNAUTHORIZED.getStatusCode())
             .contentType(MediaType.TEXT_PLAIN)
+            .header(
+                Constants.EXHORT_REQUEST_ID_HEADER,
+                MatchesPattern.matchesPattern(REGEX_MATCHER_REQUEST_ID))
             .extract()
             .body()
             .asString();
@@ -175,6 +188,9 @@ public class TokenValidationTest extends AbstractAnalysisTest {
             .assertThat()
             .statusCode(Response.Status.TOO_MANY_REQUESTS.getStatusCode())
             .contentType(MediaType.TEXT_PLAIN)
+            .header(
+                Constants.EXHORT_REQUEST_ID_HEADER,
+                MatchesPattern.matchesPattern(REGEX_MATCHER_REQUEST_ID))
             .extract()
             .body()
             .asString();

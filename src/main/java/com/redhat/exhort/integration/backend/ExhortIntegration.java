@@ -86,6 +86,7 @@ public class ExhortIntegration extends EndpointRouteBuilder {
       .process(monitoringProcessor::processClientException)
       .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(422))
       .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.TEXT_PLAIN))
+      .setHeader(Constants.EXHORT_REQUEST_ID_HEADER, exchangeProperty(Constants.EXHORT_REQUEST_ID_HEADER))
       .handled(true)
       .setBody().simple("${exception.message}");
 
@@ -95,6 +96,7 @@ public class ExhortIntegration extends EndpointRouteBuilder {
       .process(monitoringProcessor::processClientException)
       .setHeader(Exchange.HTTP_RESPONSE_CODE, simple("${exception.getResponse().getStatus()}"))
       .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.TEXT_PLAIN))
+      .setHeader(Constants.EXHORT_REQUEST_ID_HEADER, exchangeProperty(Constants.EXHORT_REQUEST_ID_HEADER))
       .handled(true)
       .setBody().simple("${exception.message}");
 
@@ -120,10 +122,11 @@ public class ExhortIntegration extends EndpointRouteBuilder {
     from(direct("v4analysis"))
       .routeId("v4Analysis")
       .setProperty(Constants.API_VERSION_PROPERTY, constant(Constants.API_VERSION_V4))
-      .to(direct("analysis"));     
+      .to(direct("analysis"));
 
     from(direct("analysis"))
       .routeId("dependencyAnalysis")
+      .setProperty(Constants.EXHORT_REQUEST_ID_HEADER, method(BackendUtils.class,"generateRequestId"))
       .to(seda("analyticsIdentify"))
       .setProperty(PROVIDERS_PARAM, method(vulnerabilityProvider, "getProvidersFromQueryParam"))
       .setProperty(REQUEST_CONTENT_PROPERTY, method(BackendUtils.class, "getResponseMediaType"))
@@ -134,6 +137,7 @@ public class ExhortIntegration extends EndpointRouteBuilder {
       .transform().method(ProviderAggregationStrategy.class, "toReport")
       .to(direct("report"))
       .to(seda("analyticsTrackAnalysis"))
+      .setHeader(Constants.EXHORT_REQUEST_ID_HEADER, exchangeProperty(Constants.EXHORT_REQUEST_ID_HEADER))
       .process(this::cleanUpHeaders);
 
     from(direct("findVulnerabilities"))
@@ -144,6 +148,7 @@ public class ExhortIntegration extends EndpointRouteBuilder {
 
     from(direct("validateToken"))
       .routeId("validateToken")
+      .setProperty(Constants.EXHORT_REQUEST_ID_HEADER, method(BackendUtils.class,"generateRequestId"))
       .to(seda("analyticsIdentify"))
       .choice()
         .when(header(Constants.SNYK_TOKEN_HEADER).isNotNull())
@@ -159,6 +164,7 @@ public class ExhortIntegration extends EndpointRouteBuilder {
       .end()
       .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.TEXT_PLAIN))
       .to(seda("analyticsTrackToken"))
+      .setHeader(Constants.EXHORT_REQUEST_ID_HEADER, exchangeProperty(Constants.EXHORT_REQUEST_ID_HEADER))
       .process(this::cleanUpHeaders);
 
     from(seda("analyticsIdentify"))
@@ -176,6 +182,7 @@ public class ExhortIntegration extends EndpointRouteBuilder {
 
     from(seda("processFailedRequests"))
       .routeId("processFailedRequests")
+      .setHeader(Constants.EXHORT_REQUEST_ID_HEADER, exchangeProperty(Constants.EXHORT_REQUEST_ID_HEADER))
       .process(monitoringProcessor::processServerError);
 
     from(direct("processInternalError"))

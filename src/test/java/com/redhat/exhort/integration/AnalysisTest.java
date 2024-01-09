@@ -39,6 +39,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import org.cyclonedx.CycloneDxMediaType;
+import org.hamcrest.text.MatchesPattern;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -77,6 +78,9 @@ public class AnalysisTest extends AbstractAnalysisTest {
         .assertThat()
         .statusCode(422)
         .contentType(MediaType.TEXT_PLAIN)
+        .header(
+            Constants.EXHORT_REQUEST_ID_HEADER,
+            MatchesPattern.matchesPattern(REGEX_MATCHER_REQUEST_ID))
         .body(equalTo("Unsupported providers: [unknown]"));
 
     verifyNoInteractions();
@@ -94,6 +98,9 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .then()
             .assertThat()
             .statusCode(200)
+            .header(
+                Constants.EXHORT_REQUEST_ID_HEADER,
+                MatchesPattern.matchesPattern(REGEX_MATCHER_REQUEST_ID))
             .contentType(MediaType.APPLICATION_JSON)
             .extract()
             .body()
@@ -123,6 +130,9 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .then()
             .assertThat()
             .statusCode(200)
+            .header(
+                Constants.EXHORT_REQUEST_ID_HEADER,
+                MatchesPattern.matchesPattern(REGEX_MATCHER_REQUEST_ID))
             .contentType(MediaType.APPLICATION_JSON)
             .extract()
             .body()
@@ -161,6 +171,9 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .then()
             .assertThat()
             .statusCode(200)
+            .header(
+                Constants.EXHORT_REQUEST_ID_HEADER,
+                MatchesPattern.matchesPattern(REGEX_MATCHER_REQUEST_ID))
             .extract()
             .body()
             .as(AnalysisReport.class);
@@ -226,6 +239,9 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .then()
             .assertThat()
             .statusCode(200)
+            .header(
+                Constants.EXHORT_REQUEST_ID_HEADER,
+                MatchesPattern.matchesPattern(REGEX_MATCHER_REQUEST_ID))
             .contentType(MediaType.APPLICATION_JSON)
             .extract()
             .body()
@@ -252,6 +268,9 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .assertThat()
             .statusCode(200)
             .contentType(MediaType.APPLICATION_JSON)
+            .header(
+                Constants.EXHORT_REQUEST_ID_HEADER,
+                MatchesPattern.matchesPattern(REGEX_MATCHER_REQUEST_ID))
             .extract()
             .body()
             .asPrettyString();
@@ -276,6 +295,9 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .assertThat()
             .statusCode(200)
             .contentType(MediaType.APPLICATION_JSON)
+            .header(
+                Constants.EXHORT_REQUEST_ID_HEADER,
+                MatchesPattern.matchesPattern(REGEX_MATCHER_REQUEST_ID))
             .extract()
             .body()
             .as(AnalysisReport.class);
@@ -308,6 +330,9 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .assertThat()
             .statusCode(200)
             .contentType(MediaType.APPLICATION_JSON)
+            .header(
+                Constants.EXHORT_REQUEST_ID_HEADER,
+                MatchesPattern.matchesPattern(REGEX_MATCHER_REQUEST_ID))
             .extract()
             .body()
             .as(AnalysisReport.class);
@@ -340,6 +365,9 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .assertThat()
             .statusCode(200)
             .contentType(MediaType.APPLICATION_JSON)
+            .header(
+                Constants.EXHORT_REQUEST_ID_HEADER,
+                MatchesPattern.matchesPattern(REGEX_MATCHER_REQUEST_ID))
             .extract()
             .body()
             .as(AnalysisReport.class);
@@ -373,6 +401,9 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .assertThat()
             .statusCode(200)
             .contentType(MediaType.APPLICATION_JSON)
+            .header(
+                Constants.EXHORT_REQUEST_ID_HEADER,
+                MatchesPattern.matchesPattern(REGEX_MATCHER_REQUEST_ID))
             .extract()
             .body()
             .as(AnalysisReport.class);
@@ -407,6 +438,9 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .assertThat()
             .statusCode(200)
             .contentType(MediaType.APPLICATION_JSON)
+            .header(
+                Constants.EXHORT_REQUEST_ID_HEADER,
+                MatchesPattern.matchesPattern(REGEX_MATCHER_REQUEST_ID))
             .extract()
             .body()
             .as(AnalysisReport.class);
@@ -460,6 +494,9 @@ public class AnalysisTest extends AbstractAnalysisTest {
         .post("/api/v4/analysis")
         .then()
         .assertThat()
+        .header(
+            Constants.EXHORT_REQUEST_ID_HEADER,
+            MatchesPattern.matchesPattern(REGEX_MATCHER_REQUEST_ID))
         .statusCode(415)
         .contentType(MediaType.TEXT_PLAIN);
 

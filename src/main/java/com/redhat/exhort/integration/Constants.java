@@ -45,7 +45,7 @@ public final class Constants {
   public static final String RHDA_SOURCE_HEADER = "rhda-source";
   public static final String RHDA_OPERATION_TYPE_HEADER = "rhda-operation-type";
   public static final String USER_AGENT_HEADER = "User-Agent";
-
+  public static final String EXHORT_REQUEST_ID_HEADER = "ex-request-id";
   public static final MediaType MULTIPART_MIXED_TYPE = new MediaType("multipart", "mixed");
   public static final String MULTIPART_MIXED = MULTIPART_MIXED_TYPE.toString();
   public static final String SPDX_MEDIATYPE_JSON = "application/vnd.spdx+json";
