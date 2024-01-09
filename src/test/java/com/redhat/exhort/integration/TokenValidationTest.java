@@ -49,7 +49,7 @@ public class TokenValidationTest extends AbstractAnalysisTest {
             .statusCode(400)
             .header(
                 Constants.EXHORT_REQUEST_ID_HEADER,
-                MatchesPattern.matchesPattern(regexMatcherRequestId))
+                MatchesPattern.matchesPattern(REGEX_MATCHER_REQUEST_ID))
             .contentType(MediaType.TEXT_PLAIN)
             .extract()
             .body()
@@ -76,7 +76,7 @@ public class TokenValidationTest extends AbstractAnalysisTest {
             .contentType(MediaType.TEXT_PLAIN)
             .header(
                 Constants.EXHORT_REQUEST_ID_HEADER,
-                MatchesPattern.matchesPattern(regexMatcherRequestId))
+                MatchesPattern.matchesPattern(REGEX_MATCHER_REQUEST_ID))
             .extract()
             .body()
             .asString();
@@ -114,7 +114,7 @@ public class TokenValidationTest extends AbstractAnalysisTest {
             .contentType(MediaType.TEXT_PLAIN)
             .header(
                 Constants.EXHORT_REQUEST_ID_HEADER,
-                MatchesPattern.matchesPattern(regexMatcherRequestId))
+                MatchesPattern.matchesPattern(REGEX_MATCHER_REQUEST_ID))
             .extract()
             .body()
             .asString();
@@ -152,7 +152,7 @@ public class TokenValidationTest extends AbstractAnalysisTest {
             .contentType(MediaType.TEXT_PLAIN)
             .header(
                 Constants.EXHORT_REQUEST_ID_HEADER,
-                MatchesPattern.matchesPattern(regexMatcherRequestId))
+                MatchesPattern.matchesPattern(REGEX_MATCHER_REQUEST_ID))
             .extract()
             .body()
             .asString();
@@ -190,7 +190,7 @@ public class TokenValidationTest extends AbstractAnalysisTest {
             .contentType(MediaType.TEXT_PLAIN)
             .header(
                 Constants.EXHORT_REQUEST_ID_HEADER,
-                MatchesPattern.matchesPattern(regexMatcherRequestId))
+                MatchesPattern.matchesPattern(REGEX_MATCHER_REQUEST_ID))
             .extract()
             .body()
             .asString();

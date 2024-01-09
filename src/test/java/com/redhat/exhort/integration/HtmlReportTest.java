@@ -79,7 +79,7 @@ public class HtmlReportTest extends AbstractAnalysisTest {
             .contentType(MediaType.TEXT_HTML)
             .header(
                 Constants.EXHORT_REQUEST_ID_HEADER,
-                MatchesPattern.matchesPattern(regexMatcherRequestId))
+                MatchesPattern.matchesPattern(REGEX_MATCHER_REQUEST_ID))
             .extract()
             .body()
             .asString();
@@ -154,7 +154,7 @@ public class HtmlReportTest extends AbstractAnalysisTest {
             .contentType(MediaType.TEXT_HTML)
             .header(
                 Constants.EXHORT_REQUEST_ID_HEADER,
-                MatchesPattern.matchesPattern(regexMatcherRequestId))
+                MatchesPattern.matchesPattern(REGEX_MATCHER_REQUEST_ID))
             .extract()
             .body()
             .asString();
@@ -208,7 +208,7 @@ public class HtmlReportTest extends AbstractAnalysisTest {
             .contentType(MediaType.TEXT_HTML)
             .header(
                 Constants.EXHORT_REQUEST_ID_HEADER,
-                MatchesPattern.matchesPattern(regexMatcherRequestId))
+                MatchesPattern.matchesPattern(REGEX_MATCHER_REQUEST_ID))
             .extract()
             .body()
             .asString();
@@ -248,7 +248,7 @@ public class HtmlReportTest extends AbstractAnalysisTest {
             .contentType(MediaType.TEXT_HTML)
             .header(
                 Constants.EXHORT_REQUEST_ID_HEADER,
-                MatchesPattern.matchesPattern(regexMatcherRequestId))
+                MatchesPattern.matchesPattern(REGEX_MATCHER_REQUEST_ID))
             .extract()
             .body()
             .asString();
@@ -287,7 +287,7 @@ public class HtmlReportTest extends AbstractAnalysisTest {
             .assertThat()
             .header(
                 Constants.EXHORT_REQUEST_ID_HEADER,
-                MatchesPattern.matchesPattern(regexMatcherRequestId))
+                MatchesPattern.matchesPattern(REGEX_MATCHER_REQUEST_ID))
             .statusCode(200)
             .contentType(MediaType.TEXT_HTML)
             .extract()

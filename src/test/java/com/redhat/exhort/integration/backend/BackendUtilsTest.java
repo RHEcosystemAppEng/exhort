@@ -137,7 +137,7 @@ class BackendUtilsTest {
       throws InterruptedException, ExecutionException, TimeoutException {
     Executor executor = Executors.newCachedThreadPool();
     List<CompletableFuture<String>> futuresReqIds = new ArrayList<>();
-    Vector<String> results = new Vector<>();
+    Set<String> results = ConcurrentHashMap.newKeySet();
     for (int i = 0; i < numberOfRequests; i++) {
       futuresReqIds.add(
           CompletableFuture.supplyAsync(

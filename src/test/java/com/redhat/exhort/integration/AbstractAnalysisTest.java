@@ -71,7 +71,7 @@ public abstract class AbstractAnalysisTest {
 
   static final String WIREMOCK_URL_TEMPLATE = "__WIREMOCK_URL__";
 
-  static final String regexMatcherRequestId = "[a-f0-9]{64}";
+  static final String REGEX_MATCHER_REQUEST_ID = "[a-f0-9]{64}";
 
   @InjectWireMock WireMockServer server;
 
