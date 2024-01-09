@@ -126,8 +126,6 @@ class BackendUtilsTest {
   void checkGeneratedWithSameTimeWithNullRHDATokenAndTheyShouldBeDifferent()
       throws InterruptedException {
 
-    String randomUUID = UUID.randomUUID().toString();
-
     AtomicReference<String> reqId = new AtomicReference();
     AtomicReference<String> reqId2 = new AtomicReference();
     Thread thread = new Thread(() -> reqId.set(this.backendUtilsFakeTimer.generateRequestId(null)));
