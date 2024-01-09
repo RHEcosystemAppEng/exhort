@@ -35,7 +35,7 @@ class BackendUtilsTest {
 
   private BackendUtils backendUtils;
   private BackendUtils backendUtilsFakeTimer;
-  private int numberOfRequests;
+  private static final int numberOfRequests = 10000;
 
   @BeforeEach
   void setUp() {
@@ -143,7 +143,6 @@ class BackendUtilsTest {
       throws InterruptedException, ExecutionException, TimeoutException {
     Executor executor = Executors.newCachedThreadPool();
     List<CompletableFuture<String>> futuresReqIds = new ArrayList<>();
-    numberOfRequests = 10000;
     Vector<String> results = new Vector<>();
     for (int i = 0; i < numberOfRequests; i++) {
       futuresReqIds.add(
