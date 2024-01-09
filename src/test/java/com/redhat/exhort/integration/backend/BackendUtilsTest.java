@@ -92,11 +92,8 @@ class BackendUtilsTest {
     String randomUUID2 = UUID.randomUUID().toString();
     AtomicReference<String> reqId = new AtomicReference();
     AtomicReference<String> reqId2 = new AtomicReference();
-    ;
-    Thread thread =
-        new Thread(() -> reqId.set(this.backendUtilsFakeTimer.generateRequestId(randomUUID)));
-    Thread thread2 =
-        new Thread(() -> reqId2.set(this.backendUtilsFakeTimer.generateRequestId(randomUUID2)));
+    Thread thread = createThread(reqId, randomUUID);
+    Thread thread2 = createThread(reqId2, randomUUID2);
     thread.start();
     thread2.start();
     thread.join();
@@ -111,10 +108,8 @@ class BackendUtilsTest {
 
     AtomicReference<String> reqId = new AtomicReference();
     AtomicReference<String> reqId2 = new AtomicReference();
-    Thread thread =
-        new Thread(() -> reqId.set(this.backendUtilsFakeTimer.generateRequestId(randomUUID)));
-    Thread thread2 =
-        new Thread(() -> reqId2.set(this.backendUtilsFakeTimer.generateRequestId(randomUUID)));
+    Thread thread = createThread(reqId, randomUUID);
+    Thread thread2 = createThread(reqId2, randomUUID);
     thread.start();
     thread2.start();
     thread.join();
@@ -128,9 +123,8 @@ class BackendUtilsTest {
 
     AtomicReference<String> reqId = new AtomicReference();
     AtomicReference<String> reqId2 = new AtomicReference();
-    Thread thread = new Thread(() -> reqId.set(this.backendUtilsFakeTimer.generateRequestId(null)));
-    Thread thread2 =
-        new Thread(() -> reqId2.set(this.backendUtilsFakeTimer.generateRequestId(null)));
+    Thread thread = createThread(reqId, null);
+    Thread thread2 = createThread(reqId2, null);
     thread.start();
     thread2.start();
     thread.join();
@@ -160,5 +154,9 @@ class BackendUtilsTest {
     CompletableFuture.allOf(futuresReqIds.toArray(new CompletableFuture[0]))
         .get(5, TimeUnit.SECONDS);
     assertEquals(numberOfRequests, results.size());
+  }
+
+  private Thread createThread(AtomicReference<String> reqId, String rhdaToken) {
+    return new Thread(() -> reqId.set(this.backendUtilsFakeTimer.generateRequestId(rhdaToken)));
   }
 }
