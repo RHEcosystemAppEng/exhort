@@ -22,8 +22,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.nio.charset.StandardCharsets;
 import java.time.*;
-import java.util.Arrays;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -34,10 +34,16 @@ import org.junit.jupiter.api.Test;
 class BackendUtilsTest {
 
   private BackendUtils backendUtils;
+  private BackendUtils backendUtilsFakeTimer;
+  private int numberOfRequests;
 
   @BeforeEach
   void setUp() {
     this.backendUtils = new BackendUtils();
+    LocalDate fakeDate = LocalDate.of(2024, 1, 1);
+    Clock clock =
+        Clock.fixed(fakeDate.atStartOfDay().toInstant(ZoneOffset.UTC), ZoneId.systemDefault());
+    this.backendUtilsFakeTimer = new BackendUtils(clock);
   }
 
   @Test
@@ -72,90 +78,90 @@ class BackendUtilsTest {
   @Test
   void checkGeneratedWithSameUuidRHDATokenAndDifferentTimeShouldBeDifferentFromEachOther() {
 
-    String randsomUUID = UUID.randomUUID().toString();
-    String reqId1 = this.backendUtils.generateRequestId(randsomUUID);
-    String reqId2 = this.backendUtils.generateRequestId(randsomUUID);
+    String randomUUID = UUID.randomUUID().toString();
+    String reqId1 = this.backendUtils.generateRequestId(randomUUID);
+    String reqId2 = this.backendUtils.generateRequestId(randomUUID);
     assertFalse(reqId1.equals(reqId2));
   }
 
   @Test
-  void checkGeneratedWithSameTimeDifferentRHDATokenAndDifferentFromEachOther() {
+  void checkGeneratedWithSameTimeDifferentRHDATokenAndDifferentFromEachOther()
+      throws InterruptedException {
 
     String randomUUID = UUID.randomUUID().toString();
     String randomUUID2 = UUID.randomUUID().toString();
     AtomicReference<String> reqId = new AtomicReference();
     AtomicReference<String> reqId2 = new AtomicReference();
-    LocalDate fakeDate = LocalDate.of(2024, 1, 1);
-    Clock clock =
-        Clock.fixed(fakeDate.atStartOfDay().toInstant(ZoneOffset.UTC), ZoneId.systemDefault());
-    this.backendUtils.setClock(clock);
-    Thread thread = new Thread(() -> reqId.set(this.backendUtils.generateRequestId(randomUUID)));
-    Thread thread2 = new Thread(() -> reqId2.set(this.backendUtils.generateRequestId(randomUUID2)));
+    ;
+    Thread thread =
+        new Thread(() -> reqId.set(this.backendUtilsFakeTimer.generateRequestId(randomUUID)));
+    Thread thread2 =
+        new Thread(() -> reqId2.set(this.backendUtilsFakeTimer.generateRequestId(randomUUID2)));
     thread.start();
     thread2.start();
-
-    try {
-      thread.join();
-      thread2.join();
-    } catch (InterruptedException e) {
-      throw new RuntimeException(e);
-    } finally {
-      this.backendUtils.setClock(null);
-    }
+    thread.join();
+    thread2.join();
     assertFalse(reqId.get().equals(reqId2.get()));
   }
 
   @Test
-  void checkGeneratedWithSameTimeSameRHDATokenAndTheyShouldBeEquals() {
+  void checkGeneratedWithSameTimeSameRHDATokenAndTheyShouldBeEquals() throws InterruptedException {
 
     String randomUUID = UUID.randomUUID().toString();
 
     AtomicReference<String> reqId = new AtomicReference();
     AtomicReference<String> reqId2 = new AtomicReference();
-    LocalDate fakeDate = LocalDate.of(2024, 1, 1);
-    Clock clock =
-        Clock.fixed(fakeDate.atStartOfDay().toInstant(ZoneOffset.UTC), ZoneId.systemDefault());
-    this.backendUtils.setClock(clock);
-    Thread thread = new Thread(() -> reqId.set(this.backendUtils.generateRequestId(randomUUID)));
-    Thread thread2 = new Thread(() -> reqId2.set(this.backendUtils.generateRequestId(randomUUID)));
+    Thread thread =
+        new Thread(() -> reqId.set(this.backendUtilsFakeTimer.generateRequestId(randomUUID)));
+    Thread thread2 =
+        new Thread(() -> reqId2.set(this.backendUtilsFakeTimer.generateRequestId(randomUUID)));
     thread.start();
     thread2.start();
-    try {
-      thread.join();
-      thread2.join();
-    } catch (InterruptedException e) {
-      throw new RuntimeException(e);
-    } finally {
-      this.backendUtils.setClock(null);
-    }
-
+    thread.join();
+    thread2.join();
     assertTrue(reqId.get().equals(reqId2.get()));
   }
 
   @Test
-  void checkGeneratedWithSameTimeWithNullRHDATokenAndTheyShouldBeDifferent() {
+  void checkGeneratedWithSameTimeWithNullRHDATokenAndTheyShouldBeDifferent()
+      throws InterruptedException {
 
     String randomUUID = UUID.randomUUID().toString();
 
     AtomicReference<String> reqId = new AtomicReference();
     AtomicReference<String> reqId2 = new AtomicReference();
-    LocalDate fakeDate = LocalDate.of(2024, 1, 1);
-    Clock clock =
-        Clock.fixed(fakeDate.atStartOfDay().toInstant(ZoneOffset.UTC), ZoneId.systemDefault());
-    this.backendUtils.setClock(clock);
-    Thread thread = new Thread(() -> reqId.set(this.backendUtils.generateRequestId(null)));
-    Thread thread2 = new Thread(() -> reqId2.set(this.backendUtils.generateRequestId(null)));
+    Thread thread = new Thread(() -> reqId.set(this.backendUtilsFakeTimer.generateRequestId(null)));
+    Thread thread2 =
+        new Thread(() -> reqId2.set(this.backendUtilsFakeTimer.generateRequestId(null)));
     thread.start();
     thread2.start();
-    try {
-      thread.join();
-      thread2.join();
-    } catch (InterruptedException e) {
-      throw new RuntimeException(e);
-    } finally {
-      this.backendUtils.setClock(null);
-    }
-
+    thread.join();
+    thread2.join();
     assertNotEquals(reqId.get(), reqId2.get());
+  }
+
+  @Test
+  void checkMassGeneratedConcurrentlyWithDifferentRHDATokensAndAllShouldBeDifferentFromEachOther()
+      throws InterruptedException, ExecutionException, TimeoutException {
+    Executor executor = Executors.newCachedThreadPool();
+    List<CompletableFuture<String>> futuresReqIds = new ArrayList<>();
+    numberOfRequests = 10000;
+    Vector<String> results = new Vector<>();
+    for (int i = 0; i < numberOfRequests; i++) {
+      futuresReqIds.add(
+          CompletableFuture.supplyAsync(
+                  () -> this.backendUtils.generateRequestId(UUID.randomUUID().toString()), executor)
+              .whenComplete(
+                  (reqId, error) -> {
+                    if (results.contains(reqId)) {
+                      fail("Found duplicate key: " + reqId);
+                    } else {
+                      results.add(reqId);
+                    }
+                  }));
+    }
+    CompletableFuture.allOf(futuresReqIds.toArray(new CompletableFuture[0]))
+        .get(5, TimeUnit.SECONDS);
+    assertEquals(numberOfRequests, results.size());
   }
 }

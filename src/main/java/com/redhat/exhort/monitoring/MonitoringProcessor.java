@@ -47,7 +47,7 @@ public class MonitoringProcessor {
   };
 
   private static final String[] LOGGED_PROPERTIES = {
-    Exchange.FAILURE_ENDPOINT, Exchange.FAILURE_ROUTE_ID, Constants.EXHORT_REQUEST_ID_PROPERTY
+    Exchange.FAILURE_ENDPOINT, Exchange.FAILURE_ROUTE_ID, Constants.EXHORT_REQUEST_ID_HEADER
   };
 
   @Inject MonitoringClient client;
@@ -59,8 +59,8 @@ public class MonitoringProcessor {
             .collect(Collectors.toMap(h -> h, h -> exchange.getIn().getHeader(h, String.class)));
     var context = exchange.getProperty(MONITORING_CONTEXT, MonitoringContext.class);
     metadata.put(
-        Constants.EXHORT_REQUEST_ID_PROPERTY,
-        exchange.getProperty(Constants.EXHORT_REQUEST_ID_PROPERTY, String.class));
+        Constants.EXHORT_REQUEST_ID_HEADER,
+        exchange.getProperty(Constants.EXHORT_REQUEST_ID_HEADER, String.class));
     if (context == null) {
       context =
           new MonitoringContext(

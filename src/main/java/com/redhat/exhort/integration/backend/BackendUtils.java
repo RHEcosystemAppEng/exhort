@@ -38,7 +38,11 @@ import jakarta.ws.rs.core.Response.Status;
 @RegisterForReflection
 public class BackendUtils {
 
-  public void setClock(Clock clock) {
+  public BackendUtils() {
+    this.clock = Clock.systemDefaultZone();
+  }
+
+  public BackendUtils(Clock clock) {
     this.clock = clock;
   }
 
@@ -66,11 +70,7 @@ public class BackendUtils {
     try {
       MessageDigest digestMaker = MessageDigest.getInstance("SHA-256");
       String tsOfNow;
-      if (Objects.isNull(this.clock)) {
-        tsOfNow = LocalDateTime.now(Clock.systemDefaultZone()).toString();
-      } else {
-        tsOfNow = LocalDateTime.now(this.clock).toString();
-      }
+      tsOfNow = LocalDateTime.now(this.clock).toString();
       var token = rhdaToken;
       if (Objects.isNull(rhdaToken) || rhdaToken.trim().equals("")) {
         token = Double.valueOf(Math.random()).toString();
