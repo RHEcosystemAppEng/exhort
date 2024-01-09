@@ -17,12 +17,12 @@ export const TransitiveDependenciesTable = ({
       <Table variant={TableVariant.compact}>
         <Thead>
           <Tr>
-            <Th width={10}>Vulnerability ID</Th>
-            <Th width={25}>Description</Th>
+            <Th width={15}>Vulnerability ID</Th>
+            <Th width={20}>Description</Th>
             <Th width={10}>Severity</Th>
-            <Th width={20}>CVSS Score</Th>
-            <Th width={20}>Transitive Dependency</Th>
-            <Th>Remediation</Th>
+            <Th width={15}>CVSS Score</Th>
+            <Th width={20}>Direct Dependency</Th>
+            <Th width={20}>Remediation</Th>
           </Tr>
         </Thead>
         <ConditionalTableBody isNoData={transitiveDependencies.length === 0} numRenderedColumns={7}>

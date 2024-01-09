@@ -14,12 +14,12 @@ export const VulnerabilitiesTable = ({ providerName, dependency, vulnerabilities
       <Table variant={TableVariant.compact}>
         <Thead>
           <Tr>
-            <Th width={20}>Vulnerability ID</Th>
+            <Th width={15}>Vulnerability ID</Th>
             <Th width={20}>Description</Th>
-            <Th>Severity</Th>
-            <Th width={20}>CVSS Score</Th>
+            <Th width={10}>Severity</Th>
+            <Th width={15}>CVSS Score</Th>
             <Th width={20}>Direct Dependency</Th>
-            <Th>Remediation</Th>
+            <Th width={20}>Remediation</Th>
           </Tr>
         </Thead>
         <ConditionalTableBody isNoData={vulnerabilities.length === 0} numRenderedColumns={6}>
