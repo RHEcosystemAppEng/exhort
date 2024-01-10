@@ -286,6 +286,46 @@ public class ProviderResponseHandlerTest {
   }
 
   @Test
+  public void testRecommendationsWithoutIssues() throws IOException {
+    PackageRef abRecommendation = new PackageRef("pkg:npm/ab@1-redhat-00001");
+    PackageRef acRecommendation = new PackageRef("pkg:npm/ac@1-redhat-00006");
+    Map<PackageRef, IndexedRecommendation> recommendations =
+        Map.of(
+            new PackageRef("pkg:npm/ab@1"),
+            new IndexedRecommendation(abRecommendation, Collections.emptyMap()),
+            acRecommendation, // recommend the same should be ignored
+            new IndexedRecommendation(acRecommendation, Collections.emptyMap()));
+
+    Map<String, List<Issue>> issues = Collections.emptyMap();
+
+    ProviderResponseHandler handler = new TestResponseHandler();
+
+    var report =
+        handler.buildReport(
+            new ProviderResponse(issues, null),
+            buildTree(),
+            null,
+            new TrustedContentResponse(recommendations, null));
+
+    assertNotNull(report);
+    assertNotNull(report.getSources());
+    Source source = report.getSources().get(TEST_PROVIDER);
+    assertNotNull(source);
+
+    assertEquals(1, source.getSummary().getRecommendations());
+    assertEquals(1, source.getDependencies().size());
+
+    assertTrue(
+        source.getDependencies().stream()
+            .anyMatch(
+                d ->
+                    d.getRef().name().equals("ab")
+                        && d.getRecommendation().equals(abRecommendation)));
+    assertTrue(source.getDependencies().stream().noneMatch(d -> d.getRef().name().equals("aa")));
+    assertTrue(source.getDependencies().stream().noneMatch(d -> d.getRef().name().equals("ac")));
+  }
+
+  @Test
   public void testRemediations() throws IOException {
     PackageRef abRemediation = new PackageRef("pkg:npm/ab@1-redhat-00008");
     PackageRef aabRemediation = new PackageRef("pkg:npm/aab@1-redhat-00001");
