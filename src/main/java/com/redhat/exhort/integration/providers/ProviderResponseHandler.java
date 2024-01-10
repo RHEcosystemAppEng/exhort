@@ -215,6 +215,9 @@ public abstract class ProviderResponseHandler {
       return new ProviderReport().status(response.status()).sources(Collections.emptyMap());
     }
     var sourcesIssues = splitIssuesBySource(response.issues());
+    if (sourcesIssues.isEmpty() && !tcResponse.recommendations().isEmpty()) {
+      sourcesIssues.put(getProviderName(), Collections.emptyMap());
+    }
     Map<String, Source> reports = new HashMap<>();
     sourcesIssues
         .keySet()
@@ -227,7 +230,7 @@ public abstract class ProviderResponseHandler {
     return new ProviderReport().status(defaultOkStatus(getProviderName())).sources(reports);
   }
 
-  public Source buildReportForSource(
+  private Source buildReportForSource(
       Map<String, List<Issue>> issuesData,
       DependencyTree tree,
       String privateProviders,
