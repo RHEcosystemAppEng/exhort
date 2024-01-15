@@ -5,6 +5,7 @@ export interface AppData {
   report: Report;
   ossIssueTemplate: string;
   snykIssueTemplate: string;
+  nvdIssueTemplate: string;
   snykSignup: string;
 }
 

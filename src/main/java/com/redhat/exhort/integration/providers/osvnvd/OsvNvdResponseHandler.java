@@ -36,6 +36,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.redhat.exhort.api.PackageRef;
 import com.redhat.exhort.api.v4.Issue;
+import com.redhat.exhort.api.v4.Remediation;
 import com.redhat.exhort.api.v4.SeverityUtils;
 import com.redhat.exhort.integration.Constants;
 import com.redhat.exhort.integration.providers.ProviderResponseHandler;
@@ -93,6 +94,13 @@ public class OsvNvdResponseHandler extends ProviderResponseHandler {
           if (metrics != null) {
             setMetrics(metrics, issue);
           }
+          var affected = data.get("affected");
+          if (affected != null) {
+            issue.setRemediation(getRemediation((ArrayNode) affected));
+          }
+          if (issue.getCvssScore() != null) {
+            issues.add(issue);
+          }
         });
     return issues;
   }
@@ -119,6 +127,29 @@ public class OsvNvdResponseHandler extends ProviderResponseHandler {
                 .severity(SeverityUtils.fromScore(score));
           }
         });
+  }
+
+  private Remediation getRemediation(ArrayNode affected) {
+    var r = new Remediation();
+    affected.forEach(
+        affectedNode -> {
+          var ranges = (ArrayNode) affectedNode.get("ranges");
+          if (ranges == null) {
+            return;
+          }
+          ranges.forEach(
+              rangeNode -> {
+                var events = (ArrayNode) rangeNode.get("events");
+                events.forEach(
+                    eventNode -> {
+                      var fixed = getTextValue(eventNode, "fixed");
+                      if (fixed != null) {
+                        r.addFixedInItem(fixed);
+                      }
+                    });
+              });
+        });
+    return r;
   }
 
   private String getTextValue(JsonNode node, String key) {
