@@ -92,13 +92,13 @@ public class HtmlReportTest extends AbstractAnalysisTest {
 
     DomNodeList<DomElement> tables = page.getElementsByTagName("table");
     System.out.println("tableSize: " + tables.size());
-    assertEquals(1, tables.size());
-    DomElement snykTable = tables.get(0);
+    assertEquals(2, tables.size());
+    DomElement snykTable = tables.get(1);
     HtmlTableBody tbody = getTableBodyForDependency("io.quarkus:quarkus-hibernate-orm", snykTable);
     assertNotNull(tbody);
     page = expandTransitiveTableDataCell(tbody);
     tables = page.getElementsByTagName("table");
-    assertEquals(2, tables.size());
+    assertEquals(3, tables.size());
     snykTable = tables.get(1);
     List<HtmlTableBody> tbodies = snykTable.getByXPath(".//tbody");
     HtmlTableBody privateIssueTbody =
@@ -166,10 +166,10 @@ public class HtmlReportTest extends AbstractAnalysisTest {
     page = snykSourceBtn.click();
 
     DomNodeList<DomElement> tables = page.getElementsByTagName("table");
-    assertEquals(2, tables.size());
+    assertEquals(3, tables.size());
 
     HtmlTableBody tbody =
-        getTableBodyForDependency("io.quarkus:quarkus-hibernate-orm", tables.get(1));
+        getTableBodyForDependency("io.quarkus:quarkus-hibernate-orm", tables.get(2));
     assertNotNull(tbody);
     page = expandTransitiveTableDataCell(tbody);
     tables = page.getElementsByTagName("table");

@@ -109,7 +109,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .body()
             .as(AnalysisReport.class);
 
-    assertEquals(3, report.getProviders().size());
+    assertEquals(4, report.getProviders().size());
     assertEquals(
         401, report.getProviders().get(Constants.OSS_INDEX_PROVIDER).getStatus().getCode());
     var status = report.getProviders().get(Constants.SNYK_PROVIDER).getStatus();
@@ -117,7 +117,11 @@ public class AnalysisTest extends AbstractAnalysisTest {
     assertEquals("Unsupported package types received: [foo]", status.getMessage());
     assertEquals(Constants.SNYK_PROVIDER, status.getName());
     assertFalse(status.getOk());
-    verifyNoInteractions();
+
+    verifyNoInteractionsWithOSS();
+    verifyNoInteractionsWithSnyk();
+    verifyTrustedContentRequest();
+    verifyOsvNvdRequest();
   }
 
   @ParameterizedTest
@@ -141,7 +145,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .body()
             .as(AnalysisReport.class);
 
-    assertEquals(3, report.getProviders().size());
+    assertEquals(4, report.getProviders().size());
     assertEquals(
         401, report.getProviders().get(Constants.OSS_INDEX_PROVIDER).getStatus().getCode());
     var status = report.getProviders().get(Constants.SNYK_PROVIDER).getStatus();
@@ -154,8 +158,10 @@ public class AnalysisTest extends AbstractAnalysisTest {
         200, report.getProviders().get(Constants.TRUSTED_CONTENT_PROVIDER).getStatus().getCode());
     assertFalse(status.getOk());
 
-    verifyNoInteractions();
+    verifyNoInteractionsWithOSS();
+    verifyNoInteractionsWithSnyk();
     verifyTrustedContentRequest();
+    verifyOsvNvdRequest();
   }
 
   @ParameterizedTest
@@ -201,6 +207,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
     return Stream.of(
         Arguments.of(Map.of(Constants.SNYK_PROVIDER, 200), Collections.emptyMap()),
         Arguments.of(Map.of(Constants.OSS_INDEX_PROVIDER, 401), Collections.emptyMap()),
+        Arguments.of(Map.of(Constants.OSV_NVD_PROVIDER, 200), Collections.emptyMap()),
         Arguments.of(
             Map.of(Constants.SNYK_PROVIDER, 200, Constants.OSS_INDEX_PROVIDER, 401),
             Collections.emptyMap()),
@@ -216,6 +223,21 @@ public class AnalysisTest extends AbstractAnalysisTest {
                 OK_TOKEN)),
         Arguments.of(
             Map.of(Constants.SNYK_PROVIDER, 200, Constants.OSS_INDEX_PROVIDER, 200),
+            Map.of(
+                Constants.SNYK_TOKEN_HEADER,
+                OK_TOKEN,
+                Constants.OSS_INDEX_USER_HEADER,
+                OK_USER,
+                Constants.OSS_INDEX_TOKEN_HEADER,
+                OK_TOKEN)),
+        Arguments.of(
+            Map.of(
+                Constants.SNYK_PROVIDER,
+                200,
+                Constants.OSS_INDEX_PROVIDER,
+                200,
+                Constants.OSV_NVD_PROVIDER,
+                200),
             Map.of(
                 Constants.SNYK_TOKEN_HEADER,
                 OK_TOKEN,
@@ -253,6 +275,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
     assertJson("reports/report_all_token.json", body);
     verifySnykRequest(OK_TOKEN);
     verifyOssRequest(OK_USER, OK_TOKEN, false);
+    verifyOsvNvdRequest();
   }
 
   @Test
@@ -305,7 +328,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .body()
             .as(AnalysisReport.class);
 
-    assertEquals(3, report.getProviders().size());
+    assertEquals(4, report.getProviders().size());
     assertEquals(
         401, report.getProviders().get(Constants.OSS_INDEX_PROVIDER).getStatus().getCode());
     assertTrue(report.getProviders().get(Constants.SNYK_PROVIDER).getSources().isEmpty());
@@ -313,8 +336,10 @@ public class AnalysisTest extends AbstractAnalysisTest {
     assertFalse(status.getOk());
     assertEquals(Constants.SNYK_PROVIDER, status.getName());
     assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), status.getCode());
+    assertEquals(200, report.getProviders().get(Constants.OSV_NVD_PROVIDER).getStatus().getCode());
 
     verifySnykRequest(INVALID_TOKEN);
+    verifyOsvNvdRequest();
   }
 
   @Test
@@ -340,7 +365,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .body()
             .as(AnalysisReport.class);
 
-    assertEquals(3, report.getProviders().size());
+    assertEquals(4, report.getProviders().size());
     assertEquals(
         401, report.getProviders().get(Constants.OSS_INDEX_PROVIDER).getStatus().getCode());
     assertTrue(report.getProviders().get(Constants.SNYK_PROVIDER).getSources().isEmpty());
@@ -349,7 +374,10 @@ public class AnalysisTest extends AbstractAnalysisTest {
     assertEquals(Constants.SNYK_PROVIDER, status.getName());
     assertEquals(Response.Status.FORBIDDEN.getStatusCode(), status.getCode());
 
+    assertEquals(200, report.getProviders().get(Constants.OSV_NVD_PROVIDER).getStatus().getCode());
+
     verifySnykRequest(UNAUTH_TOKEN);
+    verifyOsvNvdRequest();
   }
 
   @Test

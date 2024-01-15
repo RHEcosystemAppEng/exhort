@@ -26,6 +26,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.redhat.exhort.extensions.WiremockV3Extension.SNYK_TOKEN;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -198,6 +199,7 @@ public abstract class AbstractAnalysisTest {
     stubSnykRequests();
     stubOssToken();
     stubTrustedContentRequests();
+    stubOsvNvdRequests();
   }
 
   protected void verifyProviders(
@@ -212,6 +214,7 @@ public abstract class AbstractAnalysisTest {
                     credentials.get(Constants.OSS_INDEX_USER_HEADER),
                     credentials.get(Constants.OSS_INDEX_TOKEN_HEADER),
                     isEmpty);
+                case Constants.OSV_NVD_PROVIDER -> verifyOsvNvdRequest();
               }
             });
     verifyTrustedContentRequest();
@@ -285,6 +288,28 @@ public abstract class AbstractAnalysisTest {
                     .withStatus(200)
                     .withHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON)
                     .withBodyFile("trustedcontent/maven_report.json")));
+  }
+
+  protected void stubOsvNvdRequests() {
+    server.stubFor(
+        post(Constants.OSV_NVD_PURLS_PATH)
+            .withHeader(Exchange.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON))
+            .willReturn(
+                aResponse()
+                    .withStatus(200)
+                    .withHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                    .withBodyFile("osvnvd/empty_report.json")));
+
+    server.stubFor(
+        post(Constants.OSV_NVD_PURLS_PATH)
+            .withHeader(Exchange.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON))
+            .withRequestBody(
+                equalToJson(loadFileAsString("__files/osvnvd/maven_request.json"), true, false))
+            .willReturn(
+                aResponse()
+                    .withStatus(200)
+                    .withHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                    .withBodyFile("osvnvd/maven_report.json")));
   }
 
   protected void verifyTrustedContentRequest() {
@@ -432,9 +457,14 @@ public abstract class AbstractAnalysisTest {
     }
   }
 
+  protected void verifyOsvNvdRequest() {
+    server.verify(1, postRequestedFor(urlEqualTo(Constants.OSV_NVD_PURLS_PATH)));
+  }
+
   protected void verifyNoInteractions() {
     verifyNoInteractionsWithSnyk();
     verifyNoInteractionsWithOSS();
+    verifyNoInteractionsWithOsvNvd();
   }
 
   protected void verifyNoInteractionsWithSnyk() {
@@ -448,5 +478,9 @@ public abstract class AbstractAnalysisTest {
 
   protected void verifyNoInteractionsWithTrustedContent() {
     server.verify(0, postRequestedFor(urlEqualTo(Constants.TRUSTED_CONTENT_PATH)));
+  }
+
+  protected void verifyNoInteractionsWithOsvNvd() {
+    server.verify(0, postRequestedFor(urlPathEqualTo(Constants.OSV_NVD_PURLS_PATH)));
   }
 }
