@@ -28,7 +28,6 @@ data:
       "editable": true,
       "fiscalYearStartMonth": 0,
       "graphTooltip": 0,
-      "id": 348444,
       "links": [],
       "liveNow": false,
       "panels": [
@@ -1235,8 +1234,7 @@ data:
                     "mode": "absolute",
                     "steps": [
                       {
-                        "color": "green",
-                        "value": null
+                        "color": "green"
                       },
                       {
                         "color": "red",
@@ -1305,8 +1303,7 @@ data:
                     "mode": "absolute",
                     "steps": [
                       {
-                        "color": "green",
-                        "value": null
+                        "color": "green"
                       },
                       {
                         "color": "red",
@@ -1405,8 +1402,7 @@ data:
                     "mode": "absolute",
                     "steps": [
                       {
-                        "color": "green",
-                        "value": null
+                        "color": "green"
                       }
                     ]
                   },
@@ -1466,7 +1462,7 @@ data:
             "query": "prometheus",
             "queryValue": "",
             "refresh": 1,
-            "regex": "app-sre-stage-01-prometheus|app-sre-prod-01-prometheus",
+            "regex": "appsres07ue1-prometheus|app-sre-prod-01-prometheus|appsrep08ue2-prometheus",
             "skipUrlSync": false,
             "type": "datasource"
           },
@@ -1554,7 +1550,7 @@ data:
       "timezone": "",
       "title": "Exhort",
       "uid": "trusted-content-exhort",
-      "version": 3,
+      "version": 4,
       "weekStart": ""
     }
 kind: ConfigMap
