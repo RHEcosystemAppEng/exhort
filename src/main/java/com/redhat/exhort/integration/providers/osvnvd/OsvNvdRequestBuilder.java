@@ -23,6 +23,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.redhat.exhort.config.ObjectMapperProducer;
 import com.redhat.exhort.model.DependencyTree;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
+
+@RegisterForReflection
 public class OsvNvdRequestBuilder {
 
   private ObjectMapper mapper = ObjectMapperProducer.newInstance();
