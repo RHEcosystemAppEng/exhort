@@ -53,7 +53,7 @@ public class SpdxWrapper {
     this.doc = new SpdxDocument(inputStore, uri, null, false);
     var verify = doc.verify(SUPPORTED_VERSION);
     if (!verify.isEmpty()) {
-      throw new SpdxProcessingException("Invalid " + SUPPORTED_VERSION + " document received");
+      throw new SpdxValidationException(SUPPORTED_VERSION, verify);
     }
     this.packages = parsePackages();
   }

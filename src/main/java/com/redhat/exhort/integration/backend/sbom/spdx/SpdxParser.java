@@ -57,8 +57,11 @@ public class SpdxParser extends SbomParser {
       var deps = buildDeps(wrapper);
       var tree = new DependencyTree(deps);
       return tree;
+    } catch (SpdxValidationException e) {
+      LOGGER.info("Invalid SPDX SBOM received", e.getMessage());
+      throw new ClientErrorException(e.getMessage(), Response.Status.BAD_REQUEST);
     } catch (SpdxProcessingException | InvalidSPDXAnalysisException | IOException e) {
-      LOGGER.error("Unable to parse the SPDX SBOM file", e);
+      LOGGER.warn("Unable to parse the SPDX SBOM file", e);
       throw new ClientErrorException(
           "Unable to parse received SPDX SBOM file: " + e.getMessage(),
           Response.Status.BAD_REQUEST);
