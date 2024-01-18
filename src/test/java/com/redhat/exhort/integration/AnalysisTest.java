@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -37,7 +38,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
+import java.util.zip.GZIPOutputStream;
 
+import org.apache.camel.Exchange;
 import org.cyclonedx.CycloneDxMediaType;
 import org.hamcrest.text.MatchesPattern;
 import org.junit.jupiter.api.Test;
@@ -501,6 +504,38 @@ public class AnalysisTest extends AbstractAnalysisTest {
         .contentType(MediaType.TEXT_PLAIN);
 
     verifyNoInteractions();
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {CYCLONEDX, SPDX})
+  public void testGzipDeflatedContentEncoding(String sbom) throws IOException {
+    stubAllProviders();
+
+    var fileContent = loadFileAsString(String.format("%s/empty-sbom.json", sbom));
+    var byteArray = new ByteArrayOutputStream(fileContent.length());
+    var output = new GZIPOutputStream(byteArray);
+    output.write(fileContent.getBytes());
+    output.close();
+    byteArray.close();
+    var report =
+        given()
+            .header(CONTENT_TYPE, getContentType(sbom))
+            .header(Exchange.CONTENT_ENCODING, "gzip")
+            .body(byteArray.toByteArray())
+            .when()
+            .post("/api/v4/analysis")
+            .then()
+            .assertThat()
+            .statusCode(200)
+            .header(Exchange.CONTENT_ENCODING, "gzip")
+            .header(
+                Constants.EXHORT_REQUEST_ID_HEADER,
+                MatchesPattern.matchesPattern(REGEX_MATCHER_REQUEST_ID))
+            .extract()
+            .body()
+            .as(AnalysisReport.class);
+
+    report.getProviders().values().stream().allMatch(p -> p.getStatus().getOk());
   }
 
   private void assertScanned(Scanned scanned) {
