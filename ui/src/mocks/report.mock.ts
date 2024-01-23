@@ -5,6 +5,7 @@ import { forbiddenReport } from './reportWithForbidden.mock';
 import { unauthorizedReport } from './reportWithUnauthorized.mock';
 import { reportMixed } from './reportMixed.mock';
 import { unauthenticatedReport } from './reportWithUnauthenticated.mock';
+import { dockerReport} from './reportDocker.mock';
 
 export const MOCK_REPORT = {
   mixed: reportMixed,
@@ -14,4 +15,5 @@ export const MOCK_REPORT = {
   forbidden: forbiddenReport,
   unauthorizedReport: unauthorizedReport,
   unauthenticatedReport: unauthenticatedReport,
+  docker: dockerReport,
 };
