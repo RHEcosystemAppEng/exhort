@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 import org.spdx.jacksonstore.MultiFormatStore;
 import org.spdx.library.InvalidSPDXAnalysisException;
 import org.spdx.library.SpdxConstants;
-import org.spdx.library.Version;
 import org.spdx.library.model.ExternalRef;
 import org.spdx.library.model.SpdxDocument;
 import org.spdx.library.model.SpdxPackage;
@@ -37,7 +36,6 @@ import com.redhat.exhort.api.PackageRef;
 
 public class SpdxWrapper {
 
-  private static final String SUPPORTED_VERSION = Version.TWO_POINT_THREE_VERSION;
   private static final String PURL_REFERENCE = "http://spdx.org/rdf/references/purl";
 
   private MultiFormatStore inputStore;
@@ -48,12 +46,17 @@ public class SpdxWrapper {
   public SpdxWrapper(MultiFormatStore inputStore, InputStream input)
       throws InvalidSPDXAnalysisException, IOException {
     this.inputStore = inputStore;
-    this.inputStore.deSerialize(input, false);
-    this.uri = inputStore.getDocumentUris().get(0);
-    this.doc = new SpdxDocument(inputStore, uri, null, false);
-    var verify = doc.verify(SUPPORTED_VERSION);
+    try {
+      this.inputStore.deSerialize(input, false);
+      this.uri = inputStore.getDocumentUris().get(0);
+      this.doc = new SpdxDocument(inputStore, uri, null, false);
+    } catch (InvalidSPDXAnalysisException e) {
+      throw new SpdxProcessingException(e);
+    }
+    var version = doc.getSpecVersion();
+    var verify = doc.verify(version);
     if (!verify.isEmpty()) {
-      throw new SpdxValidationException(SUPPORTED_VERSION, verify);
+      throw new SpdxValidationException(version, verify);
     }
     this.packages = parsePackages();
   }

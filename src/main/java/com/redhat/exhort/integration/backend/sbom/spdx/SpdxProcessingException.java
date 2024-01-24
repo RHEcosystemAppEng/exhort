@@ -24,6 +24,10 @@ public class SpdxProcessingException extends RuntimeException {
     super(msg);
   }
 
+  public SpdxProcessingException(Throwable e) {
+    super(e);
+  }
+
   public SpdxProcessingException(String msg, Throwable e) {
     super(msg, e);
   }
