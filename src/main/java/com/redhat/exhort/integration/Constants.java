@@ -69,6 +69,7 @@ public final class Constants {
   public static final String RESPONSE_STATUS_PROPERTY = "responseStatus";
   public static final String DEPENDENCY_TREE_PROPERTY = "dependencyTree";
   public static final String API_VERSION_PROPERTY = "apiVersion";
+  public static final String GZIP_RESPONSE_PROPERTY = "gzipResponse";
 
   public static final String API_VERSION_V4 = "v4";
   public static final String API_VERSION_V3 = "v3";

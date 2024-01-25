@@ -54,6 +54,8 @@ import jakarta.ws.rs.core.Response.Status;
 @ApplicationScoped
 public class ExhortIntegration extends EndpointRouteBuilder {
 
+  private static final String GZIP_ENCODING = "gzip";
+
   private final MeterRegistry registry;
 
   @Inject VulnerabilityProvider vulnerabilityProvider;
@@ -127,6 +129,10 @@ public class ExhortIntegration extends EndpointRouteBuilder {
     from(direct("analysis"))
       .routeId("dependencyAnalysis")
       .setProperty(Constants.EXHORT_REQUEST_ID_HEADER, method(BackendUtils.class,"generateRequestId"))
+      .choice()
+        .when(header(Exchange.CONTENT_ENCODING).isEqualToIgnoreCase(GZIP_ENCODING)).unmarshal().gzipDeflater()
+        .setProperty(Constants.GZIP_RESPONSE_PROPERTY, constant(Boolean.TRUE))
+      .end()
       .to(seda("analyticsIdentify"))
       .setProperty(PROVIDERS_PARAM, method(vulnerabilityProvider, "getProvidersFromQueryParam"))
       .setProperty(REQUEST_CONTENT_PROPERTY, method(BackendUtils.class, "getResponseMediaType"))
@@ -138,6 +144,10 @@ public class ExhortIntegration extends EndpointRouteBuilder {
       .to(direct("report"))
       .to(seda("analyticsTrackAnalysis"))
       .setHeader(Constants.EXHORT_REQUEST_ID_HEADER, exchangeProperty(Constants.EXHORT_REQUEST_ID_HEADER))
+      .choice()
+        .when(exchangeProperty(Constants.GZIP_RESPONSE_PROPERTY).isNotNull()).marshal().gzipDeflater()
+        .setHeader(Exchange.CONTENT_ENCODING, constant("gzip"))
+      .end()
       .process(this::cleanUpHeaders);
 
     from(direct("findVulnerabilities"))
@@ -198,6 +208,7 @@ public class ExhortIntegration extends EndpointRouteBuilder {
   private void processAnalysisRequest(Exchange exchange) {
     exchange.getIn().removeHeader(Constants.ACCEPT_HEADER);
     exchange.getIn().removeHeader(Constants.ACCEPT_ENCODING_HEADER);
+    exchange.getIn().removeHeader(Exchange.CONTENT_ENCODING);
     ContentType ct;
     try {
       ct = new ContentType(exchange.getIn().getHeader(Exchange.CONTENT_TYPE, String.class));
