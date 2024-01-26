@@ -72,6 +72,11 @@ export const extractDependencyUrl = (name: string) => {
   const pkgUrl = PackageURL.fromString(name);
   switch(pkgUrl.type) {
     case MAVEN_TYPE:
+      const versionMvn = pkgUrl.version;
+      if(versionMvn?.includes("redhat")){
+        let namespace = pkgUrl.namespace?.replace(/\./g, "/");
+        return `${REDHAT_REPOSITORY}${namespace}/${pkgUrl.name}/${pkgUrl.version}`;
+      }
       return `${MAVEN_URL}${pkgUrl.namespace}/${pkgUrl.name}/${pkgUrl.version}`;
     case GOLANG_TYPE:
       const version = pkgUrl.version;
