@@ -28,7 +28,33 @@ data:
       "editable": true,
       "fiscalYearStartMonth": 0,
       "graphTooltip": 0,
-      "links": [],
+      "id": 348444,
+      "links": [
+        {
+          "asDropdown": false,
+          "icon": "external link",
+          "includeVars": false,
+          "keepTime": false,
+          "tags": [],
+          "targetBlank": true,
+          "title": "Production logs",
+          "tooltip": "Production logs",
+          "type": "link",
+          "url": "https://grafana.app-sre.devshift.net/goto/PTTUZtpIz?orgId=1"
+        },
+        {
+          "asDropdown": false,
+          "icon": "external link",
+          "includeVars": false,
+          "keepTime": false,
+          "tags": [],
+          "targetBlank": true,
+          "title": "Stage logs",
+          "tooltip": "Stage logs",
+          "type": "link",
+          "url": "https://grafana.app-sre.devshift.net/goto/9sauZtpIk?orgId=1"
+        }
+      ],
       "liveNow": false,
       "panels": [
         {
@@ -1451,8 +1477,8 @@ data:
           {
             "current": {
               "selected": true,
-              "text": "app-sre-prod-01-prometheus",
-              "value": "app-sre-prod-01-prometheus"
+              "text": "appsrep08ue2-prometheus",
+              "value": "appsrep08ue2-prometheus"
             },
             "hide": 0,
             "includeAll": false,
@@ -1462,7 +1488,7 @@ data:
             "query": "prometheus",
             "queryValue": "",
             "refresh": 1,
-            "regex": "appsres07ue1-prometheus|app-sre-prod-01-prometheus|appsrep08ue2-prometheus",
+            "regex": "appsres07ue1-prometheus|appsrep08ue2-prometheus",
             "skipUrlSync": false,
             "type": "datasource"
           },
@@ -1550,7 +1576,7 @@ data:
       "timezone": "",
       "title": "Exhort",
       "uid": "trusted-content-exhort",
-      "version": 4,
+      "version": 6,
       "weekStart": ""
     }
 kind: ConfigMap
