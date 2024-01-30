@@ -197,7 +197,8 @@ export const DepCompoundTable = ({name, dependencies}: { name: string; dependenc
                   const expandedCellKey = expandedCells[item.ref];
                   const isRowExpanded = !!expandedCellKey;
                   return (
-                    <Tbody key={item.ref} isExpanded={isRowExpanded}>
+                    (item.issues?.length || item.transitive?.length ) ? (
+                      <Tbody key={item.ref} isExpanded={isRowExpanded}>
                       <Tr>
                         <Td width={30} dataLabel={columnNames.name} component="th">
                           <DependencyLink name={item.ref}/>
@@ -277,7 +278,7 @@ export const DepCompoundTable = ({name, dependencies}: { name: string; dependenc
                         </Tr>
                       ) : (null)
                       }
-                    </Tbody>
+                    </Tbody> ): null
                   );
                 })}
                 </ConditionalTableBody>
