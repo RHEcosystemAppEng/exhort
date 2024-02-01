@@ -38,7 +38,6 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.redhat.exhort.api.PackageRef;
 import com.redhat.exhort.api.v4.Issue;
 import com.redhat.exhort.api.v4.SeverityUtils;
-import com.redhat.exhort.config.ObjectMapperProducer;
 import com.redhat.exhort.integration.Constants;
 import com.redhat.exhort.integration.providers.ProviderResponseHandler;
 import com.redhat.exhort.model.CvssParser;
@@ -56,7 +55,7 @@ public class OssIndexResponseHandler extends ProviderResponseHandler {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(OssIndexRequestBuilder.class);
 
-  @Inject ObjectMapper mapper = ObjectMapperProducer.newInstance();
+  @Inject ObjectMapper mapper;
 
   public ProviderResponse aggregateSplit(ProviderResponse oldExchange, ProviderResponse newExchange)
       throws IOException {
@@ -87,7 +86,7 @@ public class OssIndexResponseHandler extends ProviderResponseHandler {
 
   public ProviderResponse responseToIssues(
       @Body byte[] response,
-      String privateProviders,
+      @ExchangeProperty(Constants.PROVIDER_PRIVATE_DATA_PROPERTY) String privateProviders,
       @ExchangeProperty(Constants.DEPENDENCY_TREE_PROPERTY) DependencyTree tree)
       throws IOException {
     var json = (ArrayNode) mapper.readTree(response);
