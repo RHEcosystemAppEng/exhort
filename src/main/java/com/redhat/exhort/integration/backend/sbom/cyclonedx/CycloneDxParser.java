@@ -73,8 +73,6 @@ public class CycloneDxParser extends SbomParser {
           rootRef = new PackageRef(rootComponent.get().getPurl());
         } else if (componentPurls.containsKey(rootComponent.get().getBomRef())) {
           rootRef = componentPurls.get(rootComponent.get().getBomRef());
-        } else {
-          throw new IllegalStateException("Cannot retrieve the purl for the root component");
         }
       }
       return treeBuilder.dependencies(buildDependencies(bom, componentPurls, rootRef)).build();

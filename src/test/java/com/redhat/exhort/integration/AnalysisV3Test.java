@@ -87,7 +87,14 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
               assertEquals(p.getValue().equals(200), provider.get().getOk());
             });
 
-    verifyProviders(providers.keySet(), authHeaders, true);
+    verifyNoInteractionsWithSnyk();
+    verifyNoInteractionsWithOSS();
+    if (providers.containsKey(Constants.OSV_NVD_PROVIDER)) {
+      verifyOsvNvdRequest();
+    } else {
+      verifyNoInteractionsWithOsvNvd();
+    }
+    verifyTrustedContentRequest();
   }
 
   private static Stream<Arguments> emptySbomArguments() {
@@ -95,15 +102,15 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
         Arguments.of(
             Map.of(Constants.SNYK_PROVIDER, 200),
             Collections.emptyMap(),
-            Constants.MAVEN_PKG_MANAGER),
+            Constants.MAVEN_PURL_TYPE),
         Arguments.of(
             Map.of(Constants.OSS_INDEX_PROVIDER, 401),
             Collections.emptyMap(),
-            Constants.MAVEN_PKG_MANAGER),
+            Constants.MAVEN_PURL_TYPE),
         Arguments.of(
             Map.of(Constants.OSV_NVD_PROVIDER, 200),
             Collections.emptyMap(),
-            Constants.MAVEN_PKG_MANAGER),
+            Constants.MAVEN_PURL_TYPE),
         Arguments.of(
             Map.of(
                 Constants.SNYK_PROVIDER,
@@ -113,7 +120,7 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
                 Constants.OSV_NVD_PROVIDER,
                 200),
             Map.of(Constants.SNYK_TOKEN_HEADER, OK_TOKEN),
-            Constants.MAVEN_PKG_MANAGER),
+            Constants.MAVEN_PURL_TYPE),
         Arguments.of(
             Map.of(
                 Constants.SNYK_PROVIDER,
@@ -127,7 +134,7 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
                 OK_USER,
                 Constants.OSS_INDEX_TOKEN_HEADER,
                 OK_TOKEN),
-            Constants.MAVEN_PKG_MANAGER),
+            Constants.MAVEN_PURL_TYPE),
         Arguments.of(
             Map.of(
                 Constants.SNYK_PROVIDER,
@@ -143,7 +150,7 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
                 OK_USER,
                 Constants.OSS_INDEX_TOKEN_HEADER,
                 OK_TOKEN),
-            Constants.MAVEN_PKG_MANAGER),
+            Constants.MAVEN_PURL_TYPE),
         Arguments.of(
             Map.of(
                 Constants.SNYK_PROVIDER,
@@ -153,7 +160,7 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
                 Constants.OSV_NVD_PROVIDER,
                 200),
             Collections.emptyMap(),
-            Constants.MAVEN_PKG_MANAGER),
+            Constants.MAVEN_PURL_TYPE),
         Arguments.of(
             Map.of(
                 Constants.SNYK_PROVIDER,
@@ -163,7 +170,7 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
                 Constants.OSV_NVD_PROVIDER,
                 200),
             Collections.emptyMap(),
-            Constants.NPM_PKG_MANAGER),
+            Constants.NPM_PURL_TYPE),
         Arguments.of(
             Map.of(
                 Constants.SNYK_PROVIDER,
@@ -173,7 +180,7 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
                 Constants.OSV_NVD_PROVIDER,
                 200),
             Collections.emptyMap(),
-            Constants.GOLANG_PKG_MANAGER),
+            Constants.GOLANG_PURL_TYPE),
         Arguments.of(
             Map.of(
                 Constants.SNYK_PROVIDER,
@@ -183,7 +190,7 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
                 Constants.OSV_NVD_PROVIDER,
                 200),
             Collections.emptyMap(),
-            Constants.PYPI_PKG_MANAGER));
+            Constants.PYPI_PURL_TYPE));
   }
 
   @Test
@@ -210,7 +217,7 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
 
     assertJson("reports/v3/report_all_token.json", body);
     verifySnykRequest(OK_TOKEN);
-    verifyOssRequest(OK_USER, OK_TOKEN, false);
+    verifyOssRequest(OK_USER, OK_TOKEN);
     verifyTrustedContentRequest();
   }
 
@@ -246,7 +253,7 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
     var report =
         given()
             .header(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
-            .body(loadFileAsString(String.format("%s/empty-sbom.json", CYCLONEDX)))
+            .body(loadFileAsString(String.format("%s/maven-sbom.json", CYCLONEDX)))
             .header("Accept", MediaType.APPLICATION_JSON)
             .header(Constants.SNYK_TOKEN_HEADER, INVALID_TOKEN)
             .when()
@@ -294,7 +301,7 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
     var report =
         given()
             .header(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
-            .body(loadFileAsString(String.format("%s/empty-sbom.json", CYCLONEDX)))
+            .body(loadFileAsString(String.format("%s/maven-sbom.json", CYCLONEDX)))
             .header("Accept", MediaType.APPLICATION_JSON)
             .header(Constants.SNYK_TOKEN_HEADER, UNAUTH_TOKEN)
             .when()
@@ -357,7 +364,7 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
     assertEquals(Response.Status.OK.getStatusCode(), response.statusCode());
 
     verifySnykRequest(OK_TOKEN);
-    verifyOssRequest(OK_USER, OK_TOKEN, false);
+    verifyOssRequest(OK_USER, OK_TOKEN);
   }
 
   @Test

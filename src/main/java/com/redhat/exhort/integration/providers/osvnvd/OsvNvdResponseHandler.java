@@ -27,8 +27,6 @@ import java.util.stream.Collectors;
 
 import org.apache.camel.Body;
 import org.apache.camel.ExchangeProperty;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -40,7 +38,6 @@ import com.redhat.exhort.api.v4.Remediation;
 import com.redhat.exhort.api.v4.SeverityUtils;
 import com.redhat.exhort.integration.Constants;
 import com.redhat.exhort.integration.providers.ProviderResponseHandler;
-import com.redhat.exhort.integration.providers.ossindex.OssIndexRequestBuilder;
 import com.redhat.exhort.model.CvssParser;
 import com.redhat.exhort.model.DependencyTree;
 import com.redhat.exhort.model.ProviderResponse;
@@ -53,8 +50,6 @@ import jakarta.inject.Inject;
 @ApplicationScoped
 @RegisterForReflection
 public class OsvNvdResponseHandler extends ProviderResponseHandler {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(OssIndexRequestBuilder.class);
 
   @Inject ObjectMapper mapper;
 

@@ -57,33 +57,6 @@ public class OssIndexResponseHandler extends ProviderResponseHandler {
 
   @Inject ObjectMapper mapper;
 
-  public ProviderResponse aggregateSplit(ProviderResponse oldExchange, ProviderResponse newExchange)
-      throws IOException {
-    if (oldExchange == null) {
-      return newExchange;
-    }
-    if (oldExchange.status() != null && !Boolean.TRUE.equals(oldExchange.status().getOk())) {
-      return oldExchange;
-    }
-    oldExchange
-        .issues()
-        .entrySet()
-        .forEach(
-            e -> {
-              var issues = newExchange.issues().get(e.getKey());
-              if (issues != null) {
-                e.getValue().addAll(issues);
-              }
-            });
-    newExchange.issues().keySet().stream()
-        .filter(k -> !oldExchange.issues().keySet().contains(k))
-        .forEach(
-            k -> {
-              oldExchange.issues().put(k, newExchange.issues().get(k));
-            });
-    return oldExchange;
-  }
-
   public ProviderResponse responseToIssues(
       @Body byte[] response,
       @ExchangeProperty(Constants.PROVIDER_PRIVATE_DATA_PROPERTY) String privateProviders,

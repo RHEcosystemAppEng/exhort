@@ -20,6 +20,7 @@ package com.redhat.exhort.integration.providers.snyk;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
+import org.apache.camel.builder.AggregationStrategies;
 import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
@@ -51,27 +52,40 @@ public class SnykIntegration extends EndpointRouteBuilder {
   public void configure() {
 
     // fmt:off
-    from(direct("snykDepGraph"))
-      .routeId("snykDepGraph")
+    onException(IllegalArgumentException.class)
+      .routeId("snykIllegalArgumentException")
+      .useOriginalMessage()
+      .handled(true)
+      .process(responseHandler::processResponseError);
+
+    from(direct("snykScan"))
+      .routeId("snykScan")
       .process(this::setAuthToken)
-      .circuitBreaker()
-          .faultToleranceConfiguration()
-          .timeoutEnabled(true)
-          .timeoutDuration(timeout)
-        .end()
-        .process(SnykRequestBuilder::validate)
-        .transform().method(SnykRequestBuilder.class, "fromDiGraph")
-        .process(this::processDepGraphRequest)
-        .to(direct("snykRequest"))
-      .onFallback()
-        .process(responseHandler::processResponseError)
-      .end()
-        .transform().method(SnykResponseHandler.class, "buildReport");
+      .transform(method(SnykRequestBuilder.class, "splitByPkgManager"))
+      .choice()
+        .when(method(SnykRequestBuilder.class, "isEmpty"))
+          .setBody(method(SnykResponseHandler.class, "emptyResponse"))
+          .setBody(method(SnykResponseHandler.class, "buildReport"))
+        .otherwise()
+          .to(direct("snykRequest"))
+          .transform().method(SnykResponseHandler.class, "buildReport");
 
     from(direct("snykRequest"))
       .routeId("snykRequest")
-      .to(vertxHttp("{{api.snyk.host}}"))
-      .transform().method(SnykResponseHandler.class, "responseToIssues");
+      .split(body(), AggregationStrategies.beanAllowNull(SnykResponseHandler.class, "aggregateSplit"))
+        .parallelProcessing()
+          .circuitBreaker()
+            .faultToleranceConfiguration()
+            .timeoutEnabled(true)
+            .timeoutDuration(timeout)
+          .end()
+          .process(SnykRequestBuilder::validate)
+          .transform().method(SnykRequestBuilder.class, "buildRequest")
+          .process(this::processDepGraphRequest)
+        .to(vertxHttp("{{api.snyk.host}}"))
+        .transform(method(SnykResponseHandler.class, "responseToIssues"))
+      .onFallback()
+        .process(responseHandler::processResponseError);
 
     from(direct("snykValidateToken"))
       .routeId("snykValidateToken")

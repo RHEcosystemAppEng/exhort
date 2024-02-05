@@ -58,10 +58,16 @@ public final class Constants {
 
   public static final String HTTP_UNAUTHENTICATED = "Unauthenticated";
 
-  public static final String MAVEN_PKG_MANAGER = "maven";
-  public static final String NPM_PKG_MANAGER = "npm";
-  public static final String PYPI_PKG_MANAGER = "pypi";
-  public static final String GOLANG_PKG_MANAGER = "golang";
+  // PURL Types used in the application. See Snyk Supported PURL Types
+  public static final String MAVEN_PURL_TYPE = "maven";
+  public static final String NPM_PURL_TYPE = "npm";
+  public static final String PYPI_PURL_TYPE = "pypi";
+  public static final String GOLANG_PURL_TYPE = "golang";
+  public static final String DEB_PURL_TYPE = "deb";
+  public static final String NUGET_PURL_TYPE = "nuget";
+  public static final String GEM_PURL_TYPE = "gem";
+  public static final String COCOAPODS_PURL_TYPE = "cocoapods";
+  public static final String RPM_PURL_TYPE = "rpm";
 
   public static final String PKG_MANAGER_PROPERTY = "pkgManager";
   public static final String REQUEST_CONTENT_PROPERTY = "requestContent";
