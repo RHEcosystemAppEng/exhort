@@ -85,23 +85,32 @@ public abstract class ProviderResponseHandler {
     if (oldExchange.status() != null && !Boolean.TRUE.equals(oldExchange.status().getOk())) {
       return oldExchange;
     }
-    oldExchange
-        .issues()
-        .entrySet()
-        .forEach(
-            e -> {
-              var issues = newExchange.issues().get(e.getKey());
-              if (issues != null) {
-                e.getValue().addAll(issues);
-              }
-            });
-    newExchange.issues().keySet().stream()
-        .filter(k -> !oldExchange.issues().keySet().contains(k))
-        .forEach(
-            k -> {
-              oldExchange.issues().put(k, newExchange.issues().get(k));
-            });
-    return oldExchange;
+    var exchange = new ProviderResponse(new HashMap<>(), oldExchange.status());
+    if (oldExchange.issues() != null) {
+      exchange.issues().putAll(oldExchange.issues());
+    }
+    if (newExchange.issues() != null) {
+      exchange
+          .issues()
+          .entrySet()
+          .forEach(
+              e -> {
+                var issues = newExchange.issues().get(e.getKey());
+                if (issues != null) {
+                  e.getValue().addAll(issues);
+                }
+              });
+
+      newExchange.issues().keySet().stream()
+          .filter(k -> !exchange.issues().keySet().contains(k))
+          .forEach(
+              k -> {
+                exchange.issues().put(k, newExchange.issues().get(k));
+              });
+    } else if (Boolean.FALSE.equals(newExchange.status().getOk())) {
+      return new ProviderResponse(exchange.issues(), newExchange.status());
+    }
+    return exchange;
   }
 
   protected ProviderStatus defaultOkStatus(String provider) {
