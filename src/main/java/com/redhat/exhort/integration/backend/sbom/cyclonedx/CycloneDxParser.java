@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.cyclonedx.model.Bom;
@@ -109,6 +110,7 @@ public class CycloneDxParser extends SbomParser {
                           .toList();
                     }));
     List<PackageRef> directDeps;
+    addUnknownDependencies(dependencies, componentPurls);
     if (rootRef != null && dependencies.get(rootRef) != null) {
       directDeps = dependencies.get(rootRef);
     } else {
@@ -121,6 +123,15 @@ public class CycloneDxParser extends SbomParser {
     return directDeps.stream()
         .map(directRef -> toDirectDependency(directRef, dependencies))
         .collect(Collectors.toMap(DirectDependency::ref, d -> d));
+  }
+
+  private void addUnknownDependencies(
+      Map<PackageRef, List<PackageRef>> dependencies, Map<String, PackageRef> componentPurls) {
+    Set<PackageRef> knownDeps = new HashSet<>(dependencies.keySet());
+    dependencies.values().forEach(v -> knownDeps.addAll(v));
+    componentPurls.values().stream()
+        .filter(Predicate.not(knownDeps::contains))
+        .forEach(d -> dependencies.put(d, Collections.emptyList()));
   }
 
   // The SBOM generator does not have info about the dependency hierarchy
