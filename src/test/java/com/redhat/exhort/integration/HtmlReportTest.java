@@ -187,7 +187,7 @@ public class HtmlReportTest extends AbstractAnalysisTest {
     // assertNotNull(privateIssueTbody);
 
     verifySnykRequest(OK_TOKEN);
-    verifyOssRequest(OK_USER, OK_TOKEN, false);
+    verifyOssRequest(OK_USER, OK_TOKEN);
   }
 
   @Test

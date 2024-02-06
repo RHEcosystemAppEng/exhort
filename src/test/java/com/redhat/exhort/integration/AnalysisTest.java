@@ -18,6 +18,8 @@
 
 package com.redhat.exhort.integration;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static io.restassured.RestAssured.given;
 import static org.apache.camel.Exchange.CONTENT_TYPE;
 import static org.hamcrest.core.IsEqual.equalTo;
@@ -114,7 +116,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
         401, report.getProviders().get(Constants.OSS_INDEX_PROVIDER).getStatus().getCode());
     var status = report.getProviders().get(Constants.SNYK_PROVIDER).getStatus();
     assertEquals(422, status.getCode());
-    assertEquals("Unsupported package types received: [foo]", status.getMessage());
+    assertEquals("Unsupported package url types received: [foo]", status.getMessage());
     assertEquals(Constants.SNYK_PROVIDER, status.getName());
     assertFalse(status.getOk());
 
@@ -127,11 +129,11 @@ public class AnalysisTest extends AbstractAnalysisTest {
   @ParameterizedTest
   @ValueSource(strings = {CYCLONEDX, SPDX})
   public void testWithMixedPkgManagers(String sbom) {
-    stubTrustedContentRequests();
+    stubAllProviders();
     var report =
         given()
             .header(CONTENT_TYPE, getContentType(sbom))
-            .body(loadFileAsString(String.format("%s/unsupported-mixed-sbom.json", sbom)))
+            .body(loadFileAsString(String.format("%s/mixed-sbom.json", sbom)))
             .when()
             .post("/api/v4/analysis")
             .then()
@@ -149,19 +151,12 @@ public class AnalysisTest extends AbstractAnalysisTest {
     assertEquals(
         401, report.getProviders().get(Constants.OSS_INDEX_PROVIDER).getStatus().getCode());
     var status = report.getProviders().get(Constants.SNYK_PROVIDER).getStatus();
-    assertEquals(422, status.getCode());
-    assertEquals(
-        "It is not supported to submit mixed Package Manager types. Found: [pypi, npm]",
-        status.getMessage());
+    assertEquals(200, status.getCode());
     assertEquals(Constants.SNYK_PROVIDER, status.getName());
     assertEquals(
         200, report.getProviders().get(Constants.TRUSTED_CONTENT_PROVIDER).getStatus().getCode());
-    assertFalse(status.getOk());
 
-    verifyNoInteractionsWithOSS();
-    verifyNoInteractionsWithSnyk();
-    verifyTrustedContentRequest();
-    verifyOsvNvdRequest();
+    server.verify(2, postRequestedFor(urlPathEqualTo(Constants.SNYK_DEP_GRAPH_API_PATH)));
   }
 
   @ParameterizedTest
@@ -200,7 +195,14 @@ public class AnalysisTest extends AbstractAnalysisTest {
               assertTrue(provider.get().getSources().isEmpty());
             });
 
-    verifyProviders(providers.keySet(), authHeaders, true);
+    verifyNoInteractionsWithSnyk();
+    verifyNoInteractionsWithOSS();
+    if (providers.containsKey(Constants.OSV_NVD_PROVIDER)) {
+      verifyOsvNvdRequest();
+    } else {
+      verifyNoInteractionsWithOsvNvd();
+    }
+    verifyTrustedContentRequest();
   }
 
   private static Stream<Arguments> emptySbomArguments() {
@@ -274,7 +276,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
 
     assertJson("reports/report_all_token.json", body);
     verifySnykRequest(OK_TOKEN);
-    verifyOssRequest(OK_USER, OK_TOKEN, false);
+    verifyOssRequest(OK_USER, OK_TOKEN);
     verifyOsvNvdRequest();
   }
 
@@ -312,7 +314,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
     var report =
         given()
             .header(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
-            .body(loadFileAsString(String.format("%s/empty-sbom.json", CYCLONEDX)))
+            .body(loadFileAsString(String.format("%s/maven-sbom.json", CYCLONEDX)))
             .header("Accept", MediaType.APPLICATION_JSON)
             .header(Constants.SNYK_TOKEN_HEADER, INVALID_TOKEN)
             .when()
@@ -349,7 +351,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
     var report =
         given()
             .header(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
-            .body(loadFileAsString(String.format("%s/empty-sbom.json", CYCLONEDX)))
+            .body(loadFileAsString(String.format("%s/maven-sbom.json", CYCLONEDX)))
             .header("Accept", MediaType.APPLICATION_JSON)
             .header(Constants.SNYK_TOKEN_HEADER, UNAUTH_TOKEN)
             .when()
@@ -512,7 +514,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
     assertEquals(Response.Status.OK.getStatusCode(), response.statusCode());
 
     verifySnykRequest(OK_TOKEN);
-    verifyOssRequest(OK_USER, OK_TOKEN, false);
+    verifyOssRequest(OK_USER, OK_TOKEN);
   }
 
   @Test

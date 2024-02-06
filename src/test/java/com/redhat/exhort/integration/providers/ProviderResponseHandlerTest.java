@@ -424,69 +424,69 @@ public class ProviderResponseHandlerTest {
             PackageRef.builder()
                 .name("aa")
                 .version("1")
-                .pkgManager(Constants.NPM_PKG_MANAGER)
+                .pkgManager(Constants.NPM_PURL_TYPE)
                 .build(),
             DirectDependency.builder()
                 .ref(
                     PackageRef.builder()
                         .name("aa")
                         .version("1")
-                        .pkgManager(Constants.NPM_PKG_MANAGER)
+                        .pkgManager(Constants.NPM_PURL_TYPE)
                         .build())
                 .transitive(
                     Set.of(
                         PackageRef.builder()
                             .name("aaa")
                             .version("1")
-                            .pkgManager(Constants.NPM_PKG_MANAGER)
+                            .pkgManager(Constants.NPM_PURL_TYPE)
                             .build(),
                         PackageRef.builder()
                             .name("aab")
                             .version("1")
-                            .pkgManager(Constants.NPM_PKG_MANAGER)
+                            .pkgManager(Constants.NPM_PURL_TYPE)
                             .build()))
                 .build(),
             PackageRef.builder()
                 .name("ab")
                 .version("1")
-                .pkgManager(Constants.NPM_PKG_MANAGER)
+                .pkgManager(Constants.NPM_PURL_TYPE)
                 .build(),
             DirectDependency.builder()
                 .ref(
                     PackageRef.builder()
                         .name("ab")
                         .version("1")
-                        .pkgManager(Constants.NPM_PKG_MANAGER)
+                        .pkgManager(Constants.NPM_PURL_TYPE)
                         .build())
                 .transitive(
                     Set.of(
                         PackageRef.builder()
                             .name("aba")
                             .version("1")
-                            .pkgManager(Constants.NPM_PKG_MANAGER)
+                            .pkgManager(Constants.NPM_PURL_TYPE)
                             .build(),
                         PackageRef.builder()
                             .name("abb")
                             .version("1")
-                            .pkgManager(Constants.NPM_PKG_MANAGER)
+                            .pkgManager(Constants.NPM_PURL_TYPE)
                             .build(),
                         PackageRef.builder()
                             .name("abc")
                             .version("1")
-                            .pkgManager(Constants.NPM_PKG_MANAGER)
+                            .pkgManager(Constants.NPM_PURL_TYPE)
                             .build()))
                 .build(),
             PackageRef.builder()
                 .name("ac")
                 .version("1-redhat-00006")
-                .pkgManager(Constants.NPM_PKG_MANAGER)
+                .pkgManager(Constants.NPM_PURL_TYPE)
                 .build(),
             DirectDependency.builder()
                 .ref(
                     PackageRef.builder()
                         .name("ac")
                         .version("1")
-                        .pkgManager(Constants.NPM_PKG_MANAGER)
+                        .pkgManager(Constants.NPM_PURL_TYPE)
                         .build())
                 .build());
     return DependencyTree.builder().dependencies(direct).build();
@@ -498,51 +498,51 @@ public class ProviderResponseHandlerTest {
             PackageRef.builder()
                 .name("aa")
                 .version("1")
-                .pkgManager(Constants.NPM_PKG_MANAGER)
+                .pkgManager(Constants.NPM_PURL_TYPE)
                 .build(),
             DirectDependency.builder()
                 .ref(
                     PackageRef.builder()
                         .name("aa")
                         .version("1")
-                        .pkgManager(Constants.NPM_PKG_MANAGER)
+                        .pkgManager(Constants.NPM_PURL_TYPE)
                         .build())
                 .transitive(
                     Set.of(
                         PackageRef.builder()
                             .name("aaa")
                             .version("1")
-                            .pkgManager(Constants.NPM_PKG_MANAGER)
+                            .pkgManager(Constants.NPM_PURL_TYPE)
                             .build(),
                         PackageRef.builder()
                             .name("aab")
                             .version("1")
-                            .pkgManager(Constants.NPM_PKG_MANAGER)
+                            .pkgManager(Constants.NPM_PURL_TYPE)
                             .build()))
                 .build(),
             PackageRef.builder()
                 .name("ab")
                 .version("1")
-                .pkgManager(Constants.NPM_PKG_MANAGER)
+                .pkgManager(Constants.NPM_PURL_TYPE)
                 .build(),
             DirectDependency.builder()
                 .ref(
                     PackageRef.builder()
                         .name("ab")
                         .version("1")
-                        .pkgManager(Constants.NPM_PKG_MANAGER)
+                        .pkgManager(Constants.NPM_PURL_TYPE)
                         .build())
                 .transitive(
                     Set.of(
                         PackageRef.builder()
                             .name("aaa")
                             .version("1")
-                            .pkgManager(Constants.NPM_PKG_MANAGER)
+                            .pkgManager(Constants.NPM_PURL_TYPE)
                             .build(),
                         PackageRef.builder()
                             .name("abb")
                             .version("1")
-                            .pkgManager(Constants.NPM_PKG_MANAGER)
+                            .pkgManager(Constants.NPM_PURL_TYPE)
                             .build()))
                 .build());
     return DependencyTree.builder().dependencies(direct).build();

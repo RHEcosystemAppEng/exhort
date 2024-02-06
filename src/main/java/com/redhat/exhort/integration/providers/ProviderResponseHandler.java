@@ -77,6 +77,33 @@ public abstract class ProviderResponseHandler {
   public abstract ProviderResponse responseToIssues(
       byte[] response, String privateProviders, DependencyTree tree) throws IOException;
 
+  public ProviderResponse aggregateSplit(ProviderResponse oldExchange, ProviderResponse newExchange)
+      throws IOException {
+    if (oldExchange == null) {
+      return newExchange;
+    }
+    if (oldExchange.status() != null && !Boolean.TRUE.equals(oldExchange.status().getOk())) {
+      return oldExchange;
+    }
+    oldExchange
+        .issues()
+        .entrySet()
+        .forEach(
+            e -> {
+              var issues = newExchange.issues().get(e.getKey());
+              if (issues != null) {
+                e.getValue().addAll(issues);
+              }
+            });
+    newExchange.issues().keySet().stream()
+        .filter(k -> !oldExchange.issues().keySet().contains(k))
+        .forEach(
+            k -> {
+              oldExchange.issues().put(k, newExchange.issues().get(k));
+            });
+    return oldExchange;
+  }
+
   protected ProviderStatus defaultOkStatus(String provider) {
     return new ProviderStatus()
         .name(provider)
@@ -122,7 +149,7 @@ public abstract class ProviderResponseHandler {
       LOGGER.warn("Unable to process request: {}", message, cause);
     } else if (cause instanceof IllegalArgumentException) {
       status.message(cause.getMessage()).code(422);
-      LOGGER.warn("Unable to process request to: {}", getProviderName(), exception);
+      LOGGER.debug("Unable to process request to: {}", getProviderName(), exception);
     } else {
       status
           .message(cause.getMessage())

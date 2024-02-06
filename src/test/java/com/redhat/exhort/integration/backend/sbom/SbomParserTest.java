@@ -174,10 +174,10 @@ public class SbomParserTest {
     return getMediaTypes()
         .mapMulti(
             (t, consumer) -> {
-              consumer.accept(arguments(t, Constants.MAVEN_PKG_MANAGER, 2, 7));
-              consumer.accept(arguments(t, Constants.GOLANG_PKG_MANAGER, 2, 3));
-              consumer.accept(arguments(t, Constants.NPM_PKG_MANAGER, 2, 3));
-              consumer.accept(arguments(t, Constants.PYPI_PKG_MANAGER, 2, 1));
+              consumer.accept(arguments(t, Constants.MAVEN_PURL_TYPE, 2, 7));
+              consumer.accept(arguments(t, Constants.GOLANG_PURL_TYPE, 2, 3));
+              consumer.accept(arguments(t, Constants.NPM_PURL_TYPE, 2, 3));
+              consumer.accept(arguments(t, Constants.PYPI_PURL_TYPE, 2, 1));
             });
   }
 

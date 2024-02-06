@@ -19,6 +19,7 @@
 package com.redhat.exhort.integration.providers.ossindex;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.camel.Body;
@@ -59,7 +60,7 @@ public class OssIndexRequestBuilder {
     return bulks;
   }
 
-  public boolean isEmpty(@Body List<List<PackageRef>> body) {
+  public boolean isEmpty(@Body Collection<List<PackageRef>> body) {
     return body == null || body.isEmpty();
   }
 

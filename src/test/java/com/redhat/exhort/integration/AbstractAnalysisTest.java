@@ -152,13 +152,12 @@ public abstract class AbstractAnalysisTest {
     }
   }
 
-  protected void verifyRequest(String provider, Map<String, String> headers, boolean isEmpty) {
+  protected void verifyRequest(String provider, Map<String, String> headers) {
     switch (provider) {
       case Constants.SNYK_PROVIDER -> verifySnykRequest(headers.get(Constants.SNYK_TOKEN_HEADER));
       case Constants.OSS_INDEX_PROVIDER -> verifyOssRequest(
           headers.get(Constants.OSS_INDEX_USER_HEADER),
-          headers.get(Constants.OSS_INDEX_TOKEN_HEADER),
-          isEmpty);
+          headers.get(Constants.OSS_INDEX_TOKEN_HEADER));
     }
   }
 
@@ -179,8 +178,7 @@ public abstract class AbstractAnalysisTest {
           headers.get(Constants.SNYK_TOKEN_HEADER));
       case Constants.OSS_INDEX_PROVIDER -> verifyOssRequest(
           headers.get(Constants.OSS_INDEX_USER_HEADER),
-          headers.get(Constants.OSS_INDEX_TOKEN_HEADER),
-          false);
+          headers.get(Constants.OSS_INDEX_TOKEN_HEADER));
     }
   }
 
@@ -202,8 +200,7 @@ public abstract class AbstractAnalysisTest {
     stubOsvNvdRequests();
   }
 
-  protected void verifyProviders(
-      Collection<String> providers, Map<String, String> credentials, boolean isEmpty) {
+  protected void verifyProviders(Collection<String> providers, Map<String, String> credentials) {
     providers.stream()
         .forEach(
             p -> {
@@ -212,8 +209,7 @@ public abstract class AbstractAnalysisTest {
                     credentials.get(Constants.SNYK_TOKEN_HEADER));
                 case Constants.OSS_INDEX_PROVIDER -> verifyOssRequest(
                     credentials.get(Constants.OSS_INDEX_USER_HEADER),
-                    credentials.get(Constants.OSS_INDEX_TOKEN_HEADER),
-                    isEmpty);
+                    credentials.get(Constants.OSS_INDEX_TOKEN_HEADER));
                 case Constants.OSV_NVD_PROVIDER -> verifyOsvNvdRequest();
               }
             });
@@ -327,7 +323,7 @@ public abstract class AbstractAnalysisTest {
                         "{\"code\": 401, \"error\": \"Not authorised\""
                             + ", \"message\": \"Not authorised\"}")));
     // Other requests
-    SnykRequestBuilder.SUPPORTED_PKG_MANAGERS.forEach(this::stubSnykEmptyRequest);
+    SnykRequestBuilder.SUPPORTED_PURL_TYPES.forEach(this::stubSnykEmptyRequest);
     // Dependency request
     server.stubFor(
         post(Constants.SNYK_DEP_GRAPH_API_PATH)
@@ -341,6 +337,30 @@ public abstract class AbstractAnalysisTest {
                     .withStatus(200)
                     .withHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON)
                     .withBodyFile("snyk/maven_report.json")));
+    server.stubFor(
+        post(Constants.SNYK_DEP_GRAPH_API_PATH)
+            .withHeader(
+                "Authorization", equalTo("token " + OK_TOKEN).or(equalTo("token " + SNYK_TOKEN)))
+            .withHeader(Exchange.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON))
+            .withRequestBody(
+                equalToJson(loadFileAsString("__files/snyk/pypi_small_request.json"), true, false))
+            .willReturn(
+                aResponse()
+                    .withStatus(200)
+                    .withHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                    .withBodyFile("snyk/empty_report.json")));
+    server.stubFor(
+        post(Constants.SNYK_DEP_GRAPH_API_PATH)
+            .withHeader(
+                "Authorization", equalTo("token " + OK_TOKEN).or(equalTo("token " + SNYK_TOKEN)))
+            .withHeader(Exchange.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON))
+            .withRequestBody(
+                equalToJson(loadFileAsString("__files/snyk/npm_small_request.json"), true, false))
+            .willReturn(
+                aResponse()
+                    .withStatus(200)
+                    .withHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                    .withBodyFile("snyk/empty_report.json")));
     // Internal Error
     server.stubFor(
         post(Constants.SNYK_DEP_GRAPH_API_PATH)
@@ -446,8 +466,8 @@ public abstract class AbstractAnalysisTest {
             .willReturn(aResponse().withStatus(500).withBody("This is an example error")));
   }
 
-  protected void verifyOssRequest(String user, String pass, boolean isEmpty) {
-    if (user == null || pass == null || isEmpty) {
+  protected void verifyOssRequest(String user, String pass) {
+    if (user == null || pass == null) {
       server.verify(0, postRequestedFor(urlEqualTo(Constants.OSS_INDEX_AUTH_COMPONENT_API_PATH)));
     } else {
       server.verify(

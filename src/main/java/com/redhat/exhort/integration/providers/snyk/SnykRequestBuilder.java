@@ -19,12 +19,16 @@
 package com.redhat.exhort.integration.providers.snyk;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 
+import org.apache.camel.Body;
 import org.apache.camel.Exchange;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -41,61 +45,86 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 @RegisterForReflection
 public class SnykRequestBuilder {
 
-  public static final List<String> SUPPORTED_PKG_MANAGERS =
+  private static final String GOMODULES_PKG_MANAGER = "gomodules";
+  private static final String RUBYGEMS_PKG_MANAGER = "rubygems";
+  private static final String PIP_PKG_MANAGER = "pip";
+
+  public static final List<String> SUPPORTED_PURL_TYPES =
       Collections.unmodifiableList(
           new ArrayList<>() {
             {
-              add(Constants.MAVEN_PKG_MANAGER);
-              add(Constants.NPM_PKG_MANAGER);
-              add(Constants.PYPI_PKG_MANAGER);
-              add(Constants.GOLANG_PKG_MANAGER);
+              add(Constants.MAVEN_PURL_TYPE);
+              add(Constants.NPM_PURL_TYPE);
+              add(Constants.PYPI_PURL_TYPE);
+              add(Constants.GOLANG_PURL_TYPE);
+              add(Constants.DEB_PURL_TYPE);
+              add(Constants.NUGET_PURL_TYPE);
+              add(Constants.GEM_PURL_TYPE);
+              add(Constants.RPM_PURL_TYPE);
+              add(Constants.COCOAPODS_PURL_TYPE);
             }
           });
 
   private ObjectMapper mapper = ObjectMapperProducer.newInstance();
 
-  public String fromDiGraph(DependencyTree req) throws JsonProcessingException {
-    var defaultRoot = DependencyTree.getDefaultRoot(getPkgManager(req));
+  public String buildRequest(Set<PackageRef> refs) throws JsonProcessingException {
+    var defaultRoot = DependencyTree.getDefaultRoot(getPkgManager(refs));
     var depGraph = mapper.createObjectNode();
     depGraph.put("schemaVersion", "1.2.0");
     depGraph.set(
         "pkgManager",
         mapper.createObjectNode().put("name", toSnykPackageManager(defaultRoot.purl().getType())));
 
-    depGraph.set("pkgs", addPackages(depGraph, req, defaultRoot));
+    depGraph.set("pkgs", addPackages(depGraph, refs, defaultRoot));
     var root = mapper.createObjectNode().set("depGraph", depGraph);
     return mapper.writeValueAsString(root);
   }
 
-  public static void validate(Exchange exchange) {
-    var tree = exchange.getIn().getBody(DependencyTree.class);
-    Set<String> types = new HashSet<>();
-    tree.dependencies()
-        .values()
-        .forEach(
-            d -> {
-              types.add(d.ref().purl().getType());
-              d.transitive().forEach(t -> types.add(t.purl().getType()));
-            });
+  public boolean isEmpty(@Body Collection<List<PackageRef>> body) {
+    return body == null || body.isEmpty();
+  }
 
+  @SuppressWarnings("unchecked")
+  public static void validate(Exchange exchange) {
+    var tree = (Set<PackageRef>) exchange.getIn().getBody(Set.class);
+    Set<String> types = new HashSet<>();
+    tree.forEach(
+        d -> {
+          if (d.purl().getVersion() == null) {
+            throw new IllegalArgumentException("Version must not be null for package: " + d.purl());
+          }
+          types.add(d.purl().getType());
+        });
     var invalidTypes =
-        types.stream().filter(Predicate.not(SUPPORTED_PKG_MANAGERS::contains)).toList();
+        types.stream().filter(Predicate.not(SUPPORTED_PURL_TYPES::contains)).toList();
     if (!invalidTypes.isEmpty()) {
-      throw new IllegalArgumentException("Unsupported package types received: " + invalidTypes);
-    }
-    if (types.size() > 1) {
-      throw new IllegalArgumentException(
-          "It is not supported to submit mixed Package Manager types. Found: " + types);
+      throw new IllegalArgumentException("Unsupported package url types received: " + invalidTypes);
     }
   }
 
-  private JsonNode addPackages(ObjectNode depGraph, DependencyTree tree, PackageRef root) {
-    var allDeps = tree.getAll();
-    var rootNode = createNode(root, allDeps);
+  public Collection<Set<PackageRef>> splitByPkgManager(DependencyTree tree) {
+    Map<String, Set<PackageRef>> treesByPkg = new HashMap<>();
+    tree.getAll()
+        .forEach(
+            d -> {
+              var type = d.purl().getType();
+              var pkgTree = treesByPkg.get(type);
+              if (pkgTree == null) {
+                pkgTree = new HashSet<>();
+                treesByPkg.put(type, pkgTree);
+              }
+              pkgTree.add(d);
+            });
+    return treesByPkg.values();
+  }
+
+  private JsonNode addPackages(ObjectNode depGraph, Set<PackageRef> refs, PackageRef root) {
+    ;
+    var rootNode = createNode(root, refs);
     var nodes = mapper.createArrayNode().add(rootNode);
     var pkgs = mapper.createArrayNode().add(createPkg(root));
 
-    allDeps.stream()
+    refs.stream()
         .forEach(
             d -> {
               pkgs.add(createPkg(d));
@@ -130,18 +159,23 @@ public class SnykRequestBuilder {
     return new StringBuilder(pkg.name()).append("@").append(pkg.version()).toString();
   }
 
-  private String getPkgManager(DependencyTree tree) {
-    var first = tree.dependencies().keySet().stream().findFirst();
-    if (first.isEmpty()) {
-      return Constants.MAVEN_PKG_MANAGER;
+  private String getPkgManager(Set<PackageRef> refs) {
+    if (refs == null || refs.isEmpty()) {
+      return Constants.MAVEN_PURL_TYPE;
     }
-    return first.get().purl().getType();
+    return refs.iterator().next().purl().getType();
   }
 
   private String toSnykPackageManager(String pkgManager) {
     return switch (pkgManager) {
-      case Constants.GOLANG_PKG_MANAGER -> "gomodules";
-      case Constants.PYPI_PKG_MANAGER -> "pip";
+      case Constants.GOLANG_PURL_TYPE -> GOMODULES_PKG_MANAGER;
+      case Constants.PYPI_PURL_TYPE -> PIP_PKG_MANAGER;
+      case Constants.GEM_PURL_TYPE -> RUBYGEMS_PKG_MANAGER;
+        // cocoapods
+        // rpm
+        // maven
+        // deb
+        // nuget
       default -> pkgManager;
     };
   }
