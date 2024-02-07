@@ -143,7 +143,7 @@ public class CycloneDxParser extends SbomParser {
         .forEach(
             v -> {
               if (deps.containsKey(v)) {
-                throw new IllegalStateException("Duplicate component: " + v.purl());
+                LOGGER.debug("Ignore duplicate key {}", v);
               }
               deps.put(v, DirectDependency.builder().ref(v).build());
             });
