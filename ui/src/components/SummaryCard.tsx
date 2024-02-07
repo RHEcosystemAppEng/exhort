@@ -11,7 +11,9 @@ import {
   Divider,
   Grid,
   GridItem,
-  Icon, List, ListItem,
+  Icon,
+  List,
+  ListItem,
   Title,
   TitleSizes,
 } from '@patternfly/react-core';
@@ -54,8 +56,13 @@ export const SummaryCard = () => {
                 getSources(appContext.report).map((source, index) => {
                   if (Object.keys(source.report).length > 0) {
                     return (
-                      <DescriptionListGroup key={index}>
-                        <DescriptionListTerm style={{fontSize: "large"}}>{getSourceName(source)}</DescriptionListTerm>
+                      <DescriptionListGroup key={index}
+                                            style={{display: "flex", flexDirection: "column", alignItems: "center"}}>
+                        <>
+                          <DescriptionListTerm style={{fontSize: "large"}}>
+                            {getSourceName(source)}
+                          </DescriptionListTerm>
+                        </>
                         <DescriptionListDescription>
                           <ChartCard summary={source.report.summary}/>
                         </DescriptionListDescription>
