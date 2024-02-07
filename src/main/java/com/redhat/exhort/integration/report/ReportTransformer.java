@@ -18,6 +18,9 @@
 
 package com.redhat.exhort.integration.report;
 
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.apache.camel.Body;
 import org.apache.camel.Exchange;
 import org.apache.camel.Header;
@@ -60,6 +63,14 @@ public class ReportTransformer {
       return filtered;
     }
     return report;
+  }
+
+  public Map<String, AnalysisReport> batchFilterVerboseResult(
+      @Body Map<String, AnalysisReport> reports,
+      @Header(Constants.VERBOSE_MODE_HEADER) Boolean verbose) {
+    return reports.entrySet().stream()
+        .collect(
+            Collectors.toMap(Map.Entry::getKey, e -> filterVerboseResult(e.getValue(), verbose)));
   }
 
   public void attachHtmlReport(Exchange exchange) {

@@ -23,5 +23,7 @@ import java.util.Map;
 
 import com.redhat.exhort.api.v4.Issue;
 import com.redhat.exhort.api.v4.ProviderStatus;
+import com.redhat.exhort.api.v4.UnscannedDependency;
 
-public record ProviderResponse(Map<String, List<Issue>> issues, ProviderStatus status) {}
+public record ProviderResponse(
+    Map<String, List<Issue>> issues, ProviderStatus status, List<UnscannedDependency> unscanned) {}

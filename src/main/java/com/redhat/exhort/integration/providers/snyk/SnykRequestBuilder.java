@@ -18,6 +18,8 @@
 
 package com.redhat.exhort.integration.providers.snyk;
 
+import static com.redhat.exhort.integration.Constants.UNSCANNED_REASON_UNSUPPORTED_PACKAGE_TYPE;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -31,12 +33,15 @@ import java.util.stream.Collectors;
 
 import org.apache.camel.Body;
 import org.apache.camel.Exchange;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.redhat.exhort.api.PackageRef;
+import com.redhat.exhort.api.v4.UnscannedDependency;
 import com.redhat.exhort.config.ObjectMapperProducer;
 import com.redhat.exhort.integration.Constants;
 import com.redhat.exhort.model.DependencyTree;
@@ -45,6 +50,8 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @RegisterForReflection
 public class SnykRequestBuilder {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(SnykRequestBuilder.class);
 
   private static final String GOMODULES_PKG_MANAGER = "gomodules";
   private static final String RUBYGEMS_PKG_MANAGER = "rubygems";
@@ -81,7 +88,7 @@ public class SnykRequestBuilder {
     return mapper.writeValueAsString(root);
   }
 
-  public boolean isEmpty(@Body Collection<List<PackageRef>> body) {
+  public boolean isEmpty(@Body Collection<Set<PackageRef>> body) {
     return body == null || body.isEmpty();
   }
 
@@ -99,7 +106,16 @@ public class SnykRequestBuilder {
     var invalidTypes =
         types.stream().filter(Predicate.not(SUPPORTED_PURL_TYPES::contains)).toList();
     if (!invalidTypes.isEmpty()) {
-      throw new IllegalArgumentException("Unsupported package url types received: " + invalidTypes);
+      LOGGER.debug("Unsupported package url types received: {}", invalidTypes);
+      exchange.setProperty(
+          Constants.UNSCANNED_REFS_PROPERTY,
+          tree.stream()
+              .map(
+                  ref ->
+                      new UnscannedDependency()
+                          .ref(ref)
+                          .reason(UNSCANNED_REASON_UNSUPPORTED_PACKAGE_TYPE))
+              .toList());
     }
   }
 

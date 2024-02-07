@@ -24,7 +24,8 @@
             "medium": 0,
             "low": 0,
             "remediations": 1,
-            "recommendations": 2
+            "recommendations": 2,
+            "unscanned": 0
           },
           "dependencies": [
             {
@@ -204,7 +205,8 @@
             "medium": 2,
             "low": 0,
             "remediations": 2,
-            "recommendations": 2
+            "recommendations": 2,
+            "unscanned": 0
           },
           "dependencies": [
             {
@@ -558,7 +560,8 @@
             "medium": 3,
             "low": 0,
             "remediations": 1,
-            "recommendations": 2
+            "recommendations": 2,
+            "unscanned": 0
           },
           "dependencies": [
             {

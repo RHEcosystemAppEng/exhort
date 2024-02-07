@@ -65,7 +65,7 @@ public class OsvNvdResponseHandler extends ProviderResponseHandler {
       @ExchangeProperty(Constants.DEPENDENCY_TREE_PROPERTY) DependencyTree tree)
       throws IOException {
     var json = (ObjectNode) mapper.readTree(response);
-    return new ProviderResponse(getIssues(json, tree), null);
+    return new ProviderResponse(getIssues(json, tree), null, null);
   }
 
   private Map<String, List<Issue>> getIssues(ObjectNode response, DependencyTree tree) {

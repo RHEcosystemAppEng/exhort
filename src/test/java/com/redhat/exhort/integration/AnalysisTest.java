@@ -114,11 +114,14 @@ public class AnalysisTest extends AbstractAnalysisTest {
     assertEquals(4, report.getProviders().size());
     assertEquals(
         401, report.getProviders().get(Constants.OSS_INDEX_PROVIDER).getStatus().getCode());
-    var status = report.getProviders().get(Constants.SNYK_PROVIDER).getStatus();
-    assertEquals(422, status.getCode());
-    assertEquals("Unsupported package url types received: [foo]", status.getMessage());
+    var snykProvider = report.getProviders().get(Constants.SNYK_PROVIDER);
+    var status = snykProvider.getStatus();
+    assertEquals(200, status.getCode());
     assertEquals(Constants.SNYK_PROVIDER, status.getName());
-    assertFalse(status.getOk());
+    assertTrue(status.getOk());
+    assertEquals(1, snykProvider.getSources().size());
+    var unscanned = snykProvider.getSources().get(Constants.SNYK_PROVIDER).getUnscanned();
+    assertEquals(1, unscanned.size());
 
     verifyNoInteractionsWithOSS();
     verifyNoInteractionsWithSnyk();
@@ -566,6 +569,38 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .as(AnalysisReport.class);
 
     report.getProviders().values().stream().allMatch(p -> p.getStatus().getOk());
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {CYCLONEDX, SPDX})
+  public void testBatchSBOMAllWithToken(String sbom) {
+    stubAllProviders();
+
+    var body =
+        given()
+            .header(CONTENT_TYPE, getContentType(sbom))
+            .header("Accept", MediaType.APPLICATION_JSON)
+            .header(Constants.SNYK_TOKEN_HEADER, OK_TOKEN)
+            .header(Constants.OSS_INDEX_USER_HEADER, OK_USER)
+            .header(Constants.OSS_INDEX_TOKEN_HEADER, OK_TOKEN)
+            .body(loadBatchSBOMFile(sbom))
+            .when()
+            .post("/api/v4/batch-analysis")
+            .then()
+            .assertThat()
+            .statusCode(200)
+            .header(
+                Constants.EXHORT_REQUEST_ID_HEADER,
+                MatchesPattern.matchesPattern(REGEX_MATCHER_REQUEST_ID))
+            .contentType(MediaType.APPLICATION_JSON)
+            .extract()
+            .body()
+            .asPrettyString();
+
+    assertJson("reports/batch_report_all_token.json", body);
+    verifySnykRequest(OK_TOKEN, 2);
+    verifyOssRequest(OK_USER, OK_TOKEN, 2);
+    verifyOsvNvdRequest(2);
   }
 
   private void assertScanned(Scanned scanned) {
