@@ -165,7 +165,7 @@ public class SpdxParser extends SbomParser {
     static RelationshipDirection fromRelationshipType(RelationshipType type) {
       return switch (type) {
         case DEPENDS_ON,
-            CONTAINS,
+            CONTAINED_BY,
             BUILD_DEPENDENCY_OF,
             OPTIONAL_COMPONENT_OF,
             OPTIONAL_DEPENDENCY_OF,
@@ -174,7 +174,7 @@ public class SpdxParser extends SbomParser {
             RUNTIME_DEPENDENCY_OF,
             DEV_DEPENDENCY_OF,
             ANCESTOR_OF -> FORWARD;
-        case DEPENDENCY_OF, DESCENDANT_OF, PACKAGE_OF, CONTAINED_BY -> BACKWARDS;
+        case DEPENDENCY_OF, DESCENDANT_OF, PACKAGE_OF, CONTAINS -> BACKWARDS;
         default -> IGNORED;
       };
     }

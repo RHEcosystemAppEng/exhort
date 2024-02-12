@@ -136,8 +136,8 @@ public class SbomParserTest {
     var file = getClass().getClassLoader().getResourceAsStream(fileName);
 
     var tree = parser.buildTree(file);
-    assertEquals(4, tree.dependencies().size());
-    assertEquals(260, tree.transitiveCount());
+    assertEquals(260, tree.dependencies().size());
+    assertEquals(4, tree.transitiveCount());
   }
 
   @ParameterizedTest
