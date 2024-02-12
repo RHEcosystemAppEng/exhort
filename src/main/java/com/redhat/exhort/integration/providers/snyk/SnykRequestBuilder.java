@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.apache.camel.Body;
 import org.apache.camel.Exchange;
@@ -125,6 +126,8 @@ public class SnykRequestBuilder {
     var pkgs = mapper.createArrayNode().add(createPkg(root));
 
     refs.stream()
+        .collect(Collectors.toMap(k -> getId(k), v -> v, (a, b) -> a))
+        .values()
         .forEach(
             d -> {
               pkgs.add(createPkg(d));
