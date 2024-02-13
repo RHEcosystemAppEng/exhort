@@ -8,8 +8,8 @@
       "direct": 0,
       "total": 12,
       "critical": 0,
-      "high": 8,
-      "medium": 4,
+      "high": 7,
+      "medium": 5,
       "low": 0
     },
     "providerStatuses": [
@@ -63,7 +63,9 @@
               },
               "cvssScore": 7.5,
               "severity": "HIGH",
-              "cves": ["CVE-2020-36518"],
+              "cves": [
+                "CVE-2020-36518"
+              ],
               "unique": false
             },
             {
@@ -83,7 +85,9 @@
               },
               "cvssScore": 7.5,
               "severity": "HIGH",
-              "cves": ["CVE-2022-42003"],
+              "cves": [
+                "CVE-2022-42003"
+              ],
               "unique": false
             },
             {
@@ -103,7 +107,9 @@
               },
               "cvssScore": 7.5,
               "severity": "HIGH",
-              "cves": ["CVE-2022-42004"],
+              "cves": [
+                "CVE-2022-42004"
+              ],
               "unique": false
             }
           ],
@@ -131,7 +137,9 @@
             },
             "cvssScore": 7.5,
             "severity": "HIGH",
-            "cves": ["CVE-2020-36518"],
+            "cves": [
+              "CVE-2020-36518"
+            ],
             "unique": false
           }
         }
@@ -154,7 +162,9 @@
         },
         "cvssScore": 7.5,
         "severity": "HIGH",
-        "cves": ["CVE-2020-36518"],
+        "cves": [
+          "CVE-2020-36518"
+        ],
         "unique": false
       }
     },
@@ -184,7 +194,9 @@
               },
               "cvssScore": 8.1,
               "severity": "HIGH",
-              "cves": ["CVE-2023-2974"],
+              "cves": [
+                "CVE-2023-2974"
+              ],
               "unique": false
             }
           ],
@@ -211,32 +223,15 @@
             },
             "cvssScore": 8.1,
             "severity": "HIGH",
-            "cves": ["CVE-2023-2974"],
+            "cves": [
+              "CVE-2023-2974"
+            ],
             "unique": false
           }
         },
         {
           "ref": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.1?type=jar",
           "issues": [
-            {
-              "id": "CVE-2020-36518",
-              "source": "osv-nvd",
-              "cvss": {
-                "attackVector": "Network",
-                "attackComplexity": "Low",
-                "privilegesRequired": "None",
-                "userInteraction": "None",
-                "scope": "Unchanged",
-                "confidentialityImpact": "None",
-                "integrityImpact": "None",
-                "availabilityImpact": "High",
-                "cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
-              },
-              "cvssScore": 7.5,
-              "severity": "HIGH",
-              "cves": ["CVE-2020-36518"],
-              "unique": false
-            },
             {
               "id": "CVE-2022-42003",
               "source": "osv-nvd",
@@ -249,11 +244,13 @@
                 "confidentialityImpact": "None",
                 "integrityImpact": "None",
                 "availabilityImpact": "High",
-                "cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+                "cvss": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
               },
               "cvssScore": 7.5,
               "severity": "HIGH",
-              "cves": ["CVE-2022-42003"],
+              "cves": [
+                "CVE-2022-42003"
+              ],
               "unique": false
             },
             {
@@ -272,7 +269,28 @@
               },
               "cvssScore": 7.5,
               "severity": "HIGH",
-              "cves": ["CVE-2022-42004"],
+              "cves": [
+                "CVE-2022-42004"
+              ],
+              "unique": false
+            },
+            {
+              "id": "CVE-2020-36518",
+              "source": "osv-nvd",
+              "cvss": {
+                "attackVector": "Network",
+                "attackComplexity": "Low",
+                "privilegesRequired": "None",
+                "confidentialityImpact": "None",
+                "integrityImpact": "None",
+                "availabilityImpact": "Low",
+                "cvss": "AV:N/AC:L/Au:N/C:N/I:N/A:P"
+              },
+              "cvssScore": 5.0,
+              "severity": "MEDIUM",
+              "cves": [
+                "CVE-2020-36518"
+              ],
               "unique": false
             }
           ],
@@ -284,7 +302,7 @@
             }
           },
           "highestVulnerability": {
-            "id": "CVE-2020-36518",
+            "id": "CVE-2022-42003",
             "source": "osv-nvd",
             "cvss": {
               "attackVector": "Network",
@@ -295,11 +313,13 @@
               "confidentialityImpact": "None",
               "integrityImpact": "None",
               "availabilityImpact": "High",
-              "cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+              "cvss": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
             },
             "cvssScore": 7.5,
             "severity": "HIGH",
-            "cves": ["CVE-2020-36518"],
+            "cves": [
+              "CVE-2022-42003"
+            ],
             "unique": false
           }
         }
@@ -321,7 +341,9 @@
         },
         "cvssScore": 8.1,
         "severity": "HIGH",
-        "cves": ["CVE-2023-2974"],
+        "cves": [
+          "CVE-2023-2974"
+        ],
         "unique": false
       }
     },
@@ -347,7 +369,9 @@
               },
               "cvssScore": 5.5,
               "severity": "MEDIUM",
-              "cves": ["CVE-2022-41946"],
+              "cves": [
+                "CVE-2022-41946"
+              ],
               "unique": false
             }
           ],
@@ -367,7 +391,9 @@
             },
             "cvssScore": 5.5,
             "severity": "MEDIUM",
-            "cves": ["CVE-2022-41946"],
+            "cves": [
+              "CVE-2022-41946"
+            ],
             "unique": false
           }
         }
@@ -389,7 +415,9 @@
         },
         "cvssScore": 5.5,
         "severity": "MEDIUM",
-        "cves": ["CVE-2022-41946"],
+        "cves": [
+          "CVE-2022-41946"
+        ],
         "unique": false
       }
     },
@@ -416,7 +444,9 @@
               },
               "cvssScore": 7.5,
               "severity": "HIGH",
-              "cves": ["CVE-2020-36518"],
+              "cves": [
+                "CVE-2020-36518"
+              ],
               "unique": false
             },
             {
@@ -457,7 +487,9 @@
               },
               "cvssScore": 5.9,
               "severity": "MEDIUM",
-              "cves": ["CVE-2022-42003"],
+              "cves": [
+                "CVE-2022-42003"
+              ],
               "unique": false
             }
           ],
@@ -485,7 +517,9 @@
             },
             "cvssScore": 7.5,
             "severity": "HIGH",
-            "cves": ["CVE-2020-36518"],
+            "cves": [
+              "CVE-2020-36518"
+            ],
             "unique": false
           }
         }
@@ -508,7 +542,9 @@
         },
         "cvssScore": 7.5,
         "severity": "HIGH",
-        "cves": ["CVE-2020-36518"],
+        "cves": [
+          "CVE-2020-36518"
+        ],
         "unique": false
       }
     },
@@ -535,7 +571,9 @@
               },
               "cvssScore": 4.7,
               "severity": "MEDIUM",
-              "cves": ["CVE-2022-41946"],
+              "cves": [
+                "CVE-2022-41946"
+              ],
               "unique": false
             }
           ],
@@ -556,7 +594,9 @@
             },
             "cvssScore": 4.7,
             "severity": "MEDIUM",
-            "cves": ["CVE-2022-41946"],
+            "cves": [
+              "CVE-2022-41946"
+            ],
             "unique": false
           }
         }
@@ -579,7 +619,9 @@
         },
         "cvssScore": 4.7,
         "severity": "MEDIUM",
-        "cves": ["CVE-2022-41946"],
+        "cves": [
+          "CVE-2022-41946"
+        ],
         "unique": false
       }
     }

@@ -33,6 +33,9 @@ public class CvssParser {
   private static final record IndexItem(
       BiConsumer<String, CvssVector> setter, Map<String, String> parameters) {}
 
+  private static final String V3_1 = "CVSS:3.1";
+  private static final String V3_0 = "CVSS:3.0";
+
   private static final Map<String, IndexItem> INDEX = new HashMap<>();
   private static final Map<String, String> ATTACK_VECTORS = new HashMap<>();
   private static final Map<String, String> ATTACK_COMPLEXITY = new HashMap<>();
@@ -43,6 +46,13 @@ public class CvssParser {
   private static final Map<String, String> EXPLOIT_CODE_MATURITY = new HashMap<>();
   private static final Map<String, String> REMEDIATION_LEVEL = new HashMap<>();
   private static final Map<String, String> REPORT_CONFIDENCE = new HashMap<>();
+
+  private static final Map<String, IndexItem> INDEX_V2 = new HashMap<>();
+  private static final Map<String, String> AUTHENTICATION_V2 = new HashMap<>();
+  private static final Map<String, String> CONFIDENTIALITY_V2 = new HashMap<>();
+  private static final Map<String, String> EXPLOIT_CODE_MATURITY_V2 = new HashMap<>();
+  private static final Map<String, String> REMEDIATION_LEVEL_V2 = new HashMap<>();
+  private static final Map<String, String> REPORT_CONFIDENCE_V2 = new HashMap<>();
 
   static {
     INDEX.put("AV", new IndexItem((v, b) -> b.attackVector(v), ATTACK_VECTORS));
@@ -95,6 +105,41 @@ public class CvssParser {
     REPORT_CONFIDENCE.put("U", "Unknown");
     REPORT_CONFIDENCE.put("R", "Reasonable");
     REPORT_CONFIDENCE.put("C", "Confirmed");
+
+    INDEX_V2.put("AV", INDEX.get("AV"));
+    INDEX_V2.put("AC", INDEX.get("AC"));
+    INDEX_V2.put("Au", new IndexItem((v, b) -> b.privilegesRequired(v), AUTHENTICATION_V2));
+    INDEX_V2.put("C", new IndexItem((v, b) -> b.confidentialityImpact(v), CONFIDENTIALITY_V2));
+    INDEX_V2.put("I", new IndexItem((v, b) -> b.integrityImpact(v), CONFIDENTIALITY_V2));
+    INDEX_V2.put("A", new IndexItem((v, b) -> b.availabilityImpact(v), CONFIDENTIALITY_V2));
+    INDEX_V2.put("E", new IndexItem((v, b) -> b.exploitCodeMaturity(v), EXPLOIT_CODE_MATURITY_V2));
+    INDEX_V2.put("RL", new IndexItem((v, b) -> b.remediationLevel(v), REMEDIATION_LEVEL_V2));
+    INDEX_V2.put("RC", new IndexItem((v, b) -> b.reportConfidence(v), REPORT_CONFIDENCE_V2));
+
+    AUTHENTICATION_V2.put("M", "High"); // Multiple -> High
+    AUTHENTICATION_V2.put("S", "Low"); // Simple -> Low
+    AUTHENTICATION_V2.put("N", "None");
+
+    CONFIDENTIALITY_V2.put("P", "Low"); // Partial -> Low
+    CONFIDENTIALITY_V2.put("C", "High"); // Complete -> High
+    CONFIDENTIALITY_V2.put("N", "None");
+
+    EXPLOIT_CODE_MATURITY_V2.put("ND", "Not Defined");
+    EXPLOIT_CODE_MATURITY_V2.put("U", "Unproven that exploit exists");
+    EXPLOIT_CODE_MATURITY_V2.put("P", "Proof of concept code");
+    EXPLOIT_CODE_MATURITY_V2.put("F", "Functional exploit exists");
+    EXPLOIT_CODE_MATURITY_V2.put("H", "High");
+
+    REMEDIATION_LEVEL_V2.put("ND", "Not Defined");
+    REMEDIATION_LEVEL_V2.put("OF", "Official fix");
+    REMEDIATION_LEVEL_V2.put("TF", "Temporary fix");
+    REMEDIATION_LEVEL_V2.put("W", "Workaround");
+    REMEDIATION_LEVEL_V2.put("U", "Unavailable");
+
+    REPORT_CONFIDENCE_V2.put("ND", "Not Defined");
+    REPORT_CONFIDENCE_V2.put("UC", "Unknown");
+    REPORT_CONFIDENCE_V2.put("UR", "Reasonable");
+    REPORT_CONFIDENCE_V2.put("C", "Confirmed");
   }
 
   public static CvssVector fromVectorString(String vector) {
@@ -103,10 +148,19 @@ public class CvssParser {
     var parts = vector.split("/");
     for (int i = 0; i < parts.length; i++) {
       var metrics = parts[i].split(":");
-      if (metrics.length == 2 && INDEX.containsKey(metrics[0])) {
-        var item = INDEX.get(metrics[0]);
-        var value = item.parameters().get(metrics[1]);
-        item.setter().accept(value, result);
+      if (vector.startsWith(V3_1) || vector.startsWith(V3_0)) {
+        if (metrics.length == 2 && INDEX.containsKey(metrics[0])) {
+          var item = INDEX.get(metrics[0]);
+          var value = item.parameters().get(metrics[1]);
+          item.setter().accept(value, result);
+        }
+      } else {
+        // Parse CVSS 2.0
+        if (metrics.length == 2 && INDEX_V2.containsKey(metrics[0])) {
+          var item = INDEX_V2.get(metrics[0]);
+          var value = item.parameters().get(metrics[1]);
+          item.setter().accept(value, result);
+        }
       }
     }
 

@@ -100,13 +100,15 @@ public class OsvNvdResponseHandler extends ProviderResponseHandler {
     return issues;
   }
 
-  // Parse only V3.1 and V3.0 CVSS vectors
+  // Parse only V3.1, V3.0 and V2 CVSS vectors
   private void setMetrics(JsonNode metrics, Issue issue) {
     ArrayNode metricsNode = null;
     if (metrics.has("cvssMetricV31")) {
       metricsNode = (ArrayNode) metrics.get("cvssMetricV31");
     } else if (metrics.has("cvssMetricV30")) {
       metricsNode = (ArrayNode) metrics.get("cvssMetricV30");
+    } else if (metrics.has("cvssMetricV2")) {
+      metricsNode = (ArrayNode) metrics.get("cvssMetricV2");
     }
     if (metricsNode == null) {
       return;
