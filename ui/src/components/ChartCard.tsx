@@ -6,11 +6,21 @@ const customColors = ['#800000', '#FF0000', '#FFA500', '#5BA352'];
 
 export const ChartCard = ({summary}: { summary: Summary }) => {
 
+  const critical = summary?.critical ?? 0;
+  const high = summary?.high ?? 0;
+  const medium = summary?.medium ?? 0;
+  const low = summary?.low ?? 0;
+  const total = summary?.total ?? 0;
+
+  const hasValues = critical + high + medium + low > 0;
+  const zeroColor = '#D5F5E3';
+  const colorScale = hasValues ? customColors : [zeroColor];
+
   const legendData = [
-    {name: `Critical: ${summary.critical}`, symbol: {type: 'square', fill: customColors[0]}},
-    {name: `High: ${summary.high}`, symbol: {type: 'square', fill: customColors[1]}},
-    {name: `Medium: ${summary.medium}`, symbol: {type: 'square', fill: customColors[2]}},
-    {name: `Low: ${summary.low}`, symbol: {type: 'square', fill: customColors[3]}},
+    {name: `Critical: ${critical}`, symbol: {type: 'square', fill: customColors[0]}},
+    {name: `High: ${high}`, symbol: {type: 'square', fill: customColors[1]}},
+    {name: `Medium: ${medium}`, symbol: {type: 'square', fill: customColors[2]}},
+    {name: `Low: ${low}`, symbol: {type: 'square', fill: customColors[3]}},
   ];
 
   return (
@@ -21,26 +31,24 @@ export const ChartCard = ({summary}: { summary: Summary }) => {
           <div style={{height: '230px', width: '350px'}}>
             <ChartDonut
               constrainToVisibleArea
-              data={[
-                {x: 'Critical', y: summary.critical},
-                {x: 'High', y: summary.high},
-                {x: 'Medium', y: summary.medium},
-                {x: 'Low', y: summary.low},
-              ]}
+              data={hasValues ? [
+                {x: 'Critical', y: critical},
+                {x: 'High', y: high},
+                {x: 'Medium', y: medium},
+                {x: 'Low', y: low},
+              ] : [{x: 'Empty', y: 1e-10}]}
               labels={({datum}) => `${datum.x}: ${datum.y}`}
               legendData={legendData}
               legendOrientation="vertical"
               legendPosition="right"
               padding={{
-                bottom: 20,
                 left: 20,
                 right: 140, // Adjusted to accommodate legend
-                top: 20,
               }}
               subTitle="Vulnerabilities"
-              title={`${summary.total}`}
+              title={`${total}`}
               width={350}
-              colorScale={customColors}
+              colorScale={colorScale}
             />
           </div>
         </Bullseye>
