@@ -120,7 +120,6 @@ public class SnykRequestBuilder {
   }
 
   private JsonNode addPackages(ObjectNode depGraph, Set<PackageRef> refs, PackageRef root) {
-    ;
     var rootNode = createNode(root, refs);
     var nodes = mapper.createArrayNode().add(rootNode);
     var pkgs = mapper.createArrayNode().add(createPkg(root));
