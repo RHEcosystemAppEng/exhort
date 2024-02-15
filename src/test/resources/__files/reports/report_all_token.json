@@ -50,7 +50,9 @@
                       },
                       "cvssScore": 7.5,
                       "severity": "HIGH",
-                      "cves": ["CVE-2020-36518"],
+                      "cves": [
+                        "CVE-2020-36518"
+                      ],
                       "unique": false,
                       "remediation": {
                         "trustedContent": {
@@ -77,7 +79,9 @@
                       },
                       "cvssScore": 7.5,
                       "severity": "HIGH",
-                      "cves": ["CVE-2022-42003"],
+                      "cves": [
+                        "CVE-2022-42003"
+                      ],
                       "unique": false
                     },
                     {
@@ -97,7 +101,9 @@
                       },
                       "cvssScore": 7.5,
                       "severity": "HIGH",
-                      "cves": ["CVE-2022-42004"],
+                      "cves": [
+                        "CVE-2022-42004"
+                      ],
                       "unique": false
                     }
                   ],
@@ -118,7 +124,9 @@
                     },
                     "cvssScore": 7.5,
                     "severity": "HIGH",
-                    "cves": ["CVE-2020-36518"],
+                    "cves": [
+                      "CVE-2020-36518"
+                    ],
                     "unique": false,
                     "remediation": {
                       "trustedContent": {
@@ -148,7 +156,9 @@
                 },
                 "cvssScore": 7.5,
                 "severity": "HIGH",
-                "cves": ["CVE-2020-36518"],
+                "cves": [
+                  "CVE-2020-36518"
+                ],
                 "unique": false,
                 "remediation": {
                   "trustedContent": {
@@ -190,8 +200,8 @@
             "total": 5,
             "dependencies": 3,
             "critical": 0,
-            "high": 4,
-            "medium": 1,
+            "high": 3,
+            "medium": 2,
             "low": 0,
             "remediations": 2,
             "recommendations": 2
@@ -219,10 +229,14 @@
                       },
                       "cvssScore": 8.1,
                       "severity": "HIGH",
-                      "cves": ["CVE-2023-2974"],
+                      "cves": [
+                        "CVE-2023-2974"
+                      ],
                       "unique": false,
                       "remediation": {
-                        "fixedIn": ["2.16.8.Final"],
+                        "fixedIn": [
+                          "2.16.8.Final"
+                        ],
                         "trustedContent": {
                           "ref": "pkg:maven/io.quarkus/quarkus-core@2.13.8.Final-redhat-00006?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
                           "status": "NotAffected",
@@ -247,10 +261,14 @@
                     },
                     "cvssScore": 8.1,
                     "severity": "HIGH",
-                    "cves": ["CVE-2023-2974"],
+                    "cves": [
+                      "CVE-2023-2974"
+                    ],
                     "unique": false,
                     "remediation": {
-                      "fixedIn": ["2.16.8.Final"],
+                      "fixedIn": [
+                        "2.16.8.Final"
+                      ],
                       "trustedContent": {
                         "ref": "pkg:maven/io.quarkus/quarkus-core@2.13.8.Final-redhat-00006?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
                         "status": "NotAffected",
@@ -263,33 +281,6 @@
                   "ref": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.1?type=jar",
                   "issues": [
                     {
-                      "id": "CVE-2020-36518",
-                      "source": "osv-nvd",
-                      "cvss": {
-                        "attackVector": "Network",
-                        "attackComplexity": "Low",
-                        "privilegesRequired": "None",
-                        "userInteraction": "None",
-                        "scope": "Unchanged",
-                        "confidentialityImpact": "None",
-                        "integrityImpact": "None",
-                        "availabilityImpact": "High",
-                        "cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
-                      },
-                      "cvssScore": 7.5,
-                      "severity": "HIGH",
-                      "cves": ["CVE-2020-36518"],
-                      "unique": false,
-                      "remediation": {
-                        "fixedIn": ["2.13.2.1", "2.12.6.1"],
-                        "trustedContent": {
-                          "ref": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.2-redhat-00001?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
-                          "status": "NotAffected",
-                          "justification": "VulnerableCodeNotPresent"
-                        }
-                      }
-                    },
-                    {
                       "id": "CVE-2022-42003",
                       "source": "osv-nvd",
                       "cvss": {
@@ -301,14 +292,19 @@
                         "confidentialityImpact": "None",
                         "integrityImpact": "None",
                         "availabilityImpact": "High",
-                        "cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+                        "cvss": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
                       },
                       "cvssScore": 7.5,
                       "severity": "HIGH",
-                      "cves": ["CVE-2022-42003"],
+                      "cves": [
+                        "CVE-2022-42003"
+                      ],
                       "unique": false,
                       "remediation": {
-                        "fixedIn": ["2.12.7.1", "2.13.4.2"]
+                        "fixedIn": [
+                          "2.12.7.1",
+                          "2.13.4.2"
+                        ]
                       }
                     },
                     {
@@ -327,15 +323,50 @@
                       },
                       "cvssScore": 7.5,
                       "severity": "HIGH",
-                      "cves": ["CVE-2022-42004"],
+                      "cves": [
+                        "CVE-2022-42004"
+                      ],
                       "unique": false,
                       "remediation": {
-                        "fixedIn": ["2.12.7.1", "2.13.4"]
+                        "fixedIn": [
+                          "2.12.7.1",
+                          "2.13.4"
+                        ]
+                      }
+                    },
+                    {
+                      "id": "CVE-2020-36518",
+                      "source": "osv-nvd",
+                      "cvss": {
+                        "attackVector": "Network",
+                        "attackComplexity": "Low",
+                        "privilegesRequired": "None",
+                        "confidentialityImpact": "None",
+                        "integrityImpact": "None",
+                        "availabilityImpact": "Low",
+                        "cvss": "AV:N/AC:L/Au:N/C:N/I:N/A:P"
+                      },
+                      "cvssScore": 5.0,
+                      "severity": "MEDIUM",
+                      "cves": [
+                        "CVE-2020-36518"
+                      ],
+                      "unique": false,
+                      "remediation": {
+                        "fixedIn": [
+                          "2.13.2.1",
+                          "2.12.6.1"
+                        ],
+                        "trustedContent": {
+                          "ref": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.2-redhat-00001?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
+                          "status": "NotAffected",
+                          "justification": "VulnerableCodeNotPresent"
+                        }
                       }
                     }
                   ],
                   "highestVulnerability": {
-                    "id": "CVE-2020-36518",
+                    "id": "CVE-2022-42003",
                     "source": "osv-nvd",
                     "cvss": {
                       "attackVector": "Network",
@@ -346,19 +377,19 @@
                       "confidentialityImpact": "None",
                       "integrityImpact": "None",
                       "availabilityImpact": "High",
-                      "cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+                      "cvss": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
                     },
                     "cvssScore": 7.5,
                     "severity": "HIGH",
-                    "cves": ["CVE-2020-36518"],
+                    "cves": [
+                      "CVE-2022-42003"
+                    ],
                     "unique": false,
                     "remediation": {
-                      "fixedIn": ["2.13.2.1", "2.12.6.1"],
-                      "trustedContent": {
-                        "ref": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.2-redhat-00001?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
-                        "status": "NotAffected",
-                        "justification": "VulnerableCodeNotPresent"
-                      }
+                      "fixedIn": [
+                        "2.12.7.1",
+                        "2.13.4.2"
+                      ]
                     }
                   }
                 }
@@ -380,10 +411,14 @@
                 },
                 "cvssScore": 8.1,
                 "severity": "HIGH",
-                "cves": ["CVE-2023-2974"],
+                "cves": [
+                  "CVE-2023-2974"
+                ],
                 "unique": false,
                 "remediation": {
-                  "fixedIn": ["2.16.8.Final"],
+                  "fixedIn": [
+                    "2.16.8.Final"
+                  ],
                   "trustedContent": {
                     "ref": "pkg:maven/io.quarkus/quarkus-core@2.13.8.Final-redhat-00006?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
                     "status": "NotAffected",
@@ -414,10 +449,17 @@
                       },
                       "cvssScore": 5.5,
                       "severity": "MEDIUM",
-                      "cves": ["CVE-2022-41946"],
+                      "cves": [
+                        "CVE-2022-41946"
+                      ],
                       "unique": false,
                       "remediation": {
-                        "fixedIn": ["42.2.27", "42.3.8", "42.4.3", "42.5.1"]
+                        "fixedIn": [
+                          "42.2.27",
+                          "42.3.8",
+                          "42.4.3",
+                          "42.5.1"
+                        ]
                       }
                     }
                   ],
@@ -437,10 +479,17 @@
                     },
                     "cvssScore": 5.5,
                     "severity": "MEDIUM",
-                    "cves": ["CVE-2022-41946"],
+                    "cves": [
+                      "CVE-2022-41946"
+                    ],
                     "unique": false,
                     "remediation": {
-                      "fixedIn": ["42.2.27", "42.3.8", "42.4.3", "42.5.1"]
+                      "fixedIn": [
+                        "42.2.27",
+                        "42.3.8",
+                        "42.4.3",
+                        "42.5.1"
+                      ]
                     }
                   }
                 }
@@ -462,10 +511,17 @@
                 },
                 "cvssScore": 5.5,
                 "severity": "MEDIUM",
-                "cves": ["CVE-2022-41946"],
+                "cves": [
+                  "CVE-2022-41946"
+                ],
                 "unique": false,
                 "remediation": {
-                  "fixedIn": ["42.2.27", "42.3.8", "42.4.3", "42.5.1"]
+                  "fixedIn": [
+                    "42.2.27",
+                    "42.3.8",
+                    "42.4.3",
+                    "42.5.1"
+                  ]
                 }
               }
             }
@@ -518,10 +574,16 @@
                       },
                       "cvssScore": 7.5,
                       "severity": "HIGH",
-                      "cves": ["CVE-2020-36518"],
+                      "cves": [
+                        "CVE-2020-36518"
+                      ],
                       "unique": false,
                       "remediation": {
-                        "fixedIn": ["2.12.6.1", "2.13.2.1", "2.14.0"],
+                        "fixedIn": [
+                          "2.12.6.1",
+                          "2.13.2.1",
+                          "2.14.0"
+                        ],
                         "trustedContent": {
                           "ref": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.2-redhat-00001?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
                           "status": "NotAffected",
@@ -549,7 +611,9 @@
                       "severity": "MEDIUM",
                       "unique": true,
                       "remediation": {
-                        "fixedIn": ["2.13.4"]
+                        "fixedIn": [
+                          "2.13.4"
+                        ]
                       }
                     },
                     {
@@ -570,10 +634,15 @@
                       },
                       "cvssScore": 5.9,
                       "severity": "MEDIUM",
-                      "cves": ["CVE-2022-42003"],
+                      "cves": [
+                        "CVE-2022-42003"
+                      ],
                       "unique": false,
                       "remediation": {
-                        "fixedIn": ["2.12.7.1", "2.13.4.2"]
+                        "fixedIn": [
+                          "2.12.7.1",
+                          "2.13.4.2"
+                        ]
                       }
                     }
                   ],
@@ -594,10 +663,16 @@
                     },
                     "cvssScore": 7.5,
                     "severity": "HIGH",
-                    "cves": ["CVE-2020-36518"],
+                    "cves": [
+                      "CVE-2020-36518"
+                    ],
                     "unique": false,
                     "remediation": {
-                      "fixedIn": ["2.12.6.1", "2.13.2.1", "2.14.0"],
+                      "fixedIn": [
+                        "2.12.6.1",
+                        "2.13.2.1",
+                        "2.14.0"
+                      ],
                       "trustedContent": {
                         "ref": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.2-redhat-00001?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
                         "status": "NotAffected",
@@ -625,10 +700,16 @@
                 },
                 "cvssScore": 7.5,
                 "severity": "HIGH",
-                "cves": ["CVE-2020-36518"],
+                "cves": [
+                  "CVE-2020-36518"
+                ],
                 "unique": false,
                 "remediation": {
-                  "fixedIn": ["2.12.6.1", "2.13.2.1", "2.14.0"],
+                  "fixedIn": [
+                    "2.12.6.1",
+                    "2.13.2.1",
+                    "2.14.0"
+                  ],
                   "trustedContent": {
                     "ref": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.2-redhat-00001?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
                     "status": "NotAffected",
@@ -660,10 +741,17 @@
                       },
                       "cvssScore": 4.7,
                       "severity": "MEDIUM",
-                      "cves": ["CVE-2022-41946"],
+                      "cves": [
+                        "CVE-2022-41946"
+                      ],
                       "unique": false,
                       "remediation": {
-                        "fixedIn": ["42.2.27", "42.3.8", "42.4.3", "42.5.1"]
+                        "fixedIn": [
+                          "42.2.27",
+                          "42.3.8",
+                          "42.4.3",
+                          "42.5.1"
+                        ]
                       }
                     }
                   ],
@@ -684,10 +772,17 @@
                     },
                     "cvssScore": 4.7,
                     "severity": "MEDIUM",
-                    "cves": ["CVE-2022-41946"],
+                    "cves": [
+                      "CVE-2022-41946"
+                    ],
                     "unique": false,
                     "remediation": {
-                      "fixedIn": ["42.2.27", "42.3.8", "42.4.3", "42.5.1"]
+                      "fixedIn": [
+                        "42.2.27",
+                        "42.3.8",
+                        "42.4.3",
+                        "42.5.1"
+                      ]
                     }
                   }
                 }
@@ -710,10 +805,17 @@
                 },
                 "cvssScore": 4.7,
                 "severity": "MEDIUM",
-                "cves": ["CVE-2022-41946"],
+                "cves": [
+                  "CVE-2022-41946"
+                ],
                 "unique": false,
                 "remediation": {
-                  "fixedIn": ["42.2.27", "42.3.8", "42.4.3", "42.5.1"]
+                  "fixedIn": [
+                    "42.2.27",
+                    "42.3.8",
+                    "42.4.3",
+                    "42.5.1"
+                  ]
                 }
               }
             }

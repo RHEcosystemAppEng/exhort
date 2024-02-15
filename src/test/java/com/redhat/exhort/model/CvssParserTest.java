@@ -28,7 +28,9 @@ public class CvssParserTest {
 
   private static final String[] INPUTS = {
     "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H",
-    "CVSS:3.1/AV:A/AC:H/PR:L/UI:R/S:U/C:H/I:L/A:L/E:U/RL:U/RC:R"
+    "CVSS:3.1/AV:A/AC:H/PR:L/UI:R/S:U/C:H/I:L/A:L/E:U/RL:U/RC:R",
+    "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H",
+    "CVSS:3.0/AV:A/AC:H/PR:L/UI:R/S:U/C:H/I:L/A:L/E:U/RL:U/RC:R",
   };
 
   private static final CvssVector[] EXPECTATIONS = {
@@ -58,9 +60,48 @@ public class CvssParserTest {
   };
 
   @Test
-  void testVectors() {
+  void testVectorsV3() {
     for (int i = 0; i < INPUTS.length; i++) {
-      assertEquals(EXPECTATIONS[i], CvssParser.fromVectorString(INPUTS[i]), "Failed: " + INPUTS[i]);
+      var expectation = EXPECTATIONS[i % 2].cvss(INPUTS[i]);
+      assertEquals(expectation, CvssParser.fromVectorString(INPUTS[i]), "Failed: " + INPUTS[i]);
+    }
+  }
+
+  private static final String[] INPUTS_V2 = {
+    "AV:N/AC:L/Au:N/C:N/I:N/A:P", "AV:A/AC:H/Au:S/C:P/I:P/A:C"
+  };
+
+  private static final CvssVector[] EXPECTATIONS_V2 = {
+    new CvssVector()
+        .attackVector("Network")
+        .attackComplexity("Low")
+        .privilegesRequired("None")
+        .confidentialityImpact("None")
+        .integrityImpact("None")
+        .availabilityImpact("Low")
+        .userInteraction(null)
+        .scope(null)
+        .cvss(INPUTS_V2[0]),
+    new CvssVector()
+        .attackVector("Adjacent Network")
+        .attackComplexity("High")
+        .privilegesRequired("Low")
+        .confidentialityImpact("Low")
+        .integrityImpact("Low")
+        .availabilityImpact("High")
+        .userInteraction(null)
+        .scope(null)
+        .exploitCodeMaturity(null)
+        .remediationLevel(null)
+        .reportConfidence(null)
+        .cvss(INPUTS_V2[1])
+  };
+
+  @Test
+  void testVectorsV2() {
+    for (int i = 0; i < INPUTS_V2.length; i++) {
+      assertEquals(
+          EXPECTATIONS_V2[i], CvssParser.fromVectorString(INPUTS_V2[i]), "Failed: " + INPUTS_V2[i]);
     }
   }
 }
