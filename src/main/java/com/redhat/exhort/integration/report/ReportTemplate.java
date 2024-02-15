@@ -54,6 +54,9 @@ public class ReportTemplate {
   @ConfigProperty(name = "report.nvd.issue.regex")
   String nvdIssuePathRegex;
 
+  @ConfigProperty(name = "report.cve.issue.regex")
+  String cveIssuePathRegex;
+
   public Map<String, Object> setVariables(
       @Body AnalysisReport report,
       @ExchangeProperty(Constants.PROVIDER_PRIVATE_DATA_PROPERTY) List<String> providerPrivateData)
@@ -66,6 +69,7 @@ public class ReportTemplate {
     params.put("nvdIssueTemplate", nvdIssuePathRegex);
     params.put("providerPrivateData", providerPrivateData);
     params.put("snykSignup", snykSignup);
+    params.put("cveIssueTemplate", cveIssuePathRegex);
 
     ObjectWriter objectWriter = new ObjectMapper().writer();
     String appData = objectWriter.writeValueAsString(params);

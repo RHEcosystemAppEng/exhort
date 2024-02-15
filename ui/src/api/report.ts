@@ -6,6 +6,7 @@ export interface AppData {
   ossIssueTemplate: string;
   snykIssueTemplate: string;
   nvdIssueTemplate: string;
+  cveIssueTemplate: string;
   snykSignup: string;
 }
 

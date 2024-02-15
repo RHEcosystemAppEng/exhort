@@ -83,8 +83,13 @@ public class OsvNvdResponseHandler extends ProviderResponseHandler {
     response.forEach(
         data -> {
           var issue = new Issue().source(Constants.OSV_NVD_PROVIDER);
+
           String cve = getTextValue(data, "cveId");
           issue.id(cve).cves(List.of(cve));
+          issue.title(getTextValue(data, "summary"));
+          if (issue.getTitle() == null || issue.getTitle().isEmpty()) {
+            issue.title(getTextValue(data, "description"));
+          }
           var metrics = data.get("metrics");
           if (metrics != null) {
             setMetrics(metrics, issue);
