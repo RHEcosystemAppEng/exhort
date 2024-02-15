@@ -180,6 +180,7 @@
           "issues": [
             {
               "id": "CVE-2023-2974",
+              "title": "quarkus-core vulnerable to client driven TLS cipher downgrading",
               "source": "osv-nvd",
               "cvss": {
                 "attackVector": "Network",
@@ -209,6 +210,7 @@
           },
           "highestVulnerability": {
             "id": "CVE-2023-2974",
+            "title": "quarkus-core vulnerable to client driven TLS cipher downgrading",
             "source": "osv-nvd",
             "cvss": {
               "attackVector": "Network",
@@ -234,6 +236,7 @@
           "issues": [
             {
               "id": "CVE-2022-42003",
+              "title": "Uncontrolled Resource Consumption in Jackson-databind",
               "source": "osv-nvd",
               "cvss": {
                 "attackVector": "Network",
@@ -255,6 +258,7 @@
             },
             {
               "id": "CVE-2022-42004",
+              "title": "Uncontrolled Resource Consumption in FasterXML jackson-databind",
               "source": "osv-nvd",
               "cvss": {
                 "attackVector": "Network",
@@ -276,6 +280,7 @@
             },
             {
               "id": "CVE-2020-36518",
+              "title": "Deeply nested json in jackson-databind",
               "source": "osv-nvd",
               "cvss": {
                 "attackVector": "Network",
@@ -303,6 +308,7 @@
           },
           "highestVulnerability": {
             "id": "CVE-2022-42003",
+            "title": "Uncontrolled Resource Consumption in Jackson-databind",
             "source": "osv-nvd",
             "cvss": {
               "attackVector": "Network",
@@ -327,6 +333,7 @@
       "recommendation": "pkg:maven/io.quarkus/quarkus-hibernate-orm@2.13.8.Final-redhat-00006?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
       "highestVulnerability": {
         "id": "CVE-2023-2974",
+        "title": "quarkus-core vulnerable to client driven TLS cipher downgrading",
         "source": "osv-nvd",
         "cvss": {
           "attackVector": "Network",
@@ -355,6 +362,7 @@
           "issues": [
             {
               "id": "CVE-2022-41946",
+              "title": "TemporaryFolder on unix-like systems does not limit access to created files",
               "source": "osv-nvd",
               "cvss": {
                 "attackVector": "Local",
@@ -377,6 +385,7 @@
           ],
           "highestVulnerability": {
             "id": "CVE-2022-41946",
+            "title": "TemporaryFolder on unix-like systems does not limit access to created files",
             "source": "osv-nvd",
             "cvss": {
               "attackVector": "Local",
@@ -401,6 +410,7 @@
       "recommendation": "pkg:maven/io.quarkus/quarkus-jdbc-postgresql@2.13.8.Final-redhat-00006?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
       "highestVulnerability": {
         "id": "CVE-2022-41946",
+        "title": "TemporaryFolder on unix-like systems does not limit access to created files",
         "source": "osv-nvd",
         "cvss": {
           "attackVector": "Local",

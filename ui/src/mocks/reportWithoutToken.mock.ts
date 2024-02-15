@@ -386,4 +386,5 @@ export const withoutTokenReport: AppData = {
   snykIssueTemplate: 'https://security.snyk.io/vuln/__ISSUE_ID__',
   nvdIssueTemplate: 'https://nvd.nist.gov/vuln/detail/__ISSUE_ID__',
   snykSignup: 'https://app.snyk.io/login',
+  cveIssueTemplate: 'https://cve.mitre.org/cgi-bin/cvename.cgi?name=__ISSUE_ID__'
 };

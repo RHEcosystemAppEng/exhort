@@ -114,6 +114,10 @@ export const issueLink = (provider: string, issueId: string, appData: AppData) =
   }
 };
 
+export const cveLink = (issueId: string, appData: AppData) => {
+  return appData.cveIssueTemplate.replace(ISSUE_PLACEHOLDER, issueId);
+}
+
 export const uppercaseFirstLetter = (val: string) => {
   return val.toLowerCase().replace(/./, (c) => c.toUpperCase());
 };
