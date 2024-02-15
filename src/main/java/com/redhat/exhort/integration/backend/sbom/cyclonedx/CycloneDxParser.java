@@ -63,11 +63,11 @@ public class CycloneDxParser extends SbomParser {
                 .collect(Collectors.toMap(Component::getBomRef, c -> new PackageRef(c.getPurl()))));
       }
 
-      if (bom.getMetadata() == null) {
-        throw new ClientErrorException(
-            "Unable to parse CycloneDX SBOM. Missing metadata.", Response.Status.BAD_REQUEST);
+      Optional<Component> rootComponent = Optional.empty();
+      if (bom.getMetadata() != null) {
+        rootComponent = Optional.ofNullable(bom.getMetadata().getComponent());
       }
-      var rootComponent = Optional.ofNullable(bom.getMetadata().getComponent());
+
       PackageRef rootRef = null;
       if (rootComponent.isPresent()) {
         if (rootComponent.get().getPurl() != null) {
