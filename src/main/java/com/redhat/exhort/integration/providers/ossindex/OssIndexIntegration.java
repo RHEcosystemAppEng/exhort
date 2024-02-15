@@ -104,7 +104,7 @@ public class OssIndexIntegration extends EndpointRouteBuilder {
     message.removeHeader(Exchange.HTTP_PATH);
     message.removeHeader(Exchange.HTTP_QUERY);
     message.removeHeader(Exchange.HTTP_URI);
-    message.removeHeader("Accept-Encoding");
+    message.removeHeader(Constants.ACCEPT_ENCODING_HEADER);
     message.setHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON);
     message.setHeader(Exchange.HTTP_METHOD, HttpMethod.POST);
 
@@ -113,7 +113,8 @@ public class OssIndexIntegration extends EndpointRouteBuilder {
     message.setHeader(Exchange.HTTP_PATH, Constants.OSS_INDEX_AUTH_COMPONENT_API_PATH);
     var auth = new StringBuilder().append(username).append(":").append(token);
     message.setHeader(
-        "Authorization", "Basic " + Base64.getEncoder().encodeToString(auth.toString().getBytes()));
+        Constants.AUTHORIZATION_HEADER,
+        "Basic " + Base64.getEncoder().encodeToString(auth.toString().getBytes()));
     message.removeHeader(Constants.OSS_INDEX_USER_HEADER);
     message.removeHeader(Constants.OSS_INDEX_TOKEN_HEADER);
   }

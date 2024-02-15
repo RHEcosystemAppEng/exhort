@@ -24,6 +24,8 @@ import java.util.Optional;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.ext.ClientHeadersFactory;
 
+import com.redhat.exhort.integration.Constants;
+
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.core.MultivaluedHashMap;
@@ -56,7 +58,7 @@ public class AuthenticationHeaderFactory implements ClientHeadersFactory {
       MultivaluedMap<String, String> incomingHeaders,
       MultivaluedMap<String, String> clientOutgoingHeaders) {
     MultivaluedMap<String, String> result = new MultivaluedHashMap<>();
-    result.add("Authorization", basicAuthHeader);
+    result.add(Constants.AUTHORIZATION_HEADER, basicAuthHeader);
     return result;
   }
 }

@@ -23,6 +23,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.matching;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
@@ -63,6 +64,7 @@ import jakarta.ws.rs.core.MediaType;
 @QuarkusTestResource(WiremockV3Extension.class)
 public abstract class AbstractAnalysisTest {
 
+  private static final String SNYK_UA_PATTERN = "redhat-snyk-exhort-.*";
   static final String OK_USER = "test-user";
   static final String OK_TOKEN = "test-token";
   static final String ERROR_TOKEN = "fail";
@@ -168,7 +170,8 @@ public abstract class AbstractAnalysisTest {
       server.verify(
           1,
           postRequestedFor(urlEqualTo(Constants.SNYK_DEP_GRAPH_API_PATH))
-              .withHeader("Authorization", equalTo("token " + token)));
+              .withHeader(Constants.AUTHORIZATION_HEADER, equalTo("token " + token))
+              .withHeader(Constants.USER_AGENT_HEADER, matching(SNYK_UA_PATTERN)));
     }
   }
 
@@ -189,7 +192,8 @@ public abstract class AbstractAnalysisTest {
       server.verify(
           1,
           getRequestedFor(urlEqualTo(Constants.SNYK_TOKEN_API_PATH))
-              .withHeader("Authorization", equalTo("token " + token)));
+              .withHeader(Constants.AUTHORIZATION_HEADER, equalTo("token " + token))
+              .withHeader(Constants.USER_AGENT_HEADER, matching(SNYK_UA_PATTERN)));
     }
   }
 
@@ -229,7 +233,7 @@ public abstract class AbstractAnalysisTest {
     // Default request
     server.stubFor(
         get(Constants.SNYK_TOKEN_API_PATH)
-            .withHeader("Authorization", equalTo("token " + OK_TOKEN))
+            .withHeader(Constants.AUTHORIZATION_HEADER, equalTo("token " + OK_TOKEN))
             .willReturn(
                 aResponse()
                     .withStatus(200)
@@ -238,12 +242,12 @@ public abstract class AbstractAnalysisTest {
     // Internal Error
     server.stubFor(
         get(Constants.SNYK_TOKEN_API_PATH)
-            .withHeader("Authorization", equalTo("token " + ERROR_TOKEN))
+            .withHeader(Constants.AUTHORIZATION_HEADER, equalTo("token " + ERROR_TOKEN))
             .willReturn(aResponse().withStatus(500).withBody("This is an example error")));
     // Invalid token
     server.stubFor(
         get(Constants.SNYK_TOKEN_API_PATH)
-            .withHeader("Authorization", equalTo("token " + INVALID_TOKEN))
+            .withHeader(Constants.AUTHORIZATION_HEADER, equalTo("token " + INVALID_TOKEN))
             .willReturn(
                 aResponse()
                     .withStatus(401)
@@ -254,7 +258,7 @@ public abstract class AbstractAnalysisTest {
     // Too many requests
     server.stubFor(
         get(Constants.SNYK_TOKEN_API_PATH)
-            .withHeader("Authorization", equalTo("token " + RATE_LIMIT_TOKEN))
+            .withHeader(Constants.AUTHORIZATION_HEADER, equalTo("token " + RATE_LIMIT_TOKEN))
             .willReturn(
                 aResponse()
                     .withStatus(429)
@@ -328,8 +332,10 @@ public abstract class AbstractAnalysisTest {
     server.stubFor(
         post(Constants.SNYK_DEP_GRAPH_API_PATH)
             .withHeader(
-                "Authorization", equalTo("token " + OK_TOKEN).or(equalTo("token " + SNYK_TOKEN)))
+                Constants.AUTHORIZATION_HEADER,
+                equalTo("token " + OK_TOKEN).or(equalTo("token " + SNYK_TOKEN)))
             .withHeader(Exchange.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON))
+            .withHeader(Constants.USER_AGENT_HEADER, matching(SNYK_UA_PATTERN))
             .withRequestBody(
                 equalToJson(loadFileAsString("__files/snyk/maven_request.json"), true, false))
             .willReturn(
@@ -340,8 +346,10 @@ public abstract class AbstractAnalysisTest {
     server.stubFor(
         post(Constants.SNYK_DEP_GRAPH_API_PATH)
             .withHeader(
-                "Authorization", equalTo("token " + OK_TOKEN).or(equalTo("token " + SNYK_TOKEN)))
+                Constants.AUTHORIZATION_HEADER,
+                equalTo("token " + OK_TOKEN).or(equalTo("token " + SNYK_TOKEN)))
             .withHeader(Exchange.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON))
+            .withHeader(Constants.USER_AGENT_HEADER, matching(SNYK_UA_PATTERN))
             .withRequestBody(
                 equalToJson(loadFileAsString("__files/snyk/pypi_small_request.json"), true, false))
             .willReturn(
@@ -352,8 +360,10 @@ public abstract class AbstractAnalysisTest {
     server.stubFor(
         post(Constants.SNYK_DEP_GRAPH_API_PATH)
             .withHeader(
-                "Authorization", equalTo("token " + OK_TOKEN).or(equalTo("token " + SNYK_TOKEN)))
+                Constants.AUTHORIZATION_HEADER,
+                equalTo("token " + OK_TOKEN).or(equalTo("token " + SNYK_TOKEN)))
             .withHeader(Exchange.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON))
+            .withHeader(Constants.USER_AGENT_HEADER, matching(SNYK_UA_PATTERN))
             .withRequestBody(
                 equalToJson(loadFileAsString("__files/snyk/npm_small_request.json"), true, false))
             .willReturn(
@@ -364,12 +374,14 @@ public abstract class AbstractAnalysisTest {
     // Internal Error
     server.stubFor(
         post(Constants.SNYK_DEP_GRAPH_API_PATH)
-            .withHeader("Authorization", equalTo("token " + ERROR_TOKEN))
+            .withHeader(Constants.AUTHORIZATION_HEADER, equalTo("token " + ERROR_TOKEN))
+            .withHeader(Constants.USER_AGENT_HEADER, matching(SNYK_UA_PATTERN))
             .willReturn(aResponse().withStatus(500).withBody("This is an example error")));
     // Invalid token
     server.stubFor(
         post(Constants.SNYK_DEP_GRAPH_API_PATH)
-            .withHeader("Authorization", equalTo("token " + INVALID_TOKEN))
+            .withHeader(Constants.AUTHORIZATION_HEADER, equalTo("token " + INVALID_TOKEN))
+            .withHeader(Constants.USER_AGENT_HEADER, matching(SNYK_UA_PATTERN))
             .willReturn(
                 aResponse()
                     .withStatus(401)
@@ -380,7 +392,8 @@ public abstract class AbstractAnalysisTest {
     // Forbidden (i.e. token does not have access to the API)
     server.stubFor(
         post(Constants.SNYK_DEP_GRAPH_API_PATH)
-            .withHeader("Authorization", equalTo("token " + UNAUTH_TOKEN))
+            .withHeader(Constants.AUTHORIZATION_HEADER, equalTo("token " + UNAUTH_TOKEN))
+            .withHeader(Constants.USER_AGENT_HEADER, matching(SNYK_UA_PATTERN))
             .willReturn(
                 aResponse()
                     .withStatus(403)
@@ -391,7 +404,8 @@ public abstract class AbstractAnalysisTest {
     // Too many requests
     server.stubFor(
         post(Constants.SNYK_DEP_GRAPH_API_PATH)
-            .withHeader("Authorization", equalTo("token " + RATE_LIMIT_TOKEN))
+            .withHeader(Constants.AUTHORIZATION_HEADER, equalTo("token " + RATE_LIMIT_TOKEN))
+            .withHeader(Constants.USER_AGENT_HEADER, matching(SNYK_UA_PATTERN))
             .willReturn(
                 aResponse()
                     .withStatus(429)
@@ -406,8 +420,10 @@ public abstract class AbstractAnalysisTest {
     server.stubFor(
         post(Constants.SNYK_DEP_GRAPH_API_PATH)
             .withHeader(
-                "Authorization", equalTo("token " + OK_TOKEN).or(equalTo("token " + SNYK_TOKEN)))
+                Constants.AUTHORIZATION_HEADER,
+                equalTo("token " + OK_TOKEN).or(equalTo("token " + SNYK_TOKEN)))
             .withHeader(Exchange.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON))
+            .withHeader(Constants.USER_AGENT_HEADER, matching(SNYK_UA_PATTERN))
             .withRequestBody(
                 equalToJson(
                     loadFileAsString("__files/snyk/empty_request.json")
