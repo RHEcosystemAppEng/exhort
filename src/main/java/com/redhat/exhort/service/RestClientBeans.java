@@ -1,0 +1,65 @@
+/*
+ * Copyright 2024 Red Hat, Inc. and/or its affiliates
+ * and other contributors as indicated by the @author tags.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.redhat.exhort.service;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import com.redhat.exhort.integration.Constants;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+
+import jakarta.enterprise.inject.Produces;
+import jakarta.inject.Named;
+import jakarta.inject.Singleton;
+import jakarta.ws.rs.client.ClientBuilder;
+
+public class RestClientBeans {
+
+  @Produces
+  @Singleton
+  @Named("snyk")
+  public RestClient snyk(@ConfigProperty(name = "api.snyk.host") String url)
+      throws URISyntaxException {
+    return new RestClient(ClientBuilder.newClient(), new URI(url + Constants.SNYK_DEP_GRAPH_API_PATH));
+  }
+
+  @Produces
+  @Singleton
+  @Named("osvNvd")
+  public RestClient osvNvd(@ConfigProperty(name = "api.osvnvd.host") String url)
+      throws URISyntaxException {
+    return new RestClient(ClientBuilder.newClient(), new URI(url + Constants.OSV_NVD_PURLS_PATH));
+  }
+
+  @Produces
+  @Singleton
+  @Named("ossIndex")
+  public RestClient ossIndex(@ConfigProperty(name = "api.ossindex.host") String url)
+      throws URISyntaxException {
+    return new RestClient(ClientBuilder.newClient(), new URI(url + Constants.OSS_INDEX_AUTH_COMPONENT_API_PATH));
+  }
+
+  @Produces
+  @Singleton
+  @Named("trustedContent")
+  public RestClient trustedContent(@ConfigProperty(name = "api.trustedcontent.host") String url)
+      throws URISyntaxException {
+    return new RestClient(ClientBuilder.newClient(), new URI(url + Constants.TRUSTED_CONTENT_PATH.replace("/","")));
+  }
+}
