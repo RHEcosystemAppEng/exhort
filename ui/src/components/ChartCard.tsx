@@ -45,7 +45,7 @@ export const ChartCard = ({summary}: { summary: Summary }) => {
                 left: 20,
                 right: 140, // Adjusted to accommodate legend
               }}
-              subTitle="Vulnerabilities"
+              subTitle="Unique vulnerabilities"
               title={`${total}`}
               width={350}
               colorScale={colorScale}
