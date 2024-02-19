@@ -436,7 +436,6 @@
       "aliases": ["GHSA-jjjh-jjxp-wpff"],
       "cveId": "CVE-2022-42003",
       "created": "2024-01-15T21:37:47.413+00:00",
-      "summary": "Uncontrolled Resource Consumption in Jackson-databind",
       "description": "In FasterXML jackson-databind 2.4.0-rc1 until 2.12.7.1 and in 2.13.x before 2.13.4.2 resource exhaustion can occur because of a lack of a check in primitive value deserializers to avoid deep wrapper array nesting, when the UNWRAP_SINGLE_VALUE_ARRAYS feature is enabled. This was patched in 2.12.7.1, 2.13.4.2, and 2.14.0.",
       "affected": [
         {
@@ -875,7 +874,6 @@
       "aliases": ["GHSA-3fhx-3vvg-2j84"],
       "cveId": "CVE-2023-2974",
       "created": "2024-01-15T21:37:49.155+00:00",
-      "summary": "quarkus-core vulnerable to client driven TLS cipher downgrading",
       "description": "A vulnerability was found in quarkus-core. This vulnerability occurs because the TLS protocol configured with quarkus.http.ssl.protocols is not enforced, and the client can force the selection of the weaker supported TLS protocol.",
       "affected": [
         {

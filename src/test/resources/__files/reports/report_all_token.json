@@ -215,7 +215,7 @@
                   "issues": [
                     {
                       "id": "CVE-2023-2974",
-                      "title": "quarkus-core vulnerable to client driven TLS cipher downgrading",
+                      "title": "A vulnerability was found in quarkus-core. This vulnerability occurs because the TLS protocol configured with quarkus.http.ssl.protocols is not enforced, and the client can force the selection of the weaker supported TLS protocol.",
                       "source": "osv-nvd",
                       "cvss": {
                         "attackVector": "Network",
@@ -248,7 +248,7 @@
                   ],
                   "highestVulnerability": {
                     "id": "CVE-2023-2974",
-                    "title": "quarkus-core vulnerable to client driven TLS cipher downgrading",
+                    "title": "A vulnerability was found in quarkus-core. This vulnerability occurs because the TLS protocol configured with quarkus.http.ssl.protocols is not enforced, and the client can force the selection of the weaker supported TLS protocol.",
                     "source": "osv-nvd",
                     "cvss": {
                       "attackVector": "Network",
@@ -284,7 +284,7 @@
                   "issues": [
                     {
                       "id": "CVE-2022-42003",
-                      "title": "Uncontrolled Resource Consumption in Jackson-databind",
+                      "title": "In FasterXML jackson-databind 2.4.0-rc1 until 2.12.7.1 and in 2.13.x before 2.13.4.2 resource exhaustion can occur because of a lack of a check in primitive value deserializers to avoid deep wrapper array nesting, when the UNWRAP_SINGLE_VALUE_ARRAYS feature is enabled. This was patched in 2.12.7.1, 2.13.4.2, and 2.14.0.",
                       "source": "osv-nvd",
                       "cvss": {
                         "attackVector": "Network",
@@ -372,7 +372,7 @@
                   ],
                   "highestVulnerability": {
                     "id": "CVE-2022-42003",
-                    "title": "Uncontrolled Resource Consumption in Jackson-databind",
+                    "title": "In FasterXML jackson-databind 2.4.0-rc1 until 2.12.7.1 and in 2.13.x before 2.13.4.2 resource exhaustion can occur because of a lack of a check in primitive value deserializers to avoid deep wrapper array nesting, when the UNWRAP_SINGLE_VALUE_ARRAYS feature is enabled. This was patched in 2.12.7.1, 2.13.4.2, and 2.14.0.",
                     "source": "osv-nvd",
                     "cvss": {
                       "attackVector": "Network",
@@ -403,7 +403,7 @@
               "recommendation": "pkg:maven/io.quarkus/quarkus-hibernate-orm@2.13.8.Final-redhat-00006?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
               "highestVulnerability": {
                 "id": "CVE-2023-2974",
-                "title": "quarkus-core vulnerable to client driven TLS cipher downgrading",
+                "title": "A vulnerability was found in quarkus-core. This vulnerability occurs because the TLS protocol configured with quarkus.http.ssl.protocols is not enforced, and the client can force the selection of the weaker supported TLS protocol.",
                 "source": "osv-nvd",
                 "cvss": {
                   "attackVector": "Network",
