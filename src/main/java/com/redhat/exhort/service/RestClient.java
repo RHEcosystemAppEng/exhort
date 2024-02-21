@@ -28,6 +28,7 @@ import jakarta.inject.Named;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Invocation;
+
 @ApplicationScoped
 @Named("mainRestClient")
 public class RestClient {
@@ -37,7 +38,6 @@ public class RestClient {
   public static final String OSV_NVD_PROVIDER_NAME = "osvNvd";
   public static final String TRUSTED_CONTENT_PROVIDER_NAME = "trustedContent";
   private final Client client;
-
 
   public static final Map<String, URI> servicesUrls = new HashMap<>();
 
@@ -49,11 +49,9 @@ public class RestClient {
     return this.client.target(this.servicesUrls.get(providerName)).request();
   }
 
-  public void addServiceUri(String providerName,URI service)
-  {
-     if(Objects.isNull(servicesUrls.get(providerName))) {
-       servicesUrls.put(providerName,service);
-     }
+  public void addServiceUri(String providerName, URI service) {
+    if (Objects.isNull(servicesUrls.get(providerName))) {
+      servicesUrls.put(providerName, service);
+    }
   }
-
 }

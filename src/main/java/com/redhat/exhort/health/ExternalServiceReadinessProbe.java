@@ -138,6 +138,8 @@ public class ExternalServiceReadinessProbe implements HealthCheck {
     //        || serviceReturnNoError(trustedContent))
     {
       return responseBuilder.up().build();
+      // If there is no even one external service that returned Positive HTTP Status, then set the
+      // result of the readiness health check as Down ( 503)
     } else {
       return responseBuilder.down().build();
     }

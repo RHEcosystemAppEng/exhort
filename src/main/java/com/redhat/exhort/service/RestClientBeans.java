@@ -21,14 +21,13 @@ package com.redhat.exhort.service;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-import jakarta.ws.rs.client.Client;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import com.redhat.exhort.integration.Constants;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;
+import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
 
@@ -45,8 +44,9 @@ public class RestClientBeans {
   public RestClient restClient(@ConfigProperty(name = "api.snyk.host") String snykUrl)
       throws URISyntaxException {
 
-    restClient.addServiceUri(RestClient.SNYK_PROVIDER_NAME, new URI(snykUrl + Constants.SNYK_TOKEN_API_PATH));
-        return restClient;
+    restClient.addServiceUri(
+        RestClient.SNYK_PROVIDER_NAME, new URI(snykUrl + Constants.SNYK_TOKEN_API_PATH));
+    return restClient;
   }
 
   @Produces
@@ -54,9 +54,10 @@ public class RestClientBeans {
   @Named("osvNvd")
   public RestClient osvNvd(@ConfigProperty(name = "api.osvnvd.management.host") String url)
       throws URISyntaxException {
-        restClient.addServiceUri(RestClient.OSV_NVD_PROVIDER_NAME,
-                                 new URI(url + Constants.OSV_NVD_HEALTH_PATH.replaceFirst("/", "")));
-      return restClient;
+    restClient.addServiceUri(
+        RestClient.OSV_NVD_PROVIDER_NAME,
+        new URI(url + Constants.OSV_NVD_HEALTH_PATH.replaceFirst("/", "")));
+    return restClient;
   }
 
   @Produces
@@ -67,7 +68,7 @@ public class RestClientBeans {
     restClient.addServiceUri(
         RestClient.OSS_INDEX_PROVIDER_NAME,
         new URI(url + Constants.OSS_INDEX_AUTH_COMPONENT_API_PATH));
-        return restClient;
+    return restClient;
   }
 
   @Produces
