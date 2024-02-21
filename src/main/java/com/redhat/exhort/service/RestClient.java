@@ -23,10 +23,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Named;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Invocation;
-
+@ApplicationScoped
+@Named("mainRestClient")
 public class RestClient {
 
   public static final String SNYK_PROVIDER_NAME = "snyk";
@@ -35,24 +38,22 @@ public class RestClient {
   public static final String TRUSTED_CONTENT_PROVIDER_NAME = "trustedContent";
   private final Client client;
 
-  private static RestClient theClient;
+
   public static final Map<String, URI> servicesUrls = new HashMap<>();
 
-  private RestClient(Client client) {
-    this.client = client;
-  }
-
-  public static RestClient getInstance(String providerName, URI service) {
-    if (Objects.isNull(theClient)) {
-      theClient = new RestClient(ClientBuilder.newClient());
-    }
-    if (Objects.isNull(servicesUrls.get(providerName))) {
-      servicesUrls.put(providerName, service);
-    }
-    return theClient;
+  public RestClient() {
+    this.client = ClientBuilder.newClient();
   }
 
   public Invocation.Builder request(String providerName) {
     return this.client.target(this.servicesUrls.get(providerName)).request();
   }
+
+  public void addServiceUri(String providerName,URI service)
+  {
+     if(Objects.isNull(servicesUrls.get(providerName))) {
+       servicesUrls.put(providerName,service);
+     }
+  }
+
 }
