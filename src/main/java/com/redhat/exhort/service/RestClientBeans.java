@@ -38,15 +38,17 @@ public class RestClientBeans {
   public RestClient restClient(@ConfigProperty(name = "api.snyk.host") String snykUrl)
       throws URISyntaxException {
     return new RestClient(
-        ClientBuilder.newClient(), new URI(snykUrl + Constants.SNYK_DEP_GRAPH_API_PATH));
+        ClientBuilder.newClient(), new URI(snykUrl + Constants.SNYK_TOKEN_API_PATH));
   }
 
   @Produces
   @Singleton
   @Named("osvNvd")
-  public RestClient osvNvd(@ConfigProperty(name = "api.osvnvd.host") String url)
+  public RestClient osvNvd(@ConfigProperty(name = "api.osvnvd.management.host") String url)
       throws URISyntaxException {
-    return new RestClient(ClientBuilder.newClient(), new URI(url + Constants.OSV_NVD_PURLS_PATH));
+    return new RestClient(
+        ClientBuilder.newClient(),
+        new URI(url + Constants.OSV_NVD_HEALTH_PATH.replaceFirst("/", "")));
   }
 
   @Produces

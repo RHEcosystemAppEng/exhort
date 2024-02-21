@@ -41,11 +41,17 @@ import jakarta.ws.rs.core.Response;
 @ApplicationScoped
 public class ExternalServiceReadinessProbe implements HealthCheck {
 
-  public static final String OSV_NVD_MINIMAL_REQUEST_BODY = "{\"purls\": [] }";
-  public static final String SNYK_MINIMAL_REQUEST_BODY =
-      "{\"depGraph\":{\"schemaVersion\":\"1.2.0\",\"pkgManager\":{\"name\":\"maven\"},\"pkgs\":[{\"id\":\"com.redhat.exhort:default-app@0.0.1\",\"info\":{\"name\":\"com.redhat.exhort:default-app\",\"version\":\"0.0.1\"}},{\"id\":\"com.redhat.exhort:default-dep@0.0.1\",\"info\":{\"name\":\"com.redhat.exhort:default-dep\",\"version\":\"0.0.1\"}}],\"graph\":{\"rootNodeId\":\"com.redhat.exhort:default-app@0.0.1\",\"nodes\":[{\"nodeId\":\"com.redhat.exhort:default-app@0.0.1\",\"pkgId\":\"com.redhat.exhort:default-app@0.0.1\",\"deps\":[{\"nodeId\":\"com.redhat.exhort:default-dep@0.0.1\"}]},{\"nodeId\":\"com.redhat.exhort:default-dep@0.0.1\",\"pkgId\":\"com.redhat.exhort:default-dep@0.0.1\",\"deps\":[]}]}}}";
   public static final String OSS_INDEX_MINIMAL_REQUEST_BODY = "{ \"coordinates\": [] }";
   public static final String TRUSTED_CONTENT_MINIMAL_REQUEST_BODY = "{ \"purls\": [] }";
+
+  @ConfigProperty(name = "api.snyk.disabled", defaultValue = "false")
+  boolean snykDisabled;
+
+  @ConfigProperty(name = "api.ossindex.disabled", defaultValue = "false")
+  boolean ossIndexDisabled;
+
+  @ConfigProperty(name = "api.osvnvd.disabled", defaultValue = "false")
+  boolean osvNvdDisabled;
 
   @Inject
   @Named("snyk")
@@ -71,17 +77,15 @@ public class ExternalServiceReadinessProbe implements HealthCheck {
     HealthCheckResponseBuilder responseBuilder =
         HealthCheckResponse.named("External Services Checkup");
     Map<String, String> snyk =
-        getStatusFromExternalService(
+        getStatusFromExternalServiceGet(
             snykClient
                 .request()
-                .header(Constants.AUTHORIZATION_HEADER, String.format("token %s", snykToken)),
-            SNYK_MINIMAL_REQUEST_BODY);
+                .header(Constants.AUTHORIZATION_HEADER, String.format("token %s", snykToken)));
     Map<String, String> ossIndex =
-        getStatusFromExternalService(ossIndexClient.request(), OSS_INDEX_MINIMAL_REQUEST_BODY);
-    Map<String, String> osvNvd =
-        getStatusFromExternalService(osvNvdClient.request(), OSV_NVD_MINIMAL_REQUEST_BODY);
+        getStatusFromExternalServicePost(ossIndexClient.request(), OSS_INDEX_MINIMAL_REQUEST_BODY);
+    Map<String, String> osvNvd = getStatusFromExternalServiceGet(osvNvdClient.request());
     Map<String, String> trustedContent =
-        getStatusFromExternalService(
+        getStatusFromExternalServicePost(
             trustedContentClient.request(), TRUSTED_CONTENT_MINIMAL_REQUEST_BODY);
     responseBuilder =
         responseBuilder
@@ -98,15 +102,16 @@ public class ExternalServiceReadinessProbe implements HealthCheck {
             .withData("oss-index provider Status", (String) ossIndex.get("httpStatus"))
             .withData("oss-index provider Description", (String) ossIndex.get("Description"));
 
-    if (serviceReturnNoError(snyk)
-        || serviceReturnNoError(ossIndex)
+    if (serviceEnabledAndReturnsNoError(snyk, this.snykDisabled)
+        || serviceEnabledAndReturnsNoError(ossIndex, this.ossIndexDisabled)
         // TODO - instead of considering 401 && 403 as success for oss-index provider, add
         // properties of ossIndex username + token/password to application.properties, as default
         // credentials ( as we have default token in snyk)
         // , and remove the following two lines .
-        || getStatsCodeFromExternalService(ossIndex) == 401
-        || getStatsCodeFromExternalService(ossIndex) == 403
-        || serviceReturnNoError(osvNvd))
+        || (!snykDisabled
+            && (getStatsCodeFromExternalService(ossIndex) == 401
+                || getStatsCodeFromExternalService(ossIndex) == 403))
+        || serviceEnabledAndReturnsNoError(osvNvd, this.osvNvdDisabled))
     // as long as trusted Content is not a self-contained provider, it shouldn't affect the
     // readiness probe result.
     //        || serviceReturnNoError(trustedContent))
@@ -117,17 +122,33 @@ public class ExternalServiceReadinessProbe implements HealthCheck {
     }
   }
 
-  private boolean serviceReturnNoError(Map<String, String> provider) {
-    return getStatsCodeFromExternalService(provider) == 200
-        || getStatsCodeFromExternalService(provider) < 400;
+  private boolean serviceEnabledAndReturnsNoError(
+      Map<String, String> provider, boolean serviceDisabled) {
+    return !serviceDisabled
+        && (getStatsCodeFromExternalService(provider) == 200
+            || getStatsCodeFromExternalService(provider) < 400);
   }
 
-  private Map<String, String> getStatusFromExternalService(
+  private Map<String, String> getStatusFromExternalServicePost(
       Invocation.Builder client, String requestBody) {
 
     HashMap<String, String> map = new HashMap<>();
     try {
       Response resp = client.post(Entity.json(requestBody));
+      map.put("httpStatus", Integer.valueOf(resp.getStatus()).toString());
+      map.put("Description", Response.Status.fromStatusCode(resp.getStatus()).toString());
+    } catch (Exception e) {
+      map.put("httpStatus", "503");
+      map.put("Description", e.getMessage());
+    }
+    return map;
+  }
+
+  private Map<String, String> getStatusFromExternalServiceGet(Invocation.Builder client) {
+
+    HashMap<String, String> map = new HashMap<>();
+    try {
+      Response resp = client.get();
       map.put("httpStatus", Integer.valueOf(resp.getStatus()).toString());
       map.put("Description", Response.Status.fromStatusCode(resp.getStatus()).toString());
     } catch (Exception e) {
