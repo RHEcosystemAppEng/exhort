@@ -28,7 +28,6 @@ import com.redhat.exhort.integration.Constants;
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
-import jakarta.ws.rs.client.ClientBuilder;
 
 public class RestClientBeans {
 
@@ -37,8 +36,8 @@ public class RestClientBeans {
   @Named("snyk")
   public RestClient restClient(@ConfigProperty(name = "api.snyk.host") String snykUrl)
       throws URISyntaxException {
-    return new RestClient(
-        ClientBuilder.newClient(), new URI(snykUrl + Constants.SNYK_TOKEN_API_PATH));
+    return RestClient.getInstance(
+        RestClient.SNYK_PROVIDER_NAME, new URI(snykUrl + Constants.SNYK_TOKEN_API_PATH));
   }
 
   @Produces
@@ -46,8 +45,8 @@ public class RestClientBeans {
   @Named("osvNvd")
   public RestClient osvNvd(@ConfigProperty(name = "api.osvnvd.management.host") String url)
       throws URISyntaxException {
-    return new RestClient(
-        ClientBuilder.newClient(),
+    return RestClient.getInstance(
+        RestClient.OSV_NVD_PROVIDER_NAME,
         new URI(url + Constants.OSV_NVD_HEALTH_PATH.replaceFirst("/", "")));
   }
 
@@ -56,8 +55,9 @@ public class RestClientBeans {
   @Named("ossIndex")
   public RestClient ossIndex(@ConfigProperty(name = "api.ossindex.host") String url)
       throws URISyntaxException {
-    return new RestClient(
-        ClientBuilder.newClient(), new URI(url + Constants.OSS_INDEX_AUTH_COMPONENT_API_PATH));
+    return RestClient.getInstance(
+        RestClient.OSS_INDEX_PROVIDER_NAME,
+        new URI(url + Constants.OSS_INDEX_AUTH_COMPONENT_API_PATH));
   }
 
   @Produces
@@ -65,7 +65,8 @@ public class RestClientBeans {
   @Named("trustedContent")
   public RestClient trustedContent(@ConfigProperty(name = "api.trustedcontent.host") String url)
       throws URISyntaxException {
-    return new RestClient(
-        ClientBuilder.newClient(), new URI(url + Constants.TRUSTED_CONTENT_PATH.replace("/", "")));
+    return RestClient.getInstance(
+        RestClient.TRUSTED_CONTENT_PROVIDER_NAME,
+        new URI(url + Constants.TRUSTED_CONTENT_PATH.replace("/", "")));
   }
 }

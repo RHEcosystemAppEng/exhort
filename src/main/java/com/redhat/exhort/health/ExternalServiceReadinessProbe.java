@@ -72,6 +72,15 @@ public class ExternalServiceReadinessProbe implements HealthCheck {
   @ConfigProperty(name = "api.snyk.token")
   private String snykToken;
 
+  /**
+   * This method build up the readiness health check, and it's basically checking if external
+   * services are available and there is a good communication to bring/fetch vulnerabilities data
+   * from them
+   *
+   * @return a json payload with status of all active external providers, and returns http status of
+   *     200 in case of that at least one provider returned positive http code, otherwise, returns
+   *     http status of 503
+   */
   @Override
   public HealthCheckResponse call() {
     HealthCheckResponseBuilder responseBuilder =
@@ -79,39 +88,51 @@ public class ExternalServiceReadinessProbe implements HealthCheck {
     Map<String, String> snyk =
         getStatusFromExternalServiceGet(
             snykClient
-                .request()
+                .request(RestClient.SNYK_PROVIDER_NAME)
                 .header(Constants.AUTHORIZATION_HEADER, String.format("token %s", snykToken)));
     Map<String, String> ossIndex =
-        getStatusFromExternalServicePost(ossIndexClient.request(), OSS_INDEX_MINIMAL_REQUEST_BODY);
-    Map<String, String> osvNvd = getStatusFromExternalServiceGet(osvNvdClient.request());
+        getStatusFromExternalServicePost(
+            ossIndexClient.request(RestClient.OSS_INDEX_PROVIDER_NAME),
+            OSS_INDEX_MINIMAL_REQUEST_BODY);
+    Map<String, String> osvNvd =
+        getStatusFromExternalServiceGet(osvNvdClient.request(RestClient.OSV_NVD_PROVIDER_NAME));
     Map<String, String> trustedContent =
         getStatusFromExternalServicePost(
-            trustedContentClient.request(), TRUSTED_CONTENT_MINIMAL_REQUEST_BODY);
+            trustedContentClient.request(RestClient.TRUSTED_CONTENT_PROVIDER_NAME),
+            TRUSTED_CONTENT_MINIMAL_REQUEST_BODY);
+    if (!snykDisabled) {
+      responseBuilder =
+          responseBuilder
+              .withData("Snyk Provider Status", snyk.get("httpStatus"))
+              .withData("Snyk Provider Description", snyk.get("Description"));
+    }
+    if (!osvNvdDisabled) {
+      responseBuilder =
+          responseBuilder
+              .withData("osvNvd Provider Status", osvNvd.get("httpStatus"))
+              .withData("osvNvd Provider Description", osvNvd.get("Description"));
+    }
     responseBuilder =
         responseBuilder
-            .withData("Snyk Provider Status", (String) snyk.get("httpStatus"))
-            .withData("Snyk Provider Description", (String) snyk.get("Description"))
-            .withData("osvNvd Provider Status", (String) osvNvd.get("httpStatus"))
-            .withData("osvNvd Provider Description", (String) osvNvd.get("Description"))
-            .withData("trusted-Content Provider", (String) trustedContent.get("httpStatus"))
-            .withData("trusted-Content Description", (String) trustedContent.get("Description"));
+            .withData("trusted-Content Provider", trustedContent.get("httpStatus"))
+            .withData("trusted-Content Description", trustedContent.get("Description"));
 
-    // if enabled
-    responseBuilder =
-        responseBuilder
-            .withData("oss-index provider Status", (String) ossIndex.get("httpStatus"))
-            .withData("oss-index provider Description", (String) ossIndex.get("Description"));
-
-    if (serviceEnabledAndReturnsNoError(snyk, this.snykDisabled)
-        || serviceEnabledAndReturnsNoError(ossIndex, this.ossIndexDisabled)
+    if (!ossIndexDisabled) {
+      responseBuilder =
+          responseBuilder
+              .withData("oss-index provider Status", (String) ossIndex.get("httpStatus"))
+              .withData("oss-index provider Description", (String) ossIndex.get("Description"));
+    }
+    if (serviceEnabledAndReturnsNoError(snyk, !this.snykDisabled)
+        || serviceEnabledAndReturnsNoError(ossIndex, !this.ossIndexDisabled)
         // TODO - instead of considering 401 && 403 as success for oss-index provider, add
         // properties of ossIndex username + token/password to application.properties, as default
         // credentials ( as we have default token in snyk)
-        // , and remove the following two lines .
-        || (!snykDisabled
+        // , and remove the following three lines .
+        || (!this.snykDisabled
             && (getStatsCodeFromExternalService(ossIndex) == 401
                 || getStatsCodeFromExternalService(ossIndex) == 403))
-        || serviceEnabledAndReturnsNoError(osvNvd, this.osvNvdDisabled))
+        || serviceEnabledAndReturnsNoError(osvNvd, !this.osvNvdDisabled))
     // as long as trusted Content is not a self-contained provider, it shouldn't affect the
     // readiness probe result.
     //        || serviceReturnNoError(trustedContent))
@@ -122,19 +143,29 @@ public class ExternalServiceReadinessProbe implements HealthCheck {
     }
   }
 
+  /**
+   * @param provider provider map contains status code and its description
+   * @param serviceEnabled only if service is enabled it should impact readiness result
+   * @return true only if service enabled and returns non error http code ( < 400)
+   */
   private boolean serviceEnabledAndReturnsNoError(
-      Map<String, String> provider, boolean serviceDisabled) {
-    return !serviceDisabled
+      Map<String, String> provider, boolean serviceEnabled) {
+    return serviceEnabled
         && (getStatsCodeFromExternalService(provider) == 200
             || getStatsCodeFromExternalService(provider) < 400);
   }
 
+  /**
+   * @param requestClient an object that contains request builder to the desired service
+   * @param requestBody a request body for a post request
+   * @return {@link Map} 2 entries map, containing the http status and description
+   */
   private Map<String, String> getStatusFromExternalServicePost(
-      Invocation.Builder client, String requestBody) {
+      Invocation.Builder requestClient, String requestBody) {
 
     HashMap<String, String> map = new HashMap<>();
     try {
-      Response resp = client.post(Entity.json(requestBody));
+      Response resp = requestClient.post(Entity.json(requestBody));
       map.put("httpStatus", Integer.valueOf(resp.getStatus()).toString());
       map.put("Description", Response.Status.fromStatusCode(resp.getStatus()).toString());
     } catch (Exception e) {
@@ -144,11 +175,15 @@ public class ExternalServiceReadinessProbe implements HealthCheck {
     return map;
   }
 
-  private Map<String, String> getStatusFromExternalServiceGet(Invocation.Builder client) {
+  /**
+   * @param requestClient an object that contains request builder to the desired service
+   * @return {@link Map} 2 entries map, containing the http status and description
+   */
+  private Map<String, String> getStatusFromExternalServiceGet(Invocation.Builder requestClient) {
 
     HashMap<String, String> map = new HashMap<>();
     try {
-      Response resp = client.get();
+      Response resp = requestClient.get();
       map.put("httpStatus", Integer.valueOf(resp.getStatus()).toString());
       map.put("Description", Response.Status.fromStatusCode(resp.getStatus()).toString());
     } catch (Exception e) {
@@ -158,6 +193,10 @@ public class ExternalServiceReadinessProbe implements HealthCheck {
     return map;
   }
 
+  /**
+   * @param resp -2 entries map, containing the http status and description
+   * @return The Http status in integer.
+   */
   private Integer getStatsCodeFromExternalService(Map<String, String> resp) {
     return Integer.valueOf(resp.get("httpStatus"));
   }

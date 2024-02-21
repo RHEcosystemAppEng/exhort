@@ -19,24 +19,40 @@
 package com.redhat.exhort.service;
 
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Invocation;
 
 public class RestClient {
+
+  public static final String SNYK_PROVIDER_NAME = "snyk";
+  public static final String OSS_INDEX_PROVIDER_NAME = "ossIndex";
+  public static final String OSV_NVD_PROVIDER_NAME = "osvNvd";
+  public static final String TRUSTED_CONTENT_PROVIDER_NAME = "trustedContent";
   private final Client client;
-  private URI serviceUrl;
 
-  public RestClient(Client client, URI url) {
+  private static RestClient theClient;
+  public static final Map<String, URI> servicesUrls = new HashMap<>();
+
+  private RestClient(Client client) {
     this.client = client;
-    this.serviceUrl = url;
   }
 
-  public Invocation.Builder request() {
-    return this.client.target(this.serviceUrl).request();
+  public static RestClient getInstance(String providerName, URI service) {
+    if (Objects.isNull(theClient)) {
+      theClient = new RestClient(ClientBuilder.newClient());
+    }
+    if (Objects.isNull(servicesUrls.get(providerName))) {
+      servicesUrls.put(providerName, service);
+    }
+    return theClient;
   }
 
-  public void setServiceUrl(URI serviceUrl) {
-    this.serviceUrl = serviceUrl;
+  public Invocation.Builder request(String providerName) {
+    return this.client.target(this.servicesUrls.get(providerName)).request();
   }
 }
