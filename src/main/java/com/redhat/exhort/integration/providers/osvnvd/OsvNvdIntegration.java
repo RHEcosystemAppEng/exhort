@@ -59,6 +59,18 @@ public class OsvNvdIntegration extends EndpointRouteBuilder {
       .process(this::processRequest)
       .to(vertxHttp("{{api.osvnvd.host}}"))
       .transform().method(responseHandler, "responseToIssues");
+
+    from(direct("osvNvdHealthCheck"))
+        .routeId("osvNvdHealthCheck")
+        .process(this::processHealthRequest)
+        .circuitBreaker()
+        .faultToleranceConfiguration()
+        .timeoutEnabled(true)
+        .timeoutDuration(timeout)
+        .end()
+        .to(vertxHttp("{{api.osvnvd.management.host}}"))
+        .onFallback()
+        .process(responseHandler::processTokenFallBack);
     // fmt:on
   }
 

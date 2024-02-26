@@ -101,6 +101,14 @@ public class SnykIntegration extends EndpointRouteBuilder {
 
     from(direct("snykValidateToken"))
       .routeId("snykValidateToken")
+      .process(this::processTokenValidation)
+      .to(direct("snykTokenRequest"));
+    from(direct("snykHealthCheck"))
+      .routeId("snykHealthCheck")
+      .process(this::setAuthToken)
+      .to(direct("snykTokenRequest"));
+    from(direct("snykTokenRequest"))
+      .routeId("snykTokenRequest")
       .process(this::processTokenRequest)
       .circuitBreaker()
         .faultToleranceConfiguration()
@@ -134,10 +142,14 @@ public class SnykIntegration extends EndpointRouteBuilder {
     message.setHeader(Exchange.HTTP_METHOD, HttpMethod.POST);
   }
 
-  private void processTokenRequest(Exchange exchange) {
+  private void processTokenValidation(Exchange exchange) {
     var message = exchange.getMessage();
     message.setHeader(
         Constants.AUTHORIZATION_HEADER, "token " + message.getHeader(Constants.SNYK_TOKEN_HEADER));
+  }
+
+  private void processTokenRequest(Exchange exchange) {
+    var message = exchange.getMessage();
     processRequestHeaders(message);
     message.setHeader(Exchange.HTTP_PATH, Constants.SNYK_TOKEN_API_PATH);
     message.setHeader(Exchange.HTTP_METHOD, HttpMethod.GET);

@@ -32,6 +32,8 @@ public final class Constants {
   private Constants() {}
 
   public static final String PROVIDERS_PARAM = "providers";
+
+  public static final String HEALTH_CHECKS_LIST_HEADER_NAME = "healthChecksRoutesList";
   public static final String SBOM_TYPE_PARAM = "sbomType";
 
   public static final String ACCEPT_HEADER = "Accept";
