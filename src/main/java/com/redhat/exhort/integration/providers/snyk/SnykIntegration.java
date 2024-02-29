@@ -118,8 +118,6 @@ public class SnykIntegration extends EndpointRouteBuilder {
         .otherwise()
           .to(direct("healthCheckProviderDisabled"));
 
-
-
     from(direct("snykTokenRequest"))
       .routeId("snykTokenRequest")
       .process(this::processTokenRequest)

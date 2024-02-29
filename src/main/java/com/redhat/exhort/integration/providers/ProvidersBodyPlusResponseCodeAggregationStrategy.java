@@ -21,7 +21,6 @@ package com.redhat.exhort.integration.providers;
 import static com.redhat.exhort.integration.providers.ProviderHealthCheck.*;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -29,30 +28,27 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.camel.processor.aggregate.AbstractListAggregationStrategy;
 
+import com.redhat.exhort.api.v4.ProviderStatus;
 import com.redhat.exhort.integration.Constants;
 
 import jakarta.ws.rs.core.Response;
 
 public class ProvidersBodyPlusResponseCodeAggregationStrategy
-    extends AbstractListAggregationStrategy<Map<String, Map<String, String>>> {
+    extends AbstractListAggregationStrategy<Map<String, ProviderStatus>> {
   @Override
-  public Map<String, Map<String, String>> getValue(Exchange exchange) {
-    Map<String, Map<String, String>> result = new HashMap<>();
-    Map<String, String> providerValues = new HashMap<>();
-    providerValues.put(
-        PROVIDER_RESPONSE_BODY_KEY, getHttpResponseBodyFromMessage(exchange.getMessage()));
+  public Map<String, ProviderStatus> getValue(Exchange exchange) {
+    Map<String, ProviderStatus> result = new HashMap<>();
+    ProviderStatus providerValues = new ProviderStatus();
+    providerValues.setMessage(getHttpResponseBodyFromMessage(exchange.getMessage()));
+    Integer statusCode = Integer.valueOf(getHttpResponseStatusFromMessage(exchange.getMessage()));
     if (!exchange.getProperty(Constants.EXCLUDE_FROM_READINESS_CHECK, Boolean.class)) {
-      providerValues.put(
-          PROVIDER_HTTP_STATUS_CODE_KEY, getHttpResponseStatusFromMessage(exchange.getMessage()));
+      providerValues.setCode(statusCode);
     }
-    List<String> enabledProviders = exchange.getProperty(Constants.PROVIDERS_PARAM, List.class);
-
-    if (enabledProviders.contains(exchange.getProperty(Constants.PROVIDER_NAME, String.class))) {
-      providerValues.put(PROVIDER_IS_ENABLED_KEY, "true");
-    } else {
-      providerValues.put(PROVIDER_IS_ENABLED_KEY, "false");
-    }
-    result.put(exchange.getProperty(Constants.PROVIDER_NAME, String.class), providerValues);
+    providerValues.setOk(
+        !exchange.getProperty(Constants.EXCLUDE_FROM_READINESS_CHECK, Boolean.class));
+    String providerName = exchange.getProperty(Constants.PROVIDER_NAME, String.class);
+    providerValues.setName(providerName);
+    result.put(providerName, providerValues);
     return result;
   }
 

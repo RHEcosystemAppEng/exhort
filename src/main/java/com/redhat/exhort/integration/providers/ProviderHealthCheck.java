@@ -28,9 +28,8 @@ import org.apache.camel.builder.ExchangeBuilder;
 import org.apache.camel.health.HealthCheckResultBuilder;
 import org.apache.camel.impl.health.AbstractHealthCheck;
 
+import com.redhat.exhort.api.v4.ProviderStatus;
 import com.redhat.exhort.integration.Constants;
-
-import jakarta.ws.rs.core.Response;
 
 public class ProviderHealthCheck extends AbstractHealthCheck {
 
@@ -56,32 +55,38 @@ public class ProviderHealthCheck extends AbstractHealthCheck {
                         Constants.HEALTH_CHECKS_LIST_HEADER_NAME, this.allProvidersHealthChecks)
                     .build());
 
-    List<Map<String, Map<String, String>>> httpResponseBodiesAndStatuses =
-        (List<Map<String, Map<String, String>>>) response.getMessage().getBody();
+    List<Map<String, ProviderStatus>> httpResponseBodiesAndStatuses =
+        (List<Map<String, ProviderStatus>>) response.getMessage().getBody();
     Map<String, Object> providers =
         httpResponseBodiesAndStatuses.stream()
             .map(Map::entrySet)
             .flatMap(Collection::stream)
             .collect(
-                Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue(), (a, b) -> a));
+                Collectors.toMap(
+                    entry -> entry.getKey(), entry -> formatProviderStatus(entry), (a, b) -> a));
     builder.details(providers);
 
     if (httpResponseBodiesAndStatuses.stream()
         .map(Map::values)
         .flatMap(Collection::stream)
-        .anyMatch(
-            providerDetails ->
-                Integer.valueOf(
-                            Objects.requireNonNullElse(
-                                providerDetails.get(PROVIDER_HTTP_STATUS_CODE_KEY),
-                                String.valueOf(
-                                    Response.Status.SERVICE_UNAVAILABLE.getStatusCode())))
-                        < 400
-                    && Boolean.parseBoolean(providerDetails.get(PROVIDER_IS_ENABLED_KEY)))) {
+        .anyMatch(providerDetails -> providerDetails.getCode() < 400 && providerDetails.getOk())) {
       builder.up();
 
     } else {
       builder.down();
+    }
+  }
+
+  private static String formatProviderStatus(Map.Entry<String, ProviderStatus> entry) {
+    ProviderStatus provider = entry.getValue();
+    if (Objects.nonNull(provider.getCode())) {
+      return String.format(
+          "providerName=%s, isEnabled=%s, statusCode=%s, message=%s",
+          provider.getName(), provider.getOk(), provider.getCode(), provider.getMessage());
+    } else {
+      return String.format(
+          "providerName=%s, isEnabled=%s, message=%s",
+          provider.getName(), provider.getOk(), provider.getMessage());
     }
   }
 
