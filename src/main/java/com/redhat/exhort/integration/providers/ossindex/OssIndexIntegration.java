@@ -18,6 +18,8 @@
 
 package com.redhat.exhort.integration.providers.ossindex;
 
+import static com.redhat.exhort.integration.backend.ExhortIntegration.excludeOrIncludeProvider;
+
 import java.util.Base64;
 import java.util.List;
 
@@ -81,6 +83,17 @@ public class OssIndexIntegration extends EndpointRouteBuilder {
           .transform(method(OssIndexResponseHandler.class, "responseToIssues"))
         .onFallback()
           .process(responseHandler::processResponseError);
+
+    from(direct("ossIndexHealthCheck"))
+      .routeId("ossIndexHealthCheck")
+      .setProperty(Constants.PROVIDER_NAME, constant(Constants.OSS_INDEX_PROVIDER))
+      .process(excludeOrIncludeProvider)
+      .choice()
+        .when(exchangeProperty(Constants.EXCLUDE_FROM_READINESS_CHECK).isEqualTo(false))
+           .setHeader(Constants.OSS_INDEX_TOKEN_HEADER,constant(" "))
+           .to(direct("ossValidateCredentials"))
+        .otherwise()
+          .to(direct("healthCheckProviderDisabled"));
 
     from(direct("ossValidateCredentials"))
       .routeId("ossValidateCredentials")

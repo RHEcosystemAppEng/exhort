@@ -21,6 +21,8 @@ package com.redhat.exhort.integration.providers;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.apache.camel.builder.ExchangeBuilder;
 import org.apache.camel.health.HealthCheckResultBuilder;
@@ -28,11 +30,18 @@ import org.apache.camel.impl.health.AbstractHealthCheck;
 
 import com.redhat.exhort.integration.Constants;
 
+import jakarta.ws.rs.core.Response;
+
 public class ProviderHealthCheck extends AbstractHealthCheck {
+
+  private static final List<String> allProvidersHealthChecks =
+      List.of("direct:snykHealthCheck", "direct:osvNvdHealthCheck", "direct:ossIndexHealthCheck");
+  public static final String PROVIDER_HTTP_STATUS_CODE_KEY = "StatusCode";
+  public static final String PROVIDER_IS_ENABLED_KEY = "isEnabled";
+  public static final String PROVIDER_RESPONSE_BODY_KEY = "responseBody";
 
   public ProviderHealthCheck() {
     super("External Providers Readiness Check");
-    setEnabled(true);
   }
 
   @Override
@@ -41,30 +50,39 @@ public class ProviderHealthCheck extends AbstractHealthCheck {
         getCamelContext()
             .createProducerTemplate()
             .send(
-                getHealthCheckRoute(),
+                "direct:exhortHealthCheck",
                 ExchangeBuilder.anExchange(getCamelContext())
                     .withHeader(
-                        Constants.HEALTH_CHECKS_LIST_HEADER_NAME, getAllProvidersHealthChecks())
+                        Constants.HEALTH_CHECKS_LIST_HEADER_NAME, this.allProvidersHealthChecks)
                     .build());
 
-    List<Map<Integer, String>> httpResponseBodiesAndStatuses =
-        (List<Map<Integer, String>>) response.getMessage().getBody();
+    List<Map<String, Map<String, String>>> httpResponseBodiesAndStatuses =
+        (List<Map<String, Map<String, String>>>) response.getMessage().getBody();
+    Map<String, Object> providers =
+        httpResponseBodiesAndStatuses.stream()
+            .map(Map::entrySet)
+            .flatMap(Collection::stream)
+            .collect(
+                Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue(), (a, b) -> a));
+    builder.details(providers);
+
     if (httpResponseBodiesAndStatuses.stream()
-        .map(entry -> entry.keySet())
+        .map(Map::values)
         .flatMap(Collection::stream)
-        .anyMatch(status -> status < 400)) {
+        .anyMatch(
+            providerDetails ->
+                Integer.valueOf(
+                            Objects.requireNonNullElse(
+                                providerDetails.get(PROVIDER_HTTP_STATUS_CODE_KEY),
+                                String.valueOf(
+                                    Response.Status.SERVICE_UNAVAILABLE.getStatusCode())))
+                        < 400
+                    && Boolean.parseBoolean(providerDetails.get(PROVIDER_IS_ENABLED_KEY)))) {
       builder.up();
+
     } else {
       builder.down();
     }
-  }
-
-  private List<String> getAllProvidersHealthChecks() {
-    return List.of("direct:snykHealthCheck", "direct:osvNvdHealthCheck");
-  }
-
-  private String getHealthCheckRoute() {
-    return "direct:exhortHealthCheck";
   }
 
   @Override

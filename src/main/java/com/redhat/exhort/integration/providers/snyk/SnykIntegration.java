@@ -18,6 +18,9 @@
 
 package com.redhat.exhort.integration.providers.snyk;
 
+import static com.redhat.exhort.integration.Constants.PROVIDERS_PARAM;
+import static com.redhat.exhort.integration.backend.ExhortIntegration.excludeOrIncludeProvider;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.camel.builder.AggregationStrategies;
@@ -103,10 +106,20 @@ public class SnykIntegration extends EndpointRouteBuilder {
       .routeId("snykValidateToken")
       .process(this::processTokenValidation)
       .to(direct("snykTokenRequest"));
+
     from(direct("snykHealthCheck"))
       .routeId("snykHealthCheck")
-      .process(this::setAuthToken)
-      .to(direct("snykTokenRequest"));
+      .setProperty(Constants.PROVIDER_NAME, constant(Constants.SNYK_PROVIDER))
+      .process(excludeOrIncludeProvider)
+      .choice()
+        .when(exchangeProperty(Constants.EXCLUDE_FROM_READINESS_CHECK).isEqualTo(false))
+          .process(this::setAuthToken)
+          .to(direct("snykTokenRequest"))
+        .otherwise()
+          .to(direct("healthCheckProviderDisabled"));
+
+
+
     from(direct("snykTokenRequest"))
       .routeId("snykTokenRequest")
       .process(this::processTokenRequest)
@@ -161,7 +174,7 @@ public class SnykIntegration extends EndpointRouteBuilder {
     message.removeHeader(Exchange.HTTP_URI);
     message.removeHeader(Constants.SNYK_TOKEN_HEADER);
     message.removeHeader(Constants.ACCEPT_ENCODING_HEADER);
-    message.removeHeader(Constants.PROVIDERS_PARAM);
+    message.removeHeader(PROVIDERS_PARAM);
     message.setHeader(
         Constants.USER_AGENT_HEADER,
         String.format(Constants.SNYK_USER_AGENT_HEADER_FORMAT, projectName, projectVersion));

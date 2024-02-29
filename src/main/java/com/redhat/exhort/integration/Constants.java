@@ -31,6 +31,9 @@ public final class Constants {
 
   private Constants() {}
 
+  public static final String PROVIDER_NAME = "providerName";
+
+  public static final String EXCLUDE_FROM_READINESS_CHECK = "exclusionFromReadiness";
   public static final String PROVIDERS_PARAM = "providers";
 
   public static final String HEALTH_CHECKS_LIST_HEADER_NAME = "healthChecksRoutesList";
