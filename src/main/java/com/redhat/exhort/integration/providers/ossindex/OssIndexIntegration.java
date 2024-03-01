@@ -37,6 +37,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.HttpMethod;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 @ApplicationScoped
 public class OssIndexIntegration extends EndpointRouteBuilder {
@@ -90,10 +91,25 @@ public class OssIndexIntegration extends EndpointRouteBuilder {
       .process(excludeOrIncludeProvider)
       .choice()
         .when(exchangeProperty(Constants.EXCLUDE_FROM_READINESS_CHECK).isEqualTo(false))
-           .setHeader(Constants.OSS_INDEX_TOKEN_HEADER,constant(" "))
-           .to(direct("ossValidateCredentials"))
+          .to(direct("ossCheckVersionEndpoint"))
         .otherwise()
           .to(direct("healthCheckProviderDisabled"));
+
+    from(direct("ossCheckVersionEndpoint"))
+      .routeId("ossCheckVersionEndpoint")
+      .circuitBreaker()
+        .faultToleranceConfiguration()
+           .timeoutEnabled(true)
+           .timeoutDuration(timeout)
+        .end()
+        .process(this::processVersionRequest)
+        .to(vertxHttp("{{api.ossindex.host}}"))
+        .setBody(constant("Service is up and running"))
+        .setHeader(Exchange.HTTP_RESPONSE_TEXT,constant("Service is up and running"))
+        .onFallback()
+           .setBody(constant(Constants.OSS_INDEX_PROVIDER + "Service is down"))
+           .setHeader(Exchange.HTTP_RESPONSE_CODE,constant(Response.Status.SERVICE_UNAVAILABLE))
+      .end();
 
     from(direct("ossValidateCredentials"))
       .routeId("ossValidateCredentials")
@@ -132,5 +148,15 @@ public class OssIndexIntegration extends EndpointRouteBuilder {
     message.removeHeader(Constants.OSS_INDEX_TOKEN_HEADER);
     exchange.setProperty(
         Constants.AUTH_PROVIDER_REQ_PROPERTY_PREFIX + Constants.OSS_INDEX_PROVIDER, Boolean.TRUE);
+  }
+
+  private void processVersionRequest(Exchange exchange) {
+    var message = exchange.getMessage();
+    message.removeHeader(Exchange.HTTP_PATH);
+    message.removeHeader(Exchange.HTTP_QUERY);
+    message.removeHeader(Exchange.HTTP_URI);
+    message.removeHeader(Constants.ACCEPT_ENCODING_HEADER);
+    message.setHeader(Exchange.HTTP_METHOD, HttpMethod.GET);
+    message.setHeader(Exchange.HTTP_PATH, Constants.OSS_INDEX_VERSION_PATH);
   }
 }

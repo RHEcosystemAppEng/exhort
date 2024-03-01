@@ -65,9 +65,14 @@ public class ProvidersBodyPlusResponseCodeAggregationStrategy
     if (Objects.nonNull(message.getHeader(Exchange.HTTP_RESPONSE_TEXT, String.class))) {
       return message.getHeader(Exchange.HTTP_RESPONSE_TEXT, String.class);
     } else {
-      return Objects.requireNonNull(
-          message.getHeader(Exchange.HTTP_RESPONSE_CODE, String.class),
-          message.getBody(String.class));
+      if (Objects.nonNull(message.getBody(String.class))
+          && message.getBody(String.class) instanceof String) {
+        return message.getBody(String.class);
+      } else {
+        return Objects.requireNonNull(
+            message.getHeader(Exchange.HTTP_RESPONSE_CODE, String.class),
+            message.getBody(String.class));
+      }
     }
   }
 }

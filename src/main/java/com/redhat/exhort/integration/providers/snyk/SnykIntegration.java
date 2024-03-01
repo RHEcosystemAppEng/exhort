@@ -115,6 +115,8 @@ public class SnykIntegration extends EndpointRouteBuilder {
         .when(exchangeProperty(Constants.EXCLUDE_FROM_READINESS_CHECK).isEqualTo(false))
           .process(this::setAuthToken)
           .to(direct("snykTokenRequest"))
+          .setHeader(Exchange.HTTP_RESPONSE_TEXT,constant("Service is up and running"))
+          .setBody(constant("Service is up and running"))
         .otherwise()
           .to(direct("healthCheckProviderDisabled"));
 

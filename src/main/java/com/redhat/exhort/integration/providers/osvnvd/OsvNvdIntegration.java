@@ -18,8 +18,8 @@
 
 package com.redhat.exhort.integration.providers.osvnvd;
 
+
 import org.apache.camel.Exchange;
-import org.apache.camel.builder.ExpressionBuilder;
 import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
@@ -29,6 +29,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.HttpMethod;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 @ApplicationScoped
 public class OsvNvdIntegration extends EndpointRouteBuilder {
@@ -74,11 +75,13 @@ public class OsvNvdIntegration extends EndpointRouteBuilder {
       .routeId("osvNvdHealthCheckEndpoint")
       .process(this::processHealthRequest)
       .circuitBreaker()
-        .faultToleranceConfiguration()
-          .timeoutEnabled(true)
-          .timeoutDuration(timeout)
-        .end()
-        .to(vertxHttp("{{api.osvnvd.management.host}}"))
+         .faultToleranceConfiguration()
+            .timeoutEnabled(true)
+            .timeoutDuration(timeout)
+         .end()
+         .to(vertxHttp("{{api.osvnvd.management.host}}"))
+         .setHeader(Exchange.HTTP_RESPONSE_TEXT,constant("Service is up and running"))
+         .setBody(constant("Service is up and running"))
       .onFallback()
          .setBody(constant(Constants.OSV_NVD_PROVIDER + "Service is down"))
          .setHeader(Exchange.HTTP_RESPONSE_CODE,constant(Response.Status.SERVICE_UNAVAILABLE))

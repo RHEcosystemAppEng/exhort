@@ -95,6 +95,7 @@ public final class Constants {
   public static final String SNYK_DEP_GRAPH_API_PATH = "/test/dep-graph";
   public static final String SNYK_TOKEN_API_PATH = "/user/me";
   public static final String OSS_INDEX_AUTH_COMPONENT_API_PATH = "/authorized/component-report";
+  public static final String OSS_INDEX_VERSION_PATH = "/version";
   public static final String OSV_NVD_PURLS_PATH = "/purls";
 
   public static final String OSV_NVD_HEALTH_PATH = "/q/health";

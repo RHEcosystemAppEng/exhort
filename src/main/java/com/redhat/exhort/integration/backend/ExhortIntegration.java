@@ -267,7 +267,10 @@ public class ExhortIntegration extends EndpointRouteBuilder {
     from(direct("healthCheckProviderDisabled"))
       .routeId("healthCheckProviderDisabled")
       .setBody(constant(String.format("Provider %s is disabled",exchangeProperty(PROVIDER_NAME))))
-      .process(exchange -> exchange.getMessage().setHeader(Exchange.HTTP_RESPONSE_TEXT,String.format("Provider %s is disabled",exchange.getProperty(PROVIDER_NAME))))
+
+      .process(exchange -> {
+        String providerName = exchange.getProperty(PROVIDER_NAME, String.class);
+        exchange.getMessage().setHeader(Exchange.HTTP_RESPONSE_TEXT,String.format("Provider %s is disabled", providerName)); })
       .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(Response.Status.SERVICE_UNAVAILABLE));
 
     //fmt:on
