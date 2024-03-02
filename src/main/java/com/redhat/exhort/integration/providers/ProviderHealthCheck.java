@@ -35,9 +35,6 @@ public class ProviderHealthCheck extends AbstractHealthCheck {
 
   private static final List<String> allProvidersHealthChecks =
       List.of("direct:snykHealthCheck", "direct:osvNvdHealthCheck", "direct:ossIndexHealthCheck");
-  public static final String PROVIDER_HTTP_STATUS_CODE_KEY = "StatusCode";
-  public static final String PROVIDER_IS_ENABLED_KEY = "isEnabled";
-  public static final String PROVIDER_RESPONSE_BODY_KEY = "responseBody";
 
   public ProviderHealthCheck() {
     super("External Providers Readiness Check");
