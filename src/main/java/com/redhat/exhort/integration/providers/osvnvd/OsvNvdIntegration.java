@@ -59,7 +59,6 @@ public class OsvNvdIntegration extends EndpointRouteBuilder {
       .process(this::processRequest)
       .to(vertxHttp("{{api.osvnvd.host}}"))
       .transform().method(responseHandler, "responseToIssues");
-
     // fmt:on
   }
 
@@ -71,5 +70,7 @@ public class OsvNvdIntegration extends EndpointRouteBuilder {
     message.setHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON);
     message.setHeader(Exchange.HTTP_PATH, Constants.OSV_NVD_PURLS_PATH);
     message.setHeader(Exchange.HTTP_METHOD, HttpMethod.POST);
+    exchange.setProperty(
+        Constants.AUTH_PROVIDER_REQ_PROPERTY_PREFIX + Constants.OSV_NVD_PROVIDER, Boolean.FALSE);
   }
 }

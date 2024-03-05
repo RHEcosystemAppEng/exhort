@@ -115,6 +115,8 @@ public class SnykIntegration extends EndpointRouteBuilder {
       token = defaultToken;
       vulnerabilityProvider.addProviderPrivateData(exchange, Constants.SNYK_PROVIDER);
     }
+    exchange.setProperty(
+        Constants.AUTH_PROVIDER_REQ_PROPERTY_PREFIX + Constants.SNYK_PROVIDER, token != null);
     message.setHeader(Constants.AUTHORIZATION_HEADER, "token " + token);
   }
 
