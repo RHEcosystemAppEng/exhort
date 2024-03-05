@@ -42,6 +42,7 @@ import com.redhat.exhort.model.trustedcontent.IndexedRecommendation;
 import com.redhat.exhort.model.trustedcontent.Recommendations;
 import com.redhat.exhort.model.trustedcontent.TcRecommendation;
 import com.redhat.exhort.model.trustedcontent.TrustedContentResponse;
+import com.redhat.exhort.model.trustedcontent.Vulnerability;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -52,6 +53,10 @@ import jakarta.ws.rs.core.Response.Status;
 @ApplicationScoped
 @RegisterForReflection
 public class TcResponseHandler extends ProviderResponseHandler {
+
+  // Other values are Affected and UnderInvestigation
+  // see https://www.cisa.gov/sites/default/files/2023-01/VEX_Status_Justification_Jun22.pdf
+  private static final List<String> FIXED_STATUSES = List.of("NotAffected", "Fixed");
 
   @Inject ObjectMapper mapper;
 
@@ -91,7 +96,7 @@ public class TcResponseHandler extends ProviderResponseHandler {
         recommendations.stream()
             .map(TcRecommendation::vulnerabilities)
             .flatMap(List::stream)
-            .collect(Collectors.toMap(v -> v.getId().toUpperCase(), v -> v)));
+            .collect(Collectors.toMap(v -> v.getId().toUpperCase(), v -> v, this::filterFixed)));
   }
 
   private PackageRef getHighestRemediationRecommendation(List<TcRecommendation> tcRecommendations) {
@@ -137,5 +142,12 @@ public class TcResponseHandler extends ProviderResponseHandler {
   public ProviderResponse responseToIssues(
       byte[] response, String privateProviders, DependencyTree tree) throws IOException {
     throw new UnsupportedOperationException("Not yet implemented");
+  }
+
+  private Vulnerability filterFixed(Vulnerability a, Vulnerability b) {
+    if (!FIXED_STATUSES.contains(a.getStatus())) {
+      return a;
+    }
+    return b;
   }
 }
