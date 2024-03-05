@@ -27,6 +27,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
@@ -35,13 +37,16 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.packageurl.PackageURL;
 import com.redhat.exhort.analytics.segment.Context;
 import com.redhat.exhort.analytics.segment.IdentifyEvent;
 import com.redhat.exhort.analytics.segment.Library;
 import com.redhat.exhort.analytics.segment.SegmentService;
 import com.redhat.exhort.analytics.segment.TrackEvent;
+import com.redhat.exhort.api.PackageRef;
 import com.redhat.exhort.api.v4.AnalysisReport;
 import com.redhat.exhort.integration.Constants;
+import com.redhat.exhort.model.DependencyTree;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -142,7 +147,7 @@ public class AnalyticsService {
       properties.put(
           "requestType", exchange.getProperty(Constants.REQUEST_CONTENT_PROPERTY, String.class));
       properties.put("sbom", exchange.getProperty(Constants.SBOM_TYPE_PARAM, String.class));
-      properties.put("scanned", report.getScanned());
+      properties.put("scanned", getScannedProps(exchange, report));
       var operationType = exchange.getIn().getHeader(RHDA_OPERATION_TYPE_HEADER, String.class);
       if (operationType != null) {
         properties.put("operationType", operationType);
@@ -159,6 +164,21 @@ public class AnalyticsService {
     } catch (Exception e) {
       LOGGER.warn("Unable to send event to segment", e);
     }
+  }
+
+  private Map<String, Object> getScannedProps(Exchange exchange, AnalysisReport report) {
+    Map<String, Object> scanned = new HashMap<>();
+    var tree = exchange.getProperty(Constants.DEPENDENCY_TREE_PROPERTY, DependencyTree.class);
+    scanned.put("direct", report.getScanned().getDirect());
+    scanned.put("total", report.getScanned().getTotal());
+    scanned.put("transitive", report.getScanned().getTransitive());
+    scanned.put(
+        "packageTypes",
+        tree.getAll().stream()
+            .map(PackageRef::purl)
+            .map(PackageURL::getType)
+            .collect(Collectors.groupingBy(Function.identity(), Collectors.counting())));
+    return scanned;
   }
 
   public void trackToken(Exchange exchange) {
