@@ -70,15 +70,19 @@ public final class Constants {
   public static final String GEM_PURL_TYPE = "gem";
   public static final String COCOAPODS_PURL_TYPE = "cocoapods";
   public static final String RPM_PURL_TYPE = "rpm";
+  public static final String OCI_PURL_TYPE = "oci";
 
   public static final String PKG_MANAGER_PROPERTY = "pkgManager";
   public static final String REQUEST_CONTENT_PROPERTY = "requestContent";
   public static final String REPORT_PROPERTY = "report";
+  public static final String REPORTS_PROPERTY = "reports";
   public static final String PROVIDER_PRIVATE_DATA_PROPERTY = "providerPrivateData";
   public static final String RESPONSE_STATUS_PROPERTY = "responseStatus";
   public static final String DEPENDENCY_TREE_PROPERTY = "dependencyTree";
   public static final String API_VERSION_PROPERTY = "apiVersion";
   public static final String GZIP_RESPONSE_PROPERTY = "gzipResponse";
+  public static final String SBOM_ID_PROPERTY = "sbomId";
+  public static final String UNSCANNED_REFS_PROPERTY = "unscannedRefs";
 
   public static final String API_VERSION_V4 = "v4";
   public static final String API_VERSION_V3 = "v3";
@@ -91,6 +95,8 @@ public final class Constants {
   public static final String TRUSTED_CONTENT_PATH = "/recommend";
   public static final String DEFAULT_ACCEPT_MEDIA_TYPE = MediaType.APPLICATION_JSON;
   public static final boolean DEFAULT_VERBOSE_MODE = false;
+
+  public static final String UNSCANNED_REASON_UNSUPPORTED_PACKAGE_TYPE = "unsupported-pkg-type";
 
   public static final List<String> PROVIDERS =
       Collections.unmodifiableList(

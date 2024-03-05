@@ -1,13 +1,13 @@
 import React from 'react';
-import { Alert, AlertVariant } from '@patternfly/react-core';
-import { uppercaseFirstLetter, hasSignUpTab } from '../utils/utils';
-import { useAppContext } from '../App';
+import {Alert, AlertVariant} from '@patternfly/react-core';
+import {hasSignUpTab, uppercaseFirstLetter} from '../utils/utils';
+import {Report} from '../api/report';
 
-export const ReportErrorAlert: React.FC = () => {
-  const appContext = useAppContext();
-  const errorReports = Object.keys(appContext.report.providers)
+export const ReportErrorAlert = ({report}: { report: Report }) => {
+
+  const errorReports = Object.keys(report.providers)
     .map(name => {
-      return appContext.report.providers[name].status;
+      return report.providers[name].status;
     })
     .filter(e => !e.ok && !hasSignUpTab(e));
 

@@ -23,7 +23,9 @@ import static com.redhat.exhort.integration.Constants.RHDA_SOURCE_HEADER;
 import static com.redhat.exhort.integration.Constants.RHDA_TOKEN_HEADER;
 import static com.redhat.exhort.integration.Constants.USER_AGENT_HEADER;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -122,38 +124,57 @@ public class AnalyticsService {
       return;
     }
     var builder = prepareTrackEvent(exchange, ANALYSIS_EVENT);
-    var report = exchange.getProperty(Constants.REPORT_PROPERTY, AnalysisReport.class);
+    var reportProperty = exchange.getProperty(Constants.REPORT_PROPERTY, AnalysisReport.class);
+    var reportsProperty = exchange.getProperty(Constants.REPORTS_PROPERTY, Collection.class);
+    var reports = new LinkedList<AnalysisReport>();
+    if (reportProperty != null) {
+      reports.add(reportProperty);
+    }
+    if (reportsProperty != null) {
+      reports.addAll(reportsProperty);
+    }
     Map<String, Object> properties = new HashMap<>();
-    if (report != null) {
-      Map<String, Object> providers = new HashMap<>();
-      report
-          .getProviders()
-          .entrySet()
-          .forEach(
-              pe -> {
-                Map<String, Object> summaries = new HashMap<>();
-                pe.getValue()
-                    .getSources()
-                    .entrySet()
-                    .forEach(
-                        se -> {
-                          summaries.put(se.getKey(), se.getValue().getSummary());
-                        });
-                Map<String, Object> providerReport = new HashMap<>();
-                providerReport.put("sources", summaries);
-                providerReport.put(
-                    "withCredentials",
-                    exchange.getProperty(
-                        Constants.AUTH_PROVIDER_REQ_PROPERTY_PREFIX + pe.getKey(),
-                        Boolean.FALSE,
-                        Boolean.class));
-                providers.put(pe.getKey(), providerReport);
-              });
-      properties.put("providers", providers);
+    if (!reports.isEmpty()) {
+      var providersList =
+          reports.stream()
+              .map(
+                  report -> {
+                    Map<String, Object> providers = new HashMap<>();
+                    report
+                        .getProviders()
+                        .entrySet()
+                        .forEach(
+                            pe -> {
+                              Map<String, Object> summaries = new HashMap<>();
+                              pe.getValue()
+                                  .getSources()
+                                  .entrySet()
+                                  .forEach(
+                                      se -> {
+                                        summaries.put(se.getKey(), se.getValue().getSummary());
+                                      });
+                              Map<String, Object> providerReport = new HashMap<>();
+                              providerReport.put("sources", summaries);
+                              providerReport.put(
+                                  "withCredentials",
+                                  exchange.getProperty(
+                                      Constants.AUTH_PROVIDER_REQ_PROPERTY_PREFIX + pe.getKey(),
+                                      Boolean.FALSE,
+                                      Boolean.class));
+                              providers.put(pe.getKey(), providerReport);
+                            });
+                    return providers;
+                  })
+              .toList();
+      properties.put("providers", providersList);
       properties.put(
           "requestType", exchange.getProperty(Constants.REQUEST_CONTENT_PROPERTY, String.class));
       properties.put("sbom", exchange.getProperty(Constants.SBOM_TYPE_PARAM, String.class));
-      properties.put("scanned", getScannedProps(exchange, report));
+      properties.put(
+          "scanned",
+          reports.stream()
+              .map(report -> getScannedProps(exchange, report))
+              .collect(Collectors.toList()));
       var operationType = exchange.getIn().getHeader(RHDA_OPERATION_TYPE_HEADER, String.class);
       if (operationType != null) {
         properties.put("operationType", operationType);

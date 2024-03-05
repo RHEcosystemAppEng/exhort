@@ -18,14 +18,12 @@ import {
   TitleSizes,
 } from '@patternfly/react-core';
 import ExclamationTriangleIcon from '@patternfly/react-icons/dist/esm/icons/exclamation-triangle-icon';
-import {useAppContext} from '../App';
 import {ChartCard} from './ChartCard';
-import {getSourceName, getSources} from '../api/report';
+import {getSourceName, getSources, Report} from '../api/report';
 import RedhatIcon from "@patternfly/react-icons/dist/esm/icons/redhat-icon";
 import SecurityCheckIcon from '../images/security-check.svg';
 
-export const SummaryCard = () => {
-  const appContext = useAppContext();
+export const SummaryCard = ({report}: { report: Report }) => {
   return (
     <Grid hasGutter>
       <Title headingLevel="h3" size={TitleSizes['2xl']} style={{paddingLeft: '15px'}}>
@@ -53,7 +51,7 @@ export const SummaryCard = () => {
             </DescriptionListGroup>
             <DescriptionList isAutoFit style={{paddingTop: "10px"}}>
               {
-                getSources(appContext.report).map((source, index) => {
+                getSources(report).map((source, index) => {
                     return (
                       <DescriptionListGroup key={index}
                                             style={{display: "flex", flexDirection: "column", alignItems: "center"}}>
@@ -89,7 +87,7 @@ export const SummaryCard = () => {
             <CardBody>
               <DescriptionListDescription>
                 <List isPlain>
-                  {getSources(appContext.report).map((source, index) => {
+                  {getSources(report).map((source, index) => {
                     if (Object.keys(source.report).length > 0) {
                       return (
                         <ListItem>

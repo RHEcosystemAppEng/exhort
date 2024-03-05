@@ -65,7 +65,7 @@ public class SnykResponseHandler extends ProviderResponseHandler {
     var filterUnique = privateProviders != null && privateProviders.contains(SNYK_PROVIDER);
 
     var snykResponse = mapper.readTree((byte[]) providerResponse);
-    return new ProviderResponse(getIssues(snykResponse, filterUnique, tree), null);
+    return new ProviderResponse(getIssues(snykResponse, filterUnique, tree), null, null);
   }
 
   private Map<String, List<Issue>> getIssues(

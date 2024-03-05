@@ -63,7 +63,7 @@ public class OssIndexResponseHandler extends ProviderResponseHandler {
       @ExchangeProperty(Constants.DEPENDENCY_TREE_PROPERTY) DependencyTree tree)
       throws IOException {
     var json = (ArrayNode) mapper.readTree(response);
-    return new ProviderResponse(getIssues(json, tree), null);
+    return new ProviderResponse(getIssues(json, tree), null, null);
   }
 
   private Map<String, List<Issue>> getIssues(ArrayNode response, DependencyTree tree) {

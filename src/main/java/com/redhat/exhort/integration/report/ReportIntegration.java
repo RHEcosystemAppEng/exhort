@@ -18,6 +18,8 @@
 
 package com.redhat.exhort.integration.report;
 
+import java.util.Map;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
@@ -62,6 +64,18 @@ public class ReportIntegration extends EndpointRouteBuilder {
                     .to(direct("jsonReport"))
             .end();
 
+        from(direct("batchReport"))
+            .routeId("batchReport")
+            .process(this::setReportsProperty)
+            .choice()
+                .when(exchangeProperty(Constants.REQUEST_CONTENT_PROPERTY).isEqualTo(MediaType.TEXT_HTML))
+                    .to(direct("htmlReport"))
+                .when(exchangeProperty(Constants.REQUEST_CONTENT_PROPERTY).isEqualTo(Constants.MULTIPART_MIXED))
+                    .to(direct("batchMultipartReport"))
+                .otherwise()
+                    .to(direct("batchJsonReport"))
+                .end();
+
         from(direct("htmlReport"))
             .routeId("htmlReport")
             .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.TEXT_HTML))
@@ -76,11 +90,24 @@ public class ReportIntegration extends EndpointRouteBuilder {
             .marshal().mimeMultipart(false, false, true)
             .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.TEXT_HTML));
 
+        from(direct("batchMultipartReport"))
+            .routeId("batchMultipartReport")
+            .to(direct("htmlReport"))
+            .bean(ReportTransformer.class, "attachHtmlReport")
+            .to(direct("batchJsonReport"))
+            .marshal().mimeMultipart(false, false, true)
+            .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.TEXT_HTML));
+
         from(direct("jsonReport"))
             .routeId("jsonReport")
             .setBody(exchangeProperty(Constants.REPORT_PROPERTY))
             .bean(ReportTransformer.class, "filterVerboseResult")
             .process(this::convertToApiVersion)
+            .marshal(dataFormat);
+
+        from(direct("batchJsonReport"))
+            .routeId("batchJsonReport")
+            .bean(ReportTransformer.class, "batchFilterVerboseResult")
             .marshal(dataFormat);
         //fmt:on
   }
@@ -91,5 +118,10 @@ public class ReportIntegration extends EndpointRouteBuilder {
     if (Constants.API_VERSION_V3.equals(apiVersion)) {
       exchange.getIn().setBody(AnalysisReportV3Converter.convert(report));
     }
+  }
+
+  private void setReportsProperty(Exchange exchange) {
+    Map<?, ?> body = exchange.getIn().getBody(Map.class);
+    exchange.setProperty(Constants.REPORTS_PROPERTY, body.values());
   }
 }

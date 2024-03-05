@@ -2,12 +2,16 @@ import { getSignUpLink } from "../utils/utils";
 
 export interface AppData {
   providerPrivateData?: string[] | null;
-  report: Report;
+  report: Report | ReportMap;
   ossIssueTemplate: string;
   snykIssueTemplate: string;
   nvdIssueTemplate: string;
   cveIssueTemplate: string;
   snykSignup: string;
+}
+
+export interface ReportMap {
+  [key: string]: Report;
 }
 
 export interface Report {
@@ -44,6 +48,7 @@ export interface Summary {
   low: number;
   remediations: number;
   recommendations: number;
+  unscanned?: number;
 }
 
 export interface TransitiveDependency {
@@ -61,8 +66,8 @@ export interface TransitiveDependency {
 
 export interface Dependency {
   ref: string;
-  issues?: Vulnerability[];
-  transitive?: TransitiveDependency[];
+  issues?: Vulnerability[] | null;
+  transitive?: TransitiveDependency[] | null;
   recommendation?: string | null;
   highestVulnerability?: Vulnerability | null;
 }
@@ -110,6 +115,19 @@ export function getSourceName(item: SourceItem): string {
   return item.provider;
 }
 
+export function isReportMap(obj: any): boolean {
+  return (
+    typeof obj === 'object' &&
+    obj !== null &&
+    Object.keys(obj).every((key) =>
+      'scanned' in obj[key] &&
+      'providers' in obj[key] &&
+      typeof obj[key].scanned === 'object' &&
+      typeof obj[key].providers === 'object'
+    )
+  );
+}
+
 export interface SourceItem {
   provider: string;
   source: string;
@@ -119,7 +137,13 @@ export interface SourceItem {
 export interface SourceReport {
   summary: Summary;
   dependencies: Dependency[];
+  unscanned?: Unscanned[];
 }
+export interface Unscanned {
+  ref: string | null;
+  reason: string | null;
+}
+
 
 export interface VulnerabilityItem {
   id: string;
@@ -131,10 +155,10 @@ export interface Vulnerability {
   id: string;
   title: string;
   source: string;
-  cvss?: Cvss;
+  cvss?: Cvss | null;
   cvssScore: number;
   severity: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';
-  cves?: string[];
+  cves?: string[] | null;
   unique: boolean;
   remediation?: {
     fixedIn?: string[] | null;
@@ -142,7 +166,7 @@ export interface Vulnerability {
       ref: string | '';
       status: string | null;
       justification: string | null;
-    };
+    } | null;
   };
 }
 
@@ -155,9 +179,9 @@ export interface Cvss {
   confidentialityImpact?: string;
   integrityImpact?: string;
   availabilityImpact?: string;
-  exploitCodeMaturity?: string;
-  remediationLevel?: string;
-  reportConfidence?: string;
+  exploitCodeMaturity?: string | null;
+  remediationLevel?: string | null;
+  reportConfidence?: string | null;
   cvss: string;
 }
 
