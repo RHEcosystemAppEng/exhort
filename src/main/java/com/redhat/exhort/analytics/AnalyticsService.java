@@ -141,6 +141,12 @@ public class AnalyticsService {
                         });
                 Map<String, Object> providerReport = new HashMap<>();
                 providerReport.put("sources", summaries);
+                providerReport.put(
+                    "withCredentials",
+                    exchange.getProperty(
+                        Constants.AUTH_PROVIDER_REQ_PROPERTY_PREFIX + pe.getKey(),
+                        Boolean.FALSE,
+                        Boolean.class));
                 providers.put(pe.getKey(), providerReport);
               });
       properties.put("providers", providers);

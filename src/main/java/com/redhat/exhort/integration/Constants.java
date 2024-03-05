@@ -111,4 +111,5 @@ public final class Constants {
               add(MULTIPART_MIXED_TYPE);
             }
           });
+  public static final String AUTH_PROVIDER_REQ_PROPERTY_PREFIX = "anonymous_";
 }

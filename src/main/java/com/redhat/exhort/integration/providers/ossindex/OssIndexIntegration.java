@@ -117,5 +117,7 @@ public class OssIndexIntegration extends EndpointRouteBuilder {
         "Basic " + Base64.getEncoder().encodeToString(auth.toString().getBytes()));
     message.removeHeader(Constants.OSS_INDEX_USER_HEADER);
     message.removeHeader(Constants.OSS_INDEX_TOKEN_HEADER);
+    exchange.setProperty(
+        Constants.AUTH_PROVIDER_REQ_PROPERTY_PREFIX + Constants.OSS_INDEX_PROVIDER, Boolean.TRUE);
   }
 }
