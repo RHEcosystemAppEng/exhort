@@ -39,8 +39,7 @@ public class ProvidersBodyPlusResponseCodeAggregationStrategy
     if (!serviceExcludedFromReadinessCheck(exchange)) {
       providerValues.setCode(statusCode);
     }
-    providerValues.setOk(
-        !serviceExcludedFromReadinessCheck(exchange));
+    providerValues.setOk(!serviceExcludedFromReadinessCheck(exchange));
     String providerName = exchange.getProperty(Constants.PROVIDER_NAME, String.class);
     providerValues.setName(providerName);
 
@@ -48,7 +47,8 @@ public class ProvidersBodyPlusResponseCodeAggregationStrategy
   }
 
   private static Boolean serviceExcludedFromReadinessCheck(Exchange exchange) {
-    return Objects.requireNonNullElse(exchange.getProperty(Constants.EXCLUDE_FROM_READINESS_CHECK, Boolean.class),false);
+    return Objects.requireNonNullElse(
+        exchange.getProperty(Constants.EXCLUDE_FROM_READINESS_CHECK, Boolean.class), false);
   }
 
   private static String getHttpResponseStatusFromMessage(Message message) {

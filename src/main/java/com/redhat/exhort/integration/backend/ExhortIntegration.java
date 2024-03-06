@@ -37,7 +37,6 @@ import org.apache.camel.Body;
 import org.apache.camel.Exchange;
 import org.apache.camel.ExchangeProperty;
 import org.apache.camel.LoggingLevel;
-import org.apache.camel.Processor;
 import org.apache.camel.builder.AggregationStrategies;
 import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
 import org.apache.camel.component.micrometer.MicrometerConstants;
@@ -75,7 +74,6 @@ import jakarta.ws.rs.core.Response.Status;
 public class ExhortIntegration extends EndpointRouteBuilder {
 
   private static final String GZIP_ENCODING = "gzip";
-
 
   private final MeterRegistry registry;
 
