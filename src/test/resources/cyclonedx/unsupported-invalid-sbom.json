@@ -20,7 +20,8 @@
         "publisher" : "JBoss by Red Hat",
         "group" : "io.quarkus",
         "name" : "quarkus-hibernate-orm",
-        "version" : "2.13.5.Final"
+        "version" : "2.13.5.Final",
+        "type" : "library"
       },
       {
         "name" : "quarkus-hibernate-orm",

@@ -93,6 +93,38 @@ public class AnalysisTest extends AbstractAnalysisTest {
 
   @ParameterizedTest
   @ValueSource(strings = {CYCLONEDX, SPDX})
+  public void testWithInvalidSbom(String sbom) {
+    var response =
+        given()
+            .header(CONTENT_TYPE, getContentType(sbom))
+            .body(loadFileAsString(String.format("%s/invalid-sbom.json", sbom)))
+            .when()
+            .post("/api/v4/analysis")
+            .then()
+            .assertThat()
+            .statusCode(400)
+            .header(
+                Constants.EXHORT_REQUEST_ID_HEADER,
+                MatchesPattern.matchesPattern(REGEX_MATCHER_REQUEST_ID))
+            .contentType(MediaType.TEXT_PLAIN)
+            .extract()
+            .body()
+            .asString();
+
+    switch (sbom) {
+      case CYCLONEDX:
+        assertTrue(response.startsWith("CycloneDX Validation error"));
+        break;
+      case SPDX:
+        assertTrue(response.startsWith("SPDX-2.3 Validation error"));
+        break;
+    }
+
+    verifyNoInteractions();
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {CYCLONEDX, SPDX})
   public void testWithInvalidPkgManagers(String sbom) {
     var report =
         given()
@@ -569,6 +601,44 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .as(AnalysisReport.class);
 
     report.getProviders().values().stream().allMatch(p -> p.getStatus().getOk());
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {CYCLONEDX, SPDX})
+  public void testInvalidGzipDeflatedContentEncoding(String sbom) throws IOException {
+    stubAllProviders();
+
+    var fileContent = loadFileAsString(String.format("%s/invalid-sbom.json", sbom));
+    var byteArray = new ByteArrayOutputStream(fileContent.length());
+    var output = new GZIPOutputStream(byteArray);
+    output.write(fileContent.getBytes());
+    output.close();
+    byteArray.close();
+    var response =
+        given()
+            .header(CONTENT_TYPE, getContentType(sbom))
+            .header(Exchange.CONTENT_ENCODING, "gzip")
+            .body(byteArray.toByteArray())
+            .when()
+            .post("/api/v4/analysis")
+            .then()
+            .assertThat()
+            .statusCode(400)
+            .header(Exchange.CONTENT_ENCODING, "gzip")
+            .header(
+                Constants.EXHORT_REQUEST_ID_HEADER,
+                MatchesPattern.matchesPattern(REGEX_MATCHER_REQUEST_ID))
+            .extract()
+            .asString();
+
+    switch (sbom) {
+      case CYCLONEDX:
+        assertTrue(response.startsWith("CycloneDX Validation error"));
+        break;
+      case SPDX:
+        assertTrue(response.startsWith("SPDX-2.3 Validation error"));
+        break;
+    }
   }
 
   @ParameterizedTest

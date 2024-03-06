@@ -30,11 +30,16 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.cyclonedx.CycloneDxSchema.Version;
+import org.cyclonedx.exception.ParseException;
 import org.cyclonedx.model.Bom;
 import org.cyclonedx.model.Component;
+import org.cyclonedx.parsers.JsonParser;
 import org.jboss.logging.Logger;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.networknt.schema.ValidationMessage;
 import com.redhat.exhort.api.PackageRef;
 import com.redhat.exhort.config.ObjectMapperProducer;
 import com.redhat.exhort.integration.backend.sbom.SbomParser;
@@ -46,42 +51,37 @@ import jakarta.ws.rs.core.Response;
 
 public class CycloneDxParser extends SbomParser {
 
-  private static final ObjectMapper mapper = ObjectMapperProducer.newInstance();
+  private static final ObjectMapper MAPPER = ObjectMapperProducer.newInstance();
   private static final Logger LOGGER = Logger.getLogger(CycloneDxParser.class);
+  private static final JsonParser JSON_PARSER = new JsonParser();
 
   @Override
   protected DependencyTree buildTree(InputStream input) {
-    try {
-      var treeBuilder = DependencyTree.builder();
-      var bom = mapper.readValue(input, Bom.class);
-      Map<String, PackageRef> componentPurls = new HashMap<>();
-      if (bom.getComponents() != null) {
-        componentPurls.putAll(
-            bom.getComponents().stream()
-                .filter(c -> c.getBomRef() != null)
-                .collect(Collectors.toMap(Component::getBomRef, c -> new PackageRef(c.getPurl()))));
-      }
 
-      Optional<Component> rootComponent = Optional.empty();
-      if (bom.getMetadata() != null) {
-        rootComponent = Optional.ofNullable(bom.getMetadata().getComponent());
-      }
-
-      PackageRef rootRef = null;
-      if (rootComponent.isPresent()) {
-        if (rootComponent.get().getPurl() != null) {
-          rootRef = new PackageRef(rootComponent.get().getPurl());
-        } else if (componentPurls.containsKey(rootComponent.get().getBomRef())) {
-          rootRef = componentPurls.get(rootComponent.get().getBomRef());
-        }
-      }
-      return treeBuilder.dependencies(buildDependencies(bom, componentPurls, rootRef)).build();
-    } catch (IOException | IllegalStateException e) {
-      LOGGER.error("Unable to parse the CycloneDX SBOM file", e);
-      throw new ClientErrorException(
-          "Unable to parse received CycloneDX SBOM file: " + e.getMessage(),
-          Response.Status.BAD_REQUEST);
+    var treeBuilder = DependencyTree.builder();
+    var bom = parseBom(input);
+    Map<String, PackageRef> componentPurls = new HashMap<>();
+    if (bom.getComponents() != null) {
+      componentPurls.putAll(
+          bom.getComponents().stream()
+              .filter(c -> c.getBomRef() != null)
+              .collect(Collectors.toMap(Component::getBomRef, c -> new PackageRef(c.getPurl()))));
     }
+
+    Optional<Component> rootComponent = Optional.empty();
+    if (bom.getMetadata() != null) {
+      rootComponent = Optional.ofNullable(bom.getMetadata().getComponent());
+    }
+
+    PackageRef rootRef = null;
+    if (rootComponent.isPresent()) {
+      if (rootComponent.get().getPurl() != null) {
+        rootRef = new PackageRef(rootComponent.get().getPurl());
+      } else if (componentPurls.containsKey(rootComponent.get().getBomRef())) {
+        rootRef = componentPurls.get(rootComponent.get().getBomRef());
+      }
+    }
+    return treeBuilder.dependencies(buildDependencies(bom, componentPurls, rootRef)).build();
   }
 
   private Map<PackageRef, DirectDependency> buildDependencies(
@@ -170,5 +170,50 @@ public class CycloneDxParser extends SbomParser {
               acc.add(d);
               findTransitive(d, dependencies, acc);
             });
+  }
+
+  private Bom parseBom(InputStream input) {
+    try {
+      JsonNode node = MAPPER.readTree(input);
+      var bom = MAPPER.treeToValue(node, Bom.class);
+      var version = parseSchemaVersion(bom.getSpecVersion());
+      var schema = JSON_PARSER.getJsonSchema(version, MAPPER);
+      var errors = schema.validate(node);
+      if (errors != null && !errors.isEmpty()) {
+        throw new ParseException(
+            errors.stream().map(ValidationMessage::getMessage).toList().toString());
+      }
+      return bom;
+    } catch (ParseException e) {
+      LOGGER.debug("CycloneDX Validation error: ", e);
+      throw new ClientErrorException(
+          "CycloneDX Validation error: " + e.getMessage(), Response.Status.BAD_REQUEST);
+    } catch (IOException e) {
+      LOGGER.error("CycloneDX Validation error: ", e);
+      throw new ClientErrorException(
+          "CycloneDX Validation error: " + e.getMessage(), Response.Status.BAD_REQUEST);
+    }
+  }
+
+  private Version parseSchemaVersion(String version) throws ParseException {
+    if (version == null) {
+      throw new ParseException("Missing CycloneDX Spec Version");
+    }
+    switch (version) {
+      case "1.5":
+        return Version.VERSION_15;
+      case "1.4":
+        return Version.VERSION_14;
+      case "1.3":
+        return Version.VERSION_13;
+      case "1.2":
+        return Version.VERSION_12;
+      case "1.1":
+        return Version.VERSION_11;
+      case "1.0":
+        return Version.VERSION_10;
+      default:
+        throw new ParseException("Invalid Spec Version received");
+    }
   }
 }
