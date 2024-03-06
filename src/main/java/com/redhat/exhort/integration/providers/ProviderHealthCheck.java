@@ -33,7 +33,7 @@ import com.redhat.exhort.integration.Constants;
 
 public class ProviderHealthCheck extends AbstractHealthCheck {
 
-  private static final List<String> allProvidersHealthChecks =
+  private static final List<String> ALL_PROVIDERS_HEALTH_CHECKS =
       List.of("direct:snykHealthCheck", "direct:osvNvdHealthCheck", "direct:ossIndexHealthCheck");
 
   public ProviderHealthCheck() {

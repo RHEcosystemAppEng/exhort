@@ -90,7 +90,7 @@ public class OssIndexIntegration extends EndpointRouteBuilder {
       .setProperty(Constants.PROVIDER_NAME, constant(Constants.OSS_INDEX_PROVIDER))
       .process(excludeOrIncludeProvider)
       .choice()
-        .when(exchangeProperty(Constants.EXCLUDE_FROM_READINESS_CHECK).isEqualTo(false))
+        .when(method(vulnerabilityProvider, "getEnabled").contains(Constants.OSV_NVD_PROVIDER))
           .to(direct("ossCheckVersionEndpoint"))
         .otherwise()
           .to(direct("healthCheckProviderDisabled"));

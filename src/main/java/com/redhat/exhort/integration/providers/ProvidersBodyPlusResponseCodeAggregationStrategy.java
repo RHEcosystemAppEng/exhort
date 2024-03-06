@@ -36,7 +36,7 @@ import jakarta.ws.rs.core.Response;
 public class ProvidersBodyPlusResponseCodeAggregationStrategy
     extends AbstractListAggregationStrategy<Map<String, ProviderStatus>> {
   @Override
-  public Map<String, ProviderStatus> getValue(Exchange exchange) {
+  public ProviderStatus getValue(Exchange exchange) {
     Map<String, ProviderStatus> result = new HashMap<>();
     ProviderStatus providerValues = new ProviderStatus();
     providerValues.setMessage(getHttpResponseBodyFromMessage(exchange.getMessage()));
