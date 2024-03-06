@@ -18,7 +18,6 @@
 
 package com.redhat.exhort.integration.providers;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -49,23 +48,21 @@ public class ProviderHealthCheck extends AbstractHealthCheck {
                 "direct:exhortHealthCheck",
                 ExchangeBuilder.anExchange(getCamelContext())
                     .withHeader(
-                        Constants.HEALTH_CHECKS_LIST_HEADER_NAME, this.allProvidersHealthChecks)
+                        Constants.HEALTH_CHECKS_LIST_HEADER_NAME, this.ALL_PROVIDERS_HEALTH_CHECKS)
                     .build());
 
-    List<Map<String, ProviderStatus>> httpResponseBodiesAndStatuses =
-        (List<Map<String, ProviderStatus>>) response.getMessage().getBody();
+    List<ProviderStatus> httpResponseBodiesAndStatuses =
+        (List<ProviderStatus>) response.getMessage().getBody();
     Map<String, Object> providers =
         httpResponseBodiesAndStatuses.stream()
-            .map(Map::entrySet)
-            .flatMap(Collection::stream)
             .collect(
                 Collectors.toMap(
-                    entry -> entry.getKey(), entry -> formatProviderStatus(entry), (a, b) -> a));
+                    provider -> provider.getName(),
+                    provider -> formatProviderStatus(provider),
+                    (a, b) -> a));
     builder.details(providers);
 
     if (httpResponseBodiesAndStatuses.stream()
-        .map(Map::values)
-        .flatMap(Collection::stream)
         .filter(providerStatus -> Objects.nonNull(providerStatus.getCode()))
         .anyMatch(providerDetails -> providerDetails.getCode() < 400 && providerDetails.getOk())) {
       builder.up();
@@ -75,8 +72,7 @@ public class ProviderHealthCheck extends AbstractHealthCheck {
     }
   }
 
-  private static String formatProviderStatus(Map.Entry<String, ProviderStatus> entry) {
-    ProviderStatus provider = entry.getValue();
+  private static String formatProviderStatus(ProviderStatus provider) {
     if (Objects.nonNull(provider.getCode())) {
       return String.format(
           "providerName=%s, isEnabled=%s, statusCode=%s, message=%s",

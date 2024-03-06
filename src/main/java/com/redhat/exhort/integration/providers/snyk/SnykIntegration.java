@@ -19,7 +19,6 @@
 package com.redhat.exhort.integration.providers.snyk;
 
 import static com.redhat.exhort.integration.Constants.PROVIDERS_PARAM;
-import static com.redhat.exhort.integration.backend.ExhortIntegration.excludeOrIncludeProvider;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
@@ -110,9 +109,8 @@ public class SnykIntegration extends EndpointRouteBuilder {
     from(direct("snykHealthCheck"))
       .routeId("snykHealthCheck")
       .setProperty(Constants.PROVIDER_NAME, constant(Constants.SNYK_PROVIDER))
-      .process(excludeOrIncludeProvider)
       .choice()
-        .when(exchangeProperty(Constants.EXCLUDE_FROM_READINESS_CHECK).isEqualTo(false))
+        .when(method(vulnerabilityProvider, "getEnabled").contains(Constants.SNYK_PROVIDER))
           .process(this::setAuthToken)
           .to(direct("snykTokenRequest"))
           .setHeader(Exchange.HTTP_RESPONSE_TEXT,constant("Service is up and running"))

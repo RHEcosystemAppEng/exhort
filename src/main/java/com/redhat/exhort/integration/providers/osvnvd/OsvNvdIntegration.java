@@ -18,12 +18,12 @@
 
 package com.redhat.exhort.integration.providers.osvnvd;
 
-
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import com.redhat.exhort.integration.Constants;
+import com.redhat.exhort.integration.providers.VulnerabilityProvider;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -37,6 +37,7 @@ public class OsvNvdIntegration extends EndpointRouteBuilder {
   @ConfigProperty(name = "api.osvnvd.timeout", defaultValue = "10s")
   String timeout;
 
+  @Inject VulnerabilityProvider vulnerabilityProvider;
   @Inject OsvNvdResponseHandler responseHandler;
 
   @Override
@@ -66,7 +67,7 @@ public class OsvNvdIntegration extends EndpointRouteBuilder {
       .routeId("osvNvdHealthCheck")
       .setProperty(Constants.PROVIDER_NAME, constant(Constants.OSV_NVD_PROVIDER))
       .choice()
-         .when(exchangeProperty(Constants.EXCLUDE_FROM_READINESS_CHECK).isEqualTo(false))
+         .when(method(vulnerabilityProvider, "getEnabled").contains(Constants.OSV_NVD_PROVIDER))
             .to(direct("osvNvdHealthCheckEndpoint"))
          .otherwise()
             .to(direct("healthCheckProviderDisabled"));
@@ -86,7 +87,6 @@ public class OsvNvdIntegration extends EndpointRouteBuilder {
          .setBody(constant(Constants.OSV_NVD_PROVIDER + "Service is down"))
          .setHeader(Exchange.HTTP_RESPONSE_CODE,constant(Response.Status.SERVICE_UNAVAILABLE))
       .end();
-
     // fmt:on
   }
 

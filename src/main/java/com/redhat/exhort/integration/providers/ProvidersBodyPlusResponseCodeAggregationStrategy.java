@@ -18,10 +18,6 @@
 
 package com.redhat.exhort.integration.providers;
 
-import static com.redhat.exhort.integration.providers.ProviderHealthCheck.*;
-
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 import org.apache.camel.Exchange;
@@ -34,22 +30,25 @@ import com.redhat.exhort.integration.Constants;
 import jakarta.ws.rs.core.Response;
 
 public class ProvidersBodyPlusResponseCodeAggregationStrategy
-    extends AbstractListAggregationStrategy<Map<String, ProviderStatus>> {
+    extends AbstractListAggregationStrategy<ProviderStatus> {
   @Override
   public ProviderStatus getValue(Exchange exchange) {
-    Map<String, ProviderStatus> result = new HashMap<>();
     ProviderStatus providerValues = new ProviderStatus();
     providerValues.setMessage(getHttpResponseBodyFromMessage(exchange.getMessage()));
     Integer statusCode = Integer.valueOf(getHttpResponseStatusFromMessage(exchange.getMessage()));
-    if (!exchange.getProperty(Constants.EXCLUDE_FROM_READINESS_CHECK, Boolean.class)) {
+    if (!serviceExcludedFromReadinessCheck(exchange)) {
       providerValues.setCode(statusCode);
     }
     providerValues.setOk(
-        !exchange.getProperty(Constants.EXCLUDE_FROM_READINESS_CHECK, Boolean.class));
+        !serviceExcludedFromReadinessCheck(exchange));
     String providerName = exchange.getProperty(Constants.PROVIDER_NAME, String.class);
     providerValues.setName(providerName);
-    result.put(providerName, providerValues);
-    return result;
+
+    return providerValues;
+  }
+
+  private static Boolean serviceExcludedFromReadinessCheck(Exchange exchange) {
+    return Objects.requireNonNullElse(exchange.getProperty(Constants.EXCLUDE_FROM_READINESS_CHECK, Boolean.class),false);
   }
 
   private static String getHttpResponseStatusFromMessage(Message message) {

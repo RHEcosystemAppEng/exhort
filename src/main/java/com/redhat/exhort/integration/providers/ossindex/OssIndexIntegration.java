@@ -18,8 +18,6 @@
 
 package com.redhat.exhort.integration.providers.ossindex;
 
-import static com.redhat.exhort.integration.backend.ExhortIntegration.excludeOrIncludeProvider;
-
 import java.util.Base64;
 import java.util.List;
 
@@ -88,9 +86,8 @@ public class OssIndexIntegration extends EndpointRouteBuilder {
     from(direct("ossIndexHealthCheck"))
       .routeId("ossIndexHealthCheck")
       .setProperty(Constants.PROVIDER_NAME, constant(Constants.OSS_INDEX_PROVIDER))
-      .process(excludeOrIncludeProvider)
       .choice()
-        .when(method(vulnerabilityProvider, "getEnabled").contains(Constants.OSV_NVD_PROVIDER))
+        .when(method(vulnerabilityProvider, "getEnabled").contains(Constants.OSS_INDEX_PROVIDER))
           .to(direct("ossCheckVersionEndpoint"))
         .otherwise()
           .to(direct("healthCheckProviderDisabled"));
