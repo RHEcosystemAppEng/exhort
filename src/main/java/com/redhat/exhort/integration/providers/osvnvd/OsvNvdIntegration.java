@@ -23,11 +23,13 @@ import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import com.redhat.exhort.integration.Constants;
+import com.redhat.exhort.integration.providers.VulnerabilityProvider;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.HttpMethod;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 @ApplicationScoped
 public class OsvNvdIntegration extends EndpointRouteBuilder {
@@ -35,6 +37,7 @@ public class OsvNvdIntegration extends EndpointRouteBuilder {
   @ConfigProperty(name = "api.osvnvd.timeout", defaultValue = "10s")
   String timeout;
 
+  @Inject VulnerabilityProvider vulnerabilityProvider;
   @Inject OsvNvdResponseHandler responseHandler;
 
   @Override
@@ -59,6 +62,31 @@ public class OsvNvdIntegration extends EndpointRouteBuilder {
       .process(this::processRequest)
       .to(vertxHttp("{{api.osvnvd.host}}"))
       .transform().method(responseHandler, "responseToIssues");
+
+    from(direct("osvNvdHealthCheck"))
+      .routeId("osvNvdHealthCheck")
+      .setProperty(Constants.PROVIDER_NAME, constant(Constants.OSV_NVD_PROVIDER))
+      .choice()
+         .when(method(vulnerabilityProvider, "getEnabled").contains(Constants.OSV_NVD_PROVIDER))
+            .to(direct("osvNvdHealthCheckEndpoint"))
+         .otherwise()
+            .to(direct("healthCheckProviderDisabled"));
+
+    from(direct("osvNvdHealthCheckEndpoint"))
+      .routeId("osvNvdHealthCheckEndpoint")
+      .process(this::processHealthRequest)
+      .circuitBreaker()
+         .faultToleranceConfiguration()
+            .timeoutEnabled(true)
+            .timeoutDuration(timeout)
+         .end()
+         .to(vertxHttp("{{api.osvnvd.management.host}}"))
+         .setHeader(Exchange.HTTP_RESPONSE_TEXT,constant("Service is up and running"))
+         .setBody(constant("Service is up and running"))
+      .onFallback()
+         .setBody(constant(Constants.OSV_NVD_PROVIDER + "Service is down"))
+         .setHeader(Exchange.HTTP_RESPONSE_CODE,constant(Response.Status.SERVICE_UNAVAILABLE))
+      .end();
     // fmt:on
   }
 
@@ -66,11 +94,19 @@ public class OsvNvdIntegration extends EndpointRouteBuilder {
     var message = exchange.getMessage();
     message.removeHeader(Exchange.HTTP_QUERY);
     message.removeHeader(Exchange.HTTP_URI);
-    message.removeHeader("Accept-Encoding");
+    message.removeHeader(Constants.ACCEPT_ENCODING_HEADER);
     message.setHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON);
     message.setHeader(Exchange.HTTP_PATH, Constants.OSV_NVD_PURLS_PATH);
     message.setHeader(Exchange.HTTP_METHOD, HttpMethod.POST);
-    exchange.setProperty(
-        Constants.AUTH_PROVIDER_REQ_PROPERTY_PREFIX + Constants.OSV_NVD_PROVIDER, Boolean.FALSE);
+  }
+
+  private void processHealthRequest(Exchange exchange) {
+    var message = exchange.getMessage();
+    message.removeHeader(Exchange.HTTP_QUERY);
+    message.removeHeader(Exchange.HTTP_URI);
+    message.removeHeader(Constants.ACCEPT_ENCODING_HEADER);
+    message.removeHeader(Exchange.CONTENT_TYPE);
+    message.setHeader(Exchange.HTTP_PATH, Constants.OSV_NVD_HEALTH_PATH);
+    message.setHeader(Exchange.HTTP_METHOD, HttpMethod.GET);
   }
 }

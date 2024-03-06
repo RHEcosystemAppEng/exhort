@@ -18,6 +18,8 @@
 
 package com.redhat.exhort.integration.providers.snyk;
 
+import static com.redhat.exhort.integration.Constants.PROVIDERS_PARAM;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.camel.builder.AggregationStrategies;
@@ -101,6 +103,23 @@ public class SnykIntegration extends EndpointRouteBuilder {
 
     from(direct("snykValidateToken"))
       .routeId("snykValidateToken")
+      .process(this::processTokenValidation)
+      .to(direct("snykTokenRequest"));
+
+    from(direct("snykHealthCheck"))
+      .routeId("snykHealthCheck")
+      .setProperty(Constants.PROVIDER_NAME, constant(Constants.SNYK_PROVIDER))
+      .choice()
+        .when(method(vulnerabilityProvider, "getEnabled").contains(Constants.SNYK_PROVIDER))
+          .process(this::setAuthToken)
+          .to(direct("snykTokenRequest"))
+          .setHeader(Exchange.HTTP_RESPONSE_TEXT,constant("Service is up and running"))
+          .setBody(constant("Service is up and running"))
+        .otherwise()
+          .to(direct("healthCheckProviderDisabled"));
+
+    from(direct("snykTokenRequest"))
+      .routeId("snykTokenRequest")
       .process(this::processTokenRequest)
       .circuitBreaker()
         .faultToleranceConfiguration()
@@ -134,10 +153,14 @@ public class SnykIntegration extends EndpointRouteBuilder {
     message.setHeader(Exchange.HTTP_METHOD, HttpMethod.POST);
   }
 
-  private void processTokenRequest(Exchange exchange) {
+  private void processTokenValidation(Exchange exchange) {
     var message = exchange.getMessage();
     message.setHeader(
         Constants.AUTHORIZATION_HEADER, "token " + message.getHeader(Constants.SNYK_TOKEN_HEADER));
+  }
+
+  private void processTokenRequest(Exchange exchange) {
+    var message = exchange.getMessage();
     processRequestHeaders(message);
     message.setHeader(Exchange.HTTP_PATH, Constants.SNYK_TOKEN_API_PATH);
     message.setHeader(Exchange.HTTP_METHOD, HttpMethod.GET);
@@ -149,7 +172,7 @@ public class SnykIntegration extends EndpointRouteBuilder {
     message.removeHeader(Exchange.HTTP_URI);
     message.removeHeader(Constants.SNYK_TOKEN_HEADER);
     message.removeHeader(Constants.ACCEPT_ENCODING_HEADER);
-    message.removeHeader(Constants.PROVIDERS_PARAM);
+    message.removeHeader(PROVIDERS_PARAM);
     message.setHeader(
         Constants.USER_AGENT_HEADER,
         String.format(Constants.SNYK_USER_AGENT_HEADER_FORMAT, projectName, projectVersion));

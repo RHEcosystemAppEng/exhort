@@ -77,8 +77,8 @@ objects:
                 httpGet:
                   path: /q/health/ready
                   port: '${{MANAGEMENT_PORT}}'
-                initialDelaySeconds: 5
-                periodSeconds: 10
+                initialDelaySeconds: 2
+                periodSeconds: 15
               ports:
                 - name: http
                   containerPort: '${{SERVICE_PORT}}'

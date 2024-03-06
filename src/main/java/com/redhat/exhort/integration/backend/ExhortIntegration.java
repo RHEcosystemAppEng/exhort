@@ -52,6 +52,7 @@ import com.redhat.exhort.integration.Constants;
 import com.redhat.exhort.integration.backend.sbom.SbomParser;
 import com.redhat.exhort.integration.backend.sbom.SbomParserFactory;
 import com.redhat.exhort.integration.providers.ProviderAggregationStrategy;
+import com.redhat.exhort.integration.providers.ProvidersBodyPlusResponseCodeAggregationStrategy;
 import com.redhat.exhort.integration.providers.VulnerabilityProvider;
 import com.redhat.exhort.integration.trustedcontent.TcResponseAggregation;
 import com.redhat.exhort.model.DependencyTree;
@@ -257,7 +258,24 @@ public class ExhortIntegration extends EndpointRouteBuilder {
       .setBody().simple("${exception.message}")
       .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(Status.INTERNAL_SERVER_ERROR.getStatusCode()))
       .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.TEXT_PLAIN));
+
+    from(direct("exhortHealthCheck"))
+      .routeId("exhortHealthCheck")
+      .recipientList(header(Constants.HEALTH_CHECKS_LIST_HEADER_NAME))
+      .aggregationStrategy(new ProvidersBodyPlusResponseCodeAggregationStrategy());
+
+    from(direct("healthCheckProviderDisabled"))
+      .routeId("healthCheckProviderDisabled")
+      .setProperty(Constants.EXCLUDE_FROM_READINESS_CHECK, constant(true))
+      .setBody(constant(String.format("Provider %s is disabled",exchangeProperty(Constants.PROVIDER_NAME))))
+
+      .process(exchange -> {
+        String providerName = exchange.getProperty(Constants.PROVIDER_NAME, String.class);
+        exchange.getMessage().setHeader(Exchange.HTTP_RESPONSE_TEXT,String.format("Provider %s is disabled", providerName)); })
+      .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(Response.Status.SERVICE_UNAVAILABLE));
+
     //fmt:on
+
   }
 
   private void processAnalysisRequest(Exchange exchange) {

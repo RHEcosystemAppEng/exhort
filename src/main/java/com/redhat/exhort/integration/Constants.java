@@ -31,7 +31,12 @@ public final class Constants {
 
   private Constants() {}
 
+  public static final String PROVIDER_NAME = "providerName";
+
+  public static final String EXCLUDE_FROM_READINESS_CHECK = "exclusionFromReadiness";
   public static final String PROVIDERS_PARAM = "providers";
+
+  public static final String HEALTH_CHECKS_LIST_HEADER_NAME = "healthChecksRoutesList";
   public static final String SBOM_TYPE_PARAM = "sbomType";
 
   public static final String ACCEPT_HEADER = "Accept";
@@ -90,7 +95,10 @@ public final class Constants {
   public static final String SNYK_DEP_GRAPH_API_PATH = "/test/dep-graph";
   public static final String SNYK_TOKEN_API_PATH = "/user/me";
   public static final String OSS_INDEX_AUTH_COMPONENT_API_PATH = "/authorized/component-report";
+  public static final String OSS_INDEX_VERSION_PATH = "/version";
   public static final String OSV_NVD_PURLS_PATH = "/purls";
+
+  public static final String OSV_NVD_HEALTH_PATH = "/q/health";
 
   public static final String TRUSTED_CONTENT_PATH = "/recommend";
   public static final String DEFAULT_ACCEPT_MEDIA_TYPE = MediaType.APPLICATION_JSON;
