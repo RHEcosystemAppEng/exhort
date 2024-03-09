@@ -22,8 +22,11 @@ import {ChartCard} from './ChartCard';
 import {getSourceName, getSources, Report} from '../api/report';
 import RedhatIcon from "@patternfly/react-icons/dist/esm/icons/redhat-icon";
 import SecurityCheckIcon from '../images/security-check.svg';
+import {constructImageName, imageRemediationLink} from '../utils/utils';
+import {useAppContext} from "../App";
 
-export const SummaryCard = ({report}: { report: Report }) => {
+export const SummaryCard = ({report, isReportMap, purl}: { report: Report, isReportMap?: boolean, purl?: string }) => {
+  const appContext = useAppContext();
   return (
     <Grid hasGutter>
       <Title headingLevel="h3" size={TitleSizes['2xl']} style={{paddingLeft: '15px'}}>
@@ -37,7 +40,10 @@ export const SummaryCard = ({report}: { report: Report }) => {
           <CardHeader>
             <CardTitle>
               <DescriptionListTerm style={{fontSize: "large"}}>
-                Vendor Issues
+                {isReportMap ? (<>{purl ? constructImageName(purl) : "No Image name"} - Vendor Issues</>
+                ) : (
+                  <>Vendor Issues</>
+                )}
               </DescriptionListTerm>
             </CardTitle>
           </CardHeader>
@@ -86,29 +92,46 @@ export const SummaryCard = ({report}: { report: Report }) => {
             </CardTitle>
             <CardBody>
               <DescriptionListDescription>
-                <List isPlain>
-                  {getSources(report).map((source, index) => {
-                    if (Object.keys(source.report).length > 0) {
+                {isReportMap ? (
+                  <List isPlain>
+                    <ListItem>
+                      Switch to UBI 9 for enhanced security and enterprise-grade stability in your containerized
+                      applications, backed by Red Hat's support and compatibility assurance.
+                    </ListItem>
+                    <ListItem>
+                      <a href={purl ? imageRemediationLink(purl, report, appContext.imageMapping) : '###'}
+                         target="_blank" rel="noreferrer">
+                        <Button variant="primary" size="sm">
+                          Take me there
+                        </Button>
+                      </a>
+                    </ListItem>
+                  </List>
+                ) : (
+                  <List isPlain>
+                    {getSources(report).map((source, index) => {
+                      if (Object.keys(source.report).length > 0) {
+                        return (
+                          <ListItem>
+                            <Icon isInline status="success">
+                              <img src={SecurityCheckIcon} alt="Security Check Icon"/>
+                            </Icon>&nbsp;{source.report.summary.remediations} remediations are available from Red Hat
+                            for {source.provider}
+                          </ListItem>
+                        )
+                      }
                       return (
                         <ListItem>
                           <Icon isInline status="success">
                             <img src={SecurityCheckIcon} alt="Security Check Icon"/>
-                          </Icon>&nbsp;{source.report.summary.remediations} remediations are available from Red Hat
-                          for {source.provider}
+                          </Icon>&nbsp;
+                          There are no available Red Hat remediations for your SBOM at this time for {source.provider}
                         </ListItem>
                       )
+                    })
                     }
-                    return (
-                      <ListItem>
-                        <Icon isInline status="success">
-                          <img src={SecurityCheckIcon} alt="Security Check Icon"/>
-                        </Icon>&nbsp;
-                        There are no available Red Hat remediations for your SBOM at this time for {source.provider}
-                      </ListItem>
-                    )
-                  })
-                  }
-                </List>
+                  </List>
+                )}
               </DescriptionListDescription>
             </CardBody>
           </DescriptionListGroup>

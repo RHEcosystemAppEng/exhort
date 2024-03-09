@@ -32,10 +32,12 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.redhat.exhort.integration.Constants;
+import com.redhat.exhort.integration.trustedcontent.ubi.UBIRecommendation;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 @RegisterForReflection
 @ApplicationScoped
@@ -56,6 +58,8 @@ public class ReportTemplate {
   @ConfigProperty(name = "report.cve.issue.regex")
   String cveIssuePathRegex;
 
+  @Inject UBIRecommendation ubiRecommendation;
+
   public Map<String, Object> setVariables(
       @Body Object report,
       @ExchangeProperty(Constants.PROVIDER_PRIVATE_DATA_PROPERTY) List<String> providerPrivateData)
@@ -69,12 +73,29 @@ public class ReportTemplate {
     params.put("providerPrivateData", providerPrivateData);
     params.put("snykSignup", snykSignup);
     params.put("cveIssueTemplate", cveIssuePathRegex);
+    params.put("imageMapping", getImageMapping());
 
     ObjectWriter objectWriter = new ObjectMapper().writer();
     String appData = objectWriter.writeValueAsString(params);
     params.put("appData", appData);
 
     return params;
+  }
+
+  private String getImageMapping() throws JsonProcessingException {
+    List<Map<String, String>> urlMapping =
+        ubiRecommendation.purl().keySet().stream()
+            .map(
+                ubi -> {
+                  Map<String, String> urls = new HashMap<>(2);
+                  urls.put("purl", ubiRecommendation.purl().get(ubi));
+                  urls.put("catalogUrl", ubiRecommendation.catalogurl().get(ubi));
+                  return urls;
+                })
+            .toList();
+
+    ObjectWriter objectWriter = new ObjectMapper().writer();
+    return objectWriter.writeValueAsString(urlMapping);
   }
 
   @RegisterForReflection

@@ -4,7 +4,7 @@ import {SummaryCard} from '../components/SummaryCard';
 import {TabbedLayout} from "../components/TabbedLayout";
 import {ReportErrorAlert} from '../components/ReportErrorAlert';
 import {ReportMap} from '../api/report';
-import {extractDependencyName} from '../utils/utils';
+import {constructImageName} from '../utils/utils';
 
 export const DockerTabbedLayout = ({report}: { report: ReportMap }) => {
 
@@ -23,14 +23,14 @@ export const DockerTabbedLayout = ({report}: { report: ReportMap }) => {
     return (
       <Tab
         eventKey={key}
-        title={<TabTitleText>{extractDependencyName(key, true)}</TabTitleText>} // Use the map key as title
+        title={<TabTitleText>{constructImageName(key)}</TabTitleText>} // Use the map key as title
         aria-label={`${key} source`}
       >
         <ReportErrorAlert report={reportValue} />
         <PageSection variant={PageSectionVariants.light}>
           <Grid hasGutter>
             <GridItem>
-              <SummaryCard report={reportValue} />
+              <SummaryCard report={reportValue} isReportMap={true} purl={key}/>
             </GridItem>
           </Grid>
         </PageSection>
