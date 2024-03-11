@@ -397,7 +397,7 @@
         <configuration>
           <arguments>-Pprepare-deployment,sign-deployment</arguments>
           <tagNameFormat>v@{project.version}</tagNameFormat>
-          <scmCommentPrefix>build(release): [skip ci]</scmCommentPrefix>
+          <scmCommentPrefix>build(release): </scmCommentPrefix>
         </configuration>
       </plugin>
       <plugin>
