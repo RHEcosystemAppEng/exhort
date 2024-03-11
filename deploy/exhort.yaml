@@ -27,7 +27,7 @@ spec:
           protocol: TCP
         resources:
           limits:
-            memory: "128Mi"
+            memory: "512Mi"
             cpu: "500m"
         env:
         - name: API_SNYK_TOKEN

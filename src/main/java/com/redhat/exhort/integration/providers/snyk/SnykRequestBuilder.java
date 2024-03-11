@@ -33,8 +33,7 @@ import java.util.stream.Collectors;
 
 import org.apache.camel.Body;
 import org.apache.camel.Exchange;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jboss.logging.Logger;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -51,7 +50,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 @RegisterForReflection
 public class SnykRequestBuilder {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(SnykRequestBuilder.class);
+  private static final Logger LOGGER = Logger.getLogger(SnykRequestBuilder.class);
 
   private static final String GOMODULES_PKG_MANAGER = "gomodules";
   private static final String RUBYGEMS_PKG_MANAGER = "rubygems";
@@ -106,7 +105,7 @@ public class SnykRequestBuilder {
     var invalidTypes =
         types.stream().filter(Predicate.not(SUPPORTED_PURL_TYPES::contains)).toList();
     if (!invalidTypes.isEmpty()) {
-      LOGGER.debug("Unsupported package url types received: {}", invalidTypes);
+      LOGGER.debugf("Unsupported package url types received: %s", invalidTypes);
       exchange.setProperty(
           Constants.UNSCANNED_REFS_PROPERTY,
           tree.stream()

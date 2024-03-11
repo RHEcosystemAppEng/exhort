@@ -26,7 +26,7 @@
     <!-- Build properties -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <maven.compiler.release>17</maven.compiler.release>
+    <maven.compiler.release>21</maven.compiler.release>
     <maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ss.SSS'Z'</maven.build.timestamp.format>
     <timestamp>${maven.build.timestamp}</timestamp>
     <skipITs>true</skipITs>
@@ -48,12 +48,12 @@
     <deploy-plugin.version>3.1.1</deploy-plugin.version>
 
     <!-- Dependencies -->
-    <exhort-api.version>1.0.5-SNAPSHOT</exhort-api.version>
+    <exhort-api.version>1.0.5</exhort-api.version>
     <sentry.version>1.7.27</sentry.version>
     <cyclonedx.version>8.0.3</cyclonedx.version>
     <spdx.version>1.1.7</spdx.version>
     <htmlunit.version>2.70.0</htmlunit.version>
-    <wiremock.version>3.3.1</wiremock.version>
+    <wiremock.version>3.4.2</wiremock.version>
 
     <!-- Node and Yarn -->
     <node.version>v20.9.0</node.version>
@@ -142,6 +142,10 @@
       <artifactId>quarkus-smallrye-openapi</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.jboss.slf4j</groupId>
+      <artifactId>slf4j-jboss-logmanager</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.apache.camel.quarkus</groupId>
       <artifactId>camel-quarkus-direct</artifactId>
     </dependency>
@@ -182,6 +186,12 @@
       <groupId>org.spdx</groupId>
       <artifactId>spdx-jackson-store</artifactId>
       <version>${spdx.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.logging.log4j</groupId>
+          <artifactId>log4j-slf4j18-impl</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>io.sentry</groupId>
@@ -197,12 +207,6 @@
       <groupId>io.rest-assured</groupId>
       <artifactId>rest-assured</artifactId>
       <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>org.hamcrest</groupId>
-          <artifactId>hamcrest</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.wiremock</groupId>

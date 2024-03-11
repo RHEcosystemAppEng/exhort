@@ -29,8 +29,7 @@ import java.util.stream.Collectors;
 
 import org.apache.camel.Body;
 import org.apache.camel.ExchangeProperty;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jboss.logging.Logger;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -53,7 +52,7 @@ import jakarta.inject.Inject;
 @RegisterForReflection
 public class OssIndexResponseHandler extends ProviderResponseHandler {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(OssIndexRequestBuilder.class);
+  private static final Logger LOGGER = Logger.getLogger(OssIndexRequestBuilder.class);
 
   @Inject ObjectMapper mapper;
 
@@ -72,7 +71,9 @@ public class OssIndexResponseHandler extends ProviderResponseHandler {
         tree.getAll().stream()
             .collect(
                 Collectors.toMap(
-                    d -> new PackageRef(d.toString()).purl().getCoordinates(), d -> d));
+                    d -> new PackageRef(d.toString()).purl().getCoordinates(),
+                    d -> d,
+                    (a, b) -> a));
     response.forEach(
         n -> {
           var pkgRef = n.get("coordinates").asText();

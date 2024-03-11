@@ -32,8 +32,7 @@ import java.util.stream.Collectors;
 
 import org.cyclonedx.model.Bom;
 import org.cyclonedx.model.Component;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jboss.logging.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.redhat.exhort.api.PackageRef;
@@ -48,7 +47,7 @@ import jakarta.ws.rs.core.Response;
 public class CycloneDxParser extends SbomParser {
 
   private static final ObjectMapper mapper = ObjectMapperProducer.newInstance();
-  private static final Logger LOGGER = LoggerFactory.getLogger(CycloneDxParser.class);
+  private static final Logger LOGGER = Logger.getLogger(CycloneDxParser.class);
 
   @Override
   protected DependencyTree buildTree(InputStream input) {
@@ -143,7 +142,7 @@ public class CycloneDxParser extends SbomParser {
         .forEach(
             v -> {
               if (deps.containsKey(v)) {
-                LOGGER.debug("Ignore duplicate key {}", v);
+                LOGGER.debugf("Ignore duplicate key %s", v);
               }
               deps.put(v, DirectDependency.builder().ref(v).build());
             });
