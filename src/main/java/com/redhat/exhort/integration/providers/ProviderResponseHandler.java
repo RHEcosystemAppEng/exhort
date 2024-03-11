@@ -34,8 +34,7 @@ import org.apache.camel.Exchange;
 import org.apache.camel.ExchangeProperty;
 import org.apache.camel.RuntimeCamelException;
 import org.apache.camel.http.base.HttpOperationFailedException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jboss.logging.Logger;
 
 import com.redhat.exhort.api.PackageRef;
 import com.redhat.exhort.api.v4.DependencyReport;
@@ -70,7 +69,7 @@ public abstract class ProviderResponseHandler {
 
   public static final String AFFECTED_STATUS = "Affected";
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(ProviderResponseHandler.class);
+  private static final Logger LOGGER = Logger.getLogger(ProviderResponseHandler.class);
 
   @Inject MonitoringProcessor monitoringProcessor;
 

@@ -179,7 +179,7 @@ parameters:
     description: The maximum amount of CPU the container can use.
     displayName: Memory Limit
     required: true
-    value: 500m
+    value: 1024Mi
   - name: MEMORY_REQUEST
     description: The minimum amount of memory required by a container
     displayName: Memory Limit
@@ -189,7 +189,7 @@ parameters:
     description: The maximum amount of memory the container can use.
     displayName: Memory Limit
     required: true
-    value: 1024Mi
+    value: 5120Mi
   - name: ENV_NAME
     value: stage
     displayName: Environment (default -- stage)

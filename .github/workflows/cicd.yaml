@@ -18,13 +18,12 @@ env:
   IMAGE_REGISTRY_USER: ${{ secrets.IMAGE_REGISTRY_USER }}
   IMAGE_REGISTRY_PASSWORD: ${{ secrets.IMAGE_REGISTRY_PASSWORD }}
   # 🖊️ EDIT to change Dockerfile.
-  DOCKERFILE_PATH: ./src/main/docker/Dockerfile.native-micro
+  DOCKERFILE_PATH: ./src/main/docker/Dockerfile.jvm.staged
 
 on:
   push:
     branches:
       - main
-      - stable
     tags:
       - '*'
   workflow_dispatch:
@@ -88,7 +87,6 @@ jobs:
           branch=${GITHUB_REF_NAME}
           case ${branch} in
           'main') tag='latest' ;;
-          'stable') tag='alpha' ;;
           *) tag=${branch} ;;
           esac
           echo "tag=${tag}" >> $GITHUB_OUTPUT
@@ -98,12 +96,12 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '21'
           cache: 'maven'
 
       - name: Build Package with Maven
         run: |
-          ./mvnw -B verify -Pnative
+          ./mvnw -B verify
         env:
           GITHUB_ACTOR: ${{ secrets.GITHUB_ACTOR }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

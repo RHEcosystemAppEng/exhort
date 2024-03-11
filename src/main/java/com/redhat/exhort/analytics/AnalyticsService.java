@@ -36,8 +36,7 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jboss.logging.Logger;
 
 import com.github.packageurl.PackageURL;
 import com.redhat.exhort.analytics.segment.Context;
@@ -58,7 +57,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 @RegisterForReflection
 public class AnalyticsService {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(AnalyticsService.class);
+  private static final Logger LOGGER = Logger.getLogger(AnalyticsService.class);
 
   private static final String ANONYMOUS_ID = "telemetry-anonymous-id";
   private static final String ANALYSIS_EVENT = "rhda.exhort.analysis";

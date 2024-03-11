@@ -28,8 +28,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jboss.logging.Logger;
 import org.spdx.jacksonstore.MultiFormatStore;
 import org.spdx.jacksonstore.MultiFormatStore.Format;
 import org.spdx.library.InvalidSPDXAnalysisException;
@@ -47,7 +46,7 @@ import jakarta.ws.rs.core.Response;
 
 public class SpdxParser extends SbomParser {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(SpdxParser.class);
+  private static final Logger LOGGER = Logger.getLogger(SpdxParser.class);
 
   @Override
   protected DependencyTree buildTree(InputStream input) {
@@ -58,7 +57,7 @@ public class SpdxParser extends SbomParser {
       var tree = new DependencyTree(deps);
       return tree;
     } catch (SpdxValidationException e) {
-      LOGGER.info("Invalid SPDX SBOM received", e.getMessage());
+      LOGGER.info("Invalid SPDX SBOM received", e);
       throw new ClientErrorException(e.getMessage(), Response.Status.BAD_REQUEST);
     } catch (SpdxProcessingException | InvalidSPDXAnalysisException | IOException e) {
       LOGGER.warn("Unable to parse the SPDX SBOM file", e);

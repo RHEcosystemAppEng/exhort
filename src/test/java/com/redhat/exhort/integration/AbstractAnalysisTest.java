@@ -36,7 +36,10 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Map;
 
@@ -44,7 +47,6 @@ import org.apache.camel.Exchange;
 import org.cyclonedx.CycloneDxMediaType;
 import org.junit.jupiter.api.AfterEach;
 
-import com.github.jknack.handlebars.internal.Files;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.BasicCredentials;
 import com.google.common.base.Charsets;
@@ -107,12 +109,12 @@ public abstract class AbstractAnalysisTest {
     }
   }
 
-  protected void assertHtml(String expectedFile, String currentBody) {
+  protected void assertHtml(String expectedFile, String currentBody) throws URISyntaxException {
     String expected;
     try {
       expected =
-          Files.read(
-              getClass().getClassLoader().getResourceAsStream("__files/" + expectedFile),
+          Files.readString(
+              Path.of(getClass().getClassLoader().getResource("__files/" + expectedFile).toURI()),
               Charset.defaultCharset());
       expected = expected.replaceAll(WIREMOCK_URL_TEMPLATE, server.baseUrl());
       assertEquals(expected, currentBody);
@@ -155,8 +157,9 @@ public abstract class AbstractAnalysisTest {
 
   protected String loadFileAsString(String file) {
     try {
-      return Files.read(getClass().getClassLoader().getResourceAsStream(file), Charsets.UTF_8);
-    } catch (IOException e) {
+      return Files.readString(
+          Path.of(getClass().getClassLoader().getResource(file).toURI()), Charsets.UTF_8);
+    } catch (IOException | URISyntaxException e) {
       fail("Unable to read expected file: " + file, e);
       return null;
     }
