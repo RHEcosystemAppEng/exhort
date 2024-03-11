@@ -17,8 +17,11 @@ env:
   IMAGE_NAME: exhort
   IMAGE_REGISTRY_USER: ${{ secrets.IMAGE_REGISTRY_USER }}
   IMAGE_REGISTRY_PASSWORD: ${{ secrets.IMAGE_REGISTRY_PASSWORD }}
+  REGISTRY_REDHAT_IO_USER: ${{ secrets.REGISTRY_REDHAT_IO_USER }}
+  REGISTRY_REDHAT_IO_PASSWORD: ${{ secrets.REGISTRY_REDHAT_IO_PASSWORD }}
+  
   # 🖊️ EDIT to change Dockerfile.
-  DOCKERFILE_PATH: ./src/main/docker/Dockerfile.jvm.staged
+  DOCKERFILE_PATH: ./src/main/docker/Dockerfile.jvm
 
 on:
   push:
@@ -42,6 +45,8 @@ jobs:
             const secrets = {
               OPENSHIFT_SERVER: `${{ env.OPENSHIFT_SERVER }}`,
               OPENSHIFT_TOKEN: `${{ env.OPENSHIFT_TOKEN }}`,
+              REGISTRY_REDHAT_IO_USER: `${{ env.REGISTRY_REDHAT_IO_USER }}`,
+              REGISTRY_REDHAT_IO_PASSWORD: `${{ env.REGISTRY_REDHAT_IO_PASSWORD }}`
             };
             
             // if image registry is ghcr.io - no registry credentials required, otherwise get registry credentials
@@ -105,7 +110,12 @@ jobs:
         env:
           GITHUB_ACTOR: ${{ secrets.GITHUB_ACTOR }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
+      - name: Log in to Red Hat Registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: registry.redhat.io
+          username: ${{ env.REGISTRY_REDHAT_IO_USER }}
+          password: ${{ env.REGISTRY_REDHAT_IO_PASSWORD }}
       - name: Build Image With buildah
         id: build-image
         uses: redhat-actions/buildah-build@v2
