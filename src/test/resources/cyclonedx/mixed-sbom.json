@@ -17,6 +17,7 @@
   },
   "components": [
     {
+      "type": "library",
       "publisher": "JBoss by Red Hat",
       "group": "io.quarkus",
       "name": "quarkus-hibernate-orm",

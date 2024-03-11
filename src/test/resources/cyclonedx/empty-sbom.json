@@ -64,6 +64,7 @@
         "version" : "2.13.5.Final",
         "description" : "Define your persistent model with Hibernate ORM and JPA",
         "scope" : "optional",
+        "type": "application",
         "hashes" : [
           {
             "alg" : "MD5",

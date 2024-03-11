@@ -90,8 +90,8 @@ class BackendUtilsTest {
 
     String randomUUID = UUID.randomUUID().toString();
     String randomUUID2 = UUID.randomUUID().toString();
-    AtomicReference<String> reqId = new AtomicReference();
-    AtomicReference<String> reqId2 = new AtomicReference();
+    AtomicReference<String> reqId = new AtomicReference<>();
+    AtomicReference<String> reqId2 = new AtomicReference<>();
     Thread thread = createThread(reqId, randomUUID);
     Thread thread2 = createThread(reqId2, randomUUID2);
     thread.start();
@@ -106,8 +106,8 @@ class BackendUtilsTest {
 
     String randomUUID = UUID.randomUUID().toString();
 
-    AtomicReference<String> reqId = new AtomicReference();
-    AtomicReference<String> reqId2 = new AtomicReference();
+    AtomicReference<String> reqId = new AtomicReference<>();
+    AtomicReference<String> reqId2 = new AtomicReference<>();
     Thread thread = createThread(reqId, randomUUID);
     Thread thread2 = createThread(reqId2, randomUUID);
     thread.start();
@@ -121,8 +121,8 @@ class BackendUtilsTest {
   void checkGeneratedWithSameTimeWithNullRHDATokenAndTheyShouldBeDifferent()
       throws InterruptedException {
 
-    AtomicReference<String> reqId = new AtomicReference();
-    AtomicReference<String> reqId2 = new AtomicReference();
+    AtomicReference<String> reqId = new AtomicReference<>();
+    AtomicReference<String> reqId2 = new AtomicReference<>();
     Thread thread = createThread(reqId, null);
     Thread thread2 = createThread(reqId2, null);
     thread.start();

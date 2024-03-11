@@ -121,7 +121,11 @@ public class ExhortIntegration extends EndpointRouteBuilder {
       .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.TEXT_PLAIN))
       .setHeader(Constants.EXHORT_REQUEST_ID_HEADER, exchangeProperty(Constants.EXHORT_REQUEST_ID_HEADER))
       .handled(true)
-      .setBody().simple("${exception.message}");
+      .setBody().simple("${exception.message}")
+      .choice()
+        .when(exchangeProperty(Constants.GZIP_RESPONSE_PROPERTY).isNotNull()).marshal().gzipDeflater()
+        .setHeader(Exchange.CONTENT_ENCODING, constant("gzip"))
+      .end();
 
     rest()
       .post("/v3/analysis")
