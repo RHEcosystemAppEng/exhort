@@ -28,11 +28,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.api.Test;
 
 import com.redhat.exhort.api.PackageRef;
 import com.redhat.exhort.integration.Constants;
+import com.redhat.exhort.integration.trustedcontent.ubi.UBIRecommendation;
 import com.redhat.exhort.model.trustedcontent.IndexedRecommendation;
 
 import io.quarkus.test.junit.QuarkusTest;
@@ -47,8 +47,7 @@ class TcResponseHandlerTest {
 
   @Inject TcResponseHandler handler;
 
-  @ConfigProperty(name = "trustedcontent.recommended.ubi")
-  String recommendedUBIPurl;
+  @Inject UBIRecommendation mapping;
 
   @Test
   void testAggregation() throws IOException {
@@ -114,14 +113,15 @@ class TcResponseHandlerTest {
 
   @Test
   void testSbomId() throws IOException {
-    String sbomId = "pkg:oci/quay.io/test-app@0.0.1";
+    String sbomId = "pkg:oci/alpine@0.0.1";
+    handler.ubiRecommendation = mapping;
     var response =
         handler.parseResponse(
             getClass()
                 .getClassLoader()
                 .getResourceAsStream("__files/trustedcontent/empty_report.json")
                 .readAllBytes(),
-            "pkg:oci/quay.io/test-app@0.0.1");
+            sbomId);
     assertNotNull(response);
     assertTrue(response.status().getOk());
     assertEquals("OK", response.status().getMessage());
@@ -130,17 +130,19 @@ class TcResponseHandlerTest {
 
     PackageRef sbomRef = new PackageRef(sbomId);
     IndexedRecommendation recommendation =
-        new IndexedRecommendation(new PackageRef(recommendedUBIPurl), null);
+        new IndexedRecommendation(new PackageRef(expectedUBIRecommendation), null);
     assertEquals(1, response.recommendations().size());
     assertEquals(recommendation, response.recommendations().get(sbomRef));
   }
 
   private static final record ExpectedRecommendation(String version, Set<String> cves) {}
 
+  private static final String expectedUBIRecommendation = "pkg:oci/ubi@0.0.2";
+
   public static class SbomIdTestProfile implements QuarkusTestProfile {
     @Override
     public Map<String, String> getConfigOverrides() {
-      return Map.of("trustedcontent.recommended.ubi", "pkg:oci/quay.io/test-app@0.0.2");
+      return Map.of("trustedcontent.recommendation.ubi.mapping.alpine", expectedUBIRecommendation);
     }
   }
 }

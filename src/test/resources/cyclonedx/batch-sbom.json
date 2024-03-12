@@ -781,40 +781,76 @@
       }
     ]
   },
-  "pkg:oci/quay.io/default-app@0.0.1" : {
-  "bomFormat": "CycloneDX",
-  "specVersion": "1.4",
-  "serialNumber": "urn:uuid:21e8d828-b07f-4fd3-bd14-0458f7188d40",
-  "version": 1,
-  "metadata": {
-    "timestamp": "2023-05-16T14:37:58Z",
-    "component": {
-      "group": "com.redhat.exhort",
-      "name": "default-app",
-      "version": "0.0.1",
-      "licenses": [],
-      "purl": "pkg:oci/quay.io/default-app@0.0.1",
-      "type": "library",
-      "bom-ref": "pkg:oci/quay.io/default-app@0.0.1"
-    }
+  "pkg:oci/default-app@sha256:7c288032ecf3319045d9fa538c3b0cc868a320d01d03bce15b99c2c336319994?repository_url=quay.io/default-app&tag=0.0.1": {
+    "bomFormat": "CycloneDX",
+    "specVersion": "1.4",
+    "serialNumber": "urn:uuid:21e8d828-b07f-4fd3-bd14-0458f7188d40",
+    "version": 1,
+    "metadata": {
+      "timestamp": "2023-05-16T14:37:58Z",
+      "component": {
+        "group": "com.redhat.exhort",
+        "name": "default-app",
+        "version": "0.0.1",
+        "licenses": [],
+        "purl": "pkg:oci/default-app@sha256:7c288032ecf3319045d9fa538c3b0cc868a320d01d03bce15b99c2c336319994?repository_url=quay.io/default-app&tag=0.0.1",
+        "type": "library",
+        "bom-ref": "pkg:oci/default-app@sha256:7c288032ecf3319045d9fa538c3b0cc868a320d01d03bce15b99c2c336319994?repository_url=quay.io/default-app&tag=0.0.1"
+      }
+    },
+    "components": [
+      {
+        "type": "library",
+        "name": "common",
+        "group": "@xml-tools",
+        "version": "0.1.6",
+        "bom-ref": "@xml-tools/common@0.1.6",
+        "purl": "pkg:npm/%40xml-tools/common@0.1.6"
+      }
+    ],
+    "dependencies": [
+      {
+        "ref": "pkg:oci/default-app@sha256:7c288032ecf3319045d9fa538c3b0cc868a320d01d03bce15b99c2c336319994?repository_url=quay.io/default-app&tag=0.0.1",
+        "dependsOn": [
+          "@xml-tools/common@0.1.6"
+        ]
+      }
+    ]
   },
-  "components": [
-    {
-      "type": "library",
-      "name": "common",
-      "group": "@xml-tools",
-      "version": "0.1.6",
-      "bom-ref": "@xml-tools/common@0.1.6",
-      "purl": "pkg:npm/%40xml-tools/common@0.1.6"
-    }
-  ],
-  "dependencies": [
-    {
-      "ref": "pkg:oci/quay.io/default-app@0.0.1",
-      "dependsOn": [
-        "@xml-tools/common@0.1.6"
-      ]
-    }
-  ]
-}
+  "pkg:oci/debian@sha256:7c288032ecf3319045d9fa538c3b0cc868a320d01d03bce15b99c2c336319994?tag=0.0.1": {
+    "bomFormat": "CycloneDX",
+    "specVersion": "1.4",
+    "serialNumber": "urn:uuid:21e8d828-b07f-4fd3-bd14-0458f7188d40",
+    "version": 1,
+    "metadata": {
+      "timestamp": "2023-05-16T14:37:58Z",
+      "component": {
+        "group": "com.redhat.exhort",
+        "name": "default-app",
+        "version": "0.0.1",
+        "licenses": [],
+        "purl": "pkg:oci/debian@sha256:7c288032ecf3319045d9fa538c3b0cc868a320d01d03bce15b99c2c336319994?tag=0.0.1",
+        "type": "library",
+        "bom-ref": "pkg:oci/debian@sha256:7c288032ecf3319045d9fa538c3b0cc868a320d01d03bce15b99c2c336319994?tag=0.0.1"
+      }
+    },
+    "components": [
+      {
+        "type": "library",
+        "name": "common",
+        "group": "@xml-tools",
+        "version": "0.1.6",
+        "bom-ref": "@xml-tools/common@0.1.6",
+        "purl": "pkg:npm/%40xml-tools/common@0.1.6"
+      }
+    ],
+    "dependencies": [
+      {
+        "ref": "pkg:oci/debian@sha256:7c288032ecf3319045d9fa538c3b0cc868a320d01d03bce15b99c2c336319994?tag=0.0.1",
+        "dependsOn": [
+          "@xml-tools/common@0.1.6"
+        ]
+      }
+    ]
+  }
 }

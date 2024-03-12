@@ -29,13 +29,13 @@ import java.util.stream.Collectors;
 import org.apache.camel.Body;
 import org.apache.camel.Exchange;
 import org.apache.camel.ExchangeProperty;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.redhat.exhort.api.PackageRef;
 import com.redhat.exhort.api.v4.ProviderStatus;
 import com.redhat.exhort.integration.Constants;
 import com.redhat.exhort.integration.providers.ProviderResponseHandler;
+import com.redhat.exhort.integration.trustedcontent.ubi.UBIRecommendation;
 import com.redhat.exhort.model.DependencyTree;
 import com.redhat.exhort.model.ProviderResponse;
 import com.redhat.exhort.model.trustedcontent.IndexedRecommendation;
@@ -60,8 +60,7 @@ public class TcResponseHandler extends ProviderResponseHandler {
 
   @Inject ObjectMapper mapper;
 
-  @ConfigProperty(name = "trustedcontent.recommended.ubi")
-  String recommendedUBIPurl;
+  @Inject UBIRecommendation ubiRecommendation;
 
   public TrustedContentResponse parseResponse(
       @Body byte[] tcResponse, @ExchangeProperty(Constants.SBOM_ID_PROPERTY) String sbomId)
@@ -116,14 +115,17 @@ public class TcResponseHandler extends ProviderResponseHandler {
       return Collections.emptyMap();
     }
 
-    PackageRef pkgRef = new PackageRef(sbomId);
+    var pkgRef = new PackageRef(sbomId);
     if (!Constants.OCI_PURL_TYPE.equals(pkgRef.purl().getType())) {
       return Collections.emptyMap();
     }
 
-    IndexedRecommendation recommendation =
-        new IndexedRecommendation(new PackageRef(recommendedUBIPurl), null);
-    return Collections.singletonMap(pkgRef, recommendation);
+    var recommendedUBIPurl = ubiRecommendation.mapping().get(pkgRef.name());
+    if (recommendedUBIPurl != null) {
+      var recommendation = new IndexedRecommendation(new PackageRef(recommendedUBIPurl), null);
+      return Collections.singletonMap(pkgRef, recommendation);
+    }
+    return Collections.emptyMap();
   }
 
   @Override
