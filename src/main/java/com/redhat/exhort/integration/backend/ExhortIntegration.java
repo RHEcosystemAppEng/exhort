@@ -33,10 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.camel.Body;
-import org.apache.camel.Exchange;
-import org.apache.camel.ExchangeProperty;
-import org.apache.camel.LoggingLevel;
+import org.apache.camel.*;
 import org.apache.camel.builder.AggregationStrategies;
 import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
 import org.apache.camel.component.micrometer.MicrometerConstants;
@@ -195,14 +192,14 @@ public class ExhortIntegration extends EndpointRouteBuilder {
         .when(header(Exchange.CONTENT_ENCODING).isEqualToIgnoreCase(GZIP_ENCODING)).unmarshal().gzipDeflater()
         .setProperty(Constants.GZIP_RESPONSE_PROPERTY, constant(Boolean.TRUE))
       .end()
-      .to(seda("analyticsIdentify"))
+      .to(seda("analyticsIdentify").waitForTaskToComplete(WaitForTaskToComplete.Never))
       .setProperty(PROVIDERS_PARAM, method(vulnerabilityProvider, "getProvidersFromQueryParam"))
       .setProperty(REQUEST_CONTENT_PROPERTY, method(BackendUtils.class, "getResponseMediaType"))
       .setProperty(VERBOSE_MODE_HEADER, header(VERBOSE_MODE_HEADER));
 
     from(direct("postProcessAnalysisRequest"))
       .routeId("postProcessAnalysisRequest")
-      .to(seda("analyticsTrackAnalysis"))
+      .to(seda("analyticsTrackAnalysis").waitForTaskToComplete(WaitForTaskToComplete.Never))
       .setHeader(Constants.EXHORT_REQUEST_ID_HEADER, exchangeProperty(Constants.EXHORT_REQUEST_ID_HEADER))
       .choice()
         .when(exchangeProperty(Constants.GZIP_RESPONSE_PROPERTY).isNotNull()).marshal().gzipDeflater()
@@ -219,7 +216,7 @@ public class ExhortIntegration extends EndpointRouteBuilder {
     from(direct("validateToken"))
       .routeId("validateToken")
       .setProperty(Constants.EXHORT_REQUEST_ID_HEADER, method(BackendUtils.class,"generateRequestId"))
-      .to(seda("analyticsIdentify"))
+      .to(seda("analyticsIdentify").waitForTaskToComplete(WaitForTaskToComplete.Never))
       .choice()
         .when(header(Constants.SNYK_TOKEN_HEADER).isNotNull())
           .setProperty(PROVIDERS_PARAM, constant(Arrays.asList(Constants.SNYK_PROVIDER)))
@@ -233,7 +230,7 @@ public class ExhortIntegration extends EndpointRouteBuilder {
           .setBody(constant("Missing provider authentication headers"))
       .end()
       .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.TEXT_PLAIN))
-      .to(seda("analyticsTrackToken"))
+      .to(seda("analyticsTrackToken").waitForTaskToComplete(WaitForTaskToComplete.Never))
       .setHeader(Constants.EXHORT_REQUEST_ID_HEADER, exchangeProperty(Constants.EXHORT_REQUEST_ID_HEADER))
       .process(this::cleanUpHeaders);
 
@@ -258,7 +255,7 @@ public class ExhortIntegration extends EndpointRouteBuilder {
     from(direct("processInternalError"))
       .routeId("processInternalError")
       .log(LoggingLevel.ERROR, "${exception.stacktrace}")
-      .to(seda("processFailedRequests"))
+      .to(seda("processFailedRequests").waitForTaskToComplete(WaitForTaskToComplete.Never))
       .setBody().simple("${exception.message}")
       .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(Status.INTERNAL_SERVER_ERROR.getStatusCode()))
       .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.TEXT_PLAIN));
