@@ -256,16 +256,16 @@ public class ExhortIntegration extends EndpointRouteBuilder {
       .routeId("analyticsTrackAnalysis")
       .process(analytics::trackAnalysis);
 
-    from(seda("processFailedRequests"))
+    from(seda("processFailedRequests")).setExchangePattern(ExchangePattern.InOnly)
       .routeId("processFailedRequests")
-      .setHeader(Constants.EXHORT_REQUEST_ID_HEADER, exchangeProperty(Constants.EXHORT_REQUEST_ID_HEADER))
       .process(monitoringProcessor::processServerError);
 
     from(direct("processInternalError"))
       .routeId("processInternalError")
       .log(LoggingLevel.ERROR, "${exception.stacktrace}")
-      .to(seda("processFailedRequests"))
+      .to(seda("processFailedRequests").waitForTaskToComplete(WaitForTaskToComplete.Never))
       .setBody().simple("${exception.message}")
+      .setHeader(Constants.EXHORT_REQUEST_ID_HEADER, exchangeProperty(Constants.EXHORT_REQUEST_ID_HEADER))
       .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(Status.INTERNAL_SERVER_ERROR.getStatusCode()))
       .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.TEXT_PLAIN));
 
