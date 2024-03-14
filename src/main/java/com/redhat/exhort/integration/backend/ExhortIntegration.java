@@ -37,6 +37,7 @@ import org.apache.camel.Body;
 import org.apache.camel.Exchange;
 import org.apache.camel.ExchangeProperty;
 import org.apache.camel.LoggingLevel;
+import org.apache.camel.WaitForTaskToComplete;
 import org.apache.camel.builder.AggregationStrategies;
 import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
 import org.apache.camel.component.micrometer.MicrometerConstants;
@@ -202,7 +203,7 @@ public class ExhortIntegration extends EndpointRouteBuilder {
 
     from(direct("postProcessAnalysisRequest"))
       .routeId("postProcessAnalysisRequest")
-      .to(seda("analyticsTrackAnalysis"))
+      .to(seda("analyticsTrackAnalysis").waitForTaskToComplete(WaitForTaskToComplete.Never))
       .setHeader(Constants.EXHORT_REQUEST_ID_HEADER, exchangeProperty(Constants.EXHORT_REQUEST_ID_HEADER))
       .choice()
         .when(exchangeProperty(Constants.GZIP_RESPONSE_PROPERTY).isNotNull()).marshal().gzipDeflater()
@@ -233,13 +234,17 @@ public class ExhortIntegration extends EndpointRouteBuilder {
           .setBody(constant("Missing provider authentication headers"))
       .end()
       .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.TEXT_PLAIN))
-      .to(seda("analyticsTrackToken"))
+      .to(seda("analyticsTrackToken").waitForTaskToComplete(WaitForTaskToComplete.Never))
       .setHeader(Constants.EXHORT_REQUEST_ID_HEADER, exchangeProperty(Constants.EXHORT_REQUEST_ID_HEADER))
       .process(this::cleanUpHeaders);
 
     from(seda("analyticsIdentify"))
       .routeId("analyticsIdentify")
       .process(monitoringProcessor::processOriginalRequest)
+      .to(seda("analyticsAsyncIdentify").waitForTaskToComplete(WaitForTaskToComplete.Never));
+
+    from(seda("analyticsAsyncIdentify"))
+      .routeId("analyticsAsyncIdentify")
       .process(analytics::identify);
 
     from(seda("analyticsTrackToken"))
@@ -258,7 +263,7 @@ public class ExhortIntegration extends EndpointRouteBuilder {
     from(direct("processInternalError"))
       .routeId("processInternalError")
       .log(LoggingLevel.ERROR, "${exception.stacktrace}")
-      .to(seda("processFailedRequests"))
+      .to(seda("processFailedRequests").waitForTaskToComplete(WaitForTaskToComplete.Never))
       .setBody().simple("${exception.message}")
       .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(Status.INTERNAL_SERVER_ERROR.getStatusCode()))
       .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.TEXT_PLAIN));

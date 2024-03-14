@@ -187,7 +187,10 @@ public abstract class ProviderResponseHandler {
 
   public void processTokenFallBack(Exchange exchange) {
     Exception exception = (Exception) exchange.getProperty(Exchange.EXCEPTION_CAUGHT);
-    Throwable cause = exception.getCause();
+    Throwable cause = exception;
+    if (exception.getCause() != null) {
+      cause = exception.getCause();
+    }
     String body;
     int code = Response.Status.INTERNAL_SERVER_ERROR.getStatusCode();
 

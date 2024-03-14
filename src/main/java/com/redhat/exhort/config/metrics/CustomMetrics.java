@@ -41,11 +41,15 @@ public class CustomMetrics {
       List.of(
           "snykValidateToken",
           "snykRequest",
+          "getTrustedContent",
+          "osvNvdRequest",
           "ossValidateCredentials",
           "ossSplitReq",
           "ossIndexRequest",
-          "gavRequest",
-          "vexRequest");
+          "analyticsIdentify",
+          "analyticsTrackAnalysis",
+          "analyticsTrackToken",
+          "processFailedRequests");
 
   @Produces
   @Singleton

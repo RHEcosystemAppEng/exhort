@@ -63,15 +63,14 @@ public class ProvidersBodyPlusResponseCodeAggregationStrategy
   private static String getHttpResponseBodyFromMessage(Message message) {
     if (Objects.nonNull(message.getHeader(Exchange.HTTP_RESPONSE_TEXT, String.class))) {
       return message.getHeader(Exchange.HTTP_RESPONSE_TEXT, String.class);
-    } else {
-      if (Objects.nonNull(message.getBody(String.class))
-          && message.getBody(String.class) instanceof String) {
-        return message.getBody(String.class);
-      } else {
-        return Objects.requireNonNull(
-            message.getHeader(Exchange.HTTP_RESPONSE_CODE, String.class),
-            message.getBody(String.class));
-      }
     }
+    if (Objects.nonNull(message.getBody(String.class))
+        && message.getBody(String.class) instanceof String) {
+      return message.getBody(String.class);
+    }
+    if (Objects.nonNull(message.getHeader(Exchange.HTTP_RESPONSE_CODE, String.class))) {
+      return message.getHeader(Exchange.HTTP_RESPONSE_CODE, String.class);
+    }
+    return "Unknown provider status";
   }
 }
