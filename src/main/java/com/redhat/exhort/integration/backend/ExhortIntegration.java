@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 
 import org.apache.camel.Body;
 import org.apache.camel.Exchange;
+import org.apache.camel.ExchangePattern;
 import org.apache.camel.ExchangeProperty;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.WaitForTaskToComplete;
@@ -243,15 +244,15 @@ public class ExhortIntegration extends EndpointRouteBuilder {
       .process(monitoringProcessor::processOriginalRequest)
       .to(seda("analyticsAsyncIdentify").waitForTaskToComplete(WaitForTaskToComplete.Never));
 
-    from(seda("analyticsAsyncIdentify"))
+    from(seda("analyticsAsyncIdentify")).setExchangePattern(ExchangePattern.InOnly)
       .routeId("analyticsAsyncIdentify")
       .process(analytics::identify);
 
-    from(seda("analyticsTrackToken"))
+    from(seda("analyticsTrackToken")).setExchangePattern(ExchangePattern.InOnly)
       .routeId("analyticsTrackToken")
       .process(analytics::trackToken);
 
-    from(seda("analyticsTrackAnalysis"))
+    from(seda("analyticsTrackAnalysis")).setExchangePattern(ExchangePattern.InOnly)
       .routeId("analyticsTrackAnalysis")
       .process(analytics::trackAnalysis);
 
@@ -263,7 +264,7 @@ public class ExhortIntegration extends EndpointRouteBuilder {
     from(direct("processInternalError"))
       .routeId("processInternalError")
       .log(LoggingLevel.ERROR, "${exception.stacktrace}")
-      .to(seda("processFailedRequests").waitForTaskToComplete(WaitForTaskToComplete.Never))
+      .to(seda("processFailedRequests"))
       .setBody().simple("${exception.message}")
       .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(Status.INTERNAL_SERVER_ERROR.getStatusCode()))
       .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.TEXT_PLAIN));
