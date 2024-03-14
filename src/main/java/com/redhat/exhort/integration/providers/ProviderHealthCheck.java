@@ -21,14 +21,11 @@ package com.redhat.exhort.integration.providers;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
-import org.apache.camel.builder.ExchangeBuilder;
 import org.apache.camel.health.HealthCheckResultBuilder;
 import org.apache.camel.impl.health.AbstractHealthCheck;
 
 import com.redhat.exhort.api.v4.ProviderStatus;
-import com.redhat.exhort.integration.Constants;
 
 public class ProviderHealthCheck extends AbstractHealthCheck {
 
@@ -41,35 +38,38 @@ public class ProviderHealthCheck extends AbstractHealthCheck {
 
   @Override
   protected void doCall(HealthCheckResultBuilder builder, Map<String, Object> options) {
-    var response =
-        getCamelContext()
-            .createProducerTemplate()
-            .send(
-                "direct:exhortHealthCheck",
-                ExchangeBuilder.anExchange(getCamelContext())
-                    .withHeader(
-                        Constants.HEALTH_CHECKS_LIST_HEADER_NAME, this.ALL_PROVIDERS_HEALTH_CHECKS)
-                    .build());
+    builder.up();
+    // TODO: Temporarily disabled while investigating TC-1067
+    // var response =
+    //     getCamelContext()
+    //         .createProducerTemplate()
+    //         .send(
+    //             "direct:exhortHealthCheck",
+    //             ExchangeBuilder.anExchange(getCamelContext())
+    //                 .withHeader(
+    //                     Constants.HEALTH_CHECKS_LIST_HEADER_NAME, ALL_PROVIDERS_HEALTH_CHECKS)
+    //                 .build());
 
-    List<ProviderStatus> httpResponseBodiesAndStatuses =
-        (List<ProviderStatus>) response.getMessage().getBody();
-    Map<String, Object> providers =
-        httpResponseBodiesAndStatuses.stream()
-            .collect(
-                Collectors.toMap(
-                    provider -> provider.getName(),
-                    provider -> formatProviderStatus(provider),
-                    (a, b) -> a));
-    builder.details(providers);
+    // List<ProviderStatus> httpResponseBodiesAndStatuses =
+    //     (List<ProviderStatus>) response.getMessage().getBody();
+    // Map<String, Object> providers =
+    //     httpResponseBodiesAndStatuses.stream()
+    //         .collect(
+    //             Collectors.toMap(
+    //                 provider -> provider.getName(),
+    //                 provider -> formatProviderStatus(provider),
+    //                 (a, b) -> a));
+    // builder.details(providers);
 
-    if (httpResponseBodiesAndStatuses.stream()
-        .filter(providerStatus -> Objects.nonNull(providerStatus.getCode()))
-        .anyMatch(providerDetails -> providerDetails.getCode() < 400 && providerDetails.getOk())) {
-      builder.up();
+    // if (httpResponseBodiesAndStatuses.stream()
+    //     .filter(providerStatus -> Objects.nonNull(providerStatus.getCode()))
+    //     .anyMatch(providerDetails -> providerDetails.getCode() < 400 && providerDetails.getOk()))
+    // {
+    //   builder.up();
 
-    } else {
-      builder.down();
-    }
+    // } else {
+    //   builder.down();
+    // }
   }
 
   private static String formatProviderStatus(ProviderStatus provider) {

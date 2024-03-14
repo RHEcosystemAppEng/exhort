@@ -38,7 +38,7 @@ import jakarta.ws.rs.core.MediaType;
 @ApplicationScoped
 public class SnykIntegration extends EndpointRouteBuilder {
 
-  @ConfigProperty(name = "api.snyk.timeout", defaultValue = "10s")
+  @ConfigProperty(name = "api.snyk.timeout", defaultValue = "20s")
   String timeout;
 
   @ConfigProperty(name = "api.snyk.token")

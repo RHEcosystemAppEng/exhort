@@ -35,7 +35,7 @@ import jakarta.ws.rs.core.MediaType;
 @RegisterForReflection
 public class TrustedContentIntegration extends EndpointRouteBuilder {
 
-  @ConfigProperty(name = "api.trustedcontent.timeout", defaultValue = "30s")
+  @ConfigProperty(name = "api.trustedcontent.timeout", defaultValue = "60s")
   String timeout;
 
   @Inject TcResponseHandler responseHandler;

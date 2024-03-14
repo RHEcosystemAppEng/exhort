@@ -18,6 +18,7 @@
 
 package com.redhat.exhort.monitoring.impl;
 
+import java.util.Base64;
 import java.util.Map;
 
 import com.redhat.exhort.monitoring.MonitoringClient;
@@ -47,7 +48,10 @@ public class SentryMonitoringClient implements MonitoringClient {
                   this.client
                       .getContext()
                       .recordBreadcrumb(
-                          new BreadcrumbBuilder().setMessage(b).setType(null).build()));
+                          new BreadcrumbBuilder()
+                              .setMessage(new String(Base64.getEncoder().encode(b.getBytes())))
+                              .setType(null)
+                              .build()));
     }
     if (context.userId() != null) {
       this.client.getContext().setUser(new UserBuilder().setId(context.userId()).build());

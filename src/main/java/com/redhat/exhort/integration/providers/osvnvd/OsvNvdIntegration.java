@@ -34,7 +34,7 @@ import jakarta.ws.rs.core.Response;
 @ApplicationScoped
 public class OsvNvdIntegration extends EndpointRouteBuilder {
 
-  @ConfigProperty(name = "api.osvnvd.timeout", defaultValue = "10s")
+  @ConfigProperty(name = "api.osvnvd.timeout", defaultValue = "30s")
   String timeout;
 
   @Inject VulnerabilityProvider vulnerabilityProvider;
