@@ -63,7 +63,8 @@ public class ProviderHealthCheck extends AbstractHealthCheck {
 
     // if (httpResponseBodiesAndStatuses.stream()
     //     .filter(providerStatus -> Objects.nonNull(providerStatus.getCode()))
-    //     .anyMatch(providerDetails -> providerDetails.getCode() < 400 && providerDetails.getOk())) {
+    //     .anyMatch(providerDetails -> providerDetails.getCode() < 400 && providerDetails.getOk()))
+    // {
     //   builder.up();
 
     // } else {
