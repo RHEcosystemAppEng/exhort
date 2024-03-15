@@ -19,6 +19,7 @@ export const TabbedLayout = ({report}: { report: Report }) => {
 
   const tabs = sources.map((source) => {
     const srcName = getSourceName(source);
+    const vulnDeps = source.report.dependencies?.filter((dep) => dep.highestVulnerability)
     return (
       <Tab
         eventKey={srcName}
@@ -26,7 +27,7 @@ export const TabbedLayout = ({report}: { report: Report }) => {
         aria-label={`${srcName} source`}
       >
         <PageSection variant={PageSectionVariants.default}>
-          <DepCompoundTable name={srcName} dependencies={source.report.dependencies} />
+          <DepCompoundTable name={srcName} dependencies={vulnDeps} />
         </PageSection>
       </Tab>
     );
