@@ -22,7 +22,7 @@ const OSS_SIGN_UP_LINK = 'https://ossindex.sonatype.org/user/register';
 
 const REDHAT_REPOSITORY = 'https://maven.repository.redhat.com/ga/';
 
-const REHAT_IMAGES_CATALOG = 'https://catalog.redhat.com/software/containers/';
+const REDHAT_IMAGES_CATALOG = 'https://catalog.redhat.com/software/containers/';
 
 export const getSignUpLink = (provider: string): string => {
   switch(provider) {
@@ -159,7 +159,7 @@ const parsePurl = (purl: string) =>{
 
 export const imageRemediationLink = (purl: string, report: Report, imageMapping: string) => {
   const sources = getSources(report);
-  let result = REHAT_IMAGES_CATALOG;
+  let result = REDHAT_IMAGES_CATALOG;
 
   for (const key in sources) {
     const source = sources[key];
