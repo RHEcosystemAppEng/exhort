@@ -197,7 +197,7 @@ public class ExhortIntegration extends EndpointRouteBuilder {
         .when(header(Exchange.CONTENT_ENCODING).isEqualToIgnoreCase(GZIP_ENCODING)).unmarshal().gzipDeflater()
         .setProperty(Constants.GZIP_RESPONSE_PROPERTY, constant(Boolean.TRUE))
       .end()
-      .to(seda("analyticsIdentify"))
+      .to(direct("analyticsIdentify"))
       .setProperty(PROVIDERS_PARAM, method(vulnerabilityProvider, "getProvidersFromQueryParam"))
       .setProperty(REQUEST_CONTENT_PROPERTY, method(BackendUtils.class, "getResponseMediaType"))
       .setProperty(VERBOSE_MODE_HEADER, header(VERBOSE_MODE_HEADER));
@@ -221,7 +221,7 @@ public class ExhortIntegration extends EndpointRouteBuilder {
     from(direct("validateToken"))
       .routeId("validateToken")
       .setProperty(Constants.EXHORT_REQUEST_ID_HEADER, method(BackendUtils.class,"generateRequestId"))
-      .to(seda("analyticsIdentify"))
+      .to(direct("analyticsIdentify"))
       .choice()
         .when(header(Constants.SNYK_TOKEN_HEADER).isNotNull())
           .setProperty(PROVIDERS_PARAM, constant(Arrays.asList(Constants.SNYK_PROVIDER)))
@@ -239,7 +239,7 @@ public class ExhortIntegration extends EndpointRouteBuilder {
       .setHeader(Constants.EXHORT_REQUEST_ID_HEADER, exchangeProperty(Constants.EXHORT_REQUEST_ID_HEADER))
       .process(this::cleanUpHeaders);
 
-    from(seda("analyticsIdentify"))
+    from(direct("analyticsIdentify"))
       .routeId("analyticsIdentify")
       .process(monitoringProcessor::processOriginalRequest)
       .to(seda("analyticsAsyncIdentify").waitForTaskToComplete(WaitForTaskToComplete.Never));
