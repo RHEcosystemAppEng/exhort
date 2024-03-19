@@ -64,7 +64,7 @@ public class CycloneDxParser extends SbomParser {
     if (bom.getComponents() != null) {
       componentPurls.putAll(
           bom.getComponents().stream()
-              .filter(c -> c.getBomRef() != null)
+              .filter(c -> c.getBomRef() != null && c.getPurl() != null)
               .collect(Collectors.toMap(Component::getBomRef, c -> new PackageRef(c.getPurl()))));
     }
 

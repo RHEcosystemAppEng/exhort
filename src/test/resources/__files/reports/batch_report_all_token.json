@@ -839,7 +839,71 @@
       }
     }
   },
-  "pkg:oci/quay.io/default-app@0.0.1": {
+  "pkg:oci/default-app@sha256:7c288032ecf3319045d9fa538c3b0cc868a320d01d03bce15b99c2c336319994?repository_url=quay.io/default-app&tag=0.0.1": {
+    "scanned": {
+      "total": 2,
+      "direct": 2,
+      "transitive": 0
+    },
+    "providers": {
+      "oss-index": {
+        "status": {
+          "ok": false,
+          "name": "oss-index",
+          "code": 401,
+          "message": "Unauthorized: Verify the provided credentials are valid."
+        }
+      },
+      "trusted-content": {
+        "status": {
+          "ok": true,
+          "name": "trusted-content",
+          "code": 200,
+          "message": "OK"
+        }
+      },
+      "osv-nvd": {
+        "status": {
+          "ok": true,
+          "name": "osv-nvd",
+          "code": 200,
+          "message": "OK"
+        }
+      },
+      "snyk": {
+        "status": {
+          "ok": true,
+          "name": "snyk",
+          "code": 200,
+          "message": "OK"
+        },
+        "sources": {
+          "snyk": {
+            "summary": {
+              "direct": 0,
+              "transitive": 0,
+              "total": 0,
+              "dependencies": 0,
+              "critical": 0,
+              "high": 0,
+              "medium": 0,
+              "low": 0,
+              "remediations": 0,
+              "recommendations": 0,
+              "unscanned": 1
+            },
+            "unscanned": [
+              {
+                "ref": "pkg:oci/default-app@sha256%3A7c288032ecf3319045d9fa538c3b0cc868a320d01d03bce15b99c2c336319994?repository_url=quay.io%2Fdefault-app&tag=0.0.1",
+                "reason": "unsupported-pkg-type"
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "pkg:oci/debian@sha256:7c288032ecf3319045d9fa538c3b0cc868a320d01d03bce15b99c2c336319994?tag=0.0.1": {
     "scanned": {
       "total": 2,
       "direct": 2,
@@ -886,8 +950,8 @@
             },
             "dependencies": [
               {
-                "ref": "pkg:oci/quay.io/default-app@0.0.1",
-                "recommendation": "pkg:oci/registry.access.redhat.com/ubi9/ubi@latest"
+                "ref": "pkg:oci/debian@sha256%3A7c288032ecf3319045d9fa538c3b0cc868a320d01d03bce15b99c2c336319994?tag=0.0.1",
+                "recommendation": "pkg:oci/ubi@sha256%3Af5983f7c7878cc9b26a3962be7756e3c810e9831b0b9f9613e6f6b445f884e74?arch=amd64&repository_url=registry.access.redhat.com%2Fubi9%2Fubi&tag=9.3-1552"
               }
             ]
           }
@@ -917,13 +981,13 @@
             },
             "dependencies": [
               {
-                "ref": "pkg:oci/quay.io/default-app@0.0.1",
-                "recommendation": "pkg:oci/registry.access.redhat.com/ubi9/ubi@latest"
+                "ref": "pkg:oci/debian@sha256%3A7c288032ecf3319045d9fa538c3b0cc868a320d01d03bce15b99c2c336319994?tag=0.0.1",
+                "recommendation": "pkg:oci/ubi@sha256%3Af5983f7c7878cc9b26a3962be7756e3c810e9831b0b9f9613e6f6b445f884e74?arch=amd64&repository_url=registry.access.redhat.com%2Fubi9%2Fubi&tag=9.3-1552"
               }
             ],
             "unscanned": [
               {
-                "ref": "pkg:oci/quay.io/default-app@0.0.1",
+                "ref": "pkg:oci/debian@sha256%3A7c288032ecf3319045d9fa538c3b0cc868a320d01d03bce15b99c2c336319994?tag=0.0.1",
                 "reason": "unsupported-pkg-type"
               }
             ]

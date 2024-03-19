@@ -36,7 +36,9 @@ import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.DomNodeList;
+import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlButton;
+import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlHeading2;
 import com.gargoylesoftware.htmlunit.html.HtmlHeading4;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
@@ -315,6 +317,47 @@ public class HtmlReportTest extends AbstractAnalysisTest {
 
     verifySnykRequest(ERROR_TOKEN);
     verifyNoInteractionsWithOSS();
+  }
+
+  @Test
+  public void testBatchHtmlWithToken() throws IOException {
+    stubAllProviders();
+
+    String body =
+        given()
+            .header(CONTENT_TYPE, CycloneDxMediaType.APPLICATION_CYCLONEDX_JSON)
+            .body(loadBatchSBOMFile(CYCLONEDX))
+            .header("Accept", MediaType.TEXT_HTML)
+            .header(Constants.SNYK_TOKEN_HEADER, OK_TOKEN)
+            .header(Constants.OSS_INDEX_USER_HEADER, OK_USER)
+            .header(Constants.OSS_INDEX_TOKEN_HEADER, OK_TOKEN)
+            .when()
+            .post("/api/v4/batch-analysis")
+            .then()
+            .assertThat()
+            .statusCode(200)
+            .contentType(MediaType.TEXT_HTML)
+            .header(
+                Constants.EXHORT_REQUEST_ID_HEADER,
+                MatchesPattern.matchesPattern(REGEX_MATCHER_REQUEST_ID))
+            .extract()
+            .body()
+            .asString();
+
+    HtmlPage page = extractPage(body);
+    // Find the root div element with id "root"
+    HtmlElement rootElement = page.getFirstByXPath("//div[@id='root']");
+
+    // Verify multi tab layout
+    List<HtmlElement> sectionElements = rootElement.getByXPath("./section");
+    assertEquals(1, sectionElements.size());
+    List<HtmlAnchor> anchorElements =
+        page.getByXPath(
+            "//a[contains(@href, 'https://catalog.redhat.com/software/containers/ubi9/')]");
+    assertTrue(!anchorElements.isEmpty(), "At least one href contains the desired substring");
+
+    verifySnykRequest(OK_TOKEN, 3);
+    verifyOssRequest(OK_USER, OK_TOKEN, 3);
   }
 
   private HtmlTableBody getTableBodyForDependency(String depRef, DomElement table) {

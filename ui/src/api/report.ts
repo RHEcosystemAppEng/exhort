@@ -1,4 +1,4 @@
-import { getSignUpLink } from "../utils/utils";
+import {getSignUpLink} from "../utils/utils";
 
 export interface AppData {
   providerPrivateData?: string[] | null;
@@ -8,6 +8,7 @@ export interface AppData {
   nvdIssueTemplate: string;
   cveIssueTemplate: string;
   snykSignup: string;
+  imageMapping: string;
 }
 
 export interface ReportMap {
@@ -183,6 +184,11 @@ export interface Cvss {
   remediationLevel?: string | null;
   reportConfidence?: string | null;
   cvss: string;
+}
+
+export interface CatalogEntry {
+  purl: string;
+  catalogUrl: string;
 }
 
 export function hasRemediations(vulnerability: Vulnerability): boolean {

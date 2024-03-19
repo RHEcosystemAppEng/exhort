@@ -1,4 +1,4 @@
-import { AppData, ProviderStatus } from "../api/report";
+import {AppData, CatalogEntry, getSources, ProviderStatus, Report} from "../api/report";
 
 const MAVEN_TYPE = 'maven';
 const MAVEN_URL = 'https://central.sonatype.com/artifact/';
@@ -21,6 +21,8 @@ const SIGN_UP_TAB_PROVIDERS = ['oss-index'];
 const OSS_SIGN_UP_LINK = 'https://ossindex.sonatype.org/user/register';
 
 const REDHAT_REPOSITORY = 'https://maven.repository.redhat.com/ga/';
+
+const REHAT_IMAGES_CATALOG = 'https://catalog.redhat.com/software/containers/';
 
 export const getSignUpLink = (provider: string): string => {
   switch(provider) {
@@ -82,7 +84,7 @@ export const extractDependencyUrl = (name: string) => {
       const version = pkgUrl.version;
       if(version?.match(/v\d\.\d.\d-\d{14}-\w{12}/)) { //pseudo-version
         return `${GOLANG_URL}${pkgUrl.namespace}/${pkgUrl.name}`;
-      } 
+      }
       return `${GOLANG_URL}${pkgUrl.namespace}/${pkgUrl.name}@${pkgUrl.version}`;
     case NPM_TYPE:
       if(pkgUrl.namespace) {
@@ -120,6 +122,76 @@ export const cveLink = (issueId: string, appData: AppData) => {
 
 export const uppercaseFirstLetter = (val: string) => {
   return val.toLowerCase().replace(/./, (c) => c.toUpperCase());
+};
+
+export const constructImageName = (purl: string): string => {
+  const purlObj = parsePurl(purl);
+  let imageName = '';
+  if (purlObj.repository_url) {
+    const indexOfFirstSlash = purlObj.repository_url.indexOf("/");
+    const parsedRepoUrl = indexOfFirstSlash !== -1 ? purlObj.repository_url.substring(indexOfFirstSlash + 1) : "";
+    imageName += parsedRepoUrl;
+  } else {
+    imageName += `${purlObj.short_name}`;
+  }
+  if (purlObj.tag) {
+    imageName += `:${purlObj.tag}`;
+  }
+  return imageName;
+}
+
+const parsePurl = (purl: string) =>{
+  const parts = purl.split('?');
+  const nameVersion = parts[0];
+  const queryParams = parts[1];
+  const query = new URLSearchParams(queryParams);
+
+  const repository_url = query.get('repository_url') || '';
+  const tag = query.get('tag') || '';
+  const arch = query.get('arch') || '';
+  const atIndex = nameVersion.split("@");
+  const short_name = atIndex[0].substring(atIndex[0].indexOf("/") + 1);
+  // Extract version and replace "%" with ":"
+  const version = nameVersion.substring(nameVersion.lastIndexOf("@")).replace("%3A", ":");
+
+  return { repository_url, tag, short_name, version, arch };
+}
+
+export const imageRemediationLink = (purl: string, report: Report, imageMapping: string) => {
+  const sources = getSources(report);
+  let result = REHAT_IMAGES_CATALOG;
+
+  for (const key in sources) {
+    const source = sources[key];
+    const dependencies = source.report.dependencies;
+    if (dependencies) {
+      // Find the Dependency with matching ref to the provided purl
+      const matchingDependency = Object.values(dependencies).find(dependency => {
+      const originalRef = dependency.ref;
+      const transformedRef = decodeURIComponent(originalRef);
+
+      return PackageURL.fromString(transformedRef).toString() === PackageURL.fromString(purl).toString();
+    });
+
+      if (matchingDependency && matchingDependency.recommendation ) {
+        const transformedRecommUrl = decodeURIComponent(matchingDependency.recommendation);
+        const catalogUrl = getCatalogUrlByPurl(transformedRecommUrl, imageMapping);
+
+        if (catalogUrl !== undefined) {
+          return catalogUrl;
+        }
+      }
+    }
+  }
+  return result + "search";
+};
+
+const getCatalogUrlByPurl = (recommendPurl: string, imageMapping: string): string | undefined => {
+  const catalogEntries: CatalogEntry[] = JSON.parse(imageMapping);
+  // Find the matching entry
+  const matchingEntry = catalogEntries.find(entry => PackageURL.fromString(entry.purl).toString() === PackageURL.fromString(recommendPurl).toString());
+
+  return matchingEntry?.catalogUrl;
 };
 
 class PackageURL {

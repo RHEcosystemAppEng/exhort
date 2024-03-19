@@ -668,9 +668,9 @@ public class AnalysisTest extends AbstractAnalysisTest {
             .asPrettyString();
 
     assertJson("reports/batch_report_all_token.json", body);
-    verifySnykRequest(OK_TOKEN, 2);
-    verifyOssRequest(OK_USER, OK_TOKEN, 2);
-    verifyOsvNvdRequest(2);
+    verifySnykRequest(OK_TOKEN, 3);
+    verifyOssRequest(OK_USER, OK_TOKEN, 3);
+    verifyOsvNvdRequest(3);
   }
 
   private void assertScanned(Scanned scanned) {

@@ -1,9 +1,9 @@
-import { AppData } from '@app/api/report';
+import {AppData} from '@app/api/report';
 
 export const dockerReport: AppData = {
   providerPrivateData: null,
   report: {
-    "pkg:maven/org.acme.dbaas/postgresql-orm-quarkus@1.0.0-SNAPSHOT?type=jar": {
+    "pkg:oci/test-repository@sha256:333224a233db31852ac1085c6cd702016ab8aaf54cecde5c4bed5451d636adcf?repository_url=test.io/test-namespace/test-repository&tag=test-tag&os=linux&arch=amd64": {
       "scanned": {
         "total": 10,
         "direct": 3,
@@ -34,7 +34,7 @@ export const dockerReport: AppData = {
               },
               "dependencies": [
                 {
-                  "ref": "pkg:maven/io.quarkus/quarkus-hibernate-orm@2.13.5.Final?type=jar",
+                  "ref": "pkg:oci/test-repository@sha256%3A333224a233db31852ac1085c6cd702016ab8aaf54cecde5c4bed5451d636adcf?arch=amd64&os=linux&repository_url=test.io%2Ftest-namespace%2Ftest-repository&tag=test-tag  ",
                   "transitive": [
                     {
                       "ref": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.1?type=jar",
@@ -144,7 +144,7 @@ export const dockerReport: AppData = {
                       }
                     }
                   ],
-                  "recommendation": "pkg:maven/io.quarkus/quarkus-hibernate-orm@2.13.8.Final-redhat-00006?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
+                  "recommendation": "pkg:oci/ubi@sha256%3Af5983f7c7878cc9b26a3962be7756e3c810e9831b0b9f9613e6f6b445f884e74?arch=amd64&repository_url=registry.access.redhat.com%2Fubi9%2Fubi&tag=9.3-1552",
                   "highestVulnerability": {
                     "id": "CVE-2020-36518",
                     "title": "[CVE-2020-36518] CWE-787: Out-of-bounds Write",
@@ -177,7 +177,7 @@ export const dockerReport: AppData = {
                 },
                 {
                   "ref": "pkg:maven/io.quarkus/quarkus-jdbc-postgresql@2.13.5.Final?type=jar",
-                  "recommendation": "pkg:maven/io.quarkus/quarkus-jdbc-postgresql@2.13.8.Final-redhat-00006?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar"
+                  "recommendation": "pkg:oci/ubi-minimal@sha256:06d06f15f7b641a78f2512c8817cbecaa1bf549488e273f5ac27ff1654ed33f0?repository_url=registry.access.redhat.com/ubi9/ubi-minimal&tag=9.3-1552&arch=amd64"
                 }
               ]
             }
@@ -843,7 +843,7 @@ export const dockerReport: AppData = {
         }
       }
     },
-    "pkg:oci/quay.io/default-app@0.0.1": {
+    "pkg:oci/default-app@sha256:333224a233db31852ac1085c6cd702016ab8aaf54cecde5c4bed5451d636adcf?repository_url=quay.io/default-app&tag=0.0.1": {
       "scanned": {
         "total": 2,
         "direct": 2,
@@ -890,8 +890,8 @@ export const dockerReport: AppData = {
               },
               "dependencies": [
                 {
-                  "ref": "pkg:oci/quay.io/default-app@0.0.1",
-                  "recommendation": "pkg:oci/quay.io/test-app@0.0.2"
+                  "ref": "pkg:oci/default-app@sha256%3A333224a233db31852ac1085c6cd702016ab8aaf54cecde5c4bed5451d636adcf?repository_url=quay.io%2Fdefault-app&tag=0.0.1",
+                  "recommendation": "pkg:oci/ubi-minimal@sha256:06d06f15f7b641a78f2512c8817cbecaa1bf549488e273f5ac27ff1654ed33f0?repository_url=registry.access.redhat.com/ubi9/ubi-minimal&tag=9.3-1552&arch=amd64"
                 }
               ]
             }
@@ -941,5 +941,15 @@ export const dockerReport: AppData = {
   snykIssueTemplate: 'https://security.snyk.io/vuln/__ISSUE_ID__',
   nvdIssueTemplate: 'https://nvd.nist.gov/vuln/detail/__ISSUE_ID__',
   snykSignup: 'https://app.snyk.io/login',
-    cveIssueTemplate: 'https://cve.mitre.org/cgi-bin/cvename.cgi?name=__ISSUE_ID__'
+  cveIssueTemplate: 'https://cve.mitre.org/cgi-bin/cvename.cgi?name=__ISSUE_ID__',
+  imageMapping: "[\n" +
+    "  {\n" +
+    "    \"purl\": \"pkg:oci/ubi@sha256:f5983f7c7878cc9b26a3962be7756e3c810e9831b0b9f9613e6f6b445f884e74?repository_url=registry.access.redhat.com/ubi9/ubi&tag=9.3-1552&arch=amd64\",\n" +
+    "    \"catalogUrl\": \"https://catalog.redhat.com/software/containers/ubi9/ubi/615bcf606feffc5384e8452e?architecture=amd64&image=65a82982a10f3e68777870b5\"\n" +
+    "  },\n" +
+    "  {\n" +
+    "    \"purl\": \"pkg:oci/ubi-minimal@sha256:06d06f15f7b641a78f2512c8817cbecaa1bf549488e273f5ac27ff1654ed33f0?repository_url=registry.access.redhat.com/ubi9/ubi-minimal&tag=9.3-1552&arch=amd64\",\n" +
+    "    \"catalogUrl\": \"https://catalog.redhat.com/software/containers/ubi9/ubi-minimal/615bd9b4075b022acc111bf5?architecture=amd64&image=65a828e3cda4984705d45d26\"\n" +
+    "  }\n" +
+    "]"
 };

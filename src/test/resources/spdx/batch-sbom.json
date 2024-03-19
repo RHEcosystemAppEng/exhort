@@ -790,113 +790,242 @@
       }
     ]
   },
-  "pkg:oci/quay.io/default-app@0.0.1" : {
-  "SPDXID": "SPDXRef-DOCUMENT",
-  "spdxVersion": "SPDX-2.3",
-  "creationInfo": {
-    "comment": "Converted from CycloneDX spec version 1.4",
-    "created": "2023-06-08T11:54:56Z",
-    "creators": [
-      "Tool: @cyclonedx:cyclonedx-npm-1.12.0",
-      "Tool: @cyclonedx:cyclonedx-library-2.0.0",
-      "Tool: CycloneToSpdx-0.1.4"
+  "pkg:oci/default-app@sha256:7c288032ecf3319045d9fa538c3b0cc868a320d01d03bce15b99c2c336319994?repository_url=quay.io/default-app&tag=0.0.1": {
+    "SPDXID": "SPDXRef-DOCUMENT",
+    "spdxVersion": "SPDX-2.3",
+    "creationInfo": {
+      "comment": "Converted from CycloneDX spec version 1.4",
+      "created": "2023-06-08T11:54:56Z",
+      "creators": [
+        "Tool: @cyclonedx:cyclonedx-npm-1.12.0",
+        "Tool: @cyclonedx:cyclonedx-library-2.0.0",
+        "Tool: CycloneToSpdx-0.1.4"
+      ],
+      "licenseListVersion": "3.21"
+    },
+    "name": "default-app",
+    "dataLicense": "CC0-1.0",
+    "annotations": [
+      {
+        "annotationDate": "2023-07-27T20:07:25Z",
+        "annotationType": "OTHER",
+        "annotator": "Tool: CycloneToSpdx",
+        "comment": "MISSING_CDX_PROPERTY:extensions={}"
+      }
     ],
-    "licenseListVersion": "3.21"
+    "documentNamespace": "https://cyclonedx/bafb80af-ae60-41c4-aab0-fa23ed480dc9_1",
+    "packages": [
+      {
+        "SPDXID": "SPDXRef-quay-io-default-app-0.0.1",
+        "annotations": [
+          {
+            "annotationDate": "2023-07-27T20:07:25Z",
+            "annotationType": "OTHER",
+            "annotator": "Tool: CycloneToSpdx",
+            "comment": "MISSING_CDX_PROPERTY:componentType=\"APPLICATION\""
+          },
+          {
+            "annotationDate": "2023-07-27T20:07:25Z",
+            "annotationType": "OTHER",
+            "annotator": "Tool: CycloneToSpdx",
+            "comment": "MISSING_CDX_PROPERTY:properites=[{\"name\":\"cdx:npm:package:path\",\"value\":\"\"}]"
+          }
+        ],
+        "copyrightText": "NOASSERTION",
+        "downloadLocation": "NOASSERTION",
+        "externalRefs": [
+          {
+            "referenceCategory": "PACKAGE-MANAGER",
+            "referenceLocator": "pkg:oci/default-app@sha256:7c288032ecf3319045d9fa538c3b0cc868a320d01d03bce15b99c2c336319994?repository_url=quay.io/default-app&tag=0.0.1",
+            "referenceType": "purl"
+          }
+        ],
+        "filesAnalyzed": false,
+        "licenseConcluded": "NOASSERTION",
+        "licenseDeclared": "Apache-2.0",
+        "name": "quay.io/default-app",
+        "originator": "Person: Pavel Odvody",
+        "primaryPackagePurpose": "APPLICATION",
+        "versionInfo": "0.0.1"
+      },
+      {
+        "SPDXID": "SPDXRef--xml-tools-common-0.1.6",
+        "annotations": [
+          {
+            "annotationDate": "2023-07-27T20:07:25Z",
+            "annotationType": "OTHER",
+            "annotator": "Tool: CycloneToSpdx",
+            "comment": "MISSING_CDX_PROPERTY:properites=[{\"name\":\"cdx:npm:package:path\",\"value\":\"node_modules/@xml-tools/common\"}]"
+          },
+          {
+            "annotationDate": "2023-07-27T20:07:25Z",
+            "annotationType": "OTHER",
+            "annotator": "Tool: CycloneToSpdx",
+            "comment": "MISSING_CDX_PROPERTY:componentType=\"LIBRARY\""
+          }
+        ],
+        "checksums": [
+          {
+            "algorithm": "SHA512",
+            "checksumValue": "eda55978461c72cd4a23f02c77a28a9eb0787530165d392344c8c6e34029184529e4da5f408bd62c406f32ff392a88f695b4a96a0700111c03cbda8cb1f58674"
+          }
+        ],
+        "copyrightText": "NOASSERTION",
+        "description": "XML-Tools Common Utilities",
+        "downloadLocation": "https://registry.npmjs.org/@xml-tools/common/-/common-0.1.6.tgz",
+        "externalRefs": [
+          {
+            "comment": "as detected from PackageJson property \"bugs.url\"",
+            "referenceCategory": "OTHER",
+            "referenceLocator": "https://github.com/sap/xml-tools/issues",
+            "referenceType": "http://cyclonedx.org/referenctype/issue-tracker"
+          },
+          {
+            "comment": "as detected from PackageJson property \"repository.url\"",
+            "referenceCategory": "PACKAGE-MANAGER",
+            "referenceLocator": "git+https://github.com/sap/xml-tools.git",
+            "referenceType": "http://cyclonedx.org/referenctype/other-package-manager"
+          },
+          {
+            "referenceCategory": "PACKAGE-MANAGER",
+            "referenceLocator": "pkg:npm/%40xml-tools/common@0.1.6",
+            "referenceType": "purl"
+          }
+        ],
+        "filesAnalyzed": false,
+        "homepage": "https://github.com/sap/xml-tools#readme",
+        "licenseConcluded": "NOASSERTION",
+        "licenseDeclared": "Apache-2.0",
+        "name": "@xml-tools:common",
+        "primaryPackagePurpose": "LIBRARY",
+        "versionInfo": "0.1.6"
+      }
+    ],
+    "relationships": [
+      {
+        "spdxElementId": "SPDXRef-DOCUMENT",
+        "relationshipType": "DESCRIBES",
+        "relatedSpdxElement": "SPDXRef-quay-io-default-app-0.0.1"
+      }
+    ]
   },
-  "name": "default-app",
-  "dataLicense": "CC0-1.0",
-  "annotations": [
-    {
-      "annotationDate": "2023-07-27T20:07:25Z",
-      "annotationType": "OTHER",
-      "annotator": "Tool: CycloneToSpdx",
-      "comment": "MISSING_CDX_PROPERTY:extensions={}"
-    }
-  ],
-  "documentNamespace": "https://cyclonedx/bafb80af-ae60-41c4-aab0-fa23ed480dc9_1",
-  "packages": [
-    {
-      "SPDXID": "SPDXRef-quay-io-default-app-0.0.1",
-      "annotations": [
-        {
-          "annotationDate": "2023-07-27T20:07:25Z",
-          "annotationType": "OTHER",
-          "annotator": "Tool: CycloneToSpdx",
-          "comment": "MISSING_CDX_PROPERTY:componentType=\"APPLICATION\""
-        },
-        {
-          "annotationDate": "2023-07-27T20:07:25Z",
-          "annotationType": "OTHER",
-          "annotator": "Tool: CycloneToSpdx",
-          "comment": "MISSING_CDX_PROPERTY:properites=[{\"name\":\"cdx:npm:package:path\",\"value\":\"\"}]"
-        }
+  "pkg:oci/debian@sha256:7c288032ecf3319045d9fa538c3b0cc868a320d01d03bce15b99c2c336319994?tag=0.0.1": {
+    "SPDXID": "SPDXRef-DOCUMENT",
+    "spdxVersion": "SPDX-2.3",
+    "creationInfo": {
+      "comment": "Converted from CycloneDX spec version 1.4",
+      "created": "2023-06-08T11:54:56Z",
+      "creators": [
+        "Tool: @cyclonedx:cyclonedx-npm-1.12.0",
+        "Tool: @cyclonedx:cyclonedx-library-2.0.0",
+        "Tool: CycloneToSpdx-0.1.4"
       ],
-      "copyrightText": "NOASSERTION",
-      "downloadLocation": "NOASSERTION",
-      "externalRefs": [
-        {
-          "referenceCategory": "PACKAGE-MANAGER",
-          "referenceLocator": "pkg:oci/quay.io/default-app@0.0.1",
-          "referenceType": "purl"
-        }
-      ],
-      "filesAnalyzed": false,
-      "licenseConcluded": "NOASSERTION",
-      "licenseDeclared": "Apache-2.0",
-      "name": "quay.io/default-app",
-      "originator": "Person: Pavel Odvody",
-      "primaryPackagePurpose": "APPLICATION",
-      "versionInfo": "0.0.1"
-    }, {
-      "SPDXID" : "SPDXRef--xml-tools-common-0.1.6",
-      "annotations" : [ {
-        "annotationDate" : "2023-07-27T20:07:25Z",
-        "annotationType" : "OTHER",
-        "annotator" : "Tool: CycloneToSpdx",
-        "comment" : "MISSING_CDX_PROPERTY:properites=[{\"name\":\"cdx:npm:package:path\",\"value\":\"node_modules/@xml-tools/common\"}]"
-      }, {
-        "annotationDate" : "2023-07-27T20:07:25Z",
-        "annotationType" : "OTHER",
-        "annotator" : "Tool: CycloneToSpdx",
-        "comment" : "MISSING_CDX_PROPERTY:componentType=\"LIBRARY\""
-      } ],
-      "checksums" : [ {
-        "algorithm" : "SHA512",
-        "checksumValue" : "eda55978461c72cd4a23f02c77a28a9eb0787530165d392344c8c6e34029184529e4da5f408bd62c406f32ff392a88f695b4a96a0700111c03cbda8cb1f58674"
-      } ],
-      "copyrightText" : "NOASSERTION",
-      "description" : "XML-Tools Common Utilities",
-      "downloadLocation" : "https://registry.npmjs.org/@xml-tools/common/-/common-0.1.6.tgz",
-      "externalRefs" : [ {
-        "comment" : "as detected from PackageJson property \"bugs.url\"",
-        "referenceCategory" : "OTHER",
-        "referenceLocator" : "https://github.com/sap/xml-tools/issues",
-        "referenceType" : "http://cyclonedx.org/referenctype/issue-tracker"
-      }, {
-        "comment" : "as detected from PackageJson property \"repository.url\"",
-        "referenceCategory" : "PACKAGE-MANAGER",
-        "referenceLocator" : "git+https://github.com/sap/xml-tools.git",
-        "referenceType" : "http://cyclonedx.org/referenctype/other-package-manager"
-      }, {
-        "referenceCategory" : "PACKAGE-MANAGER",
-        "referenceLocator" : "pkg:npm/%40xml-tools/common@0.1.6",
-        "referenceType" : "purl"
-      } ],
-      "filesAnalyzed" : false,
-      "homepage" : "https://github.com/sap/xml-tools#readme",
-      "licenseConcluded" : "NOASSERTION",
-      "licenseDeclared" : "Apache-2.0",
-      "name" : "@xml-tools:common",
-      "primaryPackagePurpose" : "LIBRARY",
-      "versionInfo" : "0.1.6"
-    }
-  ],
-  "relationships": [
-    {
-      "spdxElementId": "SPDXRef-DOCUMENT",
-      "relationshipType": "DESCRIBES",
-      "relatedSpdxElement": "SPDXRef-quay-io-default-app-0.0.1"
-    }
-  ]
-}
+      "licenseListVersion": "3.21"
+    },
+    "name": "default-app",
+    "dataLicense": "CC0-1.0",
+    "annotations": [
+      {
+        "annotationDate": "2023-07-27T20:07:25Z",
+        "annotationType": "OTHER",
+        "annotator": "Tool: CycloneToSpdx",
+        "comment": "MISSING_CDX_PROPERTY:extensions={}"
+      }
+    ],
+    "documentNamespace": "https://cyclonedx/bafb80af-ae60-41c4-aab0-fa23ed480dc9_1",
+    "packages": [
+      {
+        "SPDXID": "SPDXRef-quay-io-default-app-0.0.1",
+        "annotations": [
+          {
+            "annotationDate": "2023-07-27T20:07:25Z",
+            "annotationType": "OTHER",
+            "annotator": "Tool: CycloneToSpdx",
+            "comment": "MISSING_CDX_PROPERTY:componentType=\"APPLICATION\""
+          },
+          {
+            "annotationDate": "2023-07-27T20:07:25Z",
+            "annotationType": "OTHER",
+            "annotator": "Tool: CycloneToSpdx",
+            "comment": "MISSING_CDX_PROPERTY:properites=[{\"name\":\"cdx:npm:package:path\",\"value\":\"\"}]"
+          }
+        ],
+        "copyrightText": "NOASSERTION",
+        "downloadLocation": "NOASSERTION",
+        "externalRefs": [
+          {
+            "referenceCategory": "PACKAGE-MANAGER",
+            "referenceLocator": "pkg:oci/debian@sha256:7c288032ecf3319045d9fa538c3b0cc868a320d01d03bce15b99c2c336319994?tag=0.0.1",
+            "referenceType": "purl"
+          }
+        ],
+        "filesAnalyzed": false,
+        "licenseConcluded": "NOASSERTION",
+        "licenseDeclared": "Apache-2.0",
+        "name": "quay.io/default-app",
+        "originator": "Person: Pavel Odvody",
+        "primaryPackagePurpose": "APPLICATION",
+        "versionInfo": "0.0.1"
+      },
+      {
+        "SPDXID": "SPDXRef--xml-tools-common-0.1.6",
+        "annotations": [
+          {
+            "annotationDate": "2023-07-27T20:07:25Z",
+            "annotationType": "OTHER",
+            "annotator": "Tool: CycloneToSpdx",
+            "comment": "MISSING_CDX_PROPERTY:properites=[{\"name\":\"cdx:npm:package:path\",\"value\":\"node_modules/@xml-tools/common\"}]"
+          },
+          {
+            "annotationDate": "2023-07-27T20:07:25Z",
+            "annotationType": "OTHER",
+            "annotator": "Tool: CycloneToSpdx",
+            "comment": "MISSING_CDX_PROPERTY:componentType=\"LIBRARY\""
+          }
+        ],
+        "checksums": [
+          {
+            "algorithm": "SHA512",
+            "checksumValue": "eda55978461c72cd4a23f02c77a28a9eb0787530165d392344c8c6e34029184529e4da5f408bd62c406f32ff392a88f695b4a96a0700111c03cbda8cb1f58674"
+          }
+        ],
+        "copyrightText": "NOASSERTION",
+        "description": "XML-Tools Common Utilities",
+        "downloadLocation": "https://registry.npmjs.org/@xml-tools/common/-/common-0.1.6.tgz",
+        "externalRefs": [
+          {
+            "comment": "as detected from PackageJson property \"bugs.url\"",
+            "referenceCategory": "OTHER",
+            "referenceLocator": "https://github.com/sap/xml-tools/issues",
+            "referenceType": "http://cyclonedx.org/referenctype/issue-tracker"
+          },
+          {
+            "comment": "as detected from PackageJson property \"repository.url\"",
+            "referenceCategory": "PACKAGE-MANAGER",
+            "referenceLocator": "git+https://github.com/sap/xml-tools.git",
+            "referenceType": "http://cyclonedx.org/referenctype/other-package-manager"
+          },
+          {
+            "referenceCategory": "PACKAGE-MANAGER",
+            "referenceLocator": "pkg:npm/%40xml-tools/common@0.1.6",
+            "referenceType": "purl"
+          }
+        ],
+        "filesAnalyzed": false,
+        "homepage": "https://github.com/sap/xml-tools#readme",
+        "licenseConcluded": "NOASSERTION",
+        "licenseDeclared": "Apache-2.0",
+        "name": "@xml-tools:common",
+        "primaryPackagePurpose": "LIBRARY",
+        "versionInfo": "0.1.6"
+      }
+    ],
+    "relationships": [
+      {
+        "spdxElementId": "SPDXRef-DOCUMENT",
+        "relationshipType": "DESCRIBES",
+        "relatedSpdxElement": "SPDXRef-quay-io-default-app-0.0.1"
+      }
+    ]
+  }
 }
