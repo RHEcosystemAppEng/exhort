@@ -22,8 +22,10 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.camel.Body;
+import org.apache.camel.Exchange;
 import org.apache.camel.ExchangeProperty;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
@@ -60,8 +62,13 @@ public class ReportTemplate {
 
   @Inject UBIRecommendation ubiRecommendation;
 
+  @ConfigProperty(name = "telemetry.write-key")
+  Optional<String> writeKey;
+
   public Map<String, Object> setVariables(
+      Exchange exchange,
       @Body Object report,
+      @ExchangeProperty(Constants.RHDA_TOKEN_HEADER) String userId,
       @ExchangeProperty(Constants.PROVIDER_PRIVATE_DATA_PROPERTY) List<String> providerPrivateData)
       throws JsonMappingException, JsonProcessingException, IOException {
 
@@ -74,6 +81,9 @@ public class ReportTemplate {
     params.put("snykSignup", snykSignup);
     params.put("cveIssueTemplate", cveIssuePathRegex);
     params.put("imageMapping", getImageMapping());
+    params.put("userId", userId);
+    params.put("anonymousId", exchange.getProperty("telemetry-anonymous-id", String.class));
+    params.put("writeKey", writeKey);
 
     ObjectWriter objectWriter = new ObjectMapper().writer();
     String appData = objectWriter.writeValueAsString(params);

@@ -9,6 +9,9 @@ export interface AppData {
   cveIssueTemplate: string;
   snykSignup: string;
   imageMapping: string;
+  userId: string | null;
+  anonymousId: string | null;
+  writeKey: string;
 }
 
 export interface ReportMap {
