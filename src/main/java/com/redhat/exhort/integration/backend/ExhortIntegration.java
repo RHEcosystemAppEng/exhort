@@ -160,6 +160,7 @@ public class ExhortIntegration extends EndpointRouteBuilder {
       .routeId("dependencyAnalysis")
       .to(direct("preProcessAnalysisRequest"))
       .process(this::processAnalysisRequest)
+      .to(direct("analyticsIdentify"))
       .to(direct("analyzeSbom"))
       .to(direct("report"))
       .to(direct("postProcessAnalysisRequest"));
@@ -168,6 +169,7 @@ public class ExhortIntegration extends EndpointRouteBuilder {
       .routeId("batchDependencyAnalysis")
       .to(direct("preProcessAnalysisRequest"))
       .process(this::processBatchAnalysisRequest)
+      .to(direct("analyticsIdentify"))
       .to(direct("analyzeSboms"))
       .to(direct("batchReport"))
       .to(direct("postProcessAnalysisRequest"));
@@ -197,7 +199,6 @@ public class ExhortIntegration extends EndpointRouteBuilder {
         .when(header(Exchange.CONTENT_ENCODING).isEqualToIgnoreCase(GZIP_ENCODING)).unmarshal().gzipDeflater()
         .setProperty(Constants.GZIP_RESPONSE_PROPERTY, constant(Boolean.TRUE))
       .end()
-      .to(direct("analyticsIdentify"))
       .setProperty(PROVIDERS_PARAM, method(vulnerabilityProvider, "getProvidersFromQueryParam"))
       .setProperty(REQUEST_CONTENT_PROPERTY, method(BackendUtils.class, "getResponseMediaType"))
       .setProperty(VERBOSE_MODE_HEADER, header(VERBOSE_MODE_HEADER));
