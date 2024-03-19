@@ -26,7 +26,7 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
 
-public class WiremockV3Extension implements QuarkusTestResourceLifecycleManager {
+public class WiremockExtension implements QuarkusTestResourceLifecycleManager {
 
   public static final String SNYK_TOKEN = "snyk-token-xyz";
 

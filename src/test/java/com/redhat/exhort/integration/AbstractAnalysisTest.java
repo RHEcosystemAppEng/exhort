@@ -28,7 +28,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
-import static com.redhat.exhort.extensions.WiremockV3Extension.SNYK_TOKEN;
+import static com.redhat.exhort.extensions.WiremockExtension.SNYK_TOKEN;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -51,7 +51,7 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.BasicCredentials;
 import com.google.common.base.Charsets;
 import com.redhat.exhort.extensions.InjectWireMock;
-import com.redhat.exhort.extensions.WiremockV3Extension;
+import com.redhat.exhort.extensions.WiremockExtension;
 import com.redhat.exhort.integration.providers.snyk.SnykRequestBuilder;
 
 import io.quarkus.test.common.QuarkusTestResource;
@@ -63,7 +63,7 @@ import io.restassured.config.EncoderConfig;
 import jakarta.ws.rs.core.MediaType;
 
 @QuarkusTest
-@QuarkusTestResource(WiremockV3Extension.class)
+@QuarkusTestResource(WiremockExtension.class)
 public abstract class AbstractAnalysisTest {
 
   private static final String SNYK_UA_PATTERN = "redhat-snyk-exhort-.*";

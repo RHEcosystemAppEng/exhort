@@ -23,6 +23,6 @@ import java.lang.annotation.RetentionPolicy;
 
 import io.quarkus.test.common.QuarkusTestResource;
 
-@QuarkusTestResource(WiremockV3Extension.class)
+@QuarkusTestResource(WiremockExtension.class)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface InjectWireMock {}

@@ -34,7 +34,7 @@
     <!-- Plugins -->
     <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
     <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-    <quarkus.platform.version>3.5.3</quarkus.platform.version>
+    <quarkus.platform.version>3.8.2</quarkus.platform.version>
     <resources-plugin.version>3.3.1</resources-plugin.version>
     <build-helper-maven-plugin.version>3.4.0</build-helper-maven-plugin.version>
     <compiler-plugin.version>3.11.0</compiler-plugin.version>
@@ -210,7 +210,7 @@
     </dependency>
     <dependency>
       <groupId>org.wiremock</groupId>
-      <artifactId>wiremock</artifactId>
+      <artifactId>wiremock-standalone</artifactId>
       <version>${wiremock.version}</version>
       <scope>test</scope>
     </dependency>
