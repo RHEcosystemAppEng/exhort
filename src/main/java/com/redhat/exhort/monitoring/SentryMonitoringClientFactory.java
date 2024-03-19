@@ -25,7 +25,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import com.redhat.exhort.monitoring.impl.SentryMonitoringClient;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
-import io.sentry.SentryClientFactory;
+import io.sentry.SentryOptions;
 
 import jakarta.enterprise.context.ApplicationScoped;
 
@@ -43,9 +43,10 @@ public class SentryMonitoringClientFactory {
   String environment;
 
   public MonitoringClient newInstance() {
-    var client = SentryClientFactory.sentryClient(dsn.get());
-    client.addTag("server_name", serverName.get());
-    client.addTag("environment", environment);
-    return new SentryMonitoringClient(client);
+    SentryOptions opt = new SentryOptions();
+    opt.setDsn(dsn.get());
+    opt.setEnvironment(environment);
+    opt.setTag("server_name", serverName.get());
+    return new SentryMonitoringClient(opt);
   }
 }

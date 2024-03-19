@@ -18,58 +18,50 @@
 
 package com.redhat.exhort.monitoring.impl;
 
-import java.util.Base64;
 import java.util.Map;
 
 import com.redhat.exhort.monitoring.MonitoringClient;
 import com.redhat.exhort.monitoring.MonitoringContext;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
-import io.sentry.SentryClient;
-import io.sentry.event.BreadcrumbBuilder;
-import io.sentry.event.UserBuilder;
+import io.sentry.Hub;
+import io.sentry.SentryOptions;
+import io.sentry.protocol.User;
 
 @RegisterForReflection
 public class SentryMonitoringClient implements MonitoringClient {
 
-  private final SentryClient client;
+  private final SentryOptions options;
 
-  public SentryMonitoringClient(SentryClient client) {
-    this.client = client;
+  public SentryMonitoringClient(SentryOptions options) {
+    this.options = options;
   }
 
   @Override
   public void reportException(Throwable exception, MonitoringContext context) {
+    var hub = new Hub(options);
     if (!context.breadcrumbs().isEmpty()) {
-      context
-          .breadcrumbs()
-          .forEach(
-              b ->
-                  this.client
-                      .getContext()
-                      .recordBreadcrumb(
-                          new BreadcrumbBuilder()
-                              .setMessage(new String(Base64.getEncoder().encode(b.getBytes())))
-                              .setType(null)
-                              .build()));
+      context.breadcrumbs().forEach(b -> hub.addBreadcrumb(b));
     }
     if (context.userId() != null) {
-      this.client.getContext().setUser(new UserBuilder().setId(context.userId()).build());
+      var user = new User();
+      user.setId(context.userId());
+      hub.setUser(user);
     }
-    addAdditionalData(context.metadata(), context.tags());
-    this.client.sendException(exception);
+    addAdditionalData(hub, context.metadata(), context.tags());
+    hub.captureException(exception);
   }
 
-  private void addAdditionalData(Map<String, String> metadata, Map<String, String> tags) {
+  private void addAdditionalData(Hub hub, Map<String, String> metadata, Map<String, String> tags) {
     if (metadata != null) {
       metadata.entrySet().stream()
           .filter(e -> e.getValue() != null)
-          .forEach(e -> this.client.getContext().addExtra(e.getKey(), e.getValue()));
+          .forEach(e -> hub.setExtra(e.getKey(), e.getValue()));
     }
     if (tags != null) {
       tags.entrySet().stream()
           .filter(e -> e.getValue() != null)
-          .forEach(t -> this.client.getContext().addTag(t.getKey(), t.getValue()));
+          .forEach(t -> hub.setTag(t.getKey(), t.getValue()));
     }
   }
 }
