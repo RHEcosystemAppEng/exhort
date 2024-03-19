@@ -30,6 +30,9 @@
           "dependencies": [
             {
               "ref": "pkg:maven/io.quarkus/quarkus-hibernate-orm@2.13.5.Final?type=jar",
+              "issues": [
+
+              ],
               "transitive": [
                 {
                   "ref": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.1?type=jar",
@@ -172,6 +175,12 @@
             },
             {
               "ref": "pkg:maven/io.quarkus/quarkus-jdbc-postgresql@2.13.5.Final?type=jar",
+              "issues": [
+
+              ],
+              "transitive": [
+
+              ],
               "recommendation": "pkg:maven/io.quarkus/quarkus-jdbc-postgresql@2.13.8.Final-redhat-00006?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar"
             }
           ]
@@ -184,6 +193,9 @@
         "name": "trusted-content",
         "code": 200,
         "message": "OK"
+      },
+      "sources": {
+
       }
     },
     "osv-nvd": {
@@ -211,6 +223,9 @@
           "dependencies": [
             {
               "ref": "pkg:maven/io.quarkus/quarkus-hibernate-orm@2.13.5.Final?type=jar",
+              "issues": [
+
+              ],
               "transitive": [
                 {
                   "ref": "pkg:maven/io.quarkus/quarkus-core@2.13.5.Final?type=jar",
@@ -438,6 +453,9 @@
             },
             {
               "ref": "pkg:maven/io.quarkus/quarkus-jdbc-postgresql@2.13.5.Final?type=jar",
+              "issues": [
+
+              ],
               "transitive": [
                 {
                   "ref": "pkg:maven/org.postgresql/postgresql@42.5.0?type=jar",
@@ -566,6 +584,9 @@
           "dependencies": [
             {
               "ref": "pkg:maven/io.quarkus/quarkus-hibernate-orm@2.13.5.Final?type=jar",
+              "issues": [
+
+              ],
               "transitive": [
                 {
                   "ref": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.1?type=jar",
@@ -622,6 +643,9 @@
                       },
                       "cvssScore": 5.9,
                       "severity": "MEDIUM",
+                      "cves": [
+
+                      ],
                       "unique": true,
                       "remediation": {
                         "fixedIn": [
@@ -733,6 +757,9 @@
             },
             {
               "ref": "pkg:maven/io.quarkus/quarkus-jdbc-postgresql@2.13.5.Final?type=jar",
+              "issues": [
+
+              ],
               "transitive": [
                 {
                   "ref": "pkg:maven/org.postgresql/postgresql@42.5.0?type=jar",

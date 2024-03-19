@@ -640,6 +640,16 @@
           {
             "type": "vcs",
             "url": "https://github.com/quarkusio/quarkus"
+          },
+          {
+            "url": "",
+            "hashes": [
+              {
+                "alg": "SHA-1",
+                "content": "cf5276dc8e459869e0ed7f01e90ec9208592f672"
+              }
+            ],
+            "type": "build-meta"
           }
         ],
         "type": "library",
@@ -718,6 +728,16 @@
           {
             "type": "vcs",
             "url": "https://github.com/eclipse-ee4j/interceptor-api"
+          },
+          {
+            "url": "",
+            "hashes": [
+              {
+                "alg": "SHA-1",
+                "content": "ab7ef6f1d7ba323e34ffc00d5b5344fefd7a2d27"
+              }
+            ],
+            "type": "build-meta"
           }
         ],
         "type": "library",
@@ -805,7 +825,19 @@
         "group": "@xml-tools",
         "version": "0.1.6",
         "bom-ref": "@xml-tools/common@0.1.6",
-        "purl": "pkg:npm/%40xml-tools/common@0.1.6"
+        "purl": "pkg:npm/%40xml-tools/common@0.1.6",
+        "externalReferences": [
+          {
+            "url": "",
+            "hashes": [
+              {
+                "alg": "SHA-1",
+                "content": "33ed361740983db7625babe04d5765a11c12ca5f"
+              }
+            ],
+            "type": "build-meta"
+          }
+        ]
       }
     ],
     "dependencies": [
@@ -841,7 +873,19 @@
         "group": "@xml-tools",
         "version": "0.1.6",
         "bom-ref": "@xml-tools/common@0.1.6",
-        "purl": "pkg:npm/%40xml-tools/common@0.1.6"
+        "purl": "pkg:npm/%40xml-tools/common@0.1.6",
+        "externalReferences": [
+          {
+            "url": "",
+            "hashes": [
+              {
+                "alg": "SHA-1",
+                "content": "33ed361740983db7625babe04d5765a11c12ca5f"
+              }
+            ],
+            "type": "build-meta"
+          }
+        ]
       }
     ],
     "dependencies": [

@@ -698,7 +698,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
     var report = getReport(hibernate.name(), dependencies);
     assertNotNull(report);
     assertEquals(hibernate, report.getRef());
-    assertNull(report.getIssues());
+    assertTrue(report.getIssues().isEmpty());
 
     assertEquals(1, report.getTransitive().size());
     var tReport = report.getTransitive().get(0);
