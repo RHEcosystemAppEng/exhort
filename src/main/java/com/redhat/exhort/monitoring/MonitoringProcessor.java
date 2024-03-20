@@ -92,6 +92,7 @@ public class MonitoringProcessor {
   }
 
   public void processClientException(Exchange exchange) {
+    processOriginalRequest(exchange);
     processError(exchange, CLIENT_ERROR_TYPE);
   }
 
