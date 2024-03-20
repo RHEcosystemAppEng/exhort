@@ -18,6 +18,7 @@
 
 package com.redhat.exhort.analytics;
 
+import static com.redhat.exhort.integration.Constants.ANONYMOUS_ID_PROPERTY;
 import static com.redhat.exhort.integration.Constants.RHDA_OPERATION_TYPE_HEADER;
 import static com.redhat.exhort.integration.Constants.RHDA_SOURCE_HEADER;
 import static com.redhat.exhort.integration.Constants.RHDA_TOKEN_HEADER;
@@ -58,8 +59,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 public class AnalyticsService {
 
   private static final Logger LOGGER = Logger.getLogger(AnalyticsService.class);
-
-  private static final String ANONYMOUS_ID = "telemetry-anonymous-id";
   private static final String ANALYSIS_EVENT = "rhda.exhort.analysis";
   private static final String TOKEN_EVENT = "rhda.exhort.token";
 
@@ -100,7 +99,7 @@ public class AnalyticsService {
     if (userId == null) {
       var anonymousId = UUID.randomUUID().toString();
       builder.anonymousId(anonymousId);
-      exchange.setProperty(ANONYMOUS_ID, anonymousId);
+      exchange.setProperty(ANONYMOUS_ID_PROPERTY, anonymousId);
     } else {
       builder.userId(userId);
       exchange.setProperty(RHDA_TOKEN_HEADER, userId);
@@ -250,7 +249,7 @@ public class AnalyticsService {
     if (userId != null) {
       builder.userId(userId);
     } else {
-      var anonymousId = exchange.getProperty(ANONYMOUS_ID, String.class);
+      var anonymousId = exchange.getProperty(ANONYMOUS_ID_PROPERTY, String.class);
       builder.anonymousId(anonymousId);
     }
     return builder;

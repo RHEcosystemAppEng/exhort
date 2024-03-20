@@ -34,7 +34,7 @@ import jakarta.ws.rs.core.MultivaluedMap;
 @ApplicationScoped
 public class AuthenticationHeaderFactory implements ClientHeadersFactory {
 
-  @ConfigProperty(name = "telemetry.write-key")
+  @ConfigProperty(name = Constants.TELEMETRY_WRITE_KEY)
   Optional<String> writeKey;
 
   String basicAuthHeader;

@@ -106,6 +106,10 @@ public final class Constants {
 
   public static final String UNSCANNED_REASON_UNSUPPORTED_PACKAGE_TYPE = "unsupported-pkg-type";
 
+  public static final String ANONYMOUS_ID_PROPERTY = "telemetry-anonymous-id";
+
+  public static final String TELEMETRY_WRITE_KEY = "telemetry.write-key";
+
   public static final List<String> PROVIDERS =
       Collections.unmodifiableList(
           new ArrayList<>() {

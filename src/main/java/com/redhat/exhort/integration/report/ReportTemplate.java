@@ -62,12 +62,16 @@ public class ReportTemplate {
 
   @Inject UBIRecommendation ubiRecommendation;
 
-  @ConfigProperty(name = "telemetry.write-key")
+  @ConfigProperty(name = Constants.TELEMETRY_WRITE_KEY)
   Optional<String> writeKey;
+
+  @ConfigProperty(name = "telemetry.disabled", defaultValue = "false")
+  Boolean disabled;
 
   public Map<String, Object> setVariables(
       Exchange exchange,
       @Body Object report,
+      @ExchangeProperty(Constants.ANONYMOUS_ID_PROPERTY) String anonymousId,
       @ExchangeProperty(Constants.RHDA_TOKEN_HEADER) String userId,
       @ExchangeProperty(Constants.PROVIDER_PRIVATE_DATA_PROPERTY) List<String> providerPrivateData)
       throws JsonMappingException, JsonProcessingException, IOException {
@@ -81,9 +85,11 @@ public class ReportTemplate {
     params.put("snykSignup", snykSignup);
     params.put("cveIssueTemplate", cveIssuePathRegex);
     params.put("imageMapping", getImageMapping());
-    params.put("userId", userId);
-    params.put("anonymousId", exchange.getProperty("telemetry-anonymous-id", String.class));
-    params.put("writeKey", writeKey);
+    if (!disabled && writeKey.isPresent()) {
+      params.put("userId", userId);
+      params.put("anonymousId", anonymousId);
+      params.put("writeKey", writeKey);
+    }
 
     ObjectWriter objectWriter = new ObjectMapper().writer();
     String appData = objectWriter.writeValueAsString(params);
