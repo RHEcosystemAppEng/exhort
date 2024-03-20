@@ -41,39 +41,6 @@ export const TabbedLayout = ({report}: { report: Report }) => {
       handleActiveTabKeyUpdate(activeTabKey);
     }, [activeTabKey, appContext.userId, appContext.anonymousId, analytics]);
 
-
-
-  // const analytics = appContext.telemetryDisabled && appContext.writeKey !== null && appContext.writeKey !== undefined
-  //     ? AnalyticsBrowser.load({writeKey: appContext.writeKey})
-  //     : null;
-  //
-  // const previousUserId = useRef<string | null>(null);
-  // const previousActiveTabKey = useRef<string | number>('');
-  //
-  //   useEffect(() => {
-  //     if(analytics){
-  //       if (appContext.userId == null) {
-  //         if (appContext.anonymousId != null) {
-  //           analytics.setAnonymousId(appContext.anonymousId);
-  //         }
-  //       } else {
-  //         if (appContext.userId !== previousUserId.current) {
-  //           analytics.identify(appContext.userId);
-  //           previousUserId.current = appContext.userId;
-  //         }
-  //       }
-  //       const handleActiveTabKeyUpdate = async (newActiveTabKey: string | number) => {
-  //         if (newActiveTabKey !== previousActiveTabKey.current) {
-  //           analytics.track("rhda.exhort.tab", {
-  //             tabName: newActiveTabKey,
-  //           });
-  //           previousActiveTabKey.current = newActiveTabKey;
-  //         }
-  //       }
-  //       // Call the function to handle asynchronous activeTabKey update
-  //       handleActiveTabKeyUpdate(activeTabKey);
-  //     }
-  //   }, [activeTabKey, appContext.userId, appContext.anonymousId, analytics]);
   // Toggle currently active tab
   const handleTabClick = (
       event: React.MouseEvent<any> | React.KeyboardEvent | MouseEvent,
