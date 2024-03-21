@@ -30,11 +30,8 @@ spec:
             memory: "5120Mi"
             cpu: "500m"
         env:
-        - name: API_SNYK_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: exhort-secret
-              key: api-snyk-token
+        - name: API_SNYK_DISABLED
+          value: "true"
         - name: API_OSSINDEX_DISABLED
           value: "true"
         - name: MONITORING_ENABLED
