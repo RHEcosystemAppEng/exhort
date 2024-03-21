@@ -24,6 +24,8 @@ const REDHAT_REPOSITORY = 'https://maven.repository.redhat.com/ga/';
 
 const REDHAT_IMAGES_CATALOG = 'https://catalog.redhat.com/software/containers/';
 
+const ENCODED_CHAR_REGEX = /%[0-9A-Fa-f]{2}/;
+
 export const getSignUpLink = (provider: string): string => {
   switch(provider) {
     case 'oss-index': return OSS_SIGN_UP_LINK;
@@ -157,9 +159,15 @@ const parsePurl = (purl: string) =>{
   return { repository_url, tag, short_name, version, arch };
 }
 
+const isEncoded = (str: string): boolean => {
+  return ENCODED_CHAR_REGEX.test(str);
+}
+
 export const imageRemediationLink = (purl: string, report: Report, imageMapping: string) => {
   const sources = getSources(report);
   let result = REDHAT_IMAGES_CATALOG;
+  const encodedPattern = /%[0-9A-Fa-f]{2}/;
+
 
   for (const key in sources) {
     const source = sources[key];
@@ -169,8 +177,9 @@ export const imageRemediationLink = (purl: string, report: Report, imageMapping:
       const matchingDependency = Object.values(dependencies).find(dependency => {
       const originalRef = dependency.ref;
       const transformedRef = decodeURIComponent(originalRef);
+      const transformedPurl = isEncoded(purl) ? decodeURIComponent(purl) : purl;
 
-      return PackageURL.fromString(transformedRef).toString() === PackageURL.fromString(purl).toString();
+      return PackageURL.fromString(transformedRef).toString() === PackageURL.fromString(transformedPurl).toString();
     });
 
       if (matchingDependency && matchingDependency.recommendation ) {
