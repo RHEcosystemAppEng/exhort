@@ -166,8 +166,6 @@ const isEncoded = (str: string): boolean => {
 export const imageRemediationLink = (purl: string, report: Report, imageMapping: string) => {
   const sources = getSources(report);
   let result = REDHAT_IMAGES_CATALOG;
-  const encodedPattern = /%[0-9A-Fa-f]{2}/;
-
 
   for (const key in sources) {
     const source = sources[key];
