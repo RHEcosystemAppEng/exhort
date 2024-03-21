@@ -30,7 +30,10 @@
     "dependencies": [
         {
             "ref": "pkg:maven/io.quarkus/quarkus-hibernate-orm@2.13.5.Final?type=jar",
-            "transitive": [
+          "issues": [
+
+          ],
+          "transitive": [
                 {
                     "ref": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.1?type=jar",
                     "issues": [
@@ -120,7 +123,10 @@
                 }
             ],
             "recommendation": "pkg:maven/io.quarkus/quarkus-hibernate-orm@2.13.8.Final-redhat-00006?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
-            "highestVulnerability": {
+          "remediations": {
+
+          },
+          "highestVulnerability": {
                 "id": "SNYK-JAVA-COMFASTERXMLJACKSONCORE-2421244",
                 "title": "Denial of Service (DoS)",
                 "source": "snyk",
@@ -145,7 +151,10 @@
         },
         {
             "ref": "pkg:maven/io.quarkus/quarkus-jdbc-postgresql@2.13.5.Final?type=jar",
-            "transitive": [
+          "issues": [
+
+          ],
+          "transitive": [
                 {
                     "ref": "pkg:maven/org.postgresql/postgresql@42.5.0?type=jar",
                     "issues": [
@@ -172,6 +181,9 @@
                             "unique": false
                         }
                     ],
+                  "remediations": {
+
+                  },
                     "highestVulnerability": {
                         "id": "SNYK-JAVA-ORGPOSTGRESQL-3146847",
                         "title": "Information Exposure",
@@ -197,7 +209,10 @@
                 }
             ],
             "recommendation": "pkg:maven/io.quarkus/quarkus-jdbc-postgresql@2.13.8.Final-redhat-00006?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
-            "highestVulnerability": {
+          "remediations": {
+
+          },
+          "highestVulnerability": {
                 "id": "SNYK-JAVA-ORGPOSTGRESQL-3146847",
                 "title": "Information Exposure",
                 "source": "snyk",

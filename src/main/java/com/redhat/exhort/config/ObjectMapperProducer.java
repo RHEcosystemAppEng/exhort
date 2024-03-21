@@ -34,7 +34,7 @@ public class ObjectMapperProducer {
   public static ObjectMapper newInstance() {
     return new ObjectMapper()
         .enable(SerializationFeature.INDENT_OUTPUT)
-        .setSerializationInclusion(Include.NON_EMPTY);
+        .setSerializationInclusion(Include.NON_NULL);
   }
 
   @Singleton

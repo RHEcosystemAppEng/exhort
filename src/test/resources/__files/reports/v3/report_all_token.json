@@ -42,6 +42,9 @@
   "dependencies": [
     {
       "ref": "pkg:maven/io.quarkus/quarkus-hibernate-orm@2.13.5.Final?type=jar",
+      "issues": [
+
+      ],
       "transitive": [
         {
           "ref": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.1?type=jar",
@@ -145,6 +148,9 @@
         }
       ],
       "recommendation": "pkg:maven/io.quarkus/quarkus-hibernate-orm@2.13.8.Final-redhat-00006?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
+      "remediations": {
+
+      },
       "highestVulnerability": {
         "id": "CVE-2020-36518",
         "title": "[CVE-2020-36518] CWE-787: Out-of-bounds Write",
@@ -170,10 +176,19 @@
     },
     {
       "ref": "pkg:maven/io.quarkus/quarkus-jdbc-postgresql@2.13.5.Final?type=jar",
-      "recommendation": "pkg:maven/io.quarkus/quarkus-jdbc-postgresql@2.13.8.Final-redhat-00006?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar"
+      "issues": [
+
+      ],
+      "recommendation": "pkg:maven/io.quarkus/quarkus-jdbc-postgresql@2.13.8.Final-redhat-00006?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
+      "remediations": {
+
+      }
     },
     {
       "ref": "pkg:maven/io.quarkus/quarkus-hibernate-orm@2.13.5.Final?type=jar",
+      "issues": [
+
+      ],
       "transitive": [
         {
           "ref": "pkg:maven/io.quarkus/quarkus-core@2.13.5.Final?type=jar",
@@ -331,6 +346,9 @@
         }
       ],
       "recommendation": "pkg:maven/io.quarkus/quarkus-hibernate-orm@2.13.8.Final-redhat-00006?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
+      "remediations": {
+
+      },
       "highestVulnerability": {
         "id": "CVE-2023-2974",
         "title": "A vulnerability was found in quarkus-core. This vulnerability occurs because the TLS protocol configured with quarkus.http.ssl.protocols is not enforced, and the client can force the selection of the weaker supported TLS protocol.",
@@ -356,6 +374,9 @@
     },
     {
       "ref": "pkg:maven/io.quarkus/quarkus-jdbc-postgresql@2.13.5.Final?type=jar",
+      "issues": [
+
+      ],
       "transitive": [
         {
           "ref": "pkg:maven/org.postgresql/postgresql@42.5.0?type=jar",
@@ -383,6 +404,9 @@
               "unique": false
             }
           ],
+          "remediations": {
+
+          },
           "highestVulnerability": {
             "id": "CVE-2022-41946",
             "title": "TemporaryFolder on unix-like systems does not limit access to created files",
@@ -408,6 +432,9 @@
         }
       ],
       "recommendation": "pkg:maven/io.quarkus/quarkus-jdbc-postgresql@2.13.8.Final-redhat-00006?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
+      "remediations": {
+
+      },
       "highestVulnerability": {
         "id": "CVE-2022-41946",
         "title": "TemporaryFolder on unix-like systems does not limit access to created files",
@@ -433,6 +460,9 @@
     },
     {
       "ref": "pkg:maven/io.quarkus/quarkus-hibernate-orm@2.13.5.Final?type=jar",
+      "issues": [
+
+      ],
       "transitive": [
         {
           "ref": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.1?type=jar",
@@ -477,6 +507,9 @@
               },
               "cvssScore": 5.9,
               "severity": "MEDIUM",
+              "cves": [
+
+              ],
               "unique": true
             },
             {
@@ -535,6 +568,9 @@
         }
       ],
       "recommendation": "pkg:maven/io.quarkus/quarkus-hibernate-orm@2.13.8.Final-redhat-00006?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
+      "remediations": {
+
+      },
       "highestVulnerability": {
         "id": "SNYK-JAVA-COMFASTERXMLJACKSONCORE-2421244",
         "title": "Denial of Service (DoS)",
@@ -560,6 +596,9 @@
     },
     {
       "ref": "pkg:maven/io.quarkus/quarkus-jdbc-postgresql@2.13.5.Final?type=jar",
+      "issues": [
+
+      ],
       "transitive": [
         {
           "ref": "pkg:maven/org.postgresql/postgresql@42.5.0?type=jar",
@@ -587,6 +626,9 @@
               "unique": false
             }
           ],
+          "remediations": {
+
+          },
           "highestVulnerability": {
             "id": "SNYK-JAVA-ORGPOSTGRESQL-3146847",
             "title": "Information Exposure",
@@ -612,6 +654,9 @@
         }
       ],
       "recommendation": "pkg:maven/io.quarkus/quarkus-jdbc-postgresql@2.13.8.Final-redhat-00006?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar",
+      "remediations": {
+
+      },
       "highestVulnerability": {
         "id": "SNYK-JAVA-ORGPOSTGRESQL-3146847",
         "title": "Information Exposure",
