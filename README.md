@@ -221,6 +221,19 @@ Content-Disposition: attachment; filename=report.html
 
 ```
 
+### Batch Dependency Analysis `/api/v4/batch-analysis`
+
+This API performs dependency analysis for multiple projects.
+
+The expected input data format is a dictionary. The keys are the package urls of the projects, while the values are the SBOMs of the projects.
+
+All the parameters for the Dependency Analysis API are applicable to the Batch Dependency Analysis API.
+
+The expected response varies based on the media type of the request:
+- When media type `application/json` is requested, the response will be a dictionary of JSON reports.
+- When media type `text/html` is requested, the response will be an html report with vulnerability information for all the requested projects.
+- When media type `multipart/mixed` is requested, the response will contain both the dictionary of JSON reports and the html report.
+
 ## Token validation
 
 Clients are allowed to validate the vulnerability provider token with a specific endpoint. That will allow IDEs and the CLI to persist the different
