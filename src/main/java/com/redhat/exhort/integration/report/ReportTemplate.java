@@ -88,7 +88,7 @@ public class ReportTemplate {
     if (!disabled && writeKey.isPresent()) {
       params.put("userId", userId);
       params.put("anonymousId", anonymousId);
-      params.put("writeKey", writeKey);
+      params.put("writeKey", writeKey.get());
     }
 
     ObjectWriter objectWriter = new ObjectMapper().writer();
