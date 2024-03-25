@@ -22,8 +22,10 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.camel.Body;
+import org.apache.camel.Exchange;
 import org.apache.camel.ExchangeProperty;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
@@ -60,8 +62,17 @@ public class ReportTemplate {
 
   @Inject UBIRecommendation ubiRecommendation;
 
+  @ConfigProperty(name = Constants.TELEMETRY_WRITE_KEY)
+  Optional<String> writeKey;
+
+  @ConfigProperty(name = "telemetry.disabled", defaultValue = "false")
+  Boolean disabled;
+
   public Map<String, Object> setVariables(
+      Exchange exchange,
       @Body Object report,
+      @ExchangeProperty(Constants.ANONYMOUS_ID_PROPERTY) String anonymousId,
+      @ExchangeProperty(Constants.RHDA_TOKEN_HEADER) String userId,
       @ExchangeProperty(Constants.PROVIDER_PRIVATE_DATA_PROPERTY) List<String> providerPrivateData)
       throws JsonMappingException, JsonProcessingException, IOException {
 
@@ -74,6 +85,11 @@ public class ReportTemplate {
     params.put("snykSignup", snykSignup);
     params.put("cveIssueTemplate", cveIssuePathRegex);
     params.put("imageMapping", getImageMapping());
+    if (!disabled && writeKey.isPresent()) {
+      params.put("userId", userId);
+      params.put("anonymousId", anonymousId);
+      params.put("writeKey", writeKey.get());
+    }
 
     ObjectWriter objectWriter = new ObjectMapper().writer();
     String appData = objectWriter.writeValueAsString(params);
