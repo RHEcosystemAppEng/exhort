@@ -843,7 +843,7 @@ export const dockerReport: AppData = {
         }
       }
     },
-    "pkg:oci/default-app@sha256:333224a233db31852ac1085c6cd702016ab8aaf54cecde5c4bed5451d636adcf?repository_url=quay.io/default-app&tag=0.0.1": {
+    "pkg:oci/alpine@sha256%3A1fafb0905264413501df60d90a92ca32df8a2011cbfb4876ddff5ceb20c8f165?arch=amd64&os=linux&repository_url=test.io%2Ftest%2Falpine&tag=test-version": {
       "scanned": {
         "total": 2,
         "direct": 2,
@@ -890,8 +890,8 @@ export const dockerReport: AppData = {
               },
               "dependencies": [
                 {
-                  "ref": "pkg:oci/default-app@sha256%3A333224a233db31852ac1085c6cd702016ab8aaf54cecde5c4bed5451d636adcf?repository_url=quay.io%2Fdefault-app&tag=0.0.1",
-                  "recommendation": "pkg:oci/ubi-minimal@sha256:06d06f15f7b641a78f2512c8817cbecaa1bf549488e273f5ac27ff1654ed33f0?repository_url=registry.access.redhat.com/ubi9/ubi-minimal&tag=9.3-1552&arch=amd64"
+                  "ref": "pkg:oci/alpine@sha256%3A1fafb0905264413501df60d90a92ca32df8a2011cbfb4876ddff5ceb20c8f165?arch=amd64&os=linux&repository_url=test.io%2Ftest%2Falpine&tag=test-version",
+                  "recommendation": "pkg:oci/ubi-minimal@sha256%3A06d06f15f7b641a78f2512c8817cbecaa1bf549488e273f5ac27ff1654ed33f0?arch=amd64&repository_url=registry.access.redhat.com%2Fubi9%2Fubi-minimal&tag=9.3-1552"
                 }
               ]
             }
