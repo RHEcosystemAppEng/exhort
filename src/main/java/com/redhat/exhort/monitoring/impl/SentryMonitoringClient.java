@@ -25,21 +25,19 @@ import com.redhat.exhort.monitoring.MonitoringContext;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import io.sentry.Hub;
-import io.sentry.SentryOptions;
 import io.sentry.protocol.User;
 
 @RegisterForReflection
 public class SentryMonitoringClient implements MonitoringClient {
 
-  private final SentryOptions options;
+  private final Hub hub;
 
-  public SentryMonitoringClient(SentryOptions options) {
-    this.options = options;
+  public SentryMonitoringClient(Hub hub) {
+    this.hub = hub;
   }
 
   @Override
   public void reportException(Throwable exception, MonitoringContext context) {
-    var hub = new Hub(options);
     if (!context.breadcrumbs().isEmpty()) {
       context.breadcrumbs().forEach(b -> hub.addBreadcrumb(b));
     }
