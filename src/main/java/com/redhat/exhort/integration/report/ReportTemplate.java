@@ -68,6 +68,8 @@ public class ReportTemplate {
   @ConfigProperty(name = "telemetry.disabled", defaultValue = "false")
   Boolean disabled;
 
+  @Inject ObjectMapper mapper;
+
   public Map<String, Object> setVariables(
       Exchange exchange,
       @Body Object report,
@@ -91,11 +93,14 @@ public class ReportTemplate {
       params.put("writeKey", writeKey.get());
     }
 
-    ObjectWriter objectWriter = new ObjectMapper().writer();
-    String appData = objectWriter.writeValueAsString(params);
-    params.put("appData", appData);
+    var appData = mapper.writeValueAsString(params);
+    params.put("appData", sanitize(appData));
 
     return params;
+  }
+
+  private String sanitize(String report) {
+    return report.replaceAll("<script>", "\\\\<script\\\\>");
   }
 
   private String getImageMapping() throws JsonProcessingException {
