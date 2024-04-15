@@ -26,6 +26,7 @@ import org.apache.camel.builder.AggregationStrategies;
 import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
+import com.redhat.exhort.config.exception.DetailedException;
 import com.redhat.exhort.integration.Constants;
 import com.redhat.exhort.integration.providers.VulnerabilityProvider;
 import com.redhat.exhort.monitoring.MonitoringProcessor;
@@ -60,7 +61,7 @@ public class SnykIntegration extends EndpointRouteBuilder {
   public void configure() {
 
     // fmt:off
-    onException(IllegalArgumentException.class)
+    onException(IllegalArgumentException.class, DetailedException.class)
       .routeId("snykIllegalArgumentException")
       .useOriginalMessage()
       .handled(true)

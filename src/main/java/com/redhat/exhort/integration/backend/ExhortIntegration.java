@@ -48,6 +48,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.redhat.exhort.analytics.AnalyticsService;
 import com.redhat.exhort.api.PackageRef;
 import com.redhat.exhort.api.v4.AnalysisReport;
+import com.redhat.exhort.config.exception.DetailedException;
 import com.redhat.exhort.integration.Constants;
 import com.redhat.exhort.integration.backend.sbom.SbomParser;
 import com.redhat.exhort.integration.backend.sbom.SbomParserFactory;
@@ -113,7 +114,7 @@ public class ExhortIntegration extends EndpointRouteBuilder {
       .handled(true)
       .setBody().simple("${exception.message}");
 
-    onException(ClientErrorException.class)
+    onException(ClientErrorException.class, DetailedException.class)
       .routeId("onExhortClientErrorException")
       .useOriginalMessage()
       .process(monitoringProcessor::processClientException)

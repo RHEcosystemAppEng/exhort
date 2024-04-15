@@ -42,6 +42,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.redhat.exhort.api.PackageRef;
 import com.redhat.exhort.api.v4.UnscannedDependency;
 import com.redhat.exhort.config.ObjectMapperProducer;
+import com.redhat.exhort.config.exception.PackageValidationException;
 import com.redhat.exhort.integration.Constants;
 import com.redhat.exhort.model.DependencyTree;
 
@@ -98,7 +99,8 @@ public class SnykRequestBuilder {
     tree.forEach(
         d -> {
           if (d.purl().getVersion() == null) {
-            throw new IllegalArgumentException("Version must not be null for package: " + d.purl());
+            String errorMessage = "Package: " + d.purl();
+            throw new PackageValidationException(new RuntimeException(errorMessage));
           }
           types.add(d.purl().getType());
         });

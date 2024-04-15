@@ -37,11 +37,13 @@ import org.spdx.library.model.enumerations.RelationshipType;
 import org.spdx.storage.simple.InMemSpdxStore;
 
 import com.redhat.exhort.api.PackageRef;
+import com.redhat.exhort.config.exception.SpdxParsingException;
+import com.redhat.exhort.config.exception.SpdxProcessingException;
+import com.redhat.exhort.config.exception.SpdxValidationException;
 import com.redhat.exhort.integration.backend.sbom.SbomParser;
 import com.redhat.exhort.model.DependencyTree;
 import com.redhat.exhort.model.DirectDependency;
 
-import jakarta.ws.rs.ClientErrorException;
 import jakarta.ws.rs.core.Response;
 
 public class SpdxParser extends SbomParser {
@@ -58,12 +60,11 @@ public class SpdxParser extends SbomParser {
       return tree;
     } catch (SpdxValidationException e) {
       LOGGER.info("Invalid SPDX SBOM received", e);
-      throw new ClientErrorException(e.getMessage(), Response.Status.BAD_REQUEST);
+      throw new SpdxParsingException("Invalid SPDX SBOM received", e, Response.Status.BAD_REQUEST);
     } catch (SpdxProcessingException | InvalidSPDXAnalysisException | IOException e) {
       LOGGER.warn("Unable to parse the SPDX SBOM file", e);
-      throw new ClientErrorException(
-          "Unable to parse received SPDX SBOM file: " + e.getMessage(),
-          Response.Status.BAD_REQUEST);
+      throw new SpdxParsingException(
+          "Unable to parse received SPDX SBOM file", e, Response.Status.BAD_REQUEST);
     }
   }
 

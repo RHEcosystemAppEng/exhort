@@ -32,7 +32,7 @@ import org.spdx.library.InvalidSPDXAnalysisException;
 import org.spdx.library.Version;
 import org.spdx.storage.simple.InMemSpdxStore;
 
-import com.redhat.exhort.integration.backend.sbom.spdx.SpdxProcessingException;
+import com.redhat.exhort.config.exception.SpdxProcessingException;
 import com.redhat.exhort.integration.backend.sbom.spdx.SpdxWrapper;
 
 public class SpdxWrapperTest {

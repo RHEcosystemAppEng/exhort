@@ -33,6 +33,8 @@ import org.spdx.library.model.SpdxPackage;
 import org.spdx.library.model.TypedValue;
 
 import com.redhat.exhort.api.PackageRef;
+import com.redhat.exhort.config.exception.SpdxProcessingException;
+import com.redhat.exhort.config.exception.SpdxValidationException;
 
 public class SpdxWrapper {
 
@@ -76,8 +78,8 @@ public class SpdxWrapper {
               .findFirst();
       if (ref.isEmpty()) {
         throw new SpdxProcessingException(
-            "Missing Purl External Reference for Package: "
-                + spdxPackage.getName().orElse("unknown"));
+            "Missing Purl External Reference for Package",
+            "Package name: " + spdxPackage.getName().orElse("unknown"));
       }
       return new PackageRef(ref.get().getReferenceLocator());
     } catch (InvalidSPDXAnalysisException e) {

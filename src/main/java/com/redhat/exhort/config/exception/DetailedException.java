@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Red Hat, Inc. and/or its affiliates
+ * Copyright 2024 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,19 +16,21 @@
  * limitations under the License.
  */
 
-package com.redhat.exhort.integration.backend.sbom.spdx;
+package com.redhat.exhort.config.exception;
 
-public class SpdxProcessingException extends RuntimeException {
+public class DetailedException extends RuntimeException {
+  private final String details;
 
-  public SpdxProcessingException(String msg) {
-    super(msg);
+  public DetailedException(String message, String details) {
+    super(message);
+    this.details = details;
   }
 
-  public SpdxProcessingException(Throwable e) {
-    super(e);
+  public String getDetails() {
+    return details;
   }
 
-  public SpdxProcessingException(String msg, Throwable e) {
-    super(msg, e);
+  public String getStatus() {
+    return "422";
   }
 }
