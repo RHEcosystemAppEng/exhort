@@ -25,7 +25,7 @@ public class SpdxValidationException extends SpdxProcessingException {
   private final List<String> errors;
 
   public SpdxValidationException(String expectedVersion, List<String> errors) {
-    super(expectedVersion + " Validation error. ", errors.toString());
+    super(expectedVersion + " Validation error", errors.toString());
     this.errors = errors;
   }
 

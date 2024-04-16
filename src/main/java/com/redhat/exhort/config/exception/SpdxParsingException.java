@@ -21,7 +21,7 @@ package com.redhat.exhort.config.exception;
 import jakarta.ws.rs.core.Response.Status;
 
 public class SpdxParsingException extends ClientDetailedException {
-  public SpdxParsingException(String msg, Exception e, Status status) {
-    super(msg, e.getMessage(), status);
+  public SpdxParsingException(Exception e, Status status) {
+    super(e.getMessage(), e.getMessage(), status);
   }
 }
