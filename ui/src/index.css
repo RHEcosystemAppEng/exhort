@@ -3,3 +3,25 @@ body {
   height: 100%;
   color: black;
 }
+
+/* Progress bar styles */
+
+.bar-critical .pf-v5-c-progress__indicator {
+  background-color: #800000;
+}
+
+.bar-high .pf-v5-c-progress__indicator {
+  background-color: #FF0000;
+}
+
+.bar-medium .pf-v5-c-progress__indicator{
+  background-color: #FFA500;
+}
+
+.bar-low .pf-v5-c-progress__indicator {
+  background-color: #5BA352;
+}
+
+.bar-default .pf-v5-c-progress__indicator {
+  background-color: #06c;
+}
