@@ -24,7 +24,14 @@
           "ranges": [
             {
               "type": "ECOSYSTEM",
-              "events": [{ "introduced": "42.2.0" }, { "fixed": "42.2.27" }]
+              "events": [
+                {
+                  "introduced": "42.2.0"
+                },
+                {
+                  "fixed": "42.2.27"
+                }
+              ]
             }
           ],
           "versions": [
@@ -120,7 +127,14 @@
           "ranges": [
             {
               "type": "ECOSYSTEM",
-              "events": [{ "introduced": "42.3.0" }, { "fixed": "42.3.8" }]
+              "events": [
+                {
+                  "introduced": "42.3.0"
+                },
+                {
+                  "fixed": "42.3.8"
+                }
+              ]
             }
           ],
           "versions": [
@@ -143,10 +157,21 @@
           "ranges": [
             {
               "type": "ECOSYSTEM",
-              "events": [{ "introduced": "42.4.0" }, { "fixed": "42.4.3" }]
+              "events": [
+                {
+                  "introduced": "42.4.0"
+                },
+                {
+                  "fixed": "42.4.3"
+                }
+              ]
             }
           ],
-          "versions": ["42.4.0", "42.4.1", "42.4.2"]
+          "versions": [
+            "42.4.0",
+            "42.4.1",
+            "42.4.2"
+          ]
         },
         {
           "package": {
@@ -157,61 +182,34 @@
           "ranges": [
             {
               "type": "ECOSYSTEM",
-              "events": [{ "introduced": "42.5.0" }, { "fixed": "42.5.1" }]
+              "events": [
+                {
+                  "introduced": "42.5.0"
+                },
+                {
+                  "fixed": "42.5.1"
+                }
+              ]
             }
           ],
-          "versions": ["42.5.0"]
+          "versions": [
+            "42.5.0"
+          ]
         }
       ],
-      "metrics": {
-        "cvssMetricV31": [
-          {
-            "source": "nvd@nist.gov",
-            "type": "Primary",
-            "cvssData": {
-              "version": "3.1",
-              "vectorString": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:N/A:N",
-              "attackVector": "LOCAL",
-              "attackComplexity": "LOW",
-              "privilegesRequired": "LOW",
-              "userInteraction": "NONE",
-              "scope": "UNCHANGED",
-              "confidentialityImpact": "HIGH",
-              "integrityImpact": "NONE",
-              "availabilityImpact": "NONE",
-              "baseScore": 5.5,
-              "baseSeverity": "MEDIUM"
-            },
-            "exploitabilityScore": 1.8,
-            "impactScore": 3.6
-          },
-          {
-            "source": "security-advisories@github.com",
-            "type": "Secondary",
-            "cvssData": {
-              "version": "3.1",
-              "vectorString": "CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:H/I:N/A:N",
-              "attackVector": "LOCAL",
-              "attackComplexity": "HIGH",
-              "privilegesRequired": "LOW",
-              "userInteraction": "NONE",
-              "scope": "UNCHANGED",
-              "confidentialityImpact": "HIGH",
-              "integrityImpact": "NONE",
-              "availabilityImpact": "NONE",
-              "baseScore": 4.7,
-              "baseSeverity": "MEDIUM"
-            },
-            "exploitabilityScore": 1.0,
-            "impactScore": 3.6
-          }
-        ]
-      }
+      "severity": [
+        {
+          "type": "CVSS_V3",
+          "score": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:N/A:N"
+        }
+      ]
     }
   ],
   "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.1?type=jar": [
     {
-      "aliases": ["GHSA-57j2-w4cx-62h2"],
+      "aliases": [
+        "GHSA-57j2-w4cx-62h2"
+      ],
       "cveId": "CVE-2020-36518",
       "created": "2024-01-15T21:37:47.413+00:00",
       "summary": "Deeply nested json in jackson-databind",
@@ -226,10 +224,21 @@
           "ranges": [
             {
               "type": "ECOSYSTEM",
-              "events": [{ "introduced": "2.13.0" }, { "fixed": "2.13.2.1" }]
+              "events": [
+                {
+                  "introduced": "2.13.0"
+                },
+                {
+                  "fixed": "2.13.2.1"
+                }
+              ]
             }
           ],
-          "versions": ["2.13.0", "2.13.1", "2.13.2"]
+          "versions": [
+            "2.13.0",
+            "2.13.1",
+            "2.13.2"
+          ]
         },
         {
           "package": {
@@ -240,7 +249,14 @@
           "ranges": [
             {
               "type": "ECOSYSTEM",
-              "events": [{ "introduced": "0" }, { "fixed": "2.12.6.1" }]
+              "events": [
+                {
+                  "introduced": "0"
+                },
+                {
+                  "fixed": "2.12.6.1"
+                }
+              ]
             }
           ],
           "versions": [
@@ -407,33 +423,17 @@
           ]
         }
       ],
-      "metrics": {
-        "cvssMetricV2": [
-          {
-            "source": "nvd@nist.gov",
-            "type": "Primary",
-            "cvssData": {
-              "version": "2.0",
-              "vectorString": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
-              "confidentialityImpact": "NONE",
-              "integrityImpact": "NONE",
-              "availabilityImpact": "PARTIAL",
-              "baseScore": 5.0
-            },
-            "baseSeverity": "MEDIUM",
-            "exploitabilityScore": 10.0,
-            "impactScore": 2.9,
-            "acInsufInfo": false,
-            "obtainAllPrivilege": false,
-            "obtainUserPrivilege": false,
-            "obtainOtherPrivilege": false,
-            "userInteractionRequired": false
-          }
-        ]
-      }
+      "severity": [
+        {
+          "type": "CVSS_V2",
+          "score": "AV:N/AC:L/Au:N/C:N/I:N/A:P"
+        }
+      ]
     },
     {
-      "aliases": ["GHSA-jjjh-jjxp-wpff"],
+      "aliases": [
+        "GHSA-jjjh-jjxp-wpff"
+      ],
       "cveId": "CVE-2022-42003",
       "created": "2024-01-15T21:37:47.413+00:00",
       "description": "In FasterXML jackson-databind 2.4.0-rc1 until 2.12.7.1 and in 2.13.x before 2.13.4.2 resource exhaustion can occur because of a lack of a check in primitive value deserializers to avoid deep wrapper array nesting, when the UNWRAP_SINGLE_VALUE_ARRAYS feature is enabled. This was patched in 2.12.7.1, 2.13.4.2, and 2.14.0.",
@@ -447,7 +447,14 @@
           "ranges": [
             {
               "type": "ECOSYSTEM",
-              "events": [{ "introduced": "2.4.0-rc1" }, { "fixed": "2.12.7.1" }]
+              "events": [
+                {
+                  "introduced": "2.4.0-rc1"
+                },
+                {
+                  "fixed": "2.12.7.1"
+                }
+              ]
             }
           ],
           "versions": [
@@ -596,7 +603,14 @@
           "ranges": [
             {
               "type": "ECOSYSTEM",
-              "events": [{ "introduced": "2.13.0" }, { "fixed": "2.13.4.2" }]
+              "events": [
+                {
+                  "introduced": "2.13.0"
+                },
+                {
+                  "fixed": "2.13.4.2"
+                }
+              ]
             }
           ],
           "versions": [
@@ -611,33 +625,17 @@
           ]
         }
       ],
-      "metrics": {
-        "cvssMetricV30": [
-          {
-            "source": "nvd@nist.gov",
-            "type": "Primary",
-            "cvssData": {
-              "version": "3.0",
-              "vectorString": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
-              "attackVector": "NETWORK",
-              "attackComplexity": "LOW",
-              "privilegesRequired": "NONE",
-              "userInteraction": "NONE",
-              "scope": "UNCHANGED",
-              "confidentialityImpact": "NONE",
-              "integrityImpact": "NONE",
-              "availabilityImpact": "HIGH",
-              "baseScore": 7.5,
-              "baseSeverity": "HIGH"
-            },
-            "exploitabilityScore": 3.9,
-            "impactScore": 3.6
-          }
-        ]
-      }
+      "severity": [
+        {
+          "type": "CVSS_V3",
+          "score": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+        }
+      ]
     },
     {
-      "aliases": ["GHSA-rgv9-q543-rqg4"],
+      "aliases": [
+        "GHSA-rgv9-q543-rqg4"
+      ],
       "cveId": "CVE-2022-42004",
       "created": "2024-01-15T21:37:47.413+00:00",
       "summary": "Uncontrolled Resource Consumption in FasterXML jackson-databind",
@@ -652,7 +650,14 @@
           "ranges": [
             {
               "type": "ECOSYSTEM",
-              "events": [{ "introduced": "0" }, { "fixed": "2.12.7.1" }]
+              "events": [
+                {
+                  "introduced": "0"
+                },
+                {
+                  "fixed": "2.12.7.1"
+                }
+              ]
             }
           ],
           "versions": [
@@ -829,7 +834,14 @@
           "ranges": [
             {
               "type": "ECOSYSTEM",
-              "events": [{ "introduced": "2.13.0" }, { "fixed": "2.13.4" }]
+              "events": [
+                {
+                  "introduced": "2.13.0"
+                },
+                {
+                  "fixed": "2.13.4"
+                }
+              ]
             }
           ],
           "versions": [
@@ -842,36 +854,20 @@
           ]
         }
       ],
-      "metrics": {
-        "cvssMetricV31": [
-          {
-            "source": "nvd@nist.gov",
-            "type": "Primary",
-            "cvssData": {
-              "version": "3.1",
-              "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
-              "attackVector": "NETWORK",
-              "attackComplexity": "LOW",
-              "privilegesRequired": "NONE",
-              "userInteraction": "NONE",
-              "scope": "UNCHANGED",
-              "confidentialityImpact": "NONE",
-              "integrityImpact": "NONE",
-              "availabilityImpact": "HIGH",
-              "baseScore": 7.5,
-              "baseSeverity": "HIGH"
-            },
-            "exploitabilityScore": 3.9,
-            "impactScore": 3.6
-          }
-        ]
-      }
+      "severity": [
+        {
+          "type": "CVSS_V3",
+          "score": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+        }
+      ]
     }
   ],
   "pkg:maven/jakarta.interceptor/jakarta.interceptor-api@1.2.5?type=jar": [],
   "pkg:maven/io.quarkus/quarkus-core@2.13.5.Final?type=jar": [
     {
-      "aliases": ["GHSA-3fhx-3vvg-2j84"],
+      "aliases": [
+        "GHSA-3fhx-3vvg-2j84"
+      ],
       "cveId": "CVE-2023-2974",
       "created": "2024-01-15T21:37:49.155+00:00",
       "description": "A vulnerability was found in quarkus-core. This vulnerability occurs because the TLS protocol configured with quarkus.http.ssl.protocols is not enforced, and the client can force the selection of the weaker supported TLS protocol.",
@@ -885,7 +881,14 @@
           "ranges": [
             {
               "type": "ECOSYSTEM",
-              "events": [{ "introduced": "0" }, { "fixed": "2.16.8.Final" }]
+              "events": [
+                {
+                  "introduced": "0"
+                },
+                {
+                  "fixed": "2.16.8.Final"
+                }
+              ]
             }
           ],
           "versions": [
@@ -1104,50 +1107,12 @@
           ]
         }
       ],
-      "metrics": {
-        "cvssMetricV31": [
-          {
-            "source": "nvd@nist.gov",
-            "type": "Primary",
-            "cvssData": {
-              "version": "3.1",
-              "vectorString": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:N",
-              "attackVector": "NETWORK",
-              "attackComplexity": "LOW",
-              "privilegesRequired": "LOW",
-              "userInteraction": "NONE",
-              "scope": "UNCHANGED",
-              "confidentialityImpact": "HIGH",
-              "integrityImpact": "HIGH",
-              "availabilityImpact": "NONE",
-              "baseScore": 8.1,
-              "baseSeverity": "HIGH"
-            },
-            "exploitabilityScore": 2.8,
-            "impactScore": 5.2
-          },
-          {
-            "source": "secalert@redhat.com",
-            "type": "Secondary",
-            "cvssData": {
-              "version": "3.1",
-              "vectorString": "CVSS:3.1/AV:N/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:N",
-              "attackVector": "NETWORK",
-              "attackComplexity": "LOW",
-              "privilegesRequired": "HIGH",
-              "userInteraction": "NONE",
-              "scope": "UNCHANGED",
-              "confidentialityImpact": "HIGH",
-              "integrityImpact": "HIGH",
-              "availabilityImpact": "NONE",
-              "baseScore": 6.5,
-              "baseSeverity": "MEDIUM"
-            },
-            "exploitabilityScore": 1.2,
-            "impactScore": 5.2
-          }
-        ]
-      }
+      "severity": [
+        {
+          "type": "CVSS_V3",
+          "score": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:N"
+        }
+      ]
     }
   ]
 }

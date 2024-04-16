@@ -21,6 +21,7 @@ package com.redhat.exhort.integration.providers.osvnvd;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -46,6 +47,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import us.springett.cvss.Cvss;
 
 @ApplicationScoped
 @RegisterForReflection
@@ -90,9 +92,9 @@ public class OsvNvdResponseHandler extends ProviderResponseHandler {
           if (issue.getTitle() == null || issue.getTitle().isEmpty()) {
             issue.title(getTextValue(data, "description"));
           }
-          var metrics = data.get("metrics");
-          if (metrics != null) {
-            setMetrics(metrics, issue);
+          var severity = data.get("severity");
+          if (severity != null) {
+            setSeverity(severity, issue);
           }
           var affected = data.get("affected");
           if (affected != null) {
@@ -105,30 +107,37 @@ public class OsvNvdResponseHandler extends ProviderResponseHandler {
     return issues;
   }
 
-  // Parse only V3.1, V3.0 and V2 CVSS vectors
-  private void setMetrics(JsonNode metrics, Issue issue) {
-    ArrayNode metricsNode = null;
-    if (metrics.has("cvssMetricV31")) {
-      metricsNode = (ArrayNode) metrics.get("cvssMetricV31");
-    } else if (metrics.has("cvssMetricV30")) {
-      metricsNode = (ArrayNode) metrics.get("cvssMetricV30");
-    } else if (metrics.has("cvssMetricV2")) {
-      metricsNode = (ArrayNode) metrics.get("cvssMetricV2");
+  // Prefer V3.1 and V3.0 over V2 CVSS vectors
+  private void setSeverity(JsonNode severity, Issue issue) {
+    Map<String, String> severities = new HashMap<>();
+
+    severity.forEach(
+        metricNode -> {
+          var vector = metricNode.get("score").asText();
+          var type = metricNode.get("type").asText();
+          severities.put(type, vector);
+        });
+    var cvss = severities.get("CVSS_V3");
+    if (cvss != null) {
+      setCvssData(issue, cvss);
+    } else {
+      cvss = severities.get("CVSS_V2");
+      if (cvss != null) {
+        setCvssData(issue, cvss);
+      }
     }
-    if (metricsNode == null) {
+  }
+
+  private void setCvssData(Issue issue, String vector) {
+    if (issue.getCvss() != null) {
       return;
     }
-    metricsNode.forEach(
-        metricNode -> {
-          if ("Primary".equalsIgnoreCase(getTextValue(metricNode, "type"))) {
-            var cvssData = (JsonNode) metricNode.get("cvssData");
-            var score = getFloatValue(cvssData, "baseScore");
-            issue
-                .cvssScore(score)
-                .cvss(CvssParser.fromVectorString(getTextValue(cvssData, "vectorString")))
-                .severity(SeverityUtils.fromScore(score));
-          }
-        });
+    var cvss = Cvss.fromVector(vector);
+    var score = Double.valueOf(cvss.calculateScore().getBaseScore()).floatValue();
+    issue
+        .cvssScore(score)
+        .cvss(CvssParser.fromVectorString(vector))
+        .severity(SeverityUtils.fromScore(score));
   }
 
   private Remediation getRemediation(ArrayNode affected) {
@@ -157,13 +166,6 @@ public class OsvNvdResponseHandler extends ProviderResponseHandler {
   private String getTextValue(JsonNode node, String key) {
     if (node.has(key)) {
       return node.get(key).asText();
-    }
-    return null;
-  }
-
-  private Float getFloatValue(JsonNode node, String key) {
-    if (node.has(key)) {
-      return node.get(key).floatValue();
     }
     return null;
   }
