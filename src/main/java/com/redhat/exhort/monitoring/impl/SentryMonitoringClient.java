@@ -20,6 +20,7 @@ package com.redhat.exhort.monitoring.impl;
 
 import java.util.Map;
 
+import com.redhat.exhort.config.exception.DetailedException;
 import com.redhat.exhort.monitoring.MonitoringClient;
 import com.redhat.exhort.monitoring.MonitoringContext;
 
@@ -47,6 +48,14 @@ public class SentryMonitoringClient implements MonitoringClient {
       hub.setUser(user);
     }
     addAdditionalData(hub, context.metadata(), context.tags());
+
+    if (exception instanceof DetailedException) {
+      DetailedException detailedException = (DetailedException) exception;
+      String details = detailedException.getDetails();
+      if (details != null) {
+        hub.setExtra("Error details", details);
+      }
+    }
     hub.captureException(exception);
   }
 

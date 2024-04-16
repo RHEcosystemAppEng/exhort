@@ -42,11 +42,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.networknt.schema.ValidationMessage;
 import com.redhat.exhort.api.PackageRef;
 import com.redhat.exhort.config.ObjectMapperProducer;
+import com.redhat.exhort.config.exception.CycloneDXValidationException;
 import com.redhat.exhort.integration.backend.sbom.SbomParser;
 import com.redhat.exhort.model.DependencyTree;
 import com.redhat.exhort.model.DirectDependency;
 
-import jakarta.ws.rs.ClientErrorException;
 import jakarta.ws.rs.core.Response;
 
 public class CycloneDxParser extends SbomParser {
@@ -186,12 +186,10 @@ public class CycloneDxParser extends SbomParser {
       return bom;
     } catch (ParseException e) {
       LOGGER.debug("CycloneDX Validation error: ", e);
-      throw new ClientErrorException(
-          "CycloneDX Validation error: " + e.getMessage(), Response.Status.BAD_REQUEST);
+      throw new CycloneDXValidationException(e, Response.Status.BAD_REQUEST);
     } catch (IOException e) {
       LOGGER.error("CycloneDX Validation error: ", e);
-      throw new ClientErrorException(
-          "CycloneDX Validation error: " + e.getMessage(), Response.Status.BAD_REQUEST);
+      throw new CycloneDXValidationException(e, Response.Status.BAD_REQUEST);
     }
   }
 

@@ -48,6 +48,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.redhat.exhort.analytics.AnalyticsService;
 import com.redhat.exhort.api.PackageRef;
 import com.redhat.exhort.api.v4.AnalysisReport;
+import com.redhat.exhort.config.exception.DetailedException;
 import com.redhat.exhort.integration.Constants;
 import com.redhat.exhort.integration.backend.sbom.SbomParser;
 import com.redhat.exhort.integration.backend.sbom.SbomParserFactory;
@@ -113,7 +114,7 @@ public class ExhortIntegration extends EndpointRouteBuilder {
       .handled(true)
       .setBody().simple("${exception.message}");
 
-    onException(ClientErrorException.class)
+    onException(ClientErrorException.class, DetailedException.class)
       .routeId("onExhortClientErrorException")
       .useOriginalMessage()
       .process(monitoringProcessor::processClientException)
@@ -125,6 +126,20 @@ public class ExhortIntegration extends EndpointRouteBuilder {
       .choice()
         .when(exchangeProperty(Constants.GZIP_RESPONSE_PROPERTY).isNotNull()).marshal().gzipDeflater()
         .setHeader(Exchange.CONTENT_ENCODING, constant("gzip"))
+      .end();
+
+    onException(DetailedException.class)
+      .routeId("onExhortDetailedException")
+      .useOriginalMessage()
+      .process(monitoringProcessor::processClientException)
+      .setHeader(Exchange.HTTP_RESPONSE_CODE, simple("${exception.getStatus()}"))
+      .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.TEXT_PLAIN))
+      .setHeader(Constants.EXHORT_REQUEST_ID_HEADER, exchangeProperty(Constants.EXHORT_REQUEST_ID_HEADER))
+      .handled(true)
+      .setBody().simple("${exception.message}")
+      .choice()
+      .when(exchangeProperty(Constants.GZIP_RESPONSE_PROPERTY).isNotNull()).marshal().gzipDeflater()
+      .setHeader(Exchange.CONTENT_ENCODING, constant("gzip"))
       .end();
 
     rest()

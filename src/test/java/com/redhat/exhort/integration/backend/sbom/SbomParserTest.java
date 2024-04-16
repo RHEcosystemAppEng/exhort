@@ -35,6 +35,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import com.redhat.exhort.config.exception.ClientDetailedException;
 import com.redhat.exhort.integration.Constants;
 import com.redhat.exhort.integration.backend.sbom.cyclonedx.CycloneDxParser;
 import com.redhat.exhort.integration.backend.sbom.spdx.SpdxParser;
@@ -99,9 +100,9 @@ public class SbomParserTest {
   void testParseInvalidSBOM(String mediaType) {
     var parser = SbomParserFactory.newInstance(mediaType);
     var file = getClass().getClassLoader().getResourceAsStream("invalid_deps_file.txt");
-    var ex = assertThrows(ClientErrorException.class, () -> parser.buildTree(file));
+    var ex = assertThrows(ClientDetailedException.class, () -> parser.buildTree(file));
     assertNotNull(ex);
-    assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), ex.getResponse().getStatus());
+    assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), Integer.valueOf(ex.getStatus()));
   }
 
   @ParameterizedTest

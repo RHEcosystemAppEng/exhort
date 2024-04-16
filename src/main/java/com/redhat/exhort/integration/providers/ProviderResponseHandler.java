@@ -47,6 +47,8 @@ import com.redhat.exhort.api.v4.Source;
 import com.redhat.exhort.api.v4.SourceSummary;
 import com.redhat.exhort.api.v4.TransitiveDependencyReport;
 import com.redhat.exhort.api.v4.UnscannedDependency;
+import com.redhat.exhort.config.exception.PackageValidationException;
+import com.redhat.exhort.config.exception.UnexpectedProviderException;
 import com.redhat.exhort.integration.Constants;
 import com.redhat.exhort.model.CvssScoreComparable.DependencyScoreComparator;
 import com.redhat.exhort.model.CvssScoreComparable.TransitiveScoreComparator;
@@ -171,7 +173,9 @@ public abstract class ProviderResponseHandler {
       String message = prettifyHttpError(httpException);
       status.message(message).code(httpException.getStatusCode());
       LOGGER.warn("Unable to process request: {}", message, cause);
-    } else if (cause instanceof IllegalArgumentException) {
+    } else if (cause instanceof IllegalArgumentException
+        || cause instanceof UnexpectedProviderException
+        || cause instanceof PackageValidationException) {
       status.message(cause.getMessage()).code(422);
       LOGGER.debug("Unable to process request to: {}", getProviderName(), exception);
     } else {

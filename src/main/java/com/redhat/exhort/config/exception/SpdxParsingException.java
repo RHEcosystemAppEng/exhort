@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Red Hat, Inc. and/or its affiliates
+ * Copyright 2024 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,20 +16,12 @@
  * limitations under the License.
  */
 
-package com.redhat.exhort.integration.backend.sbom.spdx;
+package com.redhat.exhort.config.exception;
 
-import java.util.List;
+import jakarta.ws.rs.core.Response.Status;
 
-public class SpdxValidationException extends SpdxProcessingException {
-
-  private final List<String> errors;
-
-  public SpdxValidationException(String expectedVersion, List<String> errors) {
-    super(expectedVersion + " Validation error. " + errors.toString());
-    this.errors = errors;
-  }
-
-  public List<String> getErrors() {
-    return errors;
+public class SpdxParsingException extends ClientDetailedException {
+  public SpdxParsingException(Exception e, Status status) {
+    super(e.getMessage(), e.getMessage(), status);
   }
 }
