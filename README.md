@@ -5,17 +5,19 @@
 
 ## Required parameters
 
-- `api.snyk.token` Snyk API token for default authentication
+- `api.osvnvd.host` The host where the [ONGuard](https://github.com/RHEcosystemAppEng/onguard) service is deployed
+- `api.snyk.token` Snyk API token for default authentication when the Snyk integration is enabled
 
 ## OpenAPI and SwaggerUI
 
-- OpenAPI Spec: There is an [openapi.yaml](./api-spec/v3/openapi.yaml) or published in the endpoint http://localhost:8080/q/openapi?format=json
+- OpenAPI Spec: There is an [openapi.yaml](https://github.com/RHEcosystemAppEng/exhort-api-spec/blob/main/api/v4/openapi.yaml)
 - Swagger UI: Available at http://localhost:8080/q/swagger-ui for development or when enabled with the property `quarkus.swagger-ui.always-include=true`
 
 ## Providers
 
-Currently there are 2 available providers that will provide a vulnerability report for your components or full dependency graph.
+Currently there are 3 available providers that will provide a vulnerability report for your components or full dependency graph.
 
+- OSV ([ONGuard](https://github.com/RHEcosystemAppEng/onguard))
 - Snyk (`snyk`)
 - OSS Index (`oss-index`)
 
@@ -23,15 +25,22 @@ You can disable a given provider for the dependency graph analysis by using `api
 
 Providers should be defined as a multi-valued list in the `providers` Query Parameter. e.g. `/analysis?providers=snyk&providers=oss-index`
 
-## Package Managers
+## Package URL Types
 
-The following Package Managers are currently supported:
+The supported Package URL types depends on each external provider.
 
-- Maven (`maven`)
-- Gradle (`gradle`)
-- NPM (`npm`)
-- Go Modules (`gomodules`)
-- Pip (`pip`)
+- OSV and OSS Index don't have any limitation on the type used.
+- Snyk: Given the limitations of the API endpoint currently being used only supports the following PackageURL types:
+  - Maven (`maven`)
+  - Gradle (`gradle`)
+  - NPM (`npm`)
+  - Go Modules (`gomodules`)
+  - Pip (`pip`)
+  - RPM (`rpm`)
+  - Cocoapods (`cocoapods`)
+  - Gem (`gem`)
+  - NuGet (`nuget`)
+  - Debian (`deb`)
 
 ## Exhort API
 
