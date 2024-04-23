@@ -42,11 +42,19 @@ public class TrustedContentIntegration extends EndpointRouteBuilder {
 
   @Inject TrustedContentRequestBuilder requestBuilder;
 
+  @Inject TcResponseAggregation aggregation;
+
   @Override
   public void configure() {
     // fmt:off
     from(direct("getTrustedContent"))
-      .routeId("getTrustedContent")
+        .routeId("getTrustedContent")
+        .setBody(method(requestBuilder, "filterCachedRecommendations"))
+        .to(direct("getRemoteTrustedContent"))
+        .setBody(method(aggregation, "aggregateCachedResponse"));
+
+    from(direct("getRemoteTrustedContent"))
+      .routeId("getRemoteTrustedContent")
       .circuitBreaker()
         .faultToleranceConfiguration()
           .timeoutEnabled(true)
@@ -59,6 +67,7 @@ public class TrustedContentIntegration extends EndpointRouteBuilder {
       .endCircuitBreaker()
       .onFallback()
         .process(responseHandler::processResponseError);
+
     // fmt:on
   }
 

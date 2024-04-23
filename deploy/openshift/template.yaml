@@ -96,6 +96,16 @@ objects:
                     secretKeyRef:
                       name: exhort-secret
                       key: telemetry-write-key
+                - name: DB_REDIS_HOST
+                  valueFrom:
+                    secretKeyRef:
+                      name: '${ELASTICACHE_SECRET}'
+                      key: db.endpoint
+                - name: DB_REDIS_PORT
+                  valueFrom:
+                    secretKeyRef:
+                      name: '${ELASTICACHE_SECRET}'
+                      key: db.port
                 - name: MONITORING_ENABLED
                   value: "true"
                 - name: MONITORING_SENTRY_DSN
@@ -156,6 +166,11 @@ parameters:
     displayName: Service name
     description: Service name
     value: exhort
+    required: true
+  - name: ELASTICACHE_SECRET
+    displayName: Elasticache Secret
+    description: Name of the secret containing the Elasticache settings
+    value: exhort-elasticache
     required: true
   - name: SERVICE_PORT
     displayName: Service port

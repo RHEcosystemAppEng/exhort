@@ -18,13 +18,22 @@
 
 package com.redhat.exhort.integration.trustedcontent;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.camel.Exchange;
 import org.apache.camel.ExchangeProperty;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.redhat.exhort.api.PackageRef;
 import com.redhat.exhort.integration.Constants;
+import com.redhat.exhort.integration.cache.CacheService;
 import com.redhat.exhort.model.DependencyTree;
+import com.redhat.exhort.model.trustedcontent.IndexedRecommendation;
+import com.redhat.exhort.model.trustedcontent.TrustedContentCachedRequest;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -37,13 +46,35 @@ public class TrustedContentRequestBuilder {
 
   @Inject ObjectMapper mapper;
 
-  public String buildRequest(
-      @ExchangeProperty(Constants.DEPENDENCY_TREE_PROPERTY) DependencyTree tree)
-      throws JsonProcessingException {
+  @Inject CacheService cacheService;
 
-    var purls = mapper.createArrayNode();
-    tree.getAll().stream().map(PackageRef::toString).forEach(purls::add);
-    var obj = mapper.createObjectNode().set("purls", purls);
+  public String buildRequest(Set<PackageRef> misses) throws JsonProcessingException {
+
+    var node = mapper.createArrayNode();
+    misses.stream().map(PackageRef::toString).forEach(node::add);
+    var obj = mapper.createObjectNode().set("purls", node);
     return mapper.writeValueAsString(obj);
+  }
+
+  public Set<PackageRef> filterCachedRecommendations(
+      @ExchangeProperty(Constants.DEPENDENCY_TREE_PROPERTY) DependencyTree tree,
+      Exchange exchange) {
+    Set<PackageRef> miss = new HashSet<>();
+    var allRefs = tree.getAll();
+    var cached = cacheService.getRecommendations(allRefs);
+
+    Map<PackageRef, IndexedRecommendation> cachedIdxRecommendations = new HashMap<>();
+    allRefs.forEach(
+        p -> {
+          var cachedReq = cached.get(p);
+          if (cachedReq == null) {
+            miss.add(p);
+          } else if (cachedReq.recommendation() != null) {
+            cachedIdxRecommendations.put(p, cachedReq.recommendation());
+          }
+        });
+    var req = new TrustedContentCachedRequest(cachedIdxRecommendations, miss);
+    exchange.setProperty(Constants.CACHED_RECOMMENDATIONS, req);
+    return req.miss();
   }
 }

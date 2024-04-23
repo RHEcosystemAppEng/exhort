@@ -52,6 +52,16 @@ spec:
             secretKeyRef:
               name: exhort-secret
               key: telemetry-write-key
+        - name: DB_REDIS_HOST
+          valueFrom:
+            secretKeyRef:
+              name: exhort-secret
+              key: db.host
+        - name: DB_REDIS_PORT
+          valueFrom:
+            secretKeyRef:
+              name: exhort-secret
+              key: db.port
         livenessProbe:
           httpGet:
             path: /q/health/live

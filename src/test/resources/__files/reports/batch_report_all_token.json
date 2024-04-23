@@ -31,9 +31,7 @@
             "dependencies": [
               {
                 "ref": "pkg:maven/io.quarkus/quarkus-hibernate-orm@2.13.5.Final?type=jar",
-                "issues": [
-
-                ],
+                "issues": [],
                 "transitive": [
                   {
                     "ref": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.1?type=jar",
@@ -176,12 +174,8 @@
               },
               {
                 "ref": "pkg:maven/io.quarkus/quarkus-jdbc-postgresql@2.13.5.Final?type=jar",
-                "issues": [
-
-                ],
-                "transitive": [
-
-                ],
+                "issues": [],
+                "transitive": [],
                 "recommendation": "pkg:maven/io.quarkus/quarkus-jdbc-postgresql@2.13.8.Final-redhat-00006?repository_url=https%3A%2F%2Fmaven.repository.redhat.com%2Fga%2F&type=jar"
               }
             ]
@@ -195,9 +189,7 @@
           "code": 200,
           "message": "OK"
         },
-        "sources": {
-
-        }
+        "sources": {}
       },
       "osv-nvd": {
         "status": {
@@ -224,9 +216,7 @@
             "dependencies": [
               {
                 "ref": "pkg:maven/io.quarkus/quarkus-hibernate-orm@2.13.5.Final?type=jar",
-                "issues": [
-
-                ],
+                "issues": [],
                 "transitive": [
                   {
                     "ref": "pkg:maven/io.quarkus/quarkus-core@2.13.5.Final?type=jar",
@@ -454,9 +444,7 @@
               },
               {
                 "ref": "pkg:maven/io.quarkus/quarkus-jdbc-postgresql@2.13.5.Final?type=jar",
-                "issues": [
-
-                ],
+                "issues": [],
                 "transitive": [
                   {
                     "ref": "pkg:maven/org.postgresql/postgresql@42.5.0?type=jar",
@@ -585,9 +573,7 @@
             "dependencies": [
               {
                 "ref": "pkg:maven/io.quarkus/quarkus-hibernate-orm@2.13.5.Final?type=jar",
-                "issues": [
-
-                ],
+                "issues": [],
                 "transitive": [
                   {
                     "ref": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.1?type=jar",
@@ -644,9 +630,7 @@
                         },
                         "cvssScore": 5.9,
                         "severity": "MEDIUM",
-                        "cves": [
-
-                        ],
+                        "cves": [],
                         "unique": true,
                         "remediation": {
                           "fixedIn": [
@@ -758,9 +742,7 @@
               },
               {
                 "ref": "pkg:maven/io.quarkus/quarkus-jdbc-postgresql@2.13.5.Final?type=jar",
-                "issues": [
-
-                ],
+                "issues": [],
                 "transitive": [
                   {
                     "ref": "pkg:maven/org.postgresql/postgresql@42.5.0?type=jar",
@@ -880,9 +862,7 @@
           "code": 401,
           "message": "Unauthorized: Verify the provided credentials are valid."
         },
-        "sources": {
-
-        }
+        "sources": {}
       },
       "trusted-content": {
         "status": {
@@ -891,9 +871,7 @@
           "code": 200,
           "message": "OK"
         },
-        "sources": {
-
-        }
+        "sources": {}
       },
       "osv-nvd": {
         "status": {
@@ -902,9 +880,7 @@
           "code": 200,
           "message": "OK"
         },
-        "sources": {
-
-        }
+        "sources": {}
       },
       "snyk": {
         "status": {
@@ -928,9 +904,7 @@
               "recommendations": 0,
               "unscanned": 1
             },
-            "dependencies": [
-
-            ],
+            "dependencies": [],
             "unscanned": [
               {
                 "ref": "pkg:oci/default-app@sha256%3A7c288032ecf3319045d9fa538c3b0cc868a320d01d03bce15b99c2c336319994?repository_url=quay.io%2Fdefault-app&tag=0.0.1",
@@ -956,9 +930,7 @@
           "code": 401,
           "message": "Unauthorized: Verify the provided credentials are valid."
         },
-        "sources": {
-
-        }
+        "sources": {}
       },
       "trusted-content": {
         "status": {
@@ -967,9 +939,7 @@
           "code": 200,
           "message": "OK"
         },
-        "sources": {
-
-        }
+        "sources": {}
       },
       "osv-nvd": {
         "status": {
@@ -996,12 +966,8 @@
             "dependencies": [
               {
                 "ref": "pkg:oci/debian@sha256%3A7c288032ecf3319045d9fa538c3b0cc868a320d01d03bce15b99c2c336319994?tag=0.0.1",
-                "issues": [
-
-                ],
-                "transitive": [
-
-                ],
+                "issues": [],
+                "transitive": [],
                 "recommendation": "pkg:oci/ubi@sha256%3Af5983f7c7878cc9b26a3962be7756e3c810e9831b0b9f9613e6f6b445f884e74?arch=amd64&repository_url=registry.access.redhat.com%2Fubi9%2Fubi&tag=9.3-1552"
               }
             ]
@@ -1033,12 +999,8 @@
             "dependencies": [
               {
                 "ref": "pkg:oci/debian@sha256%3A7c288032ecf3319045d9fa538c3b0cc868a320d01d03bce15b99c2c336319994?tag=0.0.1",
-                "issues": [
-
-                ],
-                "transitive": [
-
-                ],
+                "issues": [],
+                "transitive": [],
                 "recommendation": "pkg:oci/ubi@sha256%3Af5983f7c7878cc9b26a3962be7756e3c810e9831b0b9f9613e6f6b445f884e74?arch=amd64&repository_url=registry.access.redhat.com%2Fubi9%2Fubi&tag=9.3-1552"
               }
             ],

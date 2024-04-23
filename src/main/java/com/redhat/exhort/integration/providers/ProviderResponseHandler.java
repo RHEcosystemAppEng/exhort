@@ -285,17 +285,13 @@ public abstract class ProviderResponseHandler {
     }
     Map<String, Source> reports = new HashMap<>();
     sourcesIssues
-        .keySet()
+        .entrySet()
         .forEach(
             k ->
                 reports.put(
-                    k,
+                    k.getKey(),
                     buildReportForSource(
-                        sourcesIssues.get(k),
-                        tree,
-                        privateProviders,
-                        tcResponse,
-                        response.unscanned())));
+                        k.getValue(), tree, privateProviders, tcResponse, response.unscanned())));
     return new ProviderReport().status(defaultOkStatus(getProviderName())).sources(reports);
   }
 

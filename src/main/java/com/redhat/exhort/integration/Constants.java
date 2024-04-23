@@ -88,6 +88,7 @@ public final class Constants {
   public static final String GZIP_RESPONSE_PROPERTY = "gzipResponse";
   public static final String SBOM_ID_PROPERTY = "sbomId";
   public static final String UNSCANNED_REFS_PROPERTY = "unscannedRefs";
+  public static final String CACHED_RECOMMENDATIONS = "missedRecommendations";
 
   public static final String API_VERSION_V4 = "v4";
   public static final String API_VERSION_V3 = "v3";
