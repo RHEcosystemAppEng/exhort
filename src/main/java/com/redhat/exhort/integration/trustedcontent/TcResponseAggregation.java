@@ -18,19 +18,31 @@
 
 package com.redhat.exhort.integration.trustedcontent;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+
 import org.apache.camel.AggregationStrategy;
 import org.apache.camel.Exchange;
+import org.apache.camel.ExchangeProperty;
 
+import com.redhat.exhort.api.PackageRef;
 import com.redhat.exhort.integration.Constants;
+import com.redhat.exhort.integration.cache.CacheService;
+import com.redhat.exhort.model.trustedcontent.IndexedRecommendation;
+import com.redhat.exhort.model.trustedcontent.TrustedContentCachedRequest;
 import com.redhat.exhort.model.trustedcontent.TrustedContentResponse;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
+import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 
 @Singleton
 @RegisterForReflection
 public class TcResponseAggregation implements AggregationStrategy {
+
+  @Inject CacheService cacheService;
 
   @Override
   public Exchange aggregate(Exchange oldExchange, Exchange newExchange) {
@@ -38,5 +50,18 @@ public class TcResponseAggregation implements AggregationStrategy {
         Constants.TRUSTED_CONTENT_PROVIDER,
         newExchange.getIn().getBody(TrustedContentResponse.class));
     return oldExchange;
+  }
+
+  public TrustedContentResponse aggregateCachedResponse(
+      @ExchangeProperty(Constants.CACHED_RECOMMENDATIONS) TrustedContentCachedRequest cached,
+      Exchange exchange)
+      throws ExecutionException {
+    var externalResponse = exchange.getIn().getBody(TrustedContentResponse.class);
+    cacheService.cacheRecommendations(externalResponse, cached.miss());
+    Map<PackageRef, IndexedRecommendation> recommendations =
+        new HashMap<>(externalResponse.recommendations());
+    recommendations.putAll(cached.cached());
+    exchange.removeProperty(Constants.CACHED_RECOMMENDATIONS);
+    return new TrustedContentResponse(recommendations, externalResponse.status());
   }
 }
