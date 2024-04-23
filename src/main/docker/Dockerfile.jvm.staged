@@ -31,7 +31,7 @@ RUN mvn -B --settings settings.xml org.apache.maven.plugins:maven-dependency-plu
 
 COPY src src
 
-RUN mvn verify -B
+RUN mvn package -B -DskipTests=true
 
 RUN grep version /build/target/maven-archiver/pom.properties | cut -d '=' -f2 >.env-version
 RUN grep artifactId /build/target/maven-archiver/pom.properties | cut -d '=' -f2 >.env-id

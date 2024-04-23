@@ -221,10 +221,10 @@ spec:
         - copy-settings
       taskSpec:
         steps:
-          - image: registry.redhat.io/quarkus/mandrel-23-rhel8:23.0
+          - image: registry.redhat.io/ubi9/openjdk-21:1.18
             name: builder
             workingDir: $(workspaces.source.path)/source
-            script:  ./mvnw -B --settings settings.xml verify -Dquarkus.redis.hosts=redis://localhost/
+            script:  mvn -B --settings settings.xml verify -Dquarkus.redis.hosts=redis://localhost/
             computeResources:
               limits:
                 memory: 8Gi
@@ -415,7 +415,7 @@ spec:
         - ReadWriteOnce
         resources:
           requests:
-            storage: 1Gi
+            storage: 4Gi
       status: {}
   - name: git-auth
     secret:
