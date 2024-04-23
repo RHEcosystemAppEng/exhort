@@ -215,6 +215,27 @@ spec:
         workspace: mvn-settings
       - name: workspace
         workspace: workspace
+    - name: run-tests
+      runAfter:
+        - prefetch-dependencies
+        - copy-settings
+      taskSpec:
+        steps:
+          - image: registry.redhat.io/quarkus/mandrel-23-rhel8:23.0
+            name: builder
+            workingDir: $(workspaces.source.path)/source
+            script:  ./mvnw -B --settings settings.xml verify -Dquarkus.redis.hosts=redis://localhost/
+            computeResources:
+              limits:
+                memory: 8Gi
+              requests:
+                memory: 6Gi
+        sidecars:
+          - image: docker.io/redis/redis-stack:7.2.0-v7
+            name: redis-stack
+      workspaces:
+        - name: source
+          workspace: workspace
     - name: build-container
       params:
       - name: IMAGE
@@ -232,8 +253,7 @@ spec:
       - name: COMMIT_SHA
         value: $(tasks.clone-repository.results.commit)
       runAfter:
-      - prefetch-dependencies
-      - copy-settings
+      - run-tests
       taskRef:
         params:
         - name: name
