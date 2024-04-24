@@ -449,4 +449,8 @@ export const withTokenReport: AppData = {
     "    \"catalogUrl\": \"https://catalog.redhat.com/software/containers/ubi9/ubi-minimal/615bd9b4075b022acc111bf5?architecture=amd64&image=65a828e3cda4984705d45d26\"\n" +
     "  }\n" +
     "]",
+  userId: 'testUser003',
+  anonymousId: null,
+  writeKey: '',
+  rhdaSource: 'vscode'
 };

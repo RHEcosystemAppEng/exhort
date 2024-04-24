@@ -27,6 +27,8 @@ import {useAppContext} from "../App";
 
 export const SummaryCard = ({report, isReportMap, purl}: { report: Report, isReportMap?: boolean, purl?: string }) => {
   const appContext = useAppContext();
+  const gridItemMd = appContext.rhdaSource !== 'trustification' ? 6 : undefined;
+
   return (
     <Grid hasGutter>
       <Title headingLevel="h3" size={TitleSizes['2xl']} style={{paddingLeft: '15px'}}>
@@ -79,7 +81,7 @@ export const SummaryCard = ({report, isReportMap, purl}: { report: Report, isRep
           <Divider/>
         </Card>
       </GridItem>
-      <GridItem md={6}>
+      <GridItem md={gridItemMd}>
         <Card isFlat>
           <DescriptionListGroup>
             <CardTitle component="h4">
@@ -137,7 +139,8 @@ export const SummaryCard = ({report, isReportMap, purl}: { report: Report, isRep
           </DescriptionListGroup>
         </Card>&nbsp;
       </GridItem>
-      <GridItem md={6}>
+      {appContext.rhdaSource !== 'trustification' && (
+        <GridItem md={6}>
         <Card isFlat>
           <DescriptionListGroup>
             <CardTitle component="h4">
@@ -166,6 +169,7 @@ export const SummaryCard = ({report, isReportMap, purl}: { report: Report, isRep
           </DescriptionListGroup>
         </Card>&nbsp;
       </GridItem>
+      )}
     </Grid>
   );
 };
