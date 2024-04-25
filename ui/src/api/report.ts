@@ -12,6 +12,7 @@ export interface AppData {
   userId?: string | null;
   anonymousId?: string | null;
   writeKey?: string | null;
+  rhdaSource?: string | null;
 }
 
 export interface ReportMap {

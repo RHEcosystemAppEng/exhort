@@ -954,5 +954,6 @@ export const dockerReport: AppData = {
     "]",
   userId: 'testUser333',
   anonymousId: null,
-  writeKey: ''
+  writeKey: '',
+  rhdaSource: 'trustification'
 };

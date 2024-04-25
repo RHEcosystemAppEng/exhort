@@ -7236,5 +7236,6 @@ export const reportMixed: AppData = {
     "]",
   userId: 'testUser003',
   anonymousId: null,
-  writeKey: ''
+  writeKey: '',
+  rhdaSource: 'vscode'
 };
