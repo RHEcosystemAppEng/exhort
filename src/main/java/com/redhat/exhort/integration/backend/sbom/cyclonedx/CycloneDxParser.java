@@ -47,8 +47,6 @@ import com.redhat.exhort.integration.backend.sbom.SbomParser;
 import com.redhat.exhort.model.DependencyTree;
 import com.redhat.exhort.model.DirectDependency;
 
-import jakarta.ws.rs.core.Response;
-
 public class CycloneDxParser extends SbomParser {
 
   private static final ObjectMapper MAPPER = ObjectMapperProducer.newInstance();
@@ -81,7 +79,8 @@ public class CycloneDxParser extends SbomParser {
         rootRef = componentPurls.get(rootComponent.get().getBomRef());
       }
     }
-    return treeBuilder.dependencies(buildDependencies(bom, componentPurls, rootRef)).build();
+    var tree = treeBuilder.dependencies(buildDependencies(bom, componentPurls, rootRef)).build();
+    return tree;
   }
 
   private Map<PackageRef, DirectDependency> buildDependencies(
@@ -186,10 +185,10 @@ public class CycloneDxParser extends SbomParser {
       return bom;
     } catch (ParseException e) {
       LOGGER.debug("CycloneDX Validation error: ", e);
-      throw new CycloneDXValidationException(e, Response.Status.BAD_REQUEST);
+      throw new CycloneDXValidationException(e);
     } catch (IOException e) {
       LOGGER.error("CycloneDX Validation error: ", e);
-      throw new CycloneDXValidationException(e, Response.Status.BAD_REQUEST);
+      throw new CycloneDXValidationException(e);
     }
   }
 

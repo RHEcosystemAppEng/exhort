@@ -18,13 +18,12 @@
 
 package com.redhat.exhort.config.exception;
 
-import jakarta.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.Response;
 
 public class ClientDetailedException extends DetailedException {
-  private Status status;
 
   public ClientDetailedException(String message) {
-    super(message, null);
+    super(message);
   }
 
   public ClientDetailedException(String message, String details) {
@@ -39,12 +38,7 @@ public class ClientDetailedException extends DetailedException {
     super(message, e.getMessage());
   }
 
-  public ClientDetailedException(String message, String details, Status status) {
-    super(message, details);
-    this.status = status;
-  }
-
-  public String getStatus() {
-    return String.valueOf(status.getStatusCode());
+  public int getStatus() {
+    return Response.Status.BAD_REQUEST.getStatusCode();
   }
 }

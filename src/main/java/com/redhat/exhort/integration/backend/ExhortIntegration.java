@@ -114,7 +114,7 @@ public class ExhortIntegration extends EndpointRouteBuilder {
       .handled(true)
       .setBody().simple("${exception.message}");
 
-    onException(ClientErrorException.class, DetailedException.class)
+    onException(ClientErrorException.class)
       .routeId("onExhortClientErrorException")
       .useOriginalMessage()
       .process(monitoringProcessor::processClientException)
@@ -136,7 +136,7 @@ public class ExhortIntegration extends EndpointRouteBuilder {
       .setHeader(Exchange.CONTENT_TYPE, constant(MediaType.TEXT_PLAIN))
       .setHeader(Constants.EXHORT_REQUEST_ID_HEADER, exchangeProperty(Constants.EXHORT_REQUEST_ID_HEADER))
       .handled(true)
-      .setBody().simple("${exception.message}")
+      .setBody().simple("${exception.message}: ${exception.getDetails}")
       .choice()
       .when(exchangeProperty(Constants.GZIP_RESPONSE_PROPERTY).isNotNull()).marshal().gzipDeflater()
       .setHeader(Exchange.CONTENT_ENCODING, constant("gzip"))
@@ -329,6 +329,8 @@ public class ExhortIntegration extends EndpointRouteBuilder {
                         }
                       }));
       exchange.getIn().setBody(trees);
+    } catch (DetailedException e) {
+      throw e;
     } catch (IOException | RuntimeException ex) {
       throw new ClientErrorException(
           "Unable to parse received request: " + ex.getMessage(), Response.Status.BAD_REQUEST);

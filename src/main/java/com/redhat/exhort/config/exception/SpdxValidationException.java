@@ -20,16 +20,17 @@ package com.redhat.exhort.config.exception;
 
 import java.util.List;
 
-public class SpdxValidationException extends SpdxProcessingException {
+public class SpdxValidationException extends SbomValidationException {
 
-  private final List<String> errors;
-
-  public SpdxValidationException(String expectedVersion, List<String> errors) {
-    super(expectedVersion + " Validation error", errors.toString());
-    this.errors = errors;
+  public SpdxValidationException(String message) {
+    super("SPDX Validation", message);
   }
 
-  public List<String> getErrors() {
-    return errors;
+  public SpdxValidationException(String expectedVersion, List<String> errors) {
+    super(expectedVersion + " Validation", errors == null ? "" : errors.toString());
+  }
+
+  public SpdxValidationException(String message, Exception e) {
+    this(message + ": " + e.getMessage());
   }
 }

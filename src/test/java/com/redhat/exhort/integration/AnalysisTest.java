@@ -113,10 +113,10 @@ public class AnalysisTest extends AbstractAnalysisTest {
 
     switch (sbom) {
       case CYCLONEDX:
-        assertTrue(response.startsWith("CycloneDX Validation error"));
+        assertTrue(response.startsWith("CycloneDX Validation"));
         break;
       case SPDX:
-        assertTrue(response.startsWith("SPDX-2.3 Validation error"));
+        assertTrue(response.startsWith("SPDX-2.3 Validation"));
         break;
     }
 
@@ -633,10 +633,10 @@ public class AnalysisTest extends AbstractAnalysisTest {
 
     switch (sbom) {
       case CYCLONEDX:
-        assertTrue(response.startsWith("CycloneDX Validation error"));
+        assertTrue(response.startsWith("CycloneDX Validation"));
         break;
       case SPDX:
-        assertTrue(response.startsWith("SPDX-2.3 Validation error"));
+        assertTrue(response.startsWith("SPDX-2.3 Validation"));
         break;
     }
   }
