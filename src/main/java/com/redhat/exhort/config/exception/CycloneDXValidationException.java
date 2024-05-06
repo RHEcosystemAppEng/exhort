@@ -18,10 +18,9 @@
 
 package com.redhat.exhort.config.exception;
 
-import jakarta.ws.rs.core.Response.Status;
+public class CycloneDXValidationException extends SbomValidationException {
 
-public class CycloneDXValidationException extends ClientDetailedException {
-  public CycloneDXValidationException(Exception e, Status status) {
-    super("CycloneDX Validation error", e.getMessage(), status);
+  public CycloneDXValidationException(Exception e) {
+    super("CycloneDX Validation error", e.getMessage());
   }
 }

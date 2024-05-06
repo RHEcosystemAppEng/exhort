@@ -18,7 +18,6 @@
 
 package com.redhat.exhort.integration.backend.sbom.spdx;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
@@ -28,7 +27,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.jboss.logging.Logger;
 import org.spdx.jacksonstore.MultiFormatStore;
 import org.spdx.jacksonstore.MultiFormatStore.Format;
 import org.spdx.library.InvalidSPDXAnalysisException;
@@ -37,36 +35,21 @@ import org.spdx.library.model.enumerations.RelationshipType;
 import org.spdx.storage.simple.InMemSpdxStore;
 
 import com.redhat.exhort.api.PackageRef;
-import com.redhat.exhort.config.exception.ClientDetailedException;
-import com.redhat.exhort.config.exception.SpdxParsingException;
-import com.redhat.exhort.config.exception.SpdxProcessingException;
 import com.redhat.exhort.config.exception.SpdxValidationException;
 import com.redhat.exhort.integration.backend.sbom.SbomParser;
 import com.redhat.exhort.model.DependencyTree;
 import com.redhat.exhort.model.DirectDependency;
 
-import jakarta.ws.rs.core.Response;
-
 public class SpdxParser extends SbomParser {
-
-  private static final Logger LOGGER = Logger.getLogger(SpdxParser.class);
 
   @Override
   protected DependencyTree buildTree(InputStream input) {
-    try {
-      var inputStore = new MultiFormatStore(new InMemSpdxStore(), Format.JSON_PRETTY);
-      var wrapper = new SpdxWrapper(inputStore, input);
-      var deps = buildDeps(wrapper);
-      var tree = new DependencyTree(deps);
-      return tree;
-    } catch (SpdxValidationException e) {
-      LOGGER.info("Invalid SPDX SBOM received", e);
-      throw new SpdxParsingException(e, Response.Status.BAD_REQUEST);
-    } catch (SpdxProcessingException | InvalidSPDXAnalysisException | IOException e) {
-      LOGGER.warn("Unable to parse the SPDX SBOM file", e);
-      throw new ClientDetailedException(
-          "Unable to parse the SPDX SBOM file", e.getMessage(), Response.Status.BAD_REQUEST);
-    }
+
+    var inputStore = new MultiFormatStore(new InMemSpdxStore(), Format.JSON_PRETTY);
+    var wrapper = new SpdxWrapper(inputStore, input);
+    var deps = buildDeps(wrapper);
+    var tree = new DependencyTree(deps);
+    return tree;
   }
 
   private Map<PackageRef, DirectDependency> buildDeps(SpdxWrapper wrapper) {
@@ -83,7 +66,7 @@ public class SpdxParser extends SbomParser {
                         .noneMatch(e -> e.getValue().contains(k)))
             .collect(Collectors.toSet());
     if (!links.isEmpty() && directDeps.isEmpty()) {
-      throw new SpdxProcessingException(
+      throw new SpdxValidationException(
           "Unable to calculate direct dependencies due to a cyclic relationship");
     }
 
@@ -149,12 +132,12 @@ public class SpdxParser extends SbomParser {
                     case IGNORED:
                   }
                 } catch (InvalidSPDXAnalysisException e) {
-                  throw new SpdxProcessingException(
+                  throw new SpdxValidationException(
                       "Unable to determine relationship for " + p.getId(), e);
                 }
               });
     } catch (InvalidSPDXAnalysisException e) {
-      throw new SpdxProcessingException("Unable to build package relationships", e);
+      throw new SpdxValidationException("Unable to build package relationships", e);
     }
   }
 
@@ -182,6 +165,7 @@ public class SpdxParser extends SbomParser {
   }
 
   private void addLink(Map<String, Set<String>> links, String fromId, String toId) {
+    validateCyclicRefs(links, fromId, toId);
     var toRefs = links.get(fromId);
     if (toRefs == null) {
       toRefs = new HashSet<>();
@@ -204,5 +188,17 @@ public class SpdxParser extends SbomParser {
               result.addAll(addAllTransitive(d, links));
             });
     return result;
+  }
+
+  private void validateCyclicRefs(Map<String, Set<String>> links, String fromId, String toId) {
+    var toLinks = links.get(toId);
+    if (toLinks == null || toLinks.isEmpty()) {
+      return;
+    }
+    if (toLinks.contains(fromId)) {
+      throw new SpdxValidationException(
+          "Cyclic reference found between: " + fromId + " and " + toId);
+    }
+    toLinks.forEach(lRef -> validateCyclicRefs(links, fromId, lRef));
   }
 }

@@ -18,8 +18,14 @@
 
 package com.redhat.exhort.config.exception;
 
+import jakarta.ws.rs.core.Response;
+
 public class DetailedException extends RuntimeException {
   private final String details;
+
+  public DetailedException(String message) {
+    this(message, null);
+  }
 
   public DetailedException(String message, String details) {
     super(message);
@@ -30,7 +36,7 @@ public class DetailedException extends RuntimeException {
     return details;
   }
 
-  public String getStatus() {
-    return "422";
+  public int getStatus() {
+    return Response.Status.INTERNAL_SERVER_ERROR.getStatusCode();
   }
 }

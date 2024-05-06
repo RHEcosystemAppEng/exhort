@@ -33,7 +33,6 @@ import org.spdx.library.model.SpdxPackage;
 import org.spdx.library.model.TypedValue;
 
 import com.redhat.exhort.api.PackageRef;
-import com.redhat.exhort.config.exception.SpdxProcessingException;
 import com.redhat.exhort.config.exception.SpdxValidationException;
 
 public class SpdxWrapper {
@@ -46,21 +45,22 @@ public class SpdxWrapper {
   private Collection<SpdxPackage> packages;
 
   public SpdxWrapper(MultiFormatStore inputStore, InputStream input)
-      throws InvalidSPDXAnalysisException, IOException {
+      throws SpdxValidationException {
     this.inputStore = inputStore;
     try {
       this.inputStore.deSerialize(input, false);
       this.uri = inputStore.getDocumentUris().get(0);
       this.doc = new SpdxDocument(inputStore, uri, null, false);
-    } catch (InvalidSPDXAnalysisException e) {
-      throw new SpdxProcessingException(e);
+
+      var version = doc.getSpecVersion();
+      var verify = doc.verify(version);
+      if (!verify.isEmpty()) {
+        throw new SpdxValidationException(version, verify);
+      }
+      this.packages = parsePackages();
+    } catch (InvalidSPDXAnalysisException | IOException e) {
+      throw new SpdxValidationException("Unable to parse SPDX SBOM", e);
     }
-    var version = doc.getSpecVersion();
-    var verify = doc.verify(version);
-    if (!verify.isEmpty()) {
-      throw new SpdxValidationException(version, verify);
-    }
-    this.packages = parsePackages();
   }
 
   public PackageRef toPackageRef(SpdxPackage spdxPackage) {
@@ -72,18 +72,19 @@ public class SpdxWrapper {
                     try {
                       return PURL_REFERENCE.equals(r.getReferenceType().getIndividualURI());
                     } catch (InvalidSPDXAnalysisException e) {
-                      throw new SpdxProcessingException("Unalbe to retrieve referenceType", e);
+                      throw new SpdxValidationException("Unable to retrieve referenceType", e);
                     }
                   })
               .findFirst();
       if (ref.isEmpty()) {
-        throw new SpdxProcessingException(
-            "Missing Purl External Reference for Package",
-            "Package name: " + spdxPackage.getName().orElse("unknown"));
+        throw new SpdxValidationException(
+            "Missing Purl External Reference for Package: "
+                + "Package name: "
+                + spdxPackage.getName().orElse("unknown"));
       }
       return new PackageRef(ref.get().getReferenceLocator());
     } catch (InvalidSPDXAnalysisException e) {
-      throw new SpdxProcessingException("Unable to find PackageUrl from SpdxPackage", e);
+      throw new SpdxValidationException("Unable to find PackageUrl from SpdxPackage", e);
     }
   }
 
@@ -114,7 +115,7 @@ public class SpdxWrapper {
     try {
       return new SpdxPackage(inputStore, uri, id, null, false);
     } catch (InvalidSPDXAnalysisException e) {
-      throw new SpdxProcessingException("Unable to create SpdxPackage for id: " + id, e);
+      throw new SpdxValidationException("Unable to create SpdxPackage for id: " + id, e);
     }
   }
 
@@ -138,7 +139,7 @@ public class SpdxWrapper {
       }
       return expected.isEmpty();
     } catch (InvalidSPDXAnalysisException e) {
-      throw new SpdxProcessingException("Unable to retrieve package name", e);
+      throw new SpdxValidationException("Unable to retrieve package name", e);
     }
   }
 }

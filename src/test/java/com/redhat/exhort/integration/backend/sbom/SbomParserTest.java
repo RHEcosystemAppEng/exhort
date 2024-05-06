@@ -36,6 +36,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import com.redhat.exhort.config.exception.ClientDetailedException;
+import com.redhat.exhort.config.exception.SpdxValidationException;
 import com.redhat.exhort.integration.Constants;
 import com.redhat.exhort.integration.backend.sbom.cyclonedx.CycloneDxParser;
 import com.redhat.exhort.integration.backend.sbom.spdx.SpdxParser;
@@ -152,6 +153,13 @@ public class SbomParserTest {
 
     assertEquals(3, tree.dependencies().size());
     assertEquals(5, tree.transitiveCount());
+  }
+
+  @Test
+  void testCyclicReferences() {
+    var parser = SbomParserFactory.newInstance(Constants.SPDX_MEDIATYPE_JSON);
+    var file = getClass().getClassLoader().getResourceAsStream("spdx/cyclic-sbom.json");
+    assertThrows(SpdxValidationException.class, () -> parser.buildTree(file));
   }
 
   @Test

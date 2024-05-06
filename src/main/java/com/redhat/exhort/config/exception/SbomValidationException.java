@@ -18,10 +18,9 @@
 
 package com.redhat.exhort.config.exception;
 
-import jakarta.ws.rs.core.Response.Status;
+public abstract class SbomValidationException extends ClientDetailedException {
 
-public class SpdxParsingException extends ClientDetailedException {
-  public SpdxParsingException(Exception e, Status status) {
-    super(e.getMessage(), e.getMessage(), status);
+  public SbomValidationException(String message, String detail) {
+    super(message, detail);
   }
 }
