@@ -193,22 +193,6 @@ spec:
       workspaces:
       - name: source
         workspace: workspace
-    - name: copy-settings
-      runAfter:
-      - clone-repository
-      taskSpec:
-        steps:
-        - name: copy
-          image: registry.access.redhat.com/ubi9/ubi-minimal:9.4
-          script: |
-            #!/bin/sh
-            set -x
-            cp $(workspaces.settings.path)/settings.xml $(workspaces.workspace.path)/source/settings.xml
-      workspaces:
-      - name: settings
-        workspace: mvn-settings
-      - name: workspace
-        workspace: workspace
     - name: build-container
       params:
       - name: IMAGE
