@@ -23,9 +23,15 @@ USER root
 WORKDIR /build
 
 ## Maven Settings with the auth token for Github Maven Repository
-COPY settings.xml settings.xml
+COPY .tekton/settings.xml settings.xml
 COPY pom.xml .
 COPY ui ui
+
+ARG GH_USER
+ARG GH_TOKEN
+
+ENV GH_USER=$GH_USER
+ENV GH_TOKEN=$GH_TOKEN
 
 RUN mvn -B --settings settings.xml org.apache.maven.plugins:maven-dependency-plugin:3.6.1:go-offline
 

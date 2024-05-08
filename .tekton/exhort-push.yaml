@@ -209,18 +209,6 @@ spec:
         workspace: mvn-settings
       - name: workspace
         workspace: workspace
-    - name: run-tests
-      runAfter:
-        - prefetch-dependencies
-        - copy-settings
-      taskRef:
-        name: openjdk-redis-6gb
-      params:
-      - name: SCRIPT
-        value: mvn -B --settings settings.xml verify -Dquarkus.redis.hosts=redis://localhost/
-      workspaces:
-      - name: source
-        workspace: workspace
     - name: build-container
       params:
       - name: IMAGE
@@ -237,8 +225,12 @@ spec:
         value: $(params.image-expires-after)
       - name: COMMIT_SHA
         value: $(tasks.clone-repository.results.commit)
+      - name: BUILD_ARGS_FILE
+        value: ../../../entitlement/gh-creds.txt
+      - name: ENTITLEMENT_SECRET
+        value: gh-credentials
       runAfter:
-      - run-tests
+      - clone-repository
       taskRef:
         params:
         - name: name

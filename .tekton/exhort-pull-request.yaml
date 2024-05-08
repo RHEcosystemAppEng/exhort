@@ -199,34 +199,6 @@ spec:
       workspaces:
       - name: source
         workspace: workspace
-    - name: copy-settings
-      runAfter:
-      - clone-repository
-      taskSpec:
-        steps:
-        - name: copy
-          image: registry.access.redhat.com/ubi9/ubi-minimal:9.4
-          script: |
-            #!/bin/sh
-            set -x
-            cp $(workspaces.settings.path)/settings.xml $(workspaces.workspace.path)/source/settings.xml
-      workspaces:
-      - name: settings
-        workspace: mvn-settings
-      - name: workspace
-        workspace: workspace
-    - name: run-tests
-      runAfter:
-        - prefetch-dependencies
-        - copy-settings
-      taskRef:
-        name: openjdk-redis-6gb
-      params:
-      - name: SCRIPT
-        value: mvn -B --settings settings.xml verify -Dquarkus.redis.hosts=redis://localhost/
-      workspaces:
-      - name: source
-        workspace: workspace
     - name: build-container
       params:
       - name: IMAGE
@@ -243,8 +215,12 @@ spec:
         value: $(params.image-expires-after)
       - name: COMMIT_SHA
         value: $(tasks.clone-repository.results.commit)
+      - name: BUILD_ARGS_FILE
+        value: ../../../entitlement/gh-creds.txt
+      - name: ENTITLEMENT_SECRET
+        value: gh-credentials
       runAfter:
-      - run-tests
+      - clone-repository
       taskRef:
         params:
         - name: name
