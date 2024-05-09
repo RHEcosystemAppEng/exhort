@@ -3,6 +3,12 @@
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![CI](https://github.com/RHEcosystemAppEng/exhort/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/RHEcosystemAppEng/exhort/actions/workflows/ci.yaml)
 
+## Dependencies
+
+- Redis cache: Allows caching Red Hat recommendations and remediations. Can be configured with the `quarkus.redis.host` parameter
+- TrustedContent: Provides Red Hat recommendations and remediations.
+- External Vulnerability providers enabled.
+
 ## Required parameters
 
 - `api.osvnvd.host` The host where the [ONGuard](https://github.com/RHEcosystemAppEng/onguard) service is deployed
