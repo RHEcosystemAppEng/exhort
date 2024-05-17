@@ -87,6 +87,9 @@ public class OsvNvdResponseHandler extends ProviderResponseHandler {
           var issue = new Issue().source(Constants.OSV_NVD_PROVIDER);
 
           String cve = getTextValue(data, "cveId");
+          if (cve == null) {
+            return;
+          }
           issue.id(cve).cves(List.of(cve));
           issue.title(getTextValue(data, "summary"));
           if (issue.getTitle() == null || issue.getTitle().isEmpty()) {
