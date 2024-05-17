@@ -123,6 +123,10 @@ objects:
                   value: '8080'
                 - name: QUARKUS_MANAGEMENT_PORT
                   value: '9000'
+                - name: QUARKUS_REDIS_MAX_POOL_SIZE
+                  value: '20'
+                - name: QUARKUS_REDIS_MAX_POOL_WAITING
+                  value: '100'
               securityContext:
                 runAsNonRoot: true
               resources:
