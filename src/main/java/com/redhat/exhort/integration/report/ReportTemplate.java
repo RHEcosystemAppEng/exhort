@@ -102,7 +102,9 @@ public class ReportTemplate {
   }
 
   private String sanitize(String report) {
-    return report.replaceAll("<script>", "\\\\<script\\\\>");
+    String sanitizedReport = report.replaceAll("<script>", "\\\\<script\\\\>");
+    sanitizedReport = sanitizedReport.replaceAll("%40", "");
+    return sanitizedReport;
   }
 
   private String getImageMapping() throws JsonProcessingException {
