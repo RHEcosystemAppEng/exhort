@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.redhat.exhort.integration.providers.osvnvd;
+package com.redhat.exhort.integration.providers.osv;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -39,13 +39,13 @@ import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 
 @QuarkusTest
-public class OsvNvdResponseHandlerTest {
+public class OsvResponseHandlerTest {
 
-  @Inject OsvNvdResponseHandler handler;
+  @Inject OsvResponseHandler handler;
 
   @Test
   void testVectors() throws IOException, URISyntaxException {
-    var providerResponse = getProviderResponse("osvnvd/maven_report.json");
+    var providerResponse = getProviderResponse("onguard/maven_report.json");
     var postgresRef =
         PackageRef.builder().purl("pkg:maven/org.postgresql/postgresql@42.5.0?type=jar").build();
     var jacksonRef =

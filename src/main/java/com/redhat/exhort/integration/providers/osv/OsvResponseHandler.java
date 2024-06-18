@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.redhat.exhort.integration.providers.osvnvd;
+package com.redhat.exhort.integration.providers.osv;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -51,13 +51,13 @@ import us.springett.cvss.Cvss;
 
 @ApplicationScoped
 @RegisterForReflection
-public class OsvNvdResponseHandler extends ProviderResponseHandler {
+public class OsvResponseHandler extends ProviderResponseHandler {
 
   @Inject ObjectMapper mapper;
 
   @Override
   protected String getProviderName() {
-    return Constants.OSV_NVD_PROVIDER;
+    return Constants.OSV_PROVIDER;
   }
 
   @Override
@@ -84,9 +84,9 @@ public class OsvNvdResponseHandler extends ProviderResponseHandler {
     List<Issue> issues = new ArrayList<>();
     response.forEach(
         data -> {
-          var issue = new Issue().source(Constants.OSV_NVD_PROVIDER);
+          var issue = new Issue().source(Constants.OSV_PROVIDER);
 
-          String cve = getTextValue(data, "cveId");
+          String cve = getTextValue(data, "id");
           if (cve == null) {
             return;
           }

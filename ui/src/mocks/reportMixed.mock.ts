@@ -1856,15 +1856,15 @@ export const reportMixed: AppData = {
           "message": "OK"
         }
       },
-      "osv-nvd": {
+      "osv": {
         "status": {
           "ok": true,
-          "name": "osv-nvd",
+          "name": "osv",
           "code": 200,
           "message": "OK"
         },
         "sources": {
-          "osv-nvd": {
+          "osv": {
             "summary": {
               "direct": 4,
               "transitive": 57,
@@ -1882,7 +1882,7 @@ export const reportMixed: AppData = {
               "issues": [{
                 "id": "CVE-2022-22965",
                 "title": "A Spring MVC or Spring WebFlux application running on JDK 9+ may be vulnerable to remote code execution (RCE) via data binding. The specific exploit requires the application to run on Tomcat as a WAR deployment. If the application is deployed as a Spring Boot executable jar, i.e. the default, it is not vulnerable to the exploit. However, the nature of the vulnerability is more general, and there may be other ways to exploit it.",
-                "source": "osv-nvd",
+                "source": "osv",
                 "cvss": {
                   "attackVector": "Network",
                   "attackComplexity": "Low",
@@ -1907,7 +1907,7 @@ export const reportMixed: AppData = {
                 "issues": [{
                   "id": "CVE-2022-22965",
                   "title": "A Spring MVC or Spring WebFlux application running on JDK 9+ may be vulnerable to remote code execution (RCE) via data binding. The specific exploit requires the application to run on Tomcat as a WAR deployment. If the application is deployed as a Spring Boot executable jar, i.e. the default, it is not vulnerable to the exploit. However, the nature of the vulnerability is more general, and there may be other ways to exploit it.",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -1930,7 +1930,7 @@ export const reportMixed: AppData = {
                 "highestVulnerability": {
                   "id": "CVE-2022-22965",
                   "title": "A Spring MVC or Spring WebFlux application running on JDK 9+ may be vulnerable to remote code execution (RCE) via data binding. The specific exploit requires the application to run on Tomcat as a WAR deployment. If the application is deployed as a Spring Boot executable jar, i.e. the default, it is not vulnerable to the exploit. However, the nature of the vulnerability is more general, and there may be other ways to exploit it.",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -1955,7 +1955,7 @@ export const reportMixed: AppData = {
                 "issues": [{
                   "id": "CVE-2022-22965",
                   "title": "A Spring MVC or Spring WebFlux application running on JDK 9+ may be vulnerable to remote code execution (RCE) via data binding. The specific exploit requires the application to run on Tomcat as a WAR deployment. If the application is deployed as a Spring Boot executable jar, i.e. the default, it is not vulnerable to the exploit. However, the nature of the vulnerability is more general, and there may be other ways to exploit it.",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -1977,7 +1977,7 @@ export const reportMixed: AppData = {
                 }, {
                   "id": "CVE-2022-22970",
                   "title": "In spring framework versions prior to 5.3.20+ , 5.2.22+ and old unsupported versions, applications that handle file uploads are vulnerable to DoS attack if they rely on data binding to set a MultipartFile or javax.servlet.Part to a field in a model object.",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "High",
@@ -1998,7 +1998,7 @@ export const reportMixed: AppData = {
                 "highestVulnerability": {
                   "id": "CVE-2022-22965",
                   "title": "A Spring MVC or Spring WebFlux application running on JDK 9+ may be vulnerable to remote code execution (RCE) via data binding. The specific exploit requires the application to run on Tomcat as a WAR deployment. If the application is deployed as a Spring Boot executable jar, i.e. the default, it is not vulnerable to the exploit. However, the nature of the vulnerability is more general, and there may be other ways to exploit it.",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -2023,7 +2023,7 @@ export const reportMixed: AppData = {
                 "issues": [{
                   "id": "CVE-2016-1000027",
                   "title": "Pivotal Spring Framework through 5.3.16 suffers from a potential remote code execution (RCE) issue if used for Java deserialization of untrusted data. Depending on how the library is implemented within a product, this issue may or not occur, and authentication may be required. NOTE: the vendor's position is that untrusted data is not an intended use case. The product's behavior will not be changed because some users rely on deserialization of trusted data.",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -2045,7 +2045,7 @@ export const reportMixed: AppData = {
                 }, {
                   "id": "CVE-2021-22118",
                   "title": "In Spring Framework, versions 5.2.x prior to 5.2.15 and versions 5.3.x prior to 5.3.7, a WebFlux application is vulnerable to a privilege escalation: by (re)creating the temporary storage directory, a locally authenticated malicious user can read or modify files that have been uploaded to the WebFlux application, or overwrite arbitrary files with multipart request data.",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Local",
                     "attackComplexity": "Low",
@@ -2068,7 +2068,7 @@ export const reportMixed: AppData = {
                 "highestVulnerability": {
                   "id": "CVE-2016-1000027",
                   "title": "Pivotal Spring Framework through 5.3.16 suffers from a potential remote code execution (RCE) issue if used for Java deserialization of untrusted data. Depending on how the library is implemented within a product, this issue may or not occur, and authentication may be required. NOTE: the vendor's position is that untrusted data is not an intended use case. The product's behavior will not be changed because some users rely on deserialization of trusted data.",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -2093,7 +2093,7 @@ export const reportMixed: AppData = {
                 "issues": [{
                   "id": "CVE-2023-46589",
                   "title": "Improper Input Validation vulnerability in Apache Tomcat.Tomcat from 11.0.0-M1 through 11.0.0-M10, from 10.1.0-M1 through 10.1.15, from 9.0.0-M1 through 9.0.82 and from 8.5.0 through 8.5.95 did not correctly parse HTTP trailer headers. A trailer header that exceeded the header size limit could cause Tomcat to treat a single \nrequest as multiple requests leading to the possibility of request \nsmuggling when behind a reverse proxy.\n\nUsers are recommended to upgrade to version 11.0.0-M11 onwards, 10.1.16 onwards, 9.0.83 onwards or 8.5.96 onwards, which fix the issue.\n\n",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -2115,7 +2115,7 @@ export const reportMixed: AppData = {
                 }, {
                   "id": "CVE-2021-25122",
                   "title": "Exposure of Sensitive Information to an Unauthorized Actor in Apache Tomcat",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -2137,7 +2137,7 @@ export const reportMixed: AppData = {
                 }, {
                   "id": "CVE-2023-44487",
                   "title": "The HTTP/2 protocol allows a denial of service (server resource consumption) because request cancellation can reset many streams quickly, as exploited in the wild in August through October 2023.",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -2159,7 +2159,7 @@ export const reportMixed: AppData = {
                 }, {
                   "id": "CVE-2021-25329",
                   "title": "Potential remote code execution in Apache Tomcat",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Local",
                     "attackComplexity": "High",
@@ -2181,7 +2181,7 @@ export const reportMixed: AppData = {
                 }, {
                   "id": "CVE-2023-41080",
                   "title": "URL Redirection to Untrusted Site ('Open Redirect') vulnerability in FORM authentication feature Apache Tomcat.This issue affects Apache Tomcat: from 11.0.0-M1 through 11.0.0-M10, from 10.1.0-M1 through 10.0.12, from 9.0.0-M1 through 9.0.79 and from 8.5.0 through 8.5.92.\n\nThe vulnerability is limited to the ROOT (default) web application.",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -2201,7 +2201,7 @@ export const reportMixed: AppData = {
                 }, {
                   "id": "CVE-2021-24122",
                   "title": "When serving resources from a network location using the NTFS file system, Apache Tomcat versions 10.0.0-M1 to 10.0.0-M9, 9.0.0.M1 to 9.0.39, 8.5.0 to 8.5.59 and 7.0.0 to 7.0.106 were susceptible to JSP source code disclosure in some configurations. The root cause was the unexpected behaviour of the JRE API File.getCanonicalPath() which in turn was caused by the inconsistent behaviour of the Windows API (FindFirstFileW) in some circumstances.",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "High",
@@ -2221,7 +2221,7 @@ export const reportMixed: AppData = {
                 }, {
                   "id": "CVE-2023-42795",
                   "title": "Incomplete Cleanup vulnerability in Apache Tomcat.When recycling various internal objects in Apache Tomcat from 11.0.0-M1 through 11.0.0-M11, from 10.1.0-M1 through 10.1.13, from 9.0.0-M1 through 9.0.80 and from 8.5.0 through 8.5.93, an error could \ncause Tomcat to skip some parts of the recycling process leading to \ninformation leaking from the current request/response to the next.\n\nUsers are recommended to upgrade to version 11.0.0-M12 onwards, 10.1.14 onwards, 9.0.81 onwards or 8.5.94 onwards, which fixes the issue.\n\n",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -2243,7 +2243,7 @@ export const reportMixed: AppData = {
                 }, {
                   "id": "CVE-2023-45648",
                   "title": "Improper Input Validation vulnerability in Apache Tomcat.Tomcat from 11.0.0-M1 through 11.0.0-M11, from 10.1.0-M1 through 10.1.13, from 9.0.0-M1 through 9.0.81 and from 8.5.0 through 8.5.93 did not correctly parse HTTP trailer headers. A specially \ncrafted, invalid trailer header could cause Tomcat to treat a single \nrequest as multiple requests leading to the possibility of request \nsmuggling when behind a reverse proxy.\n\nUsers are recommended to upgrade to version 11.0.0-M12 onwards, 10.1.14 onwards, 9.0.81 onwards or 8.5.94 onwards, which fix the issue.\n\n",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -2266,7 +2266,7 @@ export const reportMixed: AppData = {
                 "highestVulnerability": {
                   "id": "CVE-2023-46589",
                   "title": "Improper Input Validation vulnerability in Apache Tomcat.Tomcat from 11.0.0-M1 through 11.0.0-M10, from 10.1.0-M1 through 10.1.15, from 9.0.0-M1 through 9.0.82 and from 8.5.0 through 8.5.95 did not correctly parse HTTP trailer headers. A trailer header that exceeded the header size limit could cause Tomcat to treat a single \nrequest as multiple requests leading to the possibility of request \nsmuggling when behind a reverse proxy.\n\nUsers are recommended to upgrade to version 11.0.0-M11 onwards, 10.1.16 onwards, 9.0.83 onwards or 8.5.96 onwards, which fix the issue.\n\n",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -2291,7 +2291,7 @@ export const reportMixed: AppData = {
                 "issues": [{
                   "id": "CVE-2021-46877",
                   "title": "jackson-databind 2.10.x through 2.12.x before 2.12.6 and 2.13.x before 2.13.1 allows attackers to cause a denial of service (2 GB transient heap usage per read) in uncommon situations involving JsonNode JDK serialization.",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -2313,7 +2313,7 @@ export const reportMixed: AppData = {
                 }, {
                   "id": "CVE-2020-36518",
                   "title": "jackson-databind before 2.13.0 allows a Java StackOverflow exception and denial of service via a large depth of nested objects.",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -2335,7 +2335,7 @@ export const reportMixed: AppData = {
                 }, {
                   "id": "CVE-2022-42003",
                   "title": "In FasterXML jackson-databind before versions 2.13.4.1 and 2.12.17.1, resource exhaustion can occur because of a lack of a check in primitive value deserializers to avoid deep wrapper array nesting, when the UNWRAP_SINGLE_VALUE_ARRAYS feature is enabled.",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -2357,7 +2357,7 @@ export const reportMixed: AppData = {
                 }, {
                   "id": "CVE-2022-42004",
                   "title": "In FasterXML jackson-databind before 2.13.4, resource exhaustion can occur because of a lack of a check in BeanDeserializer._deserializeFromArray to prevent use of deeply nested arrays. An application is vulnerable only with certain customized choices for deserialization.",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -2380,7 +2380,7 @@ export const reportMixed: AppData = {
                 "highestVulnerability": {
                   "id": "CVE-2021-46877",
                   "title": "jackson-databind 2.10.x through 2.12.x before 2.12.6 and 2.13.x before 2.13.1 allows attackers to cause a denial of service (2 GB transient heap usage per read) in uncommon situations involving JsonNode JDK serialization.",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -2405,7 +2405,7 @@ export const reportMixed: AppData = {
                 "issues": [{
                   "id": "CVE-2022-22950",
                   "title": "n Spring Framework versions 5.3.0 - 5.3.16 and older unsupported versions, it is possible for a user to provide a specially crafted SpEL expression that may cause a denial of service condition.",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -2427,7 +2427,7 @@ export const reportMixed: AppData = {
                 }, {
                   "id": "CVE-2023-20861",
                   "title": "In Spring Framework versions 6.0.0 - 6.0.6, 5.3.0 - 5.3.25, 5.2.0.RELEASE - 5.2.22.RELEASE, and older unsupported versions, it is possible for a user to provide a specially crafted SpEL expression that may cause a denial-of-service (DoS) condition.",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -2447,7 +2447,7 @@ export const reportMixed: AppData = {
                 }, {
                   "id": "CVE-2023-20863",
                   "title": "In spring framework versions prior to 5.2.24 release+ ,5.3.27+ and 6.0.8+ , it is possible for a user to provide a specially crafted SpEL expression that may cause a denial-of-service (DoS) condition.",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -2470,7 +2470,7 @@ export const reportMixed: AppData = {
                 "highestVulnerability": {
                   "id": "CVE-2022-22950",
                   "title": "n Spring Framework versions 5.3.0 - 5.3.16 and older unsupported versions, it is possible for a user to provide a specially crafted SpEL expression that may cause a denial of service condition.",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -2494,7 +2494,7 @@ export const reportMixed: AppData = {
               "highestVulnerability": {
                 "id": "CVE-2022-22965",
                 "title": "A Spring MVC or Spring WebFlux application running on JDK 9+ may be vulnerable to remote code execution (RCE) via data binding. The specific exploit requires the application to run on Tomcat as a WAR deployment. If the application is deployed as a Spring Boot executable jar, i.e. the default, it is not vulnerable to the exploit. However, the nature of the vulnerability is more general, and there may be other ways to exploit it.",
-                "source": "osv-nvd",
+                "source": "osv",
                 "cvss": {
                   "attackVector": "Network",
                   "attackComplexity": "Low",
@@ -2521,7 +2521,7 @@ export const reportMixed: AppData = {
                 "issues": [{
                   "id": "CVE-2022-1471",
                   "title": "SnakeYaml's Constructor() class does not restrict types which can be instantiated during deserialization. Deserializing yaml content provided by an attacker can lead to remote code execution. We recommend using SnakeYaml's SafeConsturctor when parsing untrusted content to restrict deserialization. We recommend upgrading to version 2.0 and beyond.\n",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -2543,7 +2543,7 @@ export const reportMixed: AppData = {
                 }, {
                   "id": "CVE-2022-25857",
                   "title": "The package org.yaml:snakeyaml from 0 and before 1.31 are vulnerable to Denial of Service (DoS) due missing to nested depth limitation for collections.",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -2565,7 +2565,7 @@ export const reportMixed: AppData = {
                 }, {
                   "id": "CVE-2022-38751",
                   "title": "Using snakeYAML to parse untrusted YAML files may be vulnerable to Denial of Service attacks (DOS). If the parser is running on user supplied input, an attacker may supply content that causes the parser to crash by stackoverflow.",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -2587,7 +2587,7 @@ export const reportMixed: AppData = {
                 }, {
                   "id": "CVE-2022-38752",
                   "title": "Using snakeYAML to parse untrusted YAML files may be vulnerable to Denial of Service attacks (DOS). If the parser is running on user supplied input, an attacker may supply content that causes the parser to crash by stack-overflow.",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -2609,7 +2609,7 @@ export const reportMixed: AppData = {
                 }, {
                   "id": "CVE-2022-38749",
                   "title": "Using snakeYAML to parse untrusted YAML files may be vulnerable to Denial of Service attacks (DOS). If the parser is running on user supplied input, an attacker may supply content that causes the parser to crash by stackoverflow.",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -2631,7 +2631,7 @@ export const reportMixed: AppData = {
                 }, {
                   "id": "CVE-2022-41854",
                   "title": "Those using Snakeyaml to parse untrusted YAML files may be vulnerable to Denial of Service attacks (DOS). If the parser is running on user supplied input, an attacker may supply content that causes the parser to crash by stack overflow. This effect may support a denial of service attack.",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -2653,7 +2653,7 @@ export const reportMixed: AppData = {
                 }, {
                   "id": "CVE-2022-38750",
                   "title": "Using snakeYAML to parse untrusted YAML files may be vulnerable to Denial of Service attacks (DOS). If the parser is running on user supplied input, an attacker may supply content that causes the parser to crash by stackoverflow.",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Local",
                     "attackComplexity": "Low",
@@ -2676,7 +2676,7 @@ export const reportMixed: AppData = {
                 "highestVulnerability": {
                   "id": "CVE-2022-1471",
                   "title": "SnakeYaml's Constructor() class does not restrict types which can be instantiated during deserialization. Deserializing yaml content provided by an attacker can lead to remote code execution. We recommend using SnakeYaml's SafeConsturctor when parsing untrusted content to restrict deserialization. We recommend upgrading to version 2.0 and beyond.\n",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -2701,7 +2701,7 @@ export const reportMixed: AppData = {
                 "issues": [{
                   "id": "CVE-2023-6378",
                   "title": "logback serialization vulnerability",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -2723,7 +2723,7 @@ export const reportMixed: AppData = {
                 }, {
                   "id": "CVE-2021-42550",
                   "title": "In logback version 1.2.7 and prior versions, an attacker with the required privileges to edit configurations files could craft a malicious configuration allowing to execute arbitrary code loaded from LDAP servers.",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "High",
@@ -2746,7 +2746,7 @@ export const reportMixed: AppData = {
                 "highestVulnerability": {
                   "id": "CVE-2023-6378",
                   "title": "logback serialization vulnerability",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -2771,7 +2771,7 @@ export const reportMixed: AppData = {
                 "issues": [{
                   "id": "CVE-2023-6378",
                   "title": "logback serialization vulnerability",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -2794,7 +2794,7 @@ export const reportMixed: AppData = {
                 "highestVulnerability": {
                   "id": "CVE-2023-6378",
                   "title": "logback serialization vulnerability",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -2819,7 +2819,7 @@ export const reportMixed: AppData = {
                 "issues": [{
                   "id": "CVE-2023-20883",
                   "title": "In Spring Boot versions 3.0.0 - 3.0.6, 2.7.0 - 2.7.11, 2.6.0 - 2.6.14, 2.5.0 - 2.5.14 and older unsupported versions, there is potential for a denial-of-service (DoS) attack if Spring MVC is used together with a reverse proxy cache.",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -2842,7 +2842,7 @@ export const reportMixed: AppData = {
                 "highestVulnerability": {
                   "id": "CVE-2023-20883",
                   "title": "In Spring Boot versions 3.0.0 - 3.0.6, 2.7.0 - 2.7.11, 2.6.0 - 2.6.14, 2.5.0 - 2.5.14 and older unsupported versions, there is potential for a denial-of-service (DoS) attack if Spring MVC is used together with a reverse proxy cache.",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -2867,7 +2867,7 @@ export const reportMixed: AppData = {
                 "issues": [{
                   "id": "CVE-2023-34055",
                   "title": "In Spring Boot versions 2.7.0 - 2.7.17, 3.0.0-3.0.12 and 3.1.0-3.1.5, it is possible for a user to provide specially crafted HTTP requests that may cause a denial-of-service (DoS) condition.\n\nSpecifically, an application is vulnerable when all of the following are true:\n\n  *  the application uses Spring MVC or Spring WebFlux\n  *  org.springframework.boot:spring-boot-actuator is on the classpath\n\n\n\n",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -2888,7 +2888,7 @@ export const reportMixed: AppData = {
                 "highestVulnerability": {
                   "id": "CVE-2023-34055",
                   "title": "In Spring Boot versions 2.7.0 - 2.7.17, 3.0.0-3.0.12 and 3.1.0-3.1.5, it is possible for a user to provide specially crafted HTTP requests that may cause a denial-of-service (DoS) condition.\n\nSpecifically, an application is vulnerable when all of the following are true:\n\n  *  the application uses Spring MVC or Spring WebFlux\n  *  org.springframework.boot:spring-boot-actuator is on the classpath\n\n\n\n",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -2911,7 +2911,7 @@ export const reportMixed: AppData = {
                 "issues": [{
                   "id": "CVE-2022-22968",
                   "title": "In Spring Framework versions 5.3.0 - 5.3.18, 5.2.0 - 5.2.20, and older unsupported versions, the patterns for disallowedFields on a DataBinder are case sensitive which means a field is not effectively protected unless it is listed with both upper and lower case for the first character of the field, including upper and lower case for the first character of all nested fields within the property path.",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -2934,7 +2934,7 @@ export const reportMixed: AppData = {
                 "highestVulnerability": {
                   "id": "CVE-2022-22968",
                   "title": "In Spring Framework versions 5.3.0 - 5.3.18, 5.2.0 - 5.2.20, and older unsupported versions, the patterns for disallowedFields on a DataBinder are case sensitive which means a field is not effectively protected unless it is listed with both upper and lower case for the first character of the field, including upper and lower case for the first character of all nested fields within the property path.",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -2959,7 +2959,7 @@ export const reportMixed: AppData = {
                 "issues": [{
                   "id": "CVE-2021-22060",
                   "title": "In Spring Framework versions 5.3.0 - 5.3.13, 5.2.0 - 5.2.18, and older unsupported versions, it is possible for a user to provide malicious input to cause the insertion of additional log entries. This is a follow-up to CVE-2021-22096 that protects against additional types of input and in more places of the Spring Framework codebase.",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -2979,7 +2979,7 @@ export const reportMixed: AppData = {
                 }, {
                   "id": "CVE-2021-22096",
                   "title": "In Spring Framework versions 5.3.0 - 5.3.10, 5.2.0 - 5.2.17, and older unsupported versions, it is possible for a user to provide malicious input to cause the insertion of additional log entries.",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -3000,7 +3000,7 @@ export const reportMixed: AppData = {
                 "highestVulnerability": {
                   "id": "CVE-2021-22060",
                   "title": "In Spring Framework versions 5.3.0 - 5.3.13, 5.2.0 - 5.2.18, and older unsupported versions, it is possible for a user to provide malicious input to cause the insertion of additional log entries. This is a follow-up to CVE-2021-22096 that protects against additional types of input and in more places of the Spring Framework codebase.",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -3022,7 +3022,7 @@ export const reportMixed: AppData = {
               "highestVulnerability": {
                 "id": "CVE-2022-1471",
                 "title": "SnakeYaml's Constructor() class does not restrict types which can be instantiated during deserialization. Deserializing yaml content provided by an attacker can lead to remote code execution. We recommend using SnakeYaml's SafeConsturctor when parsing untrusted content to restrict deserialization. We recommend upgrading to version 2.0 and beyond.\n",
-                "source": "osv-nvd",
+                "source": "osv",
                 "cvss": {
                   "attackVector": "Network",
                   "attackComplexity": "Low",
@@ -3049,7 +3049,7 @@ export const reportMixed: AppData = {
                 "issues": [{
                   "id": "CVE-2022-26520",
                   "title": "In pgjdbc before 42.3.3, an attacker (who controls the jdbc URL or properties) can call java.util.logging.FileHandler to write to arbitrary files through the loggerFile and loggerLevel connection properties. An example situation is that an attacker could create an executable JSP file under a Tomcat web root. NOTE: the vendor's position is that there is no pgjdbc vulnerability; instead, it is a vulnerability for any application to use the pgjdbc driver with untrusted connection properties",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -3071,7 +3071,7 @@ export const reportMixed: AppData = {
                 }, {
                   "id": "CVE-2022-21724",
                   "title": "pgjdbc is the offical PostgreSQL JDBC Driver. A security hole was found in the jdbc driver for postgresql database while doing security research. The system using the postgresql library will be attacked when attacker control the jdbc url or properties. pgjdbc instantiates plugin instances based on class names provided via `authenticationPluginClassName`, `sslhostnameverifier`, `socketFactory`, `sslfactory`, `sslpasswordcallback` connection properties. However, the driver did not verify if the class implements the expected interface before instantiating the class. This can lead to code execution loaded via arbitrary classes. Users using plugins are advised to upgrade. There are no known workarounds for this issue.",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -3093,7 +3093,7 @@ export const reportMixed: AppData = {
                 }, {
                   "id": "CVE-2022-31197",
                   "title": "PostgreSQL JDBC Driver (PgJDBC for short) allows Java programs to connect to a PostgreSQL database using standard, database independent Java code. The PGJDBC implementation of the `java.sql.ResultRow.refreshRow()` method is not performing escaping of column names so a malicious column name that contains a statement terminator, e.g. `;`, could lead to SQL injection. This could lead to executing additional SQL commands as the application's JDBC user. User applications that do not invoke the `ResultSet.refreshRow()` method are not impacted. User application that do invoke that method are impacted if the underlying database that they are querying via their JDBC application may be under the control of an attacker. The attack requires the attacker to trick the user into executing SQL against a table name who's column names would contain the malicious SQL and subsequently invoke the `refreshRow()` method on the ResultSet. Note that the application's JDBC user and the schema owner need not be the same. A JDBC application that executes as a privileged user querying database schemas owned by potentially malicious less-privileged users would be vulnerable. In that situation it may be possible for the malicious user to craft a schema that causes the application to execute commands as the privileged user. Patched versions will be released as `42.2.26` and `42.4.1`. Users are advised to upgrade. There are no known workarounds for this issue.",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -3115,7 +3115,7 @@ export const reportMixed: AppData = {
                 }, {
                   "id": "CVE-2022-41946",
                   "title": "pgjdbc is an open source postgresql JDBC Driver. In affected versions a prepared statement using either `PreparedStatement.setText(int, InputStream)` or `PreparedStatemet.setBytea(int, InputStream)` will create a temporary file if the InputStream is larger than 2k. This will create a temporary file which is readable by other users on Unix like systems, but not MacOS. On Unix like systems, the system's temporary directory is shared between all users on that system. Because of this, when files and directories are written into this directory they are, by default, readable by other users on that same system. This vulnerability does not allow other users to overwrite the contents of these directories or files. This is purely an information disclosure vulnerability. Because certain JDK file system APIs were only added in JDK 1.7, this this fix is dependent upon the version of the JDK you are using. Java 1.7 and higher users: this vulnerability is fixed in 4.5.0. Java 1.6 and lower users: no patch is available. If you are unable to patch, or are stuck running on Java 1.6, specifying the java.io.tmpdir system environment variable to a directory that is exclusively owned by the executing user will mitigate this vulnerability.",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Local",
                     "attackComplexity": "Low",
@@ -3138,7 +3138,7 @@ export const reportMixed: AppData = {
                 "highestVulnerability": {
                   "id": "CVE-2022-26520",
                   "title": "In pgjdbc before 42.3.3, an attacker (who controls the jdbc URL or properties) can call java.util.logging.FileHandler to write to arbitrary files through the loggerFile and loggerLevel connection properties. An example situation is that an attacker could create an executable JSP file under a Tomcat web root. NOTE: the vendor's position is that there is no pgjdbc vulnerability; instead, it is a vulnerability for any application to use the pgjdbc driver with untrusted connection properties",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -3163,7 +3163,7 @@ export const reportMixed: AppData = {
               "highestVulnerability": {
                 "id": "CVE-2022-26520",
                 "title": "In pgjdbc before 42.3.3, an attacker (who controls the jdbc URL or properties) can call java.util.logging.FileHandler to write to arbitrary files through the loggerFile and loggerLevel connection properties. An example situation is that an attacker could create an executable JSP file under a Tomcat web root. NOTE: the vendor's position is that there is no pgjdbc vulnerability; instead, it is a vulnerability for any application to use the pgjdbc driver with untrusted connection properties",
-                "source": "osv-nvd",
+                "source": "osv",
                 "cvss": {
                   "attackVector": "Network",
                   "attackComplexity": "Low",
@@ -3188,7 +3188,7 @@ export const reportMixed: AppData = {
               "issues": [{
                 "id": "CVE-2023-4853",
                 "title": "A flaw was found in Quarkus where HTTP security policies are not sanitizing certain character permutations correctly when accepting requests, resulting in incorrect evaluation of permissions. This issue could allow an attacker to bypass the security policy altogether, resulting in unauthorized endpoint access and possibly a denial of service.",
-                "source": "osv-nvd",
+                "source": "osv",
                 "cvss": {
                   "attackVector": "Network",
                   "attackComplexity": "High",
@@ -3215,7 +3215,7 @@ export const reportMixed: AppData = {
               }, {
                 "id": "CVE-2023-0044",
                 "title": "If the Quarkus Form Authentication session cookie Path attribute is set to `/` then a cross-site attack may be initiated which might lead to the Information Disclosure. This attack can be prevented with the Quarkus CSRF Prevention feature.",
-                "source": "osv-nvd",
+                "source": "osv",
                 "cvss": {
                   "attackVector": "Network",
                   "attackComplexity": "Low",
@@ -3240,7 +3240,7 @@ export const reportMixed: AppData = {
                 "issues": [{
                   "id": "CVE-2023-2974",
                   "title": "quarkus-core vulnerable to client driven TLS cipher downgrading",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -3268,7 +3268,7 @@ export const reportMixed: AppData = {
                 "highestVulnerability": {
                   "id": "CVE-2023-2974",
                   "title": "quarkus-core vulnerable to client driven TLS cipher downgrading",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -3298,7 +3298,7 @@ export const reportMixed: AppData = {
                 "issues": [{
                   "id": "CVE-2022-41881",
                   "title": "Netty project is an event-driven asynchronous network application framework. In versions prior to 4.1.86.Final, a StackOverflowError can be raised when parsing a malformed crafted message due to an infinite recursion. This issue is patched in version 4.1.86.Final. There is no workaround, except using a custom HaProxyMessageDecoder.",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -3321,7 +3321,7 @@ export const reportMixed: AppData = {
                 "highestVulnerability": {
                   "id": "CVE-2022-41881",
                   "title": "Netty project is an event-driven asynchronous network application framework. In versions prior to 4.1.86.Final, a StackOverflowError can be raised when parsing a malformed crafted message due to an infinite recursion. This issue is patched in version 4.1.86.Final. There is no workaround, except using a custom HaProxyMessageDecoder.",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -3346,7 +3346,7 @@ export const reportMixed: AppData = {
                 "issues": [{
                   "id": "CVE-2021-37137",
                   "title": "The Snappy frame decoder function doesn't restrict the chunk length which may lead to excessive memory usage. Beside this it also may buffer reserved skippable chunks until the whole chunk was received which may lead to excessive memory usage as well. This vulnerability can be triggered by supplying malicious input that decompresses to a very big size (via a network stream or a file) or by sending a huge skippable chunk.",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -3368,7 +3368,7 @@ export const reportMixed: AppData = {
                 }, {
                   "id": "CVE-2021-37136",
                   "title": "The Bzip2 decompression decoder function doesn't allow setting size restrictions on the decompressed output data (which affects the allocation size used during decompression). All users of Bzip2Decoder are affected. The malicious input can trigger an OOME and so a DoS attack",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -3391,7 +3391,7 @@ export const reportMixed: AppData = {
                 "highestVulnerability": {
                   "id": "CVE-2021-37137",
                   "title": "The Snappy frame decoder function doesn't restrict the chunk length which may lead to excessive memory usage. Beside this it also may buffer reserved skippable chunks until the whole chunk was received which may lead to excessive memory usage as well. This vulnerability can be triggered by supplying malicious input that decompresses to a very big size (via a network stream or a file) or by sending a huge skippable chunk.",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -3416,7 +3416,7 @@ export const reportMixed: AppData = {
                 "issues": [{
                   "id": "CVE-2023-44487",
                   "title": "The HTTP/2 protocol allows a denial of service (server resource consumption) because request cancellation can reset many streams quickly, as exploited in the wild in August through October 2023.",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -3443,7 +3443,7 @@ export const reportMixed: AppData = {
                 }, {
                   "id": "CVE-2021-21409",
                   "title": "Netty is an open-source, asynchronous event-driven network application framework for rapid development of maintainable high performance protocol servers & clients. In Netty (io.netty:netty-codec-http2) before version 4.1.61.Final there is a vulnerability that enables request smuggling. The content-length header is not correctly validated if the request only uses a single Http2HeaderFrame with the endStream set to to true. This could lead to request smuggling if the request is proxied to a remote peer and translated to HTTP/1.1. This is a followup of GHSA-wm47-8v5p-wjpj/CVE-2021-21295 which did miss to fix this one case. This was fixed as part of 4.1.61.Final.",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "High",
@@ -3466,7 +3466,7 @@ export const reportMixed: AppData = {
                 "highestVulnerability": {
                   "id": "CVE-2023-44487",
                   "title": "The HTTP/2 protocol allows a denial of service (server resource consumption) because request cancellation can reset many streams quickly, as exploited in the wild in August through October 2023.",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -3496,7 +3496,7 @@ export const reportMixed: AppData = {
                 "issues": [{
                   "id": "CVE-2023-34462",
                   "title": "Netty is an asynchronous event-driven network application framework for rapid development of maintainable high performance protocol servers & clients. The `SniHandler` can allocate up to 16MB of heap for each channel during the TLS handshake. When the handler or the channel does not have an idle timeout, it can be used to make a TCP server using the `SniHandler` to allocate 16MB of heap. The `SniHandler` class is a handler that waits for the TLS handshake to configure a `SslHandler` according to the indicated server name by the `ClientHello` record. For this matter it allocates a `ByteBuf` using the value defined in the `ClientHello` record. Normally the value of the packet should be smaller than the handshake packet but there are not checks done here and the way the code is written, it is possible to craft a packet that makes the `SslClientHelloHandler`. This vulnerability has been fixed in version 4.1.94.Final.",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -3519,7 +3519,7 @@ export const reportMixed: AppData = {
                 "highestVulnerability": {
                   "id": "CVE-2023-34462",
                   "title": "Netty is an asynchronous event-driven network application framework for rapid development of maintainable high performance protocol servers & clients. The `SniHandler` can allocate up to 16MB of heap for each channel during the TLS handshake. When the handler or the channel does not have an idle timeout, it can be used to make a TCP server using the `SniHandler` to allocate 16MB of heap. The `SniHandler` class is a handler that waits for the TLS handshake to configure a `SslHandler` according to the indicated server name by the `ClientHello` record. For this matter it allocates a `ByteBuf` using the value defined in the `ClientHello` record. Normally the value of the packet should be smaller than the handshake packet but there are not checks done here and the way the code is written, it is possible to craft a packet that makes the `SslClientHelloHandler`. This vulnerability has been fixed in version 4.1.94.Final.",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -3544,7 +3544,7 @@ export const reportMixed: AppData = {
                 "issues": [{
                   "id": "CVE-2021-43797",
                   "title": "Netty is an asynchronous event-driven network application framework for rapid development of maintainable high performance protocol servers & clients. Netty prior to version 4.1.71.Final skips control chars when they are present at the beginning / end of the header name. It should instead fail fast as these are not allowed by the spec and could lead to HTTP request smuggling. Failing to do the validation might cause netty to \"sanitize\" header names before it forward these to another remote system when used as proxy. This remote system can't see the invalid usage anymore, and therefore does not do the validation itself. Users should upgrade to version 4.1.71.Final.",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -3566,7 +3566,7 @@ export const reportMixed: AppData = {
                 }, {
                   "id": "CVE-2022-24823",
                   "title": "Netty is an open-source, asynchronous event-driven network application framework. The package `io.netty:netty-codec-http` prior to version 4.1.77.Final contains an insufficient fix for CVE-2021-21290. When Netty's multipart decoders are used local information disclosure can occur via the local system temporary directory if temporary storing uploads on the disk is enabled. This only impacts applications running on Java version 6 and lower. Additionally, this vulnerability impacts code running on Unix-like systems, and very old versions of Mac OSX and Windows as they all share the system temporary directory between all users. Version 4.1.77.Final contains a patch for this vulnerability. As a workaround, specify one's own `java.io.tmpdir` when starting the JVM or use DefaultHttpDataFactory.setBaseDir(...) to set the directory to something that is only readable by the current user.",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Local",
                     "attackComplexity": "Low",
@@ -3589,7 +3589,7 @@ export const reportMixed: AppData = {
                 "highestVulnerability": {
                   "id": "CVE-2021-43797",
                   "title": "Netty is an asynchronous event-driven network application framework for rapid development of maintainable high performance protocol servers & clients. Netty prior to version 4.1.71.Final skips control chars when they are present at the beginning / end of the header name. It should instead fail fast as these are not allowed by the spec and could lead to HTTP request smuggling. Failing to do the validation might cause netty to \"sanitize\" header names before it forward these to another remote system when used as proxy. This remote system can't see the invalid usage anymore, and therefore does not do the validation itself. Users should upgrade to version 4.1.71.Final.",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -3614,7 +3614,7 @@ export const reportMixed: AppData = {
                 "issues": [{
                   "id": "CVE-2023-24815",
                   "title": "Vert.x-Web is a set of building blocks for building web applications in the java programming language. When running vertx web applications that serve files using `StaticHandler` on Windows Operating Systems and Windows File Systems, if the mount point is a wildcard (`*`) then an attacker can exfiltrate any class path resource. When computing the relative path to locate the resource, in case of wildcards, the code: `return \"/\" + rest;` from `Utils.java` returns the user input (without validation) as the segment to lookup. Even though checks are performed to avoid escaping the sandbox, given that the input was not sanitized `\\` are not properly handled and an attacker can build a path that is valid within the classpath. This issue only affects users deploying in windows environments and upgrading is the advised remediation path. There are no known workarounds for this vulnerability.",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -3637,7 +3637,7 @@ export const reportMixed: AppData = {
                 "highestVulnerability": {
                   "id": "CVE-2023-24815",
                   "title": "Vert.x-Web is a set of building blocks for building web applications in the java programming language. When running vertx web applications that serve files using `StaticHandler` on Windows Operating Systems and Windows File Systems, if the mount point is a wildcard (`*`) then an attacker can exfiltrate any class path resource. When computing the relative path to locate the resource, in case of wildcards, the code: `return \"/\" + rest;` from `Utils.java` returns the user input (without validation) as the segment to lookup. Even though checks are performed to avoid escaping the sandbox, given that the input was not sanitized `\\` are not properly handled and an attacker can build a path that is valid within the classpath. This issue only affects users deploying in windows environments and upgrading is the advised remediation path. There are no known workarounds for this vulnerability.",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -3662,7 +3662,7 @@ export const reportMixed: AppData = {
               "highestVulnerability": {
                 "id": "CVE-2023-4853",
                 "title": "A flaw was found in Quarkus where HTTP security policies are not sanitizing certain character permutations correctly when accepting requests, resulting in incorrect evaluation of permissions. This issue could allow an attacker to bypass the security policy altogether, resulting in unauthorized endpoint access and possibly a denial of service.",
-                "source": "osv-nvd",
+                "source": "osv",
                 "cvss": {
                   "attackVector": "Network",
                   "attackComplexity": "High",
@@ -3694,7 +3694,7 @@ export const reportMixed: AppData = {
                 "issues": [{
                   "id": "CVE-2023-1370",
                   "title": "[Json-smart](https://netplex.github.io/json-smart/) is a performance focused, JSON processor lib.\n\nWhen reaching a ‘[‘ or ‘{‘ character in the JSON input, the code parses an array or an object respectively.\n\nIt was discovered that the code does not have any limit to the nesting of such arrays or objects. Since the parsing of nested arrays and objects is done recursively, nesting too many of them can cause a stack exhaustion (stack overflow) and crash the software.\n\n",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -3714,7 +3714,7 @@ export const reportMixed: AppData = {
                 }, {
                   "id": "CVE-2021-27568",
                   "title": "An issue was discovered in netplex json-smart-v1 through 2015-10-23 and json-smart-v2 through 2.4. An exception is thrown from a function, but it is not caught, as demonstrated by NumberFormatException. When it is not caught, it may cause programs using the library to crash or expose sensitive information.",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "High",
@@ -3737,7 +3737,7 @@ export const reportMixed: AppData = {
                 "highestVulnerability": {
                   "id": "CVE-2023-1370",
                   "title": "[Json-smart](https://netplex.github.io/json-smart/) is a performance focused, JSON processor lib.\n\nWhen reaching a ‘[‘ or ‘{‘ character in the JSON input, the code parses an array or an object respectively.\n\nIt was discovered that the code does not have any limit to the nesting of such arrays or objects. Since the parsing of nested arrays and objects is done recursively, nesting too many of them can cause a stack exhaustion (stack overflow) and crash the software.\n\n",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -3760,7 +3760,7 @@ export const reportMixed: AppData = {
                 "issues": [{
                   "id": "CVE-2023-51074",
                   "title": "json-path v2.8.0 was discovered to contain a stack overflow via the Criteria.parse() method.",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -3781,7 +3781,7 @@ export const reportMixed: AppData = {
                 "highestVulnerability": {
                   "id": "CVE-2023-51074",
                   "title": "json-path v2.8.0 was discovered to contain a stack overflow via the Criteria.parse() method.",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -3803,7 +3803,7 @@ export const reportMixed: AppData = {
               "highestVulnerability": {
                 "id": "CVE-2023-1370",
                 "title": "[Json-smart](https://netplex.github.io/json-smart/) is a performance focused, JSON processor lib.\n\nWhen reaching a ‘[‘ or ‘{‘ character in the JSON input, the code parses an array or an object respectively.\n\nIt was discovered that the code does not have any limit to the nesting of such arrays or objects. Since the parsing of nested arrays and objects is done recursively, nesting too many of them can cause a stack exhaustion (stack overflow) and crash the software.\n\n",
-                "source": "osv-nvd",
+                "source": "osv",
                 "cvss": {
                   "attackVector": "Network",
                   "attackComplexity": "Low",
@@ -3826,7 +3826,7 @@ export const reportMixed: AppData = {
               "issues": [{
                 "id": "CVE-2021-3827",
                 "title": "A flaw was found in keycloak, where the default ECP binding flow allows other authentication flows to be bypassed. By exploiting this behavior, an attacker can bypass the MFA authentication by sending a SOAP request with an AuthnRequest and Authorization header with the user's credentials. The highest threat from this vulnerability is to confidentiality and integrity.",
-                "source": "osv-nvd",
+                "source": "osv",
                 "cvss": {
                   "attackVector": "Network",
                   "attackComplexity": "High",
@@ -3851,7 +3851,7 @@ export const reportMixed: AppData = {
                 "issues": [{
                   "id": "CVE-2021-40690",
                   "title": "All versions of Apache Santuario - XML Security for Java prior to 2.2.3 and 2.1.7 are vulnerable to an issue where the \"secureValidation\" property is not passed correctly when creating a KeyInfo from a KeyInfoReference element. This allows an attacker to abuse an XPath Transform to extract any local .xml files in a RetrievalMethod element.",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -3873,7 +3873,7 @@ export const reportMixed: AppData = {
                 }, {
                   "id": "CVE-2023-44483",
                   "title": "All versions of Apache Santuario - XML Security for Java prior to 2.2.6, 2.3.4, and 3.0.3, when using the JSR 105 API, are vulnerable to an issue where a private key may be disclosed in log files when generating an XML Signature and logging with debug level is enabled. Users are recommended to upgrade to version 2.2.6, 2.3.4, or 3.0.3, which fixes this issue.\n",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -3895,7 +3895,7 @@ export const reportMixed: AppData = {
                 }, {
                   "id": "CVE-2013-5823",
                   "title": "Apache XML Security For Java vulnerable to Infinite Loop",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -3915,7 +3915,7 @@ export const reportMixed: AppData = {
                 }, {
                   "id": "CVE-2013-4517",
                   "title": "Improper Input Validation in Apache Santuario XML Security",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "privilegesRequired": "None",
@@ -3934,7 +3934,7 @@ export const reportMixed: AppData = {
                 }, {
                   "id": "CVE-2013-2172",
                   "title": "Inefficient Algorithmic Complexity in Apache Santuario XML Security",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "privilegesRequired": "None",
@@ -3954,7 +3954,7 @@ export const reportMixed: AppData = {
                 "highestVulnerability": {
                   "id": "CVE-2021-40690",
                   "title": "All versions of Apache Santuario - XML Security for Java prior to 2.2.3 and 2.1.7 are vulnerable to an issue where the \"secureValidation\" property is not passed correctly when creating a KeyInfo from a KeyInfoReference element. This allows an attacker to abuse an XPath Transform to extract any local .xml files in a RetrievalMethod element.",
-                  "source": "osv-nvd",
+                  "source": "osv",
                   "cvss": {
                     "attackVector": "Network",
                     "attackComplexity": "Low",
@@ -3978,7 +3978,7 @@ export const reportMixed: AppData = {
               "highestVulnerability": {
                 "id": "CVE-2021-40690",
                 "title": "All versions of Apache Santuario - XML Security for Java prior to 2.2.3 and 2.1.7 are vulnerable to an issue where the \"secureValidation\" property is not passed correctly when creating a KeyInfo from a KeyInfoReference element. This allows an attacker to abuse an XPath Transform to extract any local .xml files in a RetrievalMethod element.",
-                "source": "osv-nvd",
+                "source": "osv",
                 "cvss": {
                   "attackVector": "Network",
                   "attackComplexity": "Low",

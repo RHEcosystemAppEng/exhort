@@ -191,15 +191,15 @@ export const dockerReport: AppData = {
             "message": "OK"
           }
         },
-        "osv-nvd": {
+        "osv": {
           "status": {
             "ok": true,
-            "name": "osv-nvd",
+            "name": "osv",
             "code": 200,
             "message": "OK"
           },
           "sources": {
-            "osv-nvd": {
+            "osv": {
               "summary": {
                 "direct": 0,
                 "transitive": 5,
@@ -223,7 +223,7 @@ export const dockerReport: AppData = {
                         {
                           "id": "CVE-2023-2974",
                           "title": "A vulnerability was found in quarkus-core. This vulnerability occurs because the TLS protocol configured with quarkus.http.ssl.protocols is not enforced, and the client can force the selection of the weaker supported TLS protocol.",
-                          "source": "osv-nvd",
+                          "source": "osv",
                           "cvss": {
                             "attackVector": "Network",
                             "attackComplexity": "Low",
@@ -256,7 +256,7 @@ export const dockerReport: AppData = {
                       "highestVulnerability": {
                         "id": "CVE-2023-2974",
                         "title": "A vulnerability was found in quarkus-core. This vulnerability occurs because the TLS protocol configured with quarkus.http.ssl.protocols is not enforced, and the client can force the selection of the weaker supported TLS protocol.",
-                        "source": "osv-nvd",
+                        "source": "osv",
                         "cvss": {
                           "attackVector": "Network",
                           "attackComplexity": "Low",
@@ -292,7 +292,7 @@ export const dockerReport: AppData = {
                         {
                           "id": "CVE-2022-42003",
                           "title": "In FasterXML jackson-databind 2.4.0-rc1 until 2.12.7.1 and in 2.13.x before 2.13.4.2 resource exhaustion can occur because of a lack of a check in primitive value deserializers to avoid deep wrapper array nesting, when the UNWRAP_SINGLE_VALUE_ARRAYS feature is enabled. This was patched in 2.12.7.1, 2.13.4.2, and 2.14.0.",
-                          "source": "osv-nvd",
+                          "source": "osv",
                           "cvss": {
                             "attackVector": "Network",
                             "attackComplexity": "Low",
@@ -320,7 +320,7 @@ export const dockerReport: AppData = {
                         {
                           "id": "CVE-2022-42004",
                           "title": "Uncontrolled Resource Consumption in FasterXML jackson-databind",
-                          "source": "osv-nvd",
+                          "source": "osv",
                           "cvss": {
                             "attackVector": "Network",
                             "attackComplexity": "Low",
@@ -348,7 +348,7 @@ export const dockerReport: AppData = {
                         {
                           "id": "CVE-2020-36518",
                           "title": "Deeply nested json in jackson-databind",
-                          "source": "osv-nvd",
+                          "source": "osv",
                           "cvss": {
                             "attackVector": "Network",
                             "attackComplexity": "Low",
@@ -380,7 +380,7 @@ export const dockerReport: AppData = {
                       "highestVulnerability": {
                         "id": "CVE-2022-42003",
                         "title": "In FasterXML jackson-databind 2.4.0-rc1 until 2.12.7.1 and in 2.13.x before 2.13.4.2 resource exhaustion can occur because of a lack of a check in primitive value deserializers to avoid deep wrapper array nesting, when the UNWRAP_SINGLE_VALUE_ARRAYS feature is enabled. This was patched in 2.12.7.1, 2.13.4.2, and 2.14.0.",
-                        "source": "osv-nvd",
+                        "source": "osv",
                         "cvss": {
                           "attackVector": "Network",
                           "attackComplexity": "Low",
@@ -411,7 +411,7 @@ export const dockerReport: AppData = {
                   "highestVulnerability": {
                     "id": "CVE-2023-2974",
                     "title": "A vulnerability was found in quarkus-core. This vulnerability occurs because the TLS protocol configured with quarkus.http.ssl.protocols is not enforced, and the client can force the selection of the weaker supported TLS protocol.",
-                    "source": "osv-nvd",
+                    "source": "osv",
                     "cvss": {
                       "attackVector": "Network",
                       "attackComplexity": "Low",
@@ -450,7 +450,7 @@ export const dockerReport: AppData = {
                         {
                           "id": "CVE-2022-41946",
                           "title": "TemporaryFolder on unix-like systems does not limit access to created files",
-                          "source": "osv-nvd",
+                          "source": "osv",
                           "cvss": {
                             "attackVector": "Local",
                             "attackComplexity": "Low",
@@ -481,7 +481,7 @@ export const dockerReport: AppData = {
                       "highestVulnerability": {
                         "id": "CVE-2022-41946",
                         "title": "TemporaryFolder on unix-like systems does not limit access to created files",
-                        "source": "osv-nvd",
+                        "source": "osv",
                         "cvss": {
                           "attackVector": "Local",
                           "attackComplexity": "Low",
@@ -514,7 +514,7 @@ export const dockerReport: AppData = {
                   "highestVulnerability": {
                     "id": "CVE-2022-41946",
                     "title": "TemporaryFolder on unix-like systems does not limit access to created files",
-                    "source": "osv-nvd",
+                    "source": "osv",
                     "cvss": {
                       "attackVector": "Local",
                       "attackComplexity": "Low",
@@ -866,15 +866,15 @@ export const dockerReport: AppData = {
             "message": "OK"
           }
         },
-        "osv-nvd": {
+        "osv": {
           "status": {
             "ok": true,
-            "name": "osv-nvd",
+            "name": "osv",
             "code": 200,
             "message": "OK"
           },
           "sources": {
-            "osv-nvd": {
+            "osv": {
               "summary": {
                 "direct": 0,
                 "transitive": 0,

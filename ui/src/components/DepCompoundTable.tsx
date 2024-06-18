@@ -291,7 +291,7 @@ export const DepCompoundTable = ({name, dependencies}: { name: string; dependenc
                 params={currentPage}
                 onChange={onPageChange}
               />
-              {name === 'osv-nvd' && (
+              {name === 'osv' && (
                 <div>
                   <p>Disclaimer:This Product uses data from the NVD API but is not endorsed or certified by the NVD</p>
                 </div>

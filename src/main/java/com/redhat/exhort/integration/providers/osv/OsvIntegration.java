@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.redhat.exhort.integration.providers.osvnvd;
+package com.redhat.exhort.integration.providers.osv;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
@@ -32,59 +32,59 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 @ApplicationScoped
-public class OsvNvdIntegration extends EndpointRouteBuilder {
+public class OsvIntegration extends EndpointRouteBuilder {
 
-  @ConfigProperty(name = "api.osvnvd.timeout", defaultValue = "30s")
+  @ConfigProperty(name = "api.onguard.timeout", defaultValue = "30s")
   String timeout;
 
   @Inject VulnerabilityProvider vulnerabilityProvider;
-  @Inject OsvNvdResponseHandler responseHandler;
+  @Inject OsvResponseHandler responseHandler;
 
   @Override
   public void configure() throws Exception {
     // fmt:off
-    from(direct("osvNvdScan"))
-      .routeId("osvNvdScan")
+    from(direct("osvScan"))
+      .routeId("osvScan")
       .circuitBreaker()
         .faultToleranceConfiguration()
           .timeoutEnabled(true)
           .timeoutDuration(timeout)
         .end()
-        .transform(method(OsvNvdRequestBuilder.class, "buildRequest"))
-        .to(direct("osvNvdRequest"))
+        .transform(method(OsvRequestBuilder.class, "buildRequest"))
+        .to(direct("osvRequest"))
       .onFallback()
         .process(responseHandler::processResponseError)
       .end()
       .transform().method(responseHandler, "buildReport");
 
-    from(direct("osvNvdRequest"))
-      .routeId("osvNvdRequest")
+    from(direct("osvRequest"))
+      .routeId("osvRequest")
       .process(this::processRequest)
-      .to(vertxHttp("{{api.osvnvd.host}}"))
+      .to(vertxHttp("{{api.onguard.host}}"))
       .transform().method(responseHandler, "responseToIssues");
 
-    from(direct("osvNvdHealthCheck"))
-      .routeId("osvNvdHealthCheck")
-      .setProperty(Constants.PROVIDER_NAME, constant(Constants.OSV_NVD_PROVIDER))
+    from(direct("osvHealthCheck"))
+      .routeId("osvHealthCheck")
+      .setProperty(Constants.PROVIDER_NAME, constant(Constants.OSV_PROVIDER))
       .choice()
-         .when(method(vulnerabilityProvider, "getEnabled").contains(Constants.OSV_NVD_PROVIDER))
-            .to(direct("osvNvdHealthCheckEndpoint"))
+         .when(method(vulnerabilityProvider, "getEnabled").contains(Constants.OSV_PROVIDER))
+            .to(direct("osvHealthCheckEndpoint"))
          .otherwise()
             .to(direct("healthCheckProviderDisabled"));
 
-    from(direct("osvNvdHealthCheckEndpoint"))
-      .routeId("osvNvdHealthCheckEndpoint")
+    from(direct("osvHealthCheckEndpoint"))
+      .routeId("osvHealthCheckEndpoint")
       .process(this::processHealthRequest)
       .circuitBreaker()
          .faultToleranceConfiguration()
             .timeoutEnabled(true)
             .timeoutDuration(timeout)
          .end()
-         .to(vertxHttp("{{api.osvnvd.management.host}}"))
+         .to(vertxHttp("{{api.onguard.management.host}}"))
          .setHeader(Exchange.HTTP_RESPONSE_TEXT,constant("Service is up and running"))
          .setBody(constant("Service is up and running"))
       .onFallback()
-         .setBody(constant(Constants.OSV_NVD_PROVIDER + "Service is down"))
+         .setBody(constant(Constants.OSV_PROVIDER + "Service is down"))
          .setHeader(Exchange.HTTP_RESPONSE_CODE,constant(Response.Status.SERVICE_UNAVAILABLE))
       .end();
     // fmt:on

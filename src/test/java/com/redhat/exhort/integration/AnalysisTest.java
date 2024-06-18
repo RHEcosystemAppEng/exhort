@@ -232,7 +232,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
 
     verifyNoInteractionsWithSnyk();
     verifyNoInteractionsWithOSS();
-    if (providers.containsKey(Constants.OSV_NVD_PROVIDER)) {
+    if (providers.containsKey(Constants.OSV_PROVIDER)) {
       verifyOsvNvdRequest();
     } else {
       verifyNoInteractionsWithOsvNvd();
@@ -244,7 +244,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
     return Stream.of(
         Arguments.of(Map.of(Constants.SNYK_PROVIDER, 200), Collections.emptyMap()),
         Arguments.of(Map.of(Constants.OSS_INDEX_PROVIDER, 401), Collections.emptyMap()),
-        Arguments.of(Map.of(Constants.OSV_NVD_PROVIDER, 200), Collections.emptyMap()),
+        Arguments.of(Map.of(Constants.OSV_PROVIDER, 200), Collections.emptyMap()),
         Arguments.of(
             Map.of(Constants.SNYK_PROVIDER, 200, Constants.OSS_INDEX_PROVIDER, 401),
             Collections.emptyMap()),
@@ -273,7 +273,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
                 200,
                 Constants.OSS_INDEX_PROVIDER,
                 200,
-                Constants.OSV_NVD_PROVIDER,
+                Constants.OSV_PROVIDER,
                 200),
             Map.of(
                 Constants.SNYK_TOKEN_HEADER,
@@ -373,7 +373,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
     assertFalse(status.getOk());
     assertEquals(Constants.SNYK_PROVIDER, status.getName());
     assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), status.getCode());
-    assertEquals(200, report.getProviders().get(Constants.OSV_NVD_PROVIDER).getStatus().getCode());
+    assertEquals(200, report.getProviders().get(Constants.OSV_PROVIDER).getStatus().getCode());
 
     verifySnykRequest(INVALID_TOKEN);
     verifyOsvNvdRequest();
@@ -411,7 +411,7 @@ public class AnalysisTest extends AbstractAnalysisTest {
     assertEquals(Constants.SNYK_PROVIDER, status.getName());
     assertEquals(Response.Status.FORBIDDEN.getStatusCode(), status.getCode());
 
-    assertEquals(200, report.getProviders().get(Constants.OSV_NVD_PROVIDER).getStatus().getCode());
+    assertEquals(200, report.getProviders().get(Constants.OSV_PROVIDER).getStatus().getCode());
 
     verifySnykRequest(UNAUTH_TOKEN);
     verifyOsvNvdRequest();
