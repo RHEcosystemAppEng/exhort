@@ -89,7 +89,7 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
 
     verifyNoInteractionsWithSnyk();
     verifyNoInteractionsWithOSS();
-    if (providers.containsKey(Constants.OSV_NVD_PROVIDER)) {
+    if (providers.containsKey(Constants.OSV_PROVIDER)) {
       verifyOsvNvdRequest();
     } else {
       verifyNoInteractionsWithOsvNvd();
@@ -108,16 +108,14 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
             Collections.emptyMap(),
             Constants.MAVEN_PURL_TYPE),
         Arguments.of(
-            Map.of(Constants.OSV_NVD_PROVIDER, 200),
-            Collections.emptyMap(),
-            Constants.MAVEN_PURL_TYPE),
+            Map.of(Constants.OSV_PROVIDER, 200), Collections.emptyMap(), Constants.MAVEN_PURL_TYPE),
         Arguments.of(
             Map.of(
                 Constants.SNYK_PROVIDER,
                 200,
                 Constants.OSS_INDEX_PROVIDER,
                 401,
-                Constants.OSV_NVD_PROVIDER,
+                Constants.OSV_PROVIDER,
                 200),
             Map.of(Constants.SNYK_TOKEN_HEADER, OK_TOKEN),
             Constants.MAVEN_PURL_TYPE),
@@ -127,7 +125,7 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
                 200,
                 Constants.OSS_INDEX_PROVIDER,
                 200,
-                Constants.OSV_NVD_PROVIDER,
+                Constants.OSV_PROVIDER,
                 200),
             Map.of(
                 Constants.OSS_INDEX_USER_HEADER,
@@ -141,7 +139,7 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
                 200,
                 Constants.OSS_INDEX_PROVIDER,
                 200,
-                Constants.OSV_NVD_PROVIDER,
+                Constants.OSV_PROVIDER,
                 200),
             Map.of(
                 Constants.SNYK_TOKEN_HEADER,
@@ -157,7 +155,7 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
                 200,
                 Constants.OSS_INDEX_PROVIDER,
                 401,
-                Constants.OSV_NVD_PROVIDER,
+                Constants.OSV_PROVIDER,
                 200),
             Collections.emptyMap(),
             Constants.MAVEN_PURL_TYPE),
@@ -167,7 +165,7 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
                 200,
                 Constants.OSS_INDEX_PROVIDER,
                 401,
-                Constants.OSV_NVD_PROVIDER,
+                Constants.OSV_PROVIDER,
                 200),
             Collections.emptyMap(),
             Constants.NPM_PURL_TYPE),
@@ -177,7 +175,7 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
                 200,
                 Constants.OSS_INDEX_PROVIDER,
                 401,
-                Constants.OSV_NVD_PROVIDER,
+                Constants.OSV_PROVIDER,
                 200),
             Collections.emptyMap(),
             Constants.GOLANG_PURL_TYPE),
@@ -187,7 +185,7 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
                 200,
                 Constants.OSS_INDEX_PROVIDER,
                 401,
-                Constants.OSV_NVD_PROVIDER,
+                Constants.OSV_PROVIDER,
                 200),
             Collections.emptyMap(),
             Constants.PYPI_PURL_TYPE));
@@ -285,7 +283,7 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
 
     status =
         report.getSummary().getProviderStatuses().stream()
-            .filter(ps -> ps.getProvider().equals(Constants.OSV_NVD_PROVIDER))
+            .filter(ps -> ps.getProvider().equals(Constants.OSV_PROVIDER))
             .findFirst()
             .get();
     assertTrue(status.getOk());
@@ -333,7 +331,7 @@ public class AnalysisV3Test extends AbstractAnalysisTest {
 
     status =
         report.getSummary().getProviderStatuses().stream()
-            .filter(ps -> ps.getProvider().equals(Constants.OSV_NVD_PROVIDER))
+            .filter(ps -> ps.getProvider().equals(Constants.OSV_PROVIDER))
             .findFirst()
             .get();
     assertTrue(status.getOk());

@@ -11,7 +11,7 @@
 
 ## Required parameters
 
-- `api.osvnvd.host` The host where the [ONGuard](https://github.com/RHEcosystemAppEng/onguard) service is deployed
+- `api.onguard.host` The host where the [ONGuard](https://github.com/RHEcosystemAppEng/onguard) service is deployed
 - `api.snyk.token` Snyk API token for default authentication when the Snyk integration is enabled
 
 ## OpenAPI and SwaggerUI

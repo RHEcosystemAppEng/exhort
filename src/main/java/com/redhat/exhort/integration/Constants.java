@@ -60,7 +60,7 @@ public final class Constants {
   public static final String SNYK_PROVIDER = "snyk";
   public static final String OSS_INDEX_PROVIDER = "oss-index";
   public static final String TRUSTED_CONTENT_PROVIDER = "trusted-content";
-  public static final String OSV_NVD_PROVIDER = "osv-nvd";
+  public static final String OSV_PROVIDER = "osv";
   public static final String UNKNOWN_PROVIDER = "unknown";
 
   public static final String HTTP_UNAUTHENTICATED = "Unauthenticated";
@@ -117,7 +117,7 @@ public final class Constants {
             {
               add(SNYK_PROVIDER);
               add(OSS_INDEX_PROVIDER);
-              add(OSV_NVD_PROVIDER);
+              add(OSV_PROVIDER);
             }
           });
 

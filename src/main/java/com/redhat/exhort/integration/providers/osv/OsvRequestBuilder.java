@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.redhat.exhort.integration.providers.osvnvd;
+package com.redhat.exhort.integration.providers.osv;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,7 +26,7 @@ import com.redhat.exhort.model.DependencyTree;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @RegisterForReflection
-public class OsvNvdRequestBuilder {
+public class OsvRequestBuilder {
 
   private ObjectMapper mapper = ObjectMapperProducer.newInstance();
 
