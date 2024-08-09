@@ -220,7 +220,7 @@ spec:
         - name: name
           value: buildah-8gb
         - name: bundle
-          value: quay.io/redhat-appstudio-tekton-catalog/task-buildah-8gb:0.1@sha256:df76e431c7f85787724cc48a1b7de3b1f3f72c10dec38902d22fbb6364a0b291
+          value: quay.io/redhat-appstudio-tekton-catalog/task-buildah-8gb:0.2
         - name: kind
           value: task
         resolver: bundles
@@ -259,8 +259,6 @@ spec:
         workspace: workspace
     - name: deprecated-base-image-check
       params:
-      - name: BASE_IMAGES_DIGESTS
-        value: $(tasks.build-container.results.BASE_IMAGES_DIGESTS)
       - name: IMAGE_URL
         value: $(tasks.build-container.results.IMAGE_URL)
       - name: IMAGE_DIGEST
