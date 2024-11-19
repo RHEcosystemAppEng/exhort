@@ -27,6 +27,15 @@ spec:
     value: src/main/docker/Dockerfile.jvm.staged
   - name: path-context
     value: .
+  taskRunSpecs:
+    - pipelineTaskName: build-container
+      stepSpecs:
+        - name: build
+          computeResources:
+            requests:
+              memory: 8Gi
+            limits:
+              memory: 8Gi
   pipelineSpec:
     description: |
       This pipeline is ideal for building container images from a Containerfile while reducing network traffic.
@@ -239,9 +248,9 @@ spec:
       taskRef:
         params:
         - name: name
-          value: buildah-8gb
+          value: buildah
         - name: bundle
-          value: quay.io/konflux-ci/tekton-catalog/task-buildah-8gb:0.2@sha256:976128cdd109b87bb758e2b77dff5a1cb261fdeb9d280b937b1c67860d829786
+          value: quay.io/konflux-ci/tekton-catalog/task-buildah@sha256:d588db7bfd8cd0b951de7f7a3929ba5870e8ab1e35bd45056d03fd9c2972fcf1
         - name: kind
           value: task
         resolver: bundles
