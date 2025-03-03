@@ -133,6 +133,19 @@ public class ProviderResponseHandlerTest {
                 .transitive(1)
                 .medium(2)
                 .dependencies(2)
+                .unscanned(0)),
+        Arguments.of(
+            Map.of(
+                "pkg:npm/aa@1", List.of(buildIssue(1, 5f)),
+                "pkg:npm/aaa@1", List.of(buildIssue(2, 5f))),
+            null,
+            buildTreeWithSameTransitiveDirect(),
+            new SourceSummary()
+                .total(2)
+                .direct(2)
+                .transitive(1)
+                .medium(2)
+                .dependencies(2)
                 .unscanned(0)));
   }
 
@@ -618,6 +631,45 @@ public class ProviderResponseHandlerTest {
                             .version("1")
                             .pkgManager(Constants.NPM_PURL_TYPE)
                             .build()))
+                .build());
+    return DependencyTree.builder().dependencies(direct).build();
+  }
+
+  private static DependencyTree buildTreeWithSameTransitiveDirect() {
+    Map<PackageRef, DirectDependency> direct =
+        Map.of(
+            PackageRef.builder()
+                .name("aa")
+                .version("1")
+                .pkgManager(Constants.NPM_PURL_TYPE)
+                .build(),
+            DirectDependency.builder()
+                .ref(
+                    PackageRef.builder()
+                        .name("aa")
+                        .version("1")
+                        .pkgManager(Constants.NPM_PURL_TYPE)
+                        .build())
+                .transitive(
+                    Set.of(
+                        PackageRef.builder()
+                            .name("aaa")
+                            .version("1")
+                            .pkgManager(Constants.NPM_PURL_TYPE)
+                            .build()))
+                .build(),
+            PackageRef.builder()
+                .name("aaa")
+                .version("1")
+                .pkgManager(Constants.NPM_PURL_TYPE)
+                .build(),
+            DirectDependency.builder()
+                .ref(
+                    PackageRef.builder()
+                        .name("aaa")
+                        .version("1")
+                        .pkgManager(Constants.NPM_PURL_TYPE)
+                        .build())
                 .build());
     return DependencyTree.builder().dependencies(direct).build();
   }
