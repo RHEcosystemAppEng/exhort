@@ -368,6 +368,8 @@ spec:
       params:
       - name: image-url
         value: $(tasks.build-image-index.results.IMAGE_URL)
+      - name: artifact-type
+        value: application
       runAfter:
       - build-image-index
       taskRef:
